@@ -35,6 +35,25 @@ right where they differ.
 
 ## Before saying a change works
 
-`pytest -q` must pass — 141 tests. `dranalyse selftest` must still report
-PASS on the Stage-A criterion. A build passing is not the same as a change
-working.
+`python scripts/check_architecture.py` must exit 0 — run it **directly, never
+through a pipe**, because `| tail` swallows the exit code and one commit was
+pushed with the ratchet failing for exactly that reason. Then `pytest -q`
+must pass, 229 tests, and `dranalyse stage-a --cases 10000` must still report
+PASS. A build passing is not the same as a change working.
+
+## Starting a new session
+
+Read [`project-docs/NEXT_SESSION.md`](project-docs/NEXT_SESSION.md) first. It
+carries the current state, what is proven against real data versus only
+against the synthetic oracle, the open field findings, and the recommended
+next step with its reasoning.
+
+## Two rules that came out of real defects
+
+- **Settings are vendor-neutral to the analyser.** Nothing outside
+  `registry/settings_io/` may import a vendor-specific settings type. A
+  Siemens `.rio` is one importer among several; the fleet is mixed.
+- **Nothing infers a line or a terminal from the operator's argument order.**
+  Which end a record belongs to is resolved from evidence and reported with
+  its confidence, and ambiguity is refused. A swapped end produces a
+  confident, mirrored answer.
