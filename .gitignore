@@ -13,6 +13,15 @@ DR & Events */
 DR */
 DR1/
 dr/
+drs */
+standard docs/
+out/
+*.zip
+*.ZIP
+*.doc
+*.docx
+*.xls
+*.xlsx
 *.CFG
 *.cfg
 *.DAT

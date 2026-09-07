@@ -1,8 +1,23 @@
 # Context for the next session
 
-Written 2026-09-07, at commit `0a42087` plus the ledger update. Read this,
-then [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) §2 (binding constraints)
-and the "What is different from the brief" section of [`README.md`](../README.md).
+Written 2026-09-07, at commit `0a42087` plus the ledger update, and revised
+the same day after the Sphoorthi records arrived. Read this, then
+[`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) §2 (binding constraints) and
+the "What is different from the brief" section of [`README.md`](../README.md).
+
+**Changed in the Sphoorthi revision** (§2b is the new material):
+
+- `inspect` and `verdict` now refuse a record the conformance gate has
+  blocked, instead of calling `analyse()` on it and dying with `KeyError:
+  'I1'`. `locate`, `report` and `backtest` already gated correctly.
+- `map_channel` and `detect_phase_naming` fall back to the last
+  separator-delimited token of a channel id, so a vendor prefix no longer
+  defeats the phase match. ABB's `LINE1_A_IL1` / `LINE1_UL1` map now. Only
+  the *last* token is tried, and only after the whole id and the `ph` field,
+  so nothing that mapped before can change -- and the GE D60's RMS channel
+  `SRC 1  Ia Mag` still stays unmapped rather than colliding with `F1-IA`.
+- `.gitignore` now covers `drs */`, `*.zip` and `*.ZIP`. The nine zips that
+  came with the Sphoorthi records were stageable on a public repo.
 
 ---
 
@@ -13,10 +28,31 @@ cd "e:\dr analyser"
 pip install -e ".[dev]"
 
 python scripts/check_architecture.py     # run FIRST, it is the cheapest gate
-pytest -q                                # 229 tests
-dranalyse stage-a --cases 10000          # acceptance sweep, ~10 s on 14 cores
+pytest -q                                # 231 tests
+dranalyse stage-a --cases 10000 --workers 1     # PASS, clean p95 = 0.4403 %
 dranalyse verdict --S "DR & Events 9-4-2026/Main-2/DR-1/DR-1.CFG" \
                   --line data/registry/dhn-nnr.yaml
+```
+
+**Set `OPENBLAS_NUM_THREADS=1`.** Without it, on this machine, the Stage-A
+pool dies with `BrokenProcessPool` at the default worker count and two
+`tests/test_ml.py` cases fail with `OpenBLAS error: Memory allocation still
+failed after 10 retries`. It is one root cause, not two: every worker process
+spawns one OpenBLAS thread per core and the machine runs out. Neither is a
+defect in the code -- both reproduce on a clean `git stash` of `src/`. With
+the variable set, everything passes multi-worker and 10,000 cases take 30 s
+instead of 111 s at `--workers 1`. The p95 is identical either way (0.4403 %),
+as it should be: the sweep is seeded, not worker-count dependent.
+
+```bash
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1     # PowerShell: $env:OPENBLAS_NUM_THREADS=1
+```
+
+The local workbench:
+
+```bash
+dranalyse workbench --port 8090          # then open http://127.0.0.1:8090/
+dranalyse bundle "drs sphoorthi/garividi-maradam-1"   # the same thing, no browser
 ```
 
 Real records are **not** in the repository (it is public). They are on the
@@ -48,16 +84,109 @@ test that needs them skips cleanly, so a clone without them still runs green.
 
 **Not proven at all**
 
-- **The two-ended path has never run on real data.** There is no far-end
-  record anywhere in the corpus. Everything in §7.2 rests on the synthetic
-  generator alone.
+- **The two-ended path has still never run on real data**, but the records
+  to run it on now exist locally -- see §2b. What is missing is no longer the
+  far-end record, it is the line constants for that corridor.
 - `data/registry/dhn-nnr.yaml` is **PROVISIONAL**. Its length and impedances
   are typical ACSR Zebra values, not surveyed. Absolute distances from it are
   not operational.
 
 **Not built**: pairing, transport, edge collector, asset resolution.
 **Not handled**: distributed-parameter model for long lines, three-terminal
-lines. Series-compensated lines are detected and refused, not approximated.
+lines, **zero-sequence mutual coupling between the two circuits of a
+double-circuit corridor** -- which the new records in §2b need. Series-
+compensated lines are detected and refused, not approximated.
+
+---
+
+## 2b. The Sphoorthi records -- the first real two-ended data
+
+`drs sphoorthi/` (local only, gitignored) arrived 2026-09-07. Eleven distinct
+records, no byte-duplicates, covering **three events on two ends each**:
+
+| Event | End A | End B |
+|---|---|---|
+| 15665, 20/08/2026 -- Maradam LINE 205 | Garividi: GE **D60**, MiCOM **P444** | Maradam: Siemens **7SA522**, "MARADAM" recorder |
+| 15662, 20/08/2026 -- Maradam LINE 206 | Garividi: **P444**, ABB **REL670** | Maradam: **7SA522**, "MARADAM" recorder |
+| 15251, 10/08/2026 -- 400 kV Kalpaka-Gajuwaka | Gajuwaka Main-1 | Kalpaka Main-2 (two records, 20 s apart) |
+
+All eleven parse and all eleven map to the canonical channel schema. Four
+vendors joined the evidence base: GE D60 (BINARY), MiCOM P444, ABB REL670
+(BINARY, `nrates=1`), Siemens 7SA522.
+
+**The pairing is corroborated electrically, not by folder name.** On event
+15665 the three usable relays measure pre-fault 725.9 / 732.1 / 719.5 A and
+all three call it CG; Maradam feeds 2857 A against Garividi's 2019 A, so the
+fault is nearer Maradam. On 15662 the two ends measure 331 A and 329 A
+pre-fault, and the fault-phase currents are 15,684 A at Garividi against
+6871 A at Maradam. **Trigger times spread 13 min 24 s across the four relays
+of event 15665** -- any pairing that filters on time before electrical
+corroboration throws this event away. This is the field confirmation of the
+§7.5 clock warning.
+
+### What blocks the two-ended solve, precisely
+
+Not the records: **the line constants for the Garividi-Maradam corridor.**
+This is not a convenience. E5 solves
+`|V2S - m.Z1L.I2S| = |V2R - (1-m).Z1L.I2R|`: one real equation in one unknown
+`m`, *given* `Z1L`. Treating `Z1L` as unknown too leaves 3 real unknowns
+(`|Z_SF|`, `|Z_RF|`, the sync angle) against 1 equation. **The line reactance
+cannot be recovered from the two-ended data alone** -- it must be supplied.
+
+### Three findings from the attempt, all needing an answer before any location is trusted
+
+1. **Cross-vendor validation passed at Garividi.** The measured negative-
+   sequence source impedance `Zs2 = -V2/I2`, which needs no line constants,
+   comes out at `1.67 + j10.28` ohm from the P444 and `2.61 + j10.27` ohm
+   from the REL670 -- same bus, same fault, two vendors, agreeing to 0.5 ohm
+   and 5 degrees. The measurement chain is right on both.
+2. **The Maradam 7SA522 negative-sequence polarity is inverted** relative to
+   the Garividi relays: `Zs2` comes out at -167.1 deg (event 15665) and
+   -173.3 deg (15662) where the Garividi relays give +75.7 to +84.6 deg. A
+   flipped CT is silent and mirrors a two-ended answer. **Settle the CT star-
+   point convention at Maradam before trusting any location from this
+   corridor.** Note that reversing the sign alone does not fully explain it
+   (it would leave +13 deg, still not a plausible source angle), so the
+   parallel circuit below may be part of it.
+3. **The corridor is double-circuit** -- LINE 205 and LINE 206 run Garividi
+   to Maradam -- and **both events are ground faults**, 9 minutes apart on
+   the same morning. Zero-sequence mutual coupling between the two circuits
+   is a first-order error source for single-ended ground-fault location and
+   is not modelled. `dhn-nnr.yaml` carries `double_circuit: false`; these
+   lines cannot.
+
+Also open: the GE D60 disagrees with the P444 at the same bus on event 15665
+(`Zs2` 155.97 ohm at 9.7 deg against 21.68 ohm at 84.6 deg) while measuring
+the same 305-310 A of I2, so the disagreement is in V2, not I2. The D60 also
+raises `I-BALANCE` at 69.9 % and places inception at 202.6 ms against a
+trigger at 1623.6 ms. Not diagnosed.
+
+### The 400 kV event is parked
+
+Both ends of 15251 block on `RATIO-PS`, the two Main-2 records are 20 s apart
+with the second showing no fault at all, and the two ends disagree on fault
+type (ABC against CG). Nothing from it is usable until the `ps` question in
+§2c is settled.
+
+### 2c. The `ps=S` question, with the evidence
+
+Five records declare `ps=S` with unity ratios and are correctly blocked. They
+are not really secondary. Measured pre-fault RMS on
+`maradam-garividi-1/Main-2` with the CFG's own `a=17.44`:
+
+```
+VA 127,005.6 V   VB 127,709.4 V   VC 127,354.5 V      220 kV / sqrt(3) = 127,017 V
+IA     714.3 A   IB     707.8 A   IC     709.5 A
+```
+
+Exactly nominal primary volts. And the identical relay at the far end
+(`garividi .. Main-2 P444`) uses the same `a=17.44` / `2.21` constants but
+declares **`ps=P`**. Same model, same constants, contradictory flag.
+
+The gate is right to refuse -- do **not** add a heuristic that infers primary
+from a nominal-voltage match. The resolution is a per-relay override in the
+registry, recorded as evidence with its justification, which is one more
+reason the `AssetResolver` of §6 comes first.
 
 ---
 
@@ -279,6 +408,25 @@ These came out of the real records and are still open:
    anywhere in the corpus.
 5. **Relay clocks in one bay differ by 1418 s.** Any pairing scheme that
    filters on time before electrical corroboration will fail on this fleet.
+
+From the Sphoorthi records (§2b), and these are what actually block progress:
+
+6. **Line constants for Garividi-Maradam LINE 205 and LINE 206**, 220 kV:
+   length, conductor, Z1 and Z0, and the zero-sequence mutual coupling
+   between the two circuits. CT 800/1 and VT 220000/110 are already read out
+   of the 7SA522 and D60 headers, so only the line data is missing. **One
+   answer here turns the first real two-ended validation on.**
+7. **The CT star-point convention at Maradam** -- see §2b finding 2. A
+   flipped CT is silent and mirrors the answer.
+8. **The relays' own fault-locator output for events 15662 and 15665** (the
+   7SA522 / P444 fault report or the event PDF). That is a comparison
+   baseline needing no patrol, the same trick as the zone decisions.
+9. **Is `garividi-maradam-2/Main-1 P444`'s station name `MARADAM 2` a feeder
+   name** (the bay named for the remote end), and is the REL670's
+   `BRAHMANAKOTKUR` a config cloned from another station and never renamed?
+   The electrical evidence says both records sit at the Garividi end: they
+   measure 15,684 A and ~15,300 A of fault current where the Maradam 7SA522
+   measures 6871 A. The CFG station name is evidence, never authority.
 
 ---
 

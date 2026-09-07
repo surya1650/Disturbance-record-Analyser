@@ -23,6 +23,8 @@ from .commands import (BAR, cmd_accuracy, cmd_backtest, cmd_capture,
                        cmd_confirm, cmd_inspect, cmd_locate, cmd_pending,
                        cmd_report, cmd_selftest, cmd_settings, cmd_stage_a,
                        cmd_template, cmd_verdict)
+from .wb import cmd_bundle, cmd_workbench
+from ..standards.cli import cmd_standards
 
 __all__ = ["main", "build_parser"]
 
@@ -122,9 +124,55 @@ def build_parser() -> argparse.ArgumentParser:
                    help="line X1 per km, to turn the implied Z1 into a length")
     q.set_defaults(func=cmd_settings)
 
+    q = sub.add_parser("standards",
+                       help="audit a record and relay settings against the standards pack")
+    q.add_argument("record", nargs="?", help="COMTRADE .cfg or .cff record")
+    q.add_argument("--line", help="line definition YAML")
+    q.add_argument("--rio", help="relay settings export")
+    q.add_argument("--end", choices=("S", "R"), default="S")
+    q.add_argument("--kv", type=float, help="nominal kV when no line file is supplied")
+    q.add_argument("--thermal-mva", type=float, dest="thermal_mva",
+                   help="line conductor thermal rating for the RLD calculation")
+    q.add_argument("--bay-mva", type=float, dest="bay_mva",
+                   help="bay-equipment rating; the lower rating governs")
+    q.add_argument("--load-reach-ohm", type=float, dest="load_reach_ohm",
+                   help="configured primary-ohm RLD reach to compare")
+    q.add_argument("--show-context", action="store_true",
+                   help="print normalized source chunks (works without a record)")
+    q.add_argument("--asset-type",
+                   help="filter context, e.g. line, transformer, busbar, generator")
+    q.add_argument("--topic", help="filter context by topic substring")
+    q.add_argument("--source", help="filter context by source id")
+    q.set_defaults(func=cmd_standards)
+
     q = sub.add_parser("template", help="write a starter line definition")
     q.add_argument("path")
     q.set_defaults(func=cmd_template)
+
+    q = sub.add_parser("bundle",
+                       help="resolve a folder or zip into ONE incident and describe it")
+    q.add_argument("path", help="folder or .zip of records for a single fault")
+    q.add_argument("--id", help="bundle id (defaults to the folder name)")
+    q.add_argument("--line-id", dest="line_id", help="line this incident belongs to")
+    q.add_argument("--S", action="append", metavar="FILE",
+                   help="file inside the bundle at end S; repeat for Main-1 and Main-2")
+    q.add_argument("--R", action="append", metavar="FILE",
+                   help="file inside the bundle at end R; repeat for Main-1 and Main-2")
+    q.add_argument("--out", help="manifest path (defaults to _asset.yaml in the bundle)")
+    q.set_defaults(func=cmd_bundle)
+
+    q = sub.add_parser("workbench",
+                       help="serve the local upload-and-analyse workbench")
+    q.add_argument("--host", default="127.0.0.1",
+                   help="bind address; the default is this machine only. This "
+                        "tool has no authentication and serves live protection "
+                        "data, so widen it deliberately.")
+    q.add_argument("--port", type=int, default=8090)
+    q.add_argument("--root", default="out/bundles",
+                   help="where uploaded bundles are kept")
+    q.add_argument("--registry", default="data/registry",
+                   help="directory of line definition YAML files")
+    q.set_defaults(func=cmd_workbench)
     return p
 
 

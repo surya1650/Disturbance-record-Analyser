@@ -61,6 +61,9 @@ ALLOWED_IMPORTS = {
     # The conclusions engine sits above the analysis layers and below the CLI.
     # It reads their results; nothing in dsp/ or faultloc/ may read a rule.
     "rules": {"signals", "dsp", "faultloc", "registry"},
+    # Standards auditing consumes records, relay settings and the canonical
+    # signal map.  It is advisory and must never be imported by the maths.
+    "standards": {"signals", "comtrade", "registry", "rules"},
     # The back-test replays the whole pipeline over an archive; it sits at the
     # top of the analysis stack, below only the CLI.
     "backtest": {"signals", "comtrade", "dsp", "faultloc", "registry", "rules"},
@@ -74,9 +77,14 @@ ALLOWED_IMPORTS = {
     # Stage-A validation drives the analysis stack against the synthetic
     # oracle. It is a consumer, never a dependency of anything it grades.
     "stagea": {"signals", "dsp", "faultloc", "registry", "synth"},
+    # The workbench assembles uploaded files into ONE incident (§2.4) and
+    # serves it locally. It reads the analysis stack; nothing analytical may
+    # read it, so an upload or presentation change can never move a number.
+    "workbench": {"signals", "comtrade", "dsp", "faultloc", "registry", "rules",
+                  "report", "groundtruth"},
     "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml",
-            "rules", "backtest", "report",
-            "groundtruth", "stagea"},
+            "rules", "standards", "backtest", "report",
+            "groundtruth", "stagea", "workbench"},
     "signals": set(),
 }
 

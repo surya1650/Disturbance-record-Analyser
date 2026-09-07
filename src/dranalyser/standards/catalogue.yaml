@@ -1,0 +1,482 @@
+schema_version: 1
+description: >-
+  Normalized, retrieval-friendly engineering context from every supplied standards
+  document. Statements are paraphrases, not substitutes for the controlled originals.
+  "active" means the present analyzer can evaluate at least part of the chunk;
+  "catalogued" means it is retained for retrieval but not yet machine-enforced.
+chunks:
+  - id: APG-DIST-ZONE-REACH
+    source_id: aptransco-general-philosophy
+    locator: "pages 1-2, distance protection"
+    asset_types: [line]
+    topics: [distance.zone-reach, settings.coordination]
+    analyzer_state: active
+    summary: "Forward distance-zone reach philosophy for normal and short-adjacent-line cases."
+    rules:
+      - "Zone 1 reach is 80 percent of the protected line positive-sequence impedance."
+      - "Normally, Zone 2 covers the protected line plus 50 percent of the shortest adjacent line."
+      - "Normally, Zone 3 covers the protected line plus 120 percent of the shortest adjacent line."
+      - "Zone 4 covers the protected line plus 120 percent of the longest adjacent line."
+      - "When the shortest adjacent line is below 40 percent of the protected line (ratio above 2.5), use Zone 2 at 120 percent and Zone 3 at 150 percent of the protected line."
+      - "In that short-adjacent case, Zone 4 is the larger of 120 percent of Zone 3 or the protected line plus 120 percent of the longest adjacent line."
+  - id: APG-DIST-REVERSE
+    source_id: aptransco-general-philosophy
+    locator: "page 2, reverse zone"
+    asset_types: [line]
+    topics: [distance.reverse-zone]
+    analyzer_state: active
+    summary: "Reverse-looking distance-zone reach and timing."
+    rules:
+      - "Reverse Zone 5 reach is 25 percent of protected-line Zone 1 or 50 percent of the shortest line connected to the local bus, subject to coordination."
+      - "Use approximately 0.35 seconds for the reverse-zone delay."
+  - id: APG-DIST-TIMES
+    source_id: aptransco-general-philosophy
+    locator: "page 2, 400 kV distance timings"
+    asset_types: [line]
+    topics: [distance.zone-time]
+    analyzer_state: active
+    summary: "Time grading for 400 kV distance zones."
+    rules:
+      - "Zone 1 is instantaneous."
+      - "Zone 2 is 0.35 seconds where coordination permits, otherwise 0.5 seconds."
+      - "Zone 3 is 0.7 seconds and Zone 4 is 1.2 seconds."
+  - id: APG-DIST-RESISTIVE
+    source_id: aptransco-general-philosophy
+    locator: "page 2, quadrilateral resistive reach"
+    asset_types: [line]
+    topics: [distance.resistive-reach]
+    analyzer_state: catalogued
+    summary: "Phase-to-earth quadrilateral resistive-reach philosophy for 400 kV lines."
+    rules:
+      - "Zone 1 resistive reach includes line resistance plus 20 primary ohms arc resistance and 40 primary ohms tower-footing resistance."
+      - "Zone 2, Zone 3, and Zone 4 resistive reaches are respectively 120, 135, and 150 percent of the Zone 1 resistive reach."
+      - "Limit resistive reach to five times the corresponding reactive reach."
+  - id: APG-LOAD-ENCROACHMENT
+    source_id: aptransco-general-philosophy
+    locator: "page 2, load encroachment"
+    asset_types: [line]
+    topics: [distance.load-encroachment]
+    analyzer_state: active
+    summary: "Minimum load impedance and blinder basis."
+    rules:
+      - "Use minimum system voltage of 0.85 per unit."
+      - "Use emergency loading of 1.5 times the lower of conductor thermal rating and bay-equipment rating."
+      - "Use a 30-degree load power-factor angle and apply the documented cosine safety factor relative to the line angle."
+      - "The worked 400 kV Quad Moose, 1000/1 CT case gives about 61.96 primary ohms and 17.03 secondary ohms."
+  - id: APG-LINE-AUXILIARY
+    source_id: aptransco-general-philosophy
+    locator: "pages 2-3, auxiliary line functions"
+    asset_types: [line]
+    topics: [sotf, directional-earth-fault, autoreclose, broken-conductor, stub]
+    analyzer_state: catalogued
+    summary: "Supporting protection functions and operating values."
+    rules:
+      - "Switch-on-to-fault operates from circuit-breaker close with an overcurrent pickup of 2 In."
+      - "Directional earth-fault pickup is 0.2 In with TMS 0.6."
+      - "Single-pole autoreclose dead time is 1.0 second for the main breaker and 1.5 seconds for the tie breaker, with 25-second reclaim and one shot."
+      - "Broken-conductor detection uses I2/I1 of 0.2."
+      - "Stub protection uses 2 In pickup and 0.05-second delay."
+  - id: APG-LINE-SCHEMES
+    source_id: aptransco-general-philosophy
+    locator: "page 3, scheme and supervision settings"
+    asset_types: [line]
+    topics: [teleprotection, mutual-compensation, power-swing, voltage-transformer-failure, breaker-failure]
+    analyzer_state: catalogued
+    summary: "Communication-aided distance, mutual compensation, swing blocking, and supervision."
+    rules:
+      - "Use PUTT for medium and long lines and POTT for short lines, subject to scheme coordination."
+      - "Enable mutual zero-sequence compensation on parallel lines where mutual coupling applies."
+      - "During a power swing, allow Zone 1 operation and block higher distance zones; unblock after 2 seconds."
+      - "Enable zero-sequence compensation and voltage-transformer-failure supervision."
+      - "During VT failure, use non-directional overcurrent at 2 In with 0.5-second delay."
+      - "Do not implement local-breaker-backup logic inside the distance relay where a separate LBB scheme is provided."
+  - id: APG-TRANSFORMER-DIFFERENTIAL
+    source_id: aptransco-general-philosophy
+    locator: "pages 3-4, transformer differential and REF"
+    asset_types: [transformer]
+    topics: [transformer.differential, transformer.ref]
+    analyzer_state: catalogued
+    summary: "Transformer differential, restricted-earth-fault, and inrush/overflux restraint philosophy."
+    rules:
+      - "Match vector group, CT ratios, zero-sequence elimination, tap range, and winding compensation to the protected transformer."
+      - "Set differential pickup and bias slopes to remain stable for load, through-fault, tap error, and CT error while retaining internal-fault sensitivity."
+      - "Enable second-harmonic restraint or blocking for magnetizing inrush and fifth-harmonic restraint for overfluxing where supported."
+      - "Apply low-impedance or high-impedance REF with correct neutral-CT polarity and stabilizing components."
+  - id: APG-TRANSFORMER-BACKUP
+    source_id: aptransco-general-philosophy
+    locator: "pages 4-5, transformer backup and inherent protection"
+    asset_types: [transformer]
+    topics: [transformer.overcurrent, transformer.earth-fault, transformer.inherent]
+    analyzer_state: catalogued
+    summary: "Transformer backup grading and mechanical/inherent trips."
+    rules:
+      - "Coordinate phase overcurrent and earth-fault stages with downstream protection and transformer thermal/through-fault capability."
+      - "Use high-set instantaneous or short-delay elements only above maximum through-fault duty and in coordination with differential protection."
+      - "Bring Buchholz, pressure-relief, sudden-pressure, oil/winding temperature, oil-level, and fire-protection contacts into the trip/alarm scheme as applicable."
+      - "Route transformer trips through the designated master-trip/lockout relays and record the initiating contacts."
+
+  - id: WG3-DR-TRIGGER-STORAGE
+    source_id: fold-wg3-final-report
+    locator: "pages 10-11"
+    asset_types: [all]
+    topics: [recording.trigger, recording.retention]
+    analyzer_state: active
+    summary: "DR initiation and preservation requirements."
+    rules:
+      - "Trigger disturbance recording on the start of every protection function and on every trip command."
+      - "Retrieve records promptly so finite FIFO memory does not overwrite the event."
+      - "Retain the protection start, trip, and plant-state channels needed to reconstruct the operation."
+  - id: WG3-DR-SAMPLING-WINDOW
+    source_id: fold-wg3-final-report
+    locator: "pages 12-17"
+    asset_types: [all]
+    topics: [recording.sampling, recording.window, comtrade]
+    analyzer_state: active
+    summary: "Minimum waveform fidelity, record window, and exchange format."
+    rules:
+      - "Sample waveform channels at not less than 1000 samples per second."
+      - "Capture at least 500 milliseconds before trigger and 2500 milliseconds after trigger, for a 3000-millisecond record."
+      - "Export COMTRADE in accordance with IEC 60255-24 / IEEE C37.111-2013."
+  - id: WG3-DR-SUPPLIES-TIME-HEALTH
+    source_id: fold-wg3-final-report
+    locator: "pages 18-26"
+    asset_types: [all]
+    topics: [recording.power, time-synchronization, device-health]
+    analyzer_state: active
+    summary: "Resilient supplies, clock discipline, and recorder supervision."
+    rules:
+      - "Feed the recording system from two independent DC batteries/chargers/DC distribution boards with changeover."
+      - "Provide redundant AC UPS or inverter supplies where AC is required."
+      - "Synchronize clocks to a common time source; the report notes an international target within 2 milliseconds of UTC."
+      - "Monitor watchdog, LAN, and time-synchronization failures and map them to DR/SCADA, local LEDs, and annunciation."
+  - id: WG3-132KV-MAIN1
+    source_id: fold-wg3-final-report
+    locator: "pages 27-29, 132 kV line Main-I table"
+    asset_types: [line]
+    topics: [channels.132kv, channels.main1]
+    analyzer_state: active
+    summary: "Required Main-I line analog and digital recording at 132 kV."
+    rules:
+      - "Record phase voltages, neutral voltage, synchronizing voltage where TPAR is used, phase currents, neutral current, and parallel-line mutual current where applicable."
+      - "Record phase/earth distance starts and trips, zone pickups/trips, carrier transmit/receive, autoreclose, breaker position/commands, and 86 lockout."
+      - "Record relay failure, time-sync failure, and LAN failure indications."
+  - id: WG3-132KV-MAIN2-OTHER
+    source_id: fold-wg3-final-report
+    locator: "pages 29-30, 132 kV Main-II and other functions"
+    asset_types: [line]
+    topics: [channels.132kv, channels.main2, channels.auxiliary]
+    analyzer_state: active
+    summary: "Backup and system-function channels at 132 kV."
+    rules:
+      - "Record backup phase-overcurrent and earth-fault stage starts/trips and relay health."
+      - "As installed, record LBB, current-reversal logic, weak-infeed logic, underfrequency stages, and special-protection-system operations."
+  - id: WG3-220PLUS-LINE
+    source_id: fold-wg3-final-report
+    locator: "pages 30-33, 220 kV and above line Main-I/Main-II"
+    asset_types: [line]
+    topics: [channels.220kv, channels.400kv, channels.distance]
+    analyzer_state: active
+    summary: "Main-I/Main-II channels for 220 kV and higher line protection."
+    rules:
+      - "Record phase voltages/currents, neutral voltage/current, and mutual current where applicable for each main protection."
+      - "Record phase trip, distance zones, carrier, autoreclose, VT failure, broken conductor, power-swing block, breaker pole positions/commands, and 86/96 operation."
+      - "Record relay failure, time-sync failure, and LAN failure for both main protections."
+  - id: WG3-400KV-BREAKER-AND-HALF
+    source_id: fold-wg3-final-report
+    locator: "pages 32-33, 400 kV one-and-a-half breaker additions"
+    asset_types: [line]
+    topics: [channels.400kv, breaker-and-a-half]
+    analyzer_state: active
+    summary: "Additional channels for breaker-and-a-half line bays."
+    rules:
+      - "Record tie CT phase currents as separate analog channels."
+      - "Record tie-breaker position/trip, tie autoreclose, wait-for-master, and stub-protection indications."
+  - id: WG3-TRANSFORMER-ANALOG
+    source_id: fold-wg3-final-report
+    locator: "pages 33-35, transformer analog table"
+    asset_types: [transformer]
+    topics: [channels.transformer, transformer.differential]
+    analyzer_state: catalogued
+    summary: "Transformer waveform and calculated-operating quantities."
+    rules:
+      - "Record HV and LV phase and neutral currents, and additional winding currents for multi-winding transformers."
+      - "Record differential operating, bias/restraint, and REF currents where the relay exposes them."
+      - "Record relevant bus/winding voltages when required for backup or overflux functions."
+  - id: WG3-TRANSFORMER-DIGITAL
+    source_id: fold-wg3-final-report
+    locator: "pages 33-35, transformer digital table"
+    asset_types: [transformer]
+    topics: [channels.transformer, transformer.events]
+    analyzer_state: catalogued
+    summary: "Transformer electrical, mechanical, switching, and health indications."
+    rules:
+      - "Record differential starts/trips by phase, restrained/unrestrained stages, harmonic block/restraint, overflux, and REF starts/trips."
+      - "Record Buchholz, pressure relief, oil-surge relay, winding/oil temperature, oil-level, air-cell/fire-system, and other installed inherent protections."
+      - "Record HV/LV breaker states and commands, 86/96/master trips, and relay/time-sync/LAN failures."
+      - "Record backup phase-overcurrent and earth-fault stage starts/trips."
+  - id: WG3-REACTOR
+    source_id: fold-wg3-final-report
+    locator: "pages 35-37, reactor tables"
+    asset_types: [reactor]
+    topics: [channels.reactor, reactor.protection]
+    analyzer_state: catalogued
+    summary: "Reactor differential, REF, inherent, impedance, and backup channels."
+    rules:
+      - "Record HV phase currents, neutral-CT current, differential/bias/REF currents, and phase voltages/currents used by backup impedance."
+      - "Record differential/REF starts and trips, harmonic restraint, inherent protection, NGR status/protection, breaker and lockout operation."
+      - "Record backup impedance zones, overcurrent stages, earth-fault stages, and relay/time/LAN health."
+  - id: WG3-BUSBAR
+    source_id: fold-wg3-final-report
+    locator: "pages 37-38, busbar protection table"
+    asset_types: [busbar]
+    topics: [channels.busbar, busbar.differential]
+    analyzer_state: catalogued
+    summary: "Busbar current, topology, differential, and supervision channels."
+    rules:
+      - "Record phase currents from every bay plus incoming and differential current for each bus zone."
+      - "Record isolator membership/selection, differential pickup/trip, zone trip/alarm, check-zone/end-zone, breaker trips, and relay/time/LAN health."
+  - id: WG3-LINE-DIFFERENTIAL
+    source_id: fold-wg3-final-report
+    locator: "pages 38-39, line differential table"
+    asset_types: [line]
+    topics: [channels.line-differential, line.differential]
+    analyzer_state: catalogued
+    summary: "Local/remote line differential quantities and communications status."
+    rules:
+      - "Record local and remote phase and neutral currents plus differential and bias/restraint currents."
+      - "Record phase starts/trips, restrained/unrestrained stages, harmonic block, send/receive, remote-relay/channel error, breaker, 86/96, and health indications."
+      - "Also record autoreclose, distance, overcurrent, and earth-fault functions when integrated in the same relay."
+  - id: WG3-GENERATOR-ANALOG
+    source_id: fold-wg3-final-report
+    locator: "pages 40-42, generator analog table"
+    asset_types: [generator]
+    topics: [channels.generator, generator.protection]
+    analyzer_state: catalogued
+    summary: "Generator electrical quantities required for post-event analysis."
+    rules:
+      - "Record phase voltages/currents at load and neutral sides, sensitive neutral current, frequency, and active/reactive power where available."
+      - "Record excitation-transformer quantities, residual/stator earth voltage and current, open-delta voltage, NGT/REF and negative-sequence quantities."
+      - "Record injected 20 Hz or other stator-earth-fault measuring quantities when that scheme is installed."
+  - id: WG3-GENERATOR-DIGITAL
+    source_id: fold-wg3-final-report
+    locator: "pages 40-42, generator digital table"
+    asset_types: [generator]
+    topics: [channels.generator, generator.events]
+    analyzer_state: catalogued
+    summary: "Generator protection, turbine/excitation, switching, and health indications."
+    rules:
+      - "Record generator, transformer, REF, negative-sequence, stator/rotor earth-fault, overcurrent/earth-fault, and power-function starts/trips."
+      - "Record over/under-voltage, V/Hz, over/under-frequency, loss of excitation, reverse power, pole slip, field and turbine trips."
+      - "Record breaker/field-breaker states and commands, LBB, 86/master trips, and relay/time/LAN failures."
+  - id: WG3-SURVEY-CONTEXT
+    source_id: fold-wg3-final-report
+    locator: "pages 43-44"
+    asset_types: [all]
+    topics: [fleet.survey, context]
+    analyzer_state: catalogued
+    summary: "Fleet survey findings are descriptive baselines, not universal setting limits."
+    rules:
+      - "Treat the make/model, sampling, storage, time-sync, and channel-availability survey as evidence of installed practice rather than a normative exception to the report recommendations."
+  - id: WG3-SCENARIO-AR
+    source_id: fold-wg3-final-report
+    locator: "pages 45-46, autoreclose scenarios"
+    asset_types: [line]
+    topics: [diagnostic.autoreclose]
+    analyzer_state: catalogued
+    summary: "Evidence patterns for failed or abnormal autoreclose sequences."
+    rules:
+      - "For an evolving fault, compare phase-selective trip, dead time, reclosing phase, and subsequent three-phase trip."
+      - "When autoreclose is blocked, check breaker readiness, carrier/teleprotection, VT/synchronism, lockout, and scheme blocking inputs."
+      - "For breaker-and-a-half bays, verify main/tie wait-for-master logic and independent dead times."
+      - "For a failed pole, verify LBB pickup, timer, retrip, and adjacent-breaker trips."
+      - "For sync-check blocking, compare line/bus voltage, slip/frequency/angle criteria, permissive, and close command."
+  - id: WG3-SCENARIO-DISTANCE
+    source_id: fold-wg3-final-report
+    locator: "pages 46-48, line-distance scenarios"
+    asset_types: [line]
+    topics: [diagnostic.distance, diagnostic.teleprotection]
+    analyzer_state: catalogued
+    summary: "Diagnostic checks for distance underreach, overreach, delay, and spurious operation."
+    rules:
+      - "For high-resistance earth faults, inspect resistive reach and directional-earth-fault operation."
+      - "For delayed backup, verify zone grading against remote relay and breaker clearing times."
+      - "For weak infeed, inspect echo/weak-infeed logic and carrier send/receive."
+      - "For carrier failure, distinguish local zone timing from communications-aided acceleration."
+      - "Avoid an improperly high line earth-fault high-set element that can overreach adjacent equipment."
+      - "For double-circuit lines, include mutual zero-sequence current and compensation polarity."
+      - "For radial/light-load cases, consider capacitive charging current in earth-fault interpretation."
+      - "For repeated transient operations, compare definite-time reset/retrigger behavior and event chronology."
+      - "For cascading load, inspect load encroachment and power-swing blocking before declaring a fault."
+      - "For spurious SOTF/manual-close trips, verify breaker close initiation, voltage logic, pickup, and wiring."
+      - "For transformer charging or spurious direct trip, inspect harmonic/inrush evidence and hardwired trip inputs."
+  - id: WG3-SCENARIO-TRANSFORMER
+    source_id: fold-wg3-final-report
+    locator: "pages 48-49, transformer scenarios"
+    asset_types: [transformer]
+    topics: [diagnostic.transformer]
+    analyzer_state: catalogued
+    summary: "Diagnostic checks for transformer electrical and inherent-protection operations."
+    rules:
+      - "Differential operation during an external fault points to CT saturation, ratio/polarity error, or a loose/open CT circuit."
+      - "Unexpected REF operation requires neutral-CT polarity, ratio, wiring, and stability checks."
+      - "On charging, compare differential current with second harmonic and restraint/block status."
+      - "For inherent trips, correlate Buchholz, PRV, OSR, temperatures, oil level, fire/NIFPS status, and physical inspection."
+      - "Evaluate overfluxing using V/Hz rather than voltage alone."
+      - "Consider earthquake/mechanical shock for Buchholz operation and lightning-arrester evidence during storms."
+  - id: WG3-SCENARIO-BUSBAR
+    source_id: fold-wg3-final-report
+    locator: "pages 49-50, busbar scenarios"
+    asset_types: [busbar]
+    topics: [diagnostic.busbar, diagnostic.lbb]
+    analyzer_state: catalogued
+    summary: "Busbar topology, LBB, and external-fault stability checks."
+    rules:
+      - "Use isolator and breaker states to reconstruct bus-zone membership and trip discrimination."
+      - "For spurious LBB, check pickup/retrip chronology, breaker auxiliary contacts, trip-current criteria, and DC earth faults."
+      - "Busbar operation on an external fault requires CT saturation, CT ratio/polarity, wiring, check-zone, and zone-selection review."
+  - id: WG3-RE-PROTECTION
+    source_id: fold-wg3-final-report
+    locator: "pages 51-55, renewable-energy protection"
+    asset_types: [renewable, inverter]
+    topics: [renewable.protection, inverter.protection]
+    analyzer_state: catalogued
+    summary: "DC-side, inverter AC-side, grid-interface, and grid-support functions to capture."
+    rules:
+      - "Retain DC over/under-voltage, overcurrent, earth/insulation fault, reverse-polarity/current, arc-fault, surge, temperature, and string/combiner protection events as installed."
+      - "Retain AC overcurrent/earth fault, over/under-voltage, over/under-frequency, anti-islanding, unbalance, harmonics, synchronization, and converter/transformer trips."
+      - "Retain grid-code functions such as fault ride-through, reactive-current/voltage support, frequency response, ramp-rate, and active/reactive-power controls."
+  - id: WG3-RE-DATA-RECOMMENDATIONS
+    source_id: fold-wg3-final-report
+    locator: "pages 55-59, renewable-energy data and recommendations"
+    asset_types: [renewable, inverter]
+    topics: [renewable.recording, pmu, communications]
+    analyzer_state: catalogued
+    summary: "Data-access limitations and recording architecture recommended for renewable plants."
+    rules:
+      - "Preserve inverter event logs and Modbus/plant-controller data; the surveyed Amguri inverter did not provide COMTRADE."
+      - "Use HV-side relay records to study inverter and collector-system disturbances when device-level waveforms are unavailable."
+      - "Prefer IEC 61850-capable relays and suitable instrument transformers at every material voltage level."
+      - "Provide DFR channels for bus voltage/current, frequency, active/reactive power, and dynamic reactive support."
+      - "Provide standalone GPS-synchronized DR/event logging, PMU functions, and oscillation detection as applicable."
+      - "Use at least 1000 Hz sampling with configurable pre-fault and post-fault recording and the required analog/digital points."
+
+  - id: APR24-ZONES-REVERSE
+    source_id: aptransco-distance-review-2024
+    locator: "pages 1-2, zone coordination and reverse zone"
+    asset_types: [line]
+    topics: [distance.zone-reach, distance.zone-time, distance.reverse-zone]
+    analyzer_state: active
+    summary: "2024 review of coordinated forward and reverse distance settings."
+    rules:
+      - "Retain or revise Zone 2 and Zone 3 reaches/times only after checking adjacent-line and breaker-clearing coordination."
+      - "For GE D60, use reverse-looking Zone 5 with reach around 60 percent of the shortest outgoing feeder Zone 1, subject to a hard coordination ceiling."
+      - "The reverse reach must not exceed the shortest feeder Zone 1 reach."
+      - "Use 25-percent and 20-percent reverse blinders where specified and a 0.35-second reverse delay."
+  - id: APR24-CARRIER
+    source_id: aptransco-distance-review-2024
+    locator: "page 2, short-line carrier scheme"
+    asset_types: [line]
+    topics: [teleprotection, distance.zone2]
+    analyzer_state: catalogued
+    summary: "Carrier-aided logic for short lines without line differential."
+    rules:
+      - "For lines shorter than 10 km without line differential, apply permissive-overreach logic using Zone 2 pickup plus carrier receive in place of permissive-underreach logic."
+  - id: APR24-POWER-SWING
+    source_id: aptransco-distance-review-2024
+    locator: "page 2, power-swing blocking"
+    asset_types: [line]
+    topics: [power-swing]
+    analyzer_state: catalogued
+    summary: "Power-swing treatment confirmed by the 2024 review."
+    rules:
+      - "Permit Zone 1 trip during a power swing, block Zones 2, 3, and 4, and unblock after 2 seconds."
+  - id: APR24-AR-NONGENERATING
+    source_id: aptransco-distance-review-2024
+    locator: "pages 2-3, 220/400 kV autoreclose"
+    asset_types: [line]
+    topics: [autoreclose]
+    analyzer_state: catalogued
+    summary: "Autoreclose timing for non-generating substations."
+    rules:
+      - "At 220 kV use 1.0-second dead time, 25-second reclaim, and 1.5-second pole-discrepancy time."
+      - "At 400 kV breaker-and-a-half bays use 1.0-second main and 2.0-second tie dead times, 25-second reclaim, and 1.5/2.5-second main/tie pole-discrepancy times."
+  - id: APR24-AR-GENERATING-CABLE
+    source_id: aptransco-distance-review-2024
+    locator: "page 3, generating-station and cable autoreclose"
+    asset_types: [line]
+    topics: [autoreclose, cable]
+    analyzer_state: catalogued
+    summary: "Generating-station timings and autoreclose exclusions."
+    rules:
+      - "For 220 kV generating-station feeders use 1.5-second dead time, 25-second reclaim, and 2.0-second pole-discrepancy time."
+      - "For 400 kV generating-station breaker-and-a-half feeders use 1.5/2.5-second main/tie dead times, 25-second reclaim, and 2.0/3.0-second pole-discrepancy times."
+      - "Disable single-pole autoreclose for underground and composite cable lines."
+      - "At generating feeders, close only with healthy line voltage; otherwise block reclosing and issue a three-phase trip."
+  - id: APR24-LOAD-ENCROACHMENT
+    source_id: aptransco-distance-review-2024
+    locator: "pages 3-5, load-encroachment table and relay controls"
+    asset_types: [line]
+    topics: [distance.load-encroachment]
+    analyzer_state: active
+    summary: "Reviewed reach table and relay-control configuration."
+    rules:
+      - "Use a 30-degree load angle; tabled primary/secondary reaches are Zebra 220: 75.05/30.02, Moose 220: 68.02/27.21, Twin Moose 220 at CT 1200: 35.81/21.44, Twin Moose 220 at CT 1600: 34.99/28.00."
+      - "Additional tabled reaches are AL59 Moose 220: 63.56/38.06, Twin Moose 400: 78.45/21.55, Twin AL59 400: 63.12/34.68, and Quad Moose 400: 40.27/22.12 primary/secondary ohms."
+      - "For the documented relay example, enable G1 using source SRC1, minimum voltage 0.85 per unit, tabled reach, 30-degree angle, zero pickup/reset delay, block off, self-reset targets, and events enabled."
+  - id: APR24-VTF-OC
+    source_id: aptransco-distance-review-2024
+    locator: "pages 5-6, VT failure and overcurrent"
+    asset_types: [line]
+    topics: [voltage-transformer-failure, overcurrent]
+    analyzer_state: catalogued
+    summary: "VT-failure delay and backup-overcurrent timing review."
+    rules:
+      - "Use 0.5-second VT-failure delay at 220/400 kV and 0.8 seconds at 132 kV."
+      - "During VT failure, use non-directional overcurrent with 0.5-second delay."
+      - "Correct MiCOM overcurrent timing so the maximum intended delay is not inadvertently represented as 3 seconds."
+  - id: APR24-AUXILIARY
+    source_id: aptransco-distance-review-2024
+    locator: "pages 5-6, SOTF/DEF/stub/mutual"
+    asset_types: [line]
+    topics: [sotf, directional-earth-fault, stub, mutual-compensation]
+    analyzer_state: catalogued
+    summary: "Reviewed auxiliary protection logic."
+    rules:
+      - "Initiate switch-on-to-fault from manual breaker close."
+      - "Enable directional earth fault when distance elements have not picked up and block it during VT failure."
+      - "At 400 kV breaker-and-a-half bays, use stub pickup 2 A with 0.05-second delay."
+      - "For double-circuit lines, provide physical neutral-current CT wiring and verify mutual-compensation polarity and scaling."
+  - id: APR24-TRANSFORMER-BACKUP
+    source_id: aptransco-distance-review-2024
+    locator: "page 6, transformer high-set backup"
+    asset_types: [transformer]
+    topics: [transformer.overcurrent]
+    analyzer_state: catalogued
+    summary: "Transformer backup high-set operating time."
+    rules:
+      - "Use a 0.05-second delay for the transformer overcurrent high-set stage, subject to pickup and through-fault coordination."
+
+  - id: RLD-FORMULA
+    source_id: load-encroachment-workbook
+    locator: "Sheet1, calculation blocks E4:Q13"
+    asset_types: [line]
+    topics: [distance.load-encroachment, calculation]
+    analyzer_state: active
+    summary: "Workbook calculation reproduced by the analyzer."
+    rules:
+      - "Base load impedance is ((0.85 x nominal kV)^2 x cos(30 degrees)) / (1.5 x governing MVA rating)."
+      - "Safety factor is cos(load angle + 90 degrees - line angle) / cos(90 degrees - line angle)."
+      - "Minimum primary reach is base load impedance times the safety factor."
+      - "Secondary reach is primary reach divided by the VT-ratio/CT-ratio impedance conversion factor."
+      - "Use the lower of conductor thermal MVA and bay-equipment MVA when both are known."
+  - id: RLD-INPUTS-CASES
+    source_id: load-encroachment-workbook
+    locator: "Sheet1, rows 4-13"
+    asset_types: [line]
+    topics: [distance.load-encroachment, reference-cases]
+    analyzer_state: active
+    summary: "Reference cases and workbook inputs retained for regression and settings review."
+    rules:
+      - "The workbook covers 220 kV Zebra, Moose, Twin Moose, and AL59 Moose cases and 400 kV Twin Moose, Twin AL59, and Quad Moose cases."
+      - "Each case retains conductor/bay rating, line angle, CT ratio, VT ratio, 0.85-per-unit voltage, 1.5 emergency factor, 30-degree load angle, and calculated primary/secondary reach."
+      - "Empty workbook sheets contain no additional rules or data."

@@ -1,14 +1,15 @@
 {
   "files": {
-    "scripts/check_architecture.py": 263,
+    "scripts/check_architecture.py": 271,
     "src/dranalyser/__init__.py": 0,
     "src/dranalyser/backtest.py": 348,
-    "src/dranalyser/cli/__init__.py": 137,
+    "src/dranalyser/cli/__init__.py": 185,
     "src/dranalyser/cli/__main__.py": 9,
-    "src/dranalyser/cli/commands.py": 550,
+    "src/dranalyser/cli/commands.py": 562,
+    "src/dranalyser/cli/wb.py": 92,
     "src/dranalyser/comtrade/__init__.py": 0,
     "src/dranalyser/comtrade/conformance.py": 247,
-    "src/dranalyser/comtrade/parser.py": 467,
+    "src/dranalyser/comtrade/parser.py": 485,
     "src/dranalyser/dsp/__init__.py": 0,
     "src/dranalyser/dsp/core.py": 214,
     "src/dranalyser/dsp/detect.py": 309,
@@ -33,11 +34,19 @@
     "src/dranalyser/rules/__init__.py": 0,
     "src/dranalyser/rules/engine.py": 354,
     "src/dranalyser/rules/features.py": 373,
-    "src/dranalyser/rules/signals.py": 254,
+    "src/dranalyser/rules/signals.py": 262,
     "src/dranalyser/signals.py": 158,
     "src/dranalyser/stagea.py": 341,
+    "src/dranalyser/standards/__init__.py": 16,
+    "src/dranalyser/standards/audit.py": 303,
+    "src/dranalyser/standards/cli.py": 78,
     "src/dranalyser/synth/__init__.py": 0,
-    "src/dranalyser/synth/generator.py": 462
+    "src/dranalyser/synth/generator.py": 462,
+    "src/dranalyser/workbench/__init__.py": 14,
+    "src/dranalyser/workbench/bundle.py": 321,
+    "src/dranalyser/workbench/incident.py": 154,
+    "src/dranalyser/workbench/pages.py": 211,
+    "src/dranalyser/workbench/server.py": 284
   },
   "exceptions": {}
 }

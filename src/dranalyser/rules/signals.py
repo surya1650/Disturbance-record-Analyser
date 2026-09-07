@@ -42,6 +42,7 @@ CANONICAL = (
     "AR_FAIL",
     "VT_FAIL", "SOTF", "POWER_SWING", "DEFINITIVE_TRIP", "LOCKOUT_86",
     "MANUAL_CLOSE", "BROKEN_CONDUCTOR",
+    "CB_READY", "RELAY_FAIL", "TIME_SYNC_FAIL", "LAN_FAIL",
     "OC_PICKUP", "OC_TRIP", "EF_PICKUP", "EF_TRIP",
 )
 
@@ -71,6 +72,13 @@ class SignalRule:
 # Order matters only for which rule a channel is tested against first; within
 # a canonical name the winner is chosen by score.
 RULES: Tuple[SignalRule, ...] = (
+    # Recorder-health signals are explicitly required by the FOLD WG-3
+    # channel tables.  Match them before generic START/TRIP patterns so a
+    # watchdog or clock alarm cannot be mistaken for a protection element.
+    SignalRule("TIME_SYNC_FAIL", r"TIME.*SYNC.*(FAIL|ERR)|CLOCK.*SYNC.*ERR|SNTP.*FAIL|TSYNCERR"),
+    SignalRule("LAN_FAIL", r"\bLAN\b.*(FAIL|ERR)|NETWORK.*(FAIL|ERR)"),
+    SignalRule("RELAY_FAIL", r"(MAIN\s*[12]|BCU|RELAY).*(FAIL|UNHEALTHY)|WATCHDOG|SELF.?SUPERV"),
+    SignalRule("CB_READY", r"\bCB\b.*READY|READY.*\bCB\b|SPRING.*CHARG"),
     SignalRule("CARRIER_FAIL", r"(CARR|CHAN|TEL)\w*.*FAIL|CR\s*CH.*FAI"),
     SignalRule("CARRIER_SEND", r"T\.?\s*SEND|CARR\w*\s*SEND|SEND\s*(SIG|CARR)|PLCC.*SEND",
                prefer=(DISTANCE,), avoid=(OTHER_ELEMENT,)),

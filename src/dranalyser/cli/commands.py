@@ -53,6 +53,8 @@ def _fmt_flags(rec) -> str:
 
 
 def cmd_inspect(args) -> int:
+    from ..standards import audit_record
+
     rec = _read_any(args.record)
     check(rec, nominal_kv=args.kv)
     print(BAR)
@@ -73,6 +75,11 @@ def cmd_inspect(args) -> int:
     print("  digitals   :", len(rec.digital))
     print("  conformance:")
     print(_fmt_flags(rec))
+    print(audit_record(rec).report(indent="  "))
+
+    if rec.blocked():
+        print("  analysis   : REFUSED, this record is blocked by the conformance gate")
+        return 0
 
     an = analyse(rec)
     print("  analysis   :")
@@ -234,19 +241,22 @@ def cmd_verdict(args) -> int:
         rec = _read_any(p, end=end)
         check(rec, nominal_kv=line.kv if line else None)
         term = line.terminals[end] if line else None
-        an = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
-        ans[end] = an
         rio = args.rio if (end == "S" and args.rio) else _find_rio(p)
-        if rio:
-            settings[end] = read_rio(rio)
         print(BAR)
         print("END " + end + " : " + rec.summary())
         print("    settings   : " + (os.path.basename(rio) if rio else "none found"))
         for f in rec.flags:
             print("    " + str(f))
+        if rec.blocked():
+            print("    -> BLOCKED, this record does not proceed to a verdict")
+            continue
+        ans[end] = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
+        if rio:
+            settings[end] = read_rio(rio)
 
     if not ans:
-        print("no records given")
+        print("no record passed the conformance gate" if (args.S or args.R)
+              else "no records given")
         return 2
 
     res = None
@@ -504,12 +514,14 @@ def cmd_capture(args) -> int:
 def cmd_settings(args) -> int:
     """Read a relay settings export and say what it gives you."""
     from ..registry.rio import read_rio
+    from ..standards import audit_settings
 
     s = read_rio(args.rio)
     print(BAR)
     print(s.summary())
     for w in s.warnings:
         print("  warning:", w)
+    print(audit_settings(s).report(indent="  "))
     if args.ct and args.vt:
         k = s.secondary_to_primary(args.ct, args.vt)
         print(BAR)

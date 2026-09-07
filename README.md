@@ -30,6 +30,7 @@ out there with reasons.
 | Tier 3 classifiers trained on synthetic labels | working |
 | Relay settings reader (`.rio`), incl. backup O/C and E/F stages | working |
 | Conclusions engine, 25 rules, 21 needing no fault location | working |
+| FOLD/APTRANSCO standards audit (recording, zones, RLD calculation) | working |
 | Zone-decision back-test over an archive | working |
 | Two-page incident report | working |
 | Ground-truth capture: store, form, accuracy dashboard | working |
@@ -74,6 +75,8 @@ dranalyse stage-a --cases 10000             # full acceptance sweep
 dranalyse template mylinedata.yaml          # starter line definition
 dranalyse inspect record.cfg --kv 220       # parse and describe one record
 dranalyse settings relay.rio --ct 800 --vt 2000    # read relay settings
+dranalyse standards record.cfg --line line.yaml --rio relay.rio  # standards gaps
+dranalyse standards --show-context --asset-type transformer      # source chunks
 dranalyse locate  --line line.yaml --S a.cfg --R b.cfg   # two-ended
 dranalyse verdict --line line.yaml --S a.cfg             # protection verdict
 dranalyse report  --line line.yaml --S a.cfg -o out.html # two-page report
@@ -82,6 +85,10 @@ dranalyse capture --port 8080               # ground-truth capture form
 dranalyse pending / confirm / accuracy      # patrol confirmations
 pytest -q                                   # 229 tests
 ```
+
+The engineering rules derived from the local standards pack, their source
+pages and the boundaries of what can be proved are recorded in
+[`project-docs/STANDARDS_CONTEXT.md`](project-docs/STANDARDS_CONTEXT.md).
 
 Real disturbance records are **not** in this repository (see
 [`.gitignore`](.gitignore)); every test that needs them skips cleanly.

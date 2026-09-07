@@ -89,6 +89,35 @@ def test_ryb_naming_maps_blue_to_phase_c():
     assert map_channel("IB", "A", "", "ABC") == "IB"
 
 
+def test_a_vendor_prefix_does_not_defeat_the_phase_match():
+    """ABB REL670 writes LINE1_A_IL1 / LINE1_UL1, with an empty ph field.
+
+    A match anchored at the start of the id finds nothing there, and the
+    record was blocked as CH-MISSING with all eight channels unmapped.
+    """
+    ids = ["LINE1_A_IL1", "LINE1_A_IL2", "LINE1_A_IL3", "LINE1_A_IN",
+           "LINE1_UL1", "LINE1_UL2", "LINE1_UL3", "LINE1_UN"]
+    assert detect_phase_naming(ids) == "IEC"
+    assert map_channel("LINE1_A_IL1", "A", "", "IEC") == "IA"
+    assert map_channel("LINE1_A_IL3", "A", "", "IEC") == "IC"
+    assert map_channel("LINE1_A_IN", "A", "", "IEC") == "IN"
+    assert map_channel("LINE1_UL2", "V", "", "IEC") == "VB"
+    assert map_channel("LINE1_UN", "V", "", "IEC") == "VN"
+
+
+def test_only_the_last_token_is_tried_so_rms_channels_stay_unmapped():
+    """The GE D60 carries "SRC 1  Ia Mag" beside the real "F1-IA" waveform.
+
+    Searching every token would map the RMS magnitude channel to IA and let
+    it collide with the waveform. Only the final token is ever considered.
+    """
+    assert map_channel("SRC 1  Ia Mag", "A", "_", "ABC") is None
+    assert map_channel("SRC 1  Vag Mag", "V", "_", "ABC") is None
+    assert map_channel("F1-IA", "A", "A", "ABC") == "IA"
+    # the ph field still wins over the last token where both are present
+    assert map_channel("F4-IG", "A", "G", "ABC") == "IN"
+
+
 @needs_corpus
 def test_the_two_relays_agree_that_it_was_an_a_phase_ground_fault():
     for path in (M1, M2):

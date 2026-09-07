@@ -1,0 +1,33 @@
+schema_version: 1
+generated: "2026-09-07"
+source_root: "standard docs"
+sources:
+  - id: aptransco-general-philosophy
+    title: "APTRANSCO General Philosophy"
+    file: "APTRANSCO-General philosophy (1) (1).doc"
+    format: "legacy-word"
+    extent: "5 pages"
+    sha256: "FFAFAE27DB32413FF42B8A95F8C7A0340C78DE8380FC876CEFECC45A76C29579"
+    extraction: "Complete text extracted and normalized; original remains local and gitignored."
+  - id: fold-wg3-final-report
+    title: "Disturbance Recorder (DR) Parameter Standardization - Final Report WG-3"
+    file: "FINAL REPORT_WG-3 (2)-1.pdf"
+    format: "pdf-text"
+    extent: "60 pages"
+    sha256: "9ED7625A89992531D8532D8BC72B1335228E260F0E7CA08A2DCCDD83226B3111"
+    extraction: "All pages reviewed; requirements, tables, annexures, and recommendations normalized."
+  - id: load-encroachment-workbook
+    title: "Load Encroachment Calculations"
+    file: "Load encroachment Calculations.xlsx"
+    format: "xlsx"
+    extent: "Sheet1 cells A1:Q13; remaining sheets empty"
+    sha256: "09BDDB0B73C754B993D80013D25A78985B3E7DC0271D69D36202D44915373222"
+    extraction: "Formulas, assumptions, conductor cases, CT/VT ratios, and outputs normalized."
+  - id: aptransco-distance-review-2024
+    title: "Review of Main-I/Main-II Distance Relays (Revised)"
+    file: "Review of MainIMainII Distance relays (revised).pdf"
+    format: "pdf-scan"
+    extent: "6 pages"
+    document_date: "2024-11-27"
+    sha256: "16904C9A82C6302A35C001988FCAD1583DB70093D046AEC2A97DF78042FA5C1A"
+    extraction: "Every scanned page visually reviewed and normalized."

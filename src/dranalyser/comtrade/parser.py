@@ -54,6 +54,21 @@ def _norm(s: str) -> str:
     return re.sub(r"[\s_\-.:]", "", (s or "").strip().upper())
 
 
+def _last_token(raw_id: str) -> str:
+    """The last separator-delimited token of a channel id, I/U/V stripped.
+
+    A vendor prefix defeats any match anchored at the start of the id: ABB
+    writes ``LINE1_A_IL1`` and ``LINE1_UL1``, where the phase lives in the
+    final token. Only the LAST token is ever considered, never any token --
+    the GE D60 writes ``SRC 1  Ia Mag`` for an RMS magnitude channel, which
+    is not a waveform and must stay unmapped.
+    """
+    parts = [p for p in re.split(r"[\s_\-.:]+", (raw_id or "").strip()) if p]
+    if len(parts) < 2:
+        return ""
+    return re.sub(r"^[IUV]", "", _norm(parts[-1]))
+
+
 def detect_phase_naming(ids: Sequence[str]) -> str:
     """Decide whether this record names phases A/B/C, R/Y/B or L1/L2/L3.
 
@@ -63,9 +78,10 @@ def detect_phase_naming(ids: Sequence[str]) -> str:
     """
     tail = set()
     for i in ids:
-        n = _norm(i)
-        n = re.sub(r"^[IUV]", "", n)
-        tail.add(n[:2] if n[:2] in ("L1", "L2", "L3") else n[:1])
+        n = re.sub(r"^[IUV]", "", _norm(i))
+        for t in (n, _last_token(i)):
+            if t:
+                tail.add(t[:2] if t[:2] in ("L1", "L2", "L3") else t[:1])
     if {"L1", "L2", "L3"} & tail:
         return "IEC"
     if "R" in tail and "Y" in tail:
@@ -95,7 +111,9 @@ def map_channel(raw_id: str, unit: str, ph_field: str, naming: str) -> Optional[
 
     body = re.sub(r"^[IUV]", "", n)
     ph = _norm(ph_field)
-    for token in (body, ph):
+    # The last token is a fallback, tried only after the whole id and the ph
+    # field, so no record that maps today can change its mapping.
+    for token in (body, ph, _last_token(raw_id)):
         if not token:
             continue
         if token[:2] in ("L1", "L2", "L3"):
