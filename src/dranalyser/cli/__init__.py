@@ -18,8 +18,8 @@ import argparse
 import sys
 from typing import List, Optional
 
-from .commands import (BAR, cmd_inspect, cmd_locate, cmd_selftest,
-                       cmd_settings, cmd_template, cmd_verdict)
+from .commands import (BAR, cmd_backtest, cmd_inspect, cmd_locate,
+                       cmd_selftest, cmd_settings, cmd_template, cmd_verdict)
 
 __all__ = ["main", "build_parser"]
 
@@ -52,6 +52,15 @@ def build_parser() -> argparse.ArgumentParser:
     q.add_argument("--rio", help="relay settings export (auto-discovered if omitted)")
     q.add_argument("--rules", help="rule catalogue YAML (defaults to the built-in one)")
     q.set_defaults(func=cmd_verdict)
+
+    q = sub.add_parser("backtest",
+                       help="replay an archive against the relays' own zone decisions")
+    q.add_argument("paths", nargs="+", help="record files or directories to walk")
+    q.add_argument("--line", help="line definition YAML (optional; adds location)")
+    q.add_argument("--kv", type=float, help="nominal line kV when no line file is given")
+    q.add_argument("--csv", help="write the per-record table to this CSV")
+    q.add_argument("--rows", type=int, default=40, help="rows to print (default 40)")
+    q.set_defaults(func=cmd_backtest)
 
     q = sub.add_parser("settings", help="read a relay .rio settings export")
     q.add_argument("rio")

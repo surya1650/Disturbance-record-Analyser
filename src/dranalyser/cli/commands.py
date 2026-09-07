@@ -292,6 +292,22 @@ def cmd_verdict(args) -> int:
     return 0
 
 
+def cmd_backtest(args) -> int:
+    """Replay an archive and grade it against the relays' own zone decisions."""
+    from .. import backtest
+
+    line = load_line(args.line) if args.line else None
+    res = backtest.run(args.paths, line=line, nominal_kv=args.kv)
+    print(res.report(max_rows=args.rows))
+    if args.csv:
+        res.to_csv(args.csv)
+        print("wrote " + args.csv)
+    good, judged = res.agreement()
+    if judged and good < judged:
+        return 1
+    return 0
+
+
 def cmd_settings(args) -> int:
     """Read a relay settings export and say what it gives you."""
     from ..registry.rio import read_rio

@@ -61,7 +61,11 @@ ALLOWED_IMPORTS = {
     # The conclusions engine sits above the analysis layers and below the CLI.
     # It reads their results; nothing in dsp/ or faultloc/ may read a rule.
     "rules": {"signals", "dsp", "faultloc", "registry"},
-    "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml", "rules"},
+    # The back-test replays the whole pipeline over an archive; it sits at the
+    # top of the analysis stack, below only the CLI.
+    "backtest": {"signals", "comtrade", "dsp", "faultloc", "registry", "rules"},
+    "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml",
+            "rules", "backtest"},
     "signals": set(),
 }
 
