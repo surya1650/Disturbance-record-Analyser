@@ -6,6 +6,51 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-09-07 - First PR built, tested and pushed
+
+**State:** committed and pushed to https://github.com/surya1650/Disturbance-record-Analyser
+(branch `main`, commit `a4897d1`). 141 tests pass. `scripts/check_architecture.py` passes.
+**Not yet verified against a real two-ended pair** - none exists in the corpus.
+
+Built (`src/dranalyser/`): own COMTRADE parser (1991/1999/2013, ASCII/BINARY/BINARY32/
+FLOAT32, .CFF, nrates 0/1/n, P/S scaling); conformance gate (13 checks); DSP chain
+(frequency tracking, mimic filter, sliding full/half-cycle DFT, sequence, superimposed,
+inception, fault-type classification, CT saturation, ADC clipping, window selection);
+estimators E1-E5 and the E6 ensemble; synthetic two-source phase-domain fault generator
+(the oracle); registry with vendor k0 conversions; CLI (`locate`/`inspect`/`selftest`/
+`template`); ML tiers 1/2/3.
+
+Verified: Stage-A (§13) PASS - mean 0.030 %, p95 0.092 %, max 0.152 % of line length,
+through the full DSP chain with 1418 s clock skew, CVT transient, decaying DC, ADC
+quantisation, 1000 Hz vs 1200 Hz. Parser verified on all four real DHONE records.
+
+**Field finding from the real records - needs action, not code.** Main-1 measures 575 V
+of V0 during an A-G fault carrying 1670 A of I0; Main-2, same bay, same fault, measures
+34 kV. Main-1's VT secondary cannot pass zero sequence, so its ground-loop voltage is
+missing V0 and it reports the fault ~13 % of the line too far out - consistent with
+Main-1 tripping in Zone 2 while Main-2 tripped in Zone 1. The analyser now detects this
+(`VT-NO-ZERO`) and refuses the single-ended ground-loop calculation at that terminal
+rather than answering wrongly. **Check the Main-1 VT connection at DHONE.**
+
+Also confirmed on real records: relay clocks in one bay differ by 1418 s; pre-fault load
+sits in 11 (Main-1) and 7 (Main-2) ADC counts; no clock-quality code anywhere, so E4 is
+permanently gated off in this fleet; Main-1 has no carrier-send digital channel mapped,
+so rule CR-01 cannot be evaluated from it.
+
+Outstanding, in priority order:
+1. Recover a genuine two-ended pair (Nandyal end). Everything in §7.2, §13 Stage B and
+   the §14 proof depends on it. Organisational lead time, start now.
+2. Real Z1/Z0/length/tower schedule for DHN-NNR - `data/registry/dhn-nnr.yaml` is
+   PROVISIONAL and marked so.
+3. Not built: pairing, transport, edge collector, rules engine, two-page PDF report.
+4. Not handled: distributed-parameter model for long lines, three-terminal lines.
+   Series-compensated lines are detected and refused, not approximated.
+
+Real records, the .rio settings export and event PDFs are NOT committed - the repo is
+public. Tests needing them skip cleanly.
+
+---
+
 ## 2026-09-06 — Toolchain, guard rails and agent context installed
 
 **State:** repo is NOT a git repository yet; everything below is uncommitted on disk.
