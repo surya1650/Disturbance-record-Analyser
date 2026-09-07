@@ -19,7 +19,8 @@ import argparse
 import sys
 from typing import List, Optional
 
-from .commands import (BAR, cmd_backtest, cmd_inspect, cmd_locate,
+from .commands import (BAR, cmd_accuracy, cmd_backtest, cmd_capture,
+                       cmd_confirm, cmd_inspect, cmd_locate, cmd_pending,
                        cmd_report, cmd_selftest, cmd_settings,
                        cmd_template, cmd_verdict)
 
@@ -61,8 +62,38 @@ def build_parser() -> argparse.ArgumentParser:
     q.add_argument("--line", help="line definition YAML")
     q.add_argument("-o", "--out", help="output HTML path")
     q.add_argument("--confirm-url", dest="confirm_url",
-                   help="ground-truth capture URL printed on page 1")
+                   help="base URL of the capture form, e.g. http://dr:8080")
+    q.add_argument("--db", default="dranalyser.db",
+                   help="register the incident here so it can be confirmed later")
     q.set_defaults(func=cmd_report)
+
+    q = sub.add_parser("confirm", help="record a patrol-confirmed fault location")
+    q.add_argument("incident_id")
+    q.add_argument("--tower", help="tower number where the fault was found")
+    q.add_argument("--km", type=float, help="chainage from the S terminal")
+    q.add_argument("--cause")
+    q.add_argument("--by", help="who confirmed it")
+    q.add_argument("--confidence")
+    q.add_argument("--notes")
+    q.add_argument("--db", default="dranalyser.db")
+    q.set_defaults(func=cmd_confirm)
+
+    q = sub.add_parser("pending", help="incidents with no patrol result yet")
+    q.add_argument("--line-id", dest="line_id")
+    q.add_argument("--db", default="dranalyser.db")
+    q.set_defaults(func=cmd_pending)
+
+    q = sub.add_parser("accuracy", help="measured accuracy against confirmations")
+    q.add_argument("--line-id", dest="line_id")
+    q.add_argument("--detail", action="store_true", help="list every scored incident")
+    q.add_argument("--db", default="dranalyser.db")
+    q.set_defaults(func=cmd_accuracy)
+
+    q = sub.add_parser("capture", help="serve the ground-truth capture form")
+    q.add_argument("--host", default="0.0.0.0")
+    q.add_argument("--port", type=int, default=8080)
+    q.add_argument("--db", default="dranalyser.db")
+    q.set_defaults(func=cmd_capture)
 
     q = sub.add_parser("backtest",
                        help="replay an archive against the relays' own zone decisions")

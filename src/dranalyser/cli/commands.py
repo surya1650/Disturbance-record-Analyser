@@ -337,11 +337,32 @@ def cmd_report(args) -> int:
     feats = incident_features(ans, location=loc, line=line, settings=settings,
                               z2_time_s=z2)
     rr = apply_rules(feats, load_rules())
+    base = args.confirm_url or ""
     rep = build(ans, feats, rr, location=loc, line=line, settings=settings,
-                ground_truth_url=args.confirm_url or "")
+                ground_truth_url=(base.rstrip("/") + "/confirm/" if base else ""))
+    if base:
+        rep.ground_truth_url = base.rstrip("/") + "/confirm/" + rep.incident_id
     render(rep)
     out = args.out or (rep.incident_id + ".html")
     write(rep, out)
+
+    # Register the incident so the QR on page 1 has something to confirm
+    # against. Without this the capture form has no idea the fault happened.
+    if args.db:
+        from ..groundtruth import Store
+
+        with Store(args.db) as store:
+            store.record_incident(
+                rep.incident_id, line.id if line else (feats.get("line_id") or "UNKNOWN"),
+                fault_time=str(ans[sorted(ans)[0]].record.trigger_time or ""),
+                fault_type=feats.get("fault_type"),
+                m=(loc.m if loc and loc.ok else None),
+                km_from_S=(loc.km_from_S if loc and loc.ok else None),
+                line_km=(line.length_km if line else None),
+                method=(loc.method if loc and loc.ok else None),
+                mode=(loc.mode if loc and loc.ok else None),
+                verdict=rr.verdict, report_path=os.path.abspath(out))
+        print("registered for confirmation in " + args.db)
     print("VERDICT: " + rr.verdict)
     if loc is not None and loc.ok:
         print("LOCATION: " + format(loc.km_from_S, ".3f") + " km from "
@@ -367,6 +388,90 @@ def cmd_backtest(args) -> int:
     good, judged = res.agreement()
     if judged and good < judged:
         return 1
+    return 0
+
+
+def cmd_confirm(args) -> int:
+    """Record a patrol-confirmed fault location against an incident."""
+    from ..groundtruth import Confirmation, Store
+
+    with Store(args.db) as store:
+        if not store.incident(args.incident_id):
+            print("unknown incident " + args.incident_id
+                  + "; run `dranalyse pending --db " + args.db + "` to list them")
+            return 2
+        try:
+            store.confirm(Confirmation(
+                incident_id=args.incident_id, tower_no=args.tower,
+                chainage_km=args.km, cause=args.cause or "",
+                confirmed_by=args.by or "", confidence=args.confidence or "",
+                notes=args.notes or ""))
+        except ValueError as exc:
+            print("not recorded: " + str(exc))
+            return 2
+        s = [x for x in store.scored() if x.incident_id == args.incident_id]
+        print("recorded.")
+        if s and s[0].error_km is not None:
+            print("  estimate " + format(s[0].km_estimated, ".3f")
+                  + " km, actual " + format(s[0].km_actual, ".3f")
+                  + " km, error " + format(s[0].error_km, "+.3f") + " km"
+                  + (" (" + format(s[0].error_pct, "+.2f") + " % of line)"
+                     if s[0].error_pct is not None else ""))
+        print()
+        print(store.accuracy_report())
+    return 0
+
+
+def cmd_pending(args) -> int:
+    """Incidents with no patrol result yet: the chase list."""
+    from ..groundtruth import Store
+
+    with Store(args.db) as store:
+        rows = store.pending(args.line_id)
+        print(BAR)
+        print("AWAITING CONFIRMATION: " + str(len(rows)) + " incident(s)")
+        for r in rows:
+            print("  " + format(r["incident_id"], "<34") + format(r["line_id"], "<12")
+                  + format(r["fault_time"] or "", "<21")
+                  + (format(r["km_from_S"], "8.2f") + " km"
+                     if r["km_from_S"] is not None else "       -"))
+        print(BAR)
+        print(store.accuracy_report())
+    return 0
+
+
+def cmd_accuracy(args) -> int:
+    """Measured accuracy against patrol confirmations."""
+    from ..groundtruth import Store
+
+    with Store(args.db) as store:
+        print(store.accuracy_report(args.line_id))
+        if args.detail:
+            print()
+            print("  " + format("incident", "<34") + format("mode", "<14")
+                  + format("est km", ">9") + format("actual", ">9")
+                  + format("error", ">9") + "  tower  cause")
+            for s in store.scored(args.line_id):
+                if s.error_km is None:
+                    continue
+                print("  " + format(s.incident_id, "<34") + format(s.mode, "<14")
+                      + format(s.km_estimated, "9.2f") + format(s.km_actual, "9.2f")
+                      + format(s.error_km, "+9.2f") + "  "
+                      + format(s.tower_no, "<6") + " " + s.cause)
+    return 0
+
+
+def cmd_capture(args) -> int:
+    """Serve the ground-truth capture form the report's QR points at."""
+    from ..groundtruth import Store
+    from ..groundtruth.web import run
+
+    with Store(args.db) as store:
+        print("capture form on http://" + (args.host if args.host != "0.0.0.0"
+                                           else "localhost") + ":" + str(args.port))
+        print("  point --confirm-url at this address when generating reports")
+        print("  Ctrl-C to stop")
+        run(store, args.host, args.port)
     return 0
 
 

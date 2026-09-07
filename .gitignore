@@ -62,3 +62,6 @@ Thumbs.db
 .env
 *.pem
 *.key
+
+# local ground-truth capture database
+*.db

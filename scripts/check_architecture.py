@@ -67,8 +67,13 @@ ALLOWED_IMPORTS = {
     # The report renders what the analysis concluded. Nothing analytical may
     # import it, so a presentation change can never move a number.
     "report": {"signals", "dsp", "faultloc", "registry", "rules"},
+    # Ground-truth capture depends on nothing in the package: it stores a
+    # tower number against an incident id and must keep working when every
+    # analytical layer around it changes.
+    "groundtruth": set(),
     "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml",
-            "rules", "backtest", "report"},
+            "rules", "backtest", "report",
+            "groundtruth"},
     "signals": set(),
 }
 
