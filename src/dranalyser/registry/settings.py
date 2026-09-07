@@ -1,50 +1,61 @@
-"""Reader for Siemens/OMICRON .rio protection-settings files.
+"""Vendor-neutral protection settings -- what the analyser consumes.
 
-Settings arrive WITH the disturbance record. On the corpus this project was
-built from, the relay exports a .rio next to every DR, carrying the complete
-distance characteristic: zone reaches, polygon vertices, line angle, the
-residual-compensation ratios and the source impedance.
-
-That matters more than it sounds. The brief assumes settings reach the
-registry through a workbook filled in by substation engineers, which is the
-longest-lead-time item in the whole project. Wherever a .rio exists, most of
-that sheet fills itself, and it fills itself with what the relay is ACTUALLY
-running rather than with what someone believes it is running.
+Nothing outside `registry/settings_io/` may name a vendor-specific settings
+type. A Siemens `.rio` is one importer among several; the fleet is mixed, and
+before this module `RioSettings` was imported directly by the back-test, the
+report renderer, the rules engine and the CLI, so a second vendor could not be
+added without touching all four. `scripts/check_architecture.py` enforces the
+rule now.
 
 Units
 -----
-Everything in the file is SECONDARY ohm, referred to the RATING line
-(VT secondary volts, CT secondary amps, frequency). Converting to primary is
+Everything here is SECONDARY ohm, referred to the rating line (VT secondary
+volts, CT secondary amps, frequency). Converting to primary is
 
     Z_primary = Z_secondary * (VT_ratio / CT_ratio)
 
-and getting that ratio upside down is a factor of 6.25 on this corpus, so the
-conversion lives here and is never open-coded by a caller.
+and getting that ratio upside down is a factor of 6.25 on this fleet, so the
+conversion lives in one place and is never open-coded by a caller.
 
-Polygon vertices are (R, X) pairs. A START vertex opens the outline, LINE
-vertices continue it, CLOSE returns to START.
+Characteristics
+---------------
+`Characteristic` is an interface, not a polygon. Siemens draws polygons, ABB
+and SEL draw mho circles, and a quadrilateral is a polygon with a tilted
+reactance line. Baking the polygon in would have put the Siemens assumption
+one layer deeper than the importer.
 """
 from __future__ import annotations
 
+import cmath
 import math
-import re
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from .model import RelaySetting, k0_from_siemens
+from .model import (RelaySetting, k0_from_impedances, k0_from_kn,
+                    k0_from_sel, k0_from_siemens)
 
-NUM = r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?"
 
-
-class RioError(Exception):
+class SettingsError(Exception):
     pass
 
 
-# SIPROTEC writes 2^31/100 for a stage that is not set. A stage carrying it
-# is disabled, not set to 21 MA, and reporting it as a threshold would be
-# absurd in one direction and dangerous in the other.
+# SIPROTEC writes 2^31/100 for a stage that is not set. A stage carrying it is
+# disabled, not set to 21 MA, and reporting it as a threshold would be absurd
+# in one direction and dangerous in the other.
 DISABLED_SENTINEL = 21474836.47
 SENTINEL_TOL = 0.05
+
+
+@dataclass
+class Provenance:
+    """Where a settings object came from. A settings file is evidence."""
+
+    path: str = ""
+    fmt: str = ""                 # "rio", "scl", "sel-txt", ...
+    importer: str = ""
+    sha256: str = ""
+    parsed_at: str = ""
+    warnings: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -56,10 +67,9 @@ class BackupStage:
     They are protection in their own right: if one of them cleared the fault,
     the distance scheme did not, and that is a finding.
 
-    The RIO export carries the PICKUP but not the time delay -- the delays
-    live in the relay parameter set, so they come from the registry YAML.
-    A stage with no known delay is still worth reporting on; it just cannot
-    be graded.
+    Most exports carry the PICKUP but not the time delay -- delays live in the
+    relay parameter set, so they come from the registry YAML. A stage with no
+    known delay is still worth reporting on; it just cannot be graded.
     """
 
     id: str                       # "I>>", "I>", "IE>>", "IE>"
@@ -79,15 +89,46 @@ class BackupStage:
         if ct_ratio and ct_ratio != 1.0:
             s += " = " + format(self.pickup_primary_a(ct_ratio), ".0f") + " A pri"
         s += ", t = " + (format(self.time_s, ".3f") + " s" if self.time_s is not None
-                         else "not in the RIO export")
+                         else "not in the settings export")
         return s
 
 
-@dataclass
-class ZoneCharacteristic:
-    """One tripping polygon, in secondary ohm, as (R, X) vertices."""
+class Characteristic:
+    """One tripping characteristic, in secondary ohm.
 
-    kind: str                       # "phase" | "earth"
+    Implementations must answer `contains`, which is the only question the
+    zone decision actually asks, plus the reach quantities the report draws.
+    """
+
+    kind: str = "phase"           # "phase" | "earth"
+
+    def contains(self, z: complex) -> bool:
+        raise NotImplementedError
+
+    @property
+    def reach_x(self) -> float:
+        raise NotImplementedError
+
+    @property
+    def reach_r(self) -> float:
+        raise NotImplementedError
+
+    def reach_at_angle(self, line_angle_deg: float) -> complex:
+        raise NotImplementedError
+
+    def centroid(self) -> Tuple[float, float]:
+        raise NotImplementedError
+
+    def outline(self, n: int = 48) -> List[Tuple[float, float]]:
+        """(R, X) points for drawing. A curve is sampled; a polygon is exact."""
+        raise NotImplementedError
+
+
+@dataclass
+class PolygonChar(Characteristic):
+    """A tripping polygon, as (R, X) vertices. Siemens and most quad relays."""
+
+    kind: str = "phase"
     vertices: List[Tuple[float, float]] = field(default_factory=list)
 
     @property
@@ -148,55 +189,169 @@ class ZoneCharacteristic:
                     inside = not inside
         return inside
 
+    def outline(self, n: int = 48) -> List[Tuple[float, float]]:
+        return list(self.vertices)
+
 
 @dataclass
-class RioZone:
+class MhoChar(Characteristic):
+    """A self-polarised mho circle: through the origin, diameter `diameter`.
+
+    ABB and SEL state a reach and a characteristic (torque) angle, which is
+    the diameter as a phasor. The circle passes through the origin, so the
+    centre is at half the diameter and the radius is half its magnitude.
+
+    The maths is standard, not inferred from any file: for a circle through
+    the origin with diameter D at angle theta, a ray leaving the origin at
+    angle a leaves the circle at |D|*cos(a - theta).
+    """
+
+    kind: str = "phase"
+    diameter: complex = 0j
+
+    @property
+    def centre(self) -> complex:
+        return self.diameter / 2.0
+
+    @property
+    def radius(self) -> float:
+        return abs(self.diameter) / 2.0
+
+    @property
+    def reach_x(self) -> float:
+        return self.centre.imag + self.radius
+
+    @property
+    def reach_r(self) -> float:
+        return self.centre.real + self.radius
+
+    def reach_at_angle(self, line_angle_deg: float) -> complex:
+        a = math.radians(line_angle_deg)
+        theta = cmath.phase(self.diameter) if self.diameter else 0.0
+        mag = abs(self.diameter) * math.cos(a - theta)
+        if mag <= 0:
+            return 0j
+        return cmath.rect(mag, a)
+
+    def centroid(self) -> Tuple[float, float]:
+        return (self.centre.real, self.centre.imag)
+
+    def contains(self, z: complex) -> bool:
+        if self.radius <= 0:
+            return False
+        return abs(z - self.centre) <= self.radius
+
+    def outline(self, n: int = 48) -> List[Tuple[float, float]]:
+        c, r = self.centre, self.radius
+        return [(c.real + r * math.cos(2 * math.pi * i / n),
+                 c.imag + r * math.sin(2 * math.pi * i / n)) for i in range(n)]
+
+
+def quad_char(reach_x: float, r_right: float, r_left: float,
+              tilt_deg: float = 0.0, kind: str = "phase") -> PolygonChar:
+    """A quadrilateral, as the polygon it is.
+
+    Deliberately a builder returning `PolygonChar` rather than a third
+    geometry: a quad IS a polygon, and `contains` for it is the same
+    ray-casting test. Inventing separate maths would add a way to be wrong
+    without adding a capability.
+
+    `tilt_deg` droops the reactance line, positive downwards to the right,
+    which is how a quad avoids overreach on a resistive fault.
+    """
+    t = math.tan(math.radians(tilt_deg))
+    return PolygonChar(kind=kind, vertices=[
+        (-r_left, 0.0),
+        (r_right, 0.0),
+        (r_right, reach_x - r_right * t),
+        (-r_left, reach_x + r_left * t),
+    ])
+
+
+@dataclass
+class Zone:
     name: str
     t1: float = 0.0
     tm: float = 0.0
     overreach: bool = False
-    phase: Optional[ZoneCharacteristic] = None
-    earth: Optional[ZoneCharacteristic] = None
+    phase: Optional[Characteristic] = None
+    earth: Optional[Characteristic] = None
 
-    def characteristic(self, ground: bool) -> Optional[ZoneCharacteristic]:
+    def characteristic(self, ground: bool) -> Optional[Characteristic]:
         return (self.earth or self.phase) if ground else (self.phase or self.earth)
 
     @property
     def reverse(self) -> bool:
         """True for a reverse-looking zone.
 
-        Tested on the polygon centroid rather than on the reactive reach: a
-        reverse zone can still have a vertex above the R axis (the real Z5
-        here reaches +0.725 while sitting mostly at -0.910), so a max-X test
-        would call it forward.
+        Tested on the centroid rather than on the reactive reach: a reverse
+        zone can still reach above the R axis (the real Z5 here reaches +0.725
+        while sitting mostly at -0.910), so a max-X test would call it forward.
         """
         c = self.phase or self.earth
-        if c is None or len(c.vertices) < 3:
+        if c is None:
             return False
-        return c.centroid()[1] < 0.0
+        try:
+            return c.centroid()[1] < 0.0
+        except (NotImplementedError, IndexError):
+            return False
 
 
 @dataclass
-class RioSettings:
+class ProtectionSettings:
+    """What one relay is actually running, as the analyser needs it."""
+
     device: str = ""
+    vendor: str = ""
+    model: str = ""
     substation: str = ""
     feeder: str = ""
+    line_hint: str = ""
     vt_secondary_v: float = 110.0
     ct_secondary_a: float = 1.0
     frequency: float = 50.0
     line_angle_deg: float = 80.0
-    re_rl: Optional[float] = None
-    xe_xl: Optional[float] = None
+
+    # k0 is NEVER a typed-in number. The importer records the vendor's native
+    # convention and its parameters; the conversion lives in registry/model.py
+    # and is shared with the line registry.
+    k0_convention: str = ""
+    k0_params: Dict[str, float] = field(default_factory=dict)
+
     zs_secondary: complex = 0j
     dirchar_deg: Tuple[float, float] = (0.0, 0.0)
     impedance_correction: bool = False
-    zones: List[RioZone] = field(default_factory=list)
+    zones: List[Zone] = field(default_factory=list)
     backup: List[BackupStage] = field(default_factory=list)
-    source_path: str = ""
-    warnings: List[str] = field(default_factory=list)
+    scheme: str = ""
+
+    provenance: Provenance = field(default_factory=Provenance)
+    # Everything the importer saw, untouched. A settings file is evidence:
+    # what was not understood stays visible rather than being dropped.
+    raw: Dict[str, object] = field(default_factory=dict)
+    # Fields the importer could not determine, so consumers can treat them as
+    # unavailable -- the same discipline the rules engine uses with `requires`.
+    unknown: List[str] = field(default_factory=list)
+
+    # ---- Siemens-native ratios, read-only conveniences -------------------
+    @property
+    def re_rl(self) -> Optional[float]:
+        return self.k0_params.get("re_rl")
+
+    @property
+    def xe_xl(self) -> Optional[float]:
+        return self.k0_params.get("xe_xl")
+
+    @property
+    def source_path(self) -> str:
+        return self.provenance.path
+
+    @property
+    def warnings(self) -> List[str]:
+        return self.provenance.warnings
 
     # ---- lookups --------------------------------------------------------
-    def zone(self, name: str) -> Optional[RioZone]:
+    def zone(self, name: str) -> Optional[Zone]:
         n = name.strip().upper()
         for z in self.zones:
             if z.name.strip().upper() == n:
@@ -214,13 +369,13 @@ class RioSettings:
         return [b for b in self.backup if b.enabled]
 
     @property
-    def forward_zones(self) -> List[RioZone]:
+    def forward_zones(self) -> List[Zone]:
         return [z for z in self.zones if not z.reverse]
 
     # ---- units ----------------------------------------------------------
     def secondary_to_primary(self, ct_ratio: float, vt_ratio: float) -> float:
         if ct_ratio <= 0:
-            raise RioError("ct_ratio must be positive")
+            raise SettingsError("ct_ratio must be positive")
         return vt_ratio / ct_ratio
 
     def zone_reach_primary(self, name: str, ct_ratio: float, vt_ratio: float,
@@ -236,10 +391,24 @@ class RioSettings:
 
     # ---- derived protection quantities ----------------------------------
     def k0(self) -> Optional[complex]:
-        """Complex residual compensation from the two real SIPROTEC ratios."""
-        if self.re_rl is None or self.xe_xl is None:
+        """Complex residual compensation, from the vendor's native form."""
+        p, conv = self.k0_params, self.k0_convention
+        try:
+            if conv == "siemens_re_xe":
+                return k0_from_siemens(p["re_rl"], p["xe_xl"],
+                                       p.get("line_angle_deg", self.line_angle_deg))
+            if conv == "abb_kn":
+                return k0_from_kn(p["kn_mag"], p["kn_ang_deg"])
+            if conv == "sel_k0":
+                return k0_from_sel(p["k0m"], p["k0a_deg"])
+            if conv == "impedances":
+                return k0_from_impedances(complex(p["r1"], p["x1"]),
+                                          complex(p["r0"], p["x0"]))
+            if conv == "complex_k0":
+                return complex(p["k0_real"], p["k0_imag"])
+        except KeyError:
             return None
-        return k0_from_siemens(self.re_rl, self.xe_xl, self.line_angle_deg)
+        return None
 
     def implied_line_z1(self, ct_ratio: float, vt_ratio: float,
                         z1_reach_fraction: float = 0.80) -> Optional[complex]:
@@ -264,7 +433,7 @@ class RioSettings:
         return z1 * (1.0 + 3.0 * k0)
 
     def which_zone(self, z_apparent_secondary: complex,
-                   ground: bool = False) -> Optional[RioZone]:
+                   ground: bool = False) -> Optional[Zone]:
         """The fastest forward zone whose characteristic contains the point.
 
         This is what makes the relay's own trip decision usable as ground
@@ -283,7 +452,7 @@ class RioSettings:
     def to_relay_setting(self, ct_ratio: float, vt_ratio: float,
                          line_z1_primary: Optional[complex] = None,
                          effective_from: str = "") -> RelaySetting:
-        """Build a registry RelaySetting from the file.
+        """Build a registry RelaySetting from the settings export.
 
         Reaches are expressed per unit of line when the line impedance is
         known, and left as ohms otherwise. k0 is carried in the vendor's
@@ -300,16 +469,14 @@ class RioSettings:
 
         z2 = self.zone("Z2")
         z3 = self.zone("Z3")
-        params: Dict[str, float] = {}
-        conv = "complex_k0"
-        if self.re_rl is not None and self.xe_xl is not None:
-            conv = "siemens_re_xe"
-            params = {"re_rl": self.re_rl, "xe_xl": self.xe_xl,
-                      "line_angle_deg": self.line_angle_deg}
+        params = dict(self.k0_params)
+        conv = self.k0_convention or "complex_k0"
+        if conv == "siemens_re_xe":
+            params.setdefault("line_angle_deg", self.line_angle_deg)
 
         rs = RelaySetting(
             effective_from=effective_from,
-            scheme="PUTT" if self.zone("Z1B") else "STEP",
+            scheme=self.scheme or ("PUTT" if self.zone("Z1B") else "STEP"),
             z1_reach_pu=pu("Z1") if pu("Z1") is not None else 0.8,
             z2_reach_pu=pu("Z2") if pu("Z2") is not None else 1.2,
             z3_reach_pu=pu("Z3") if pu("Z3") is not None else 2.0,
@@ -327,17 +494,20 @@ class RioSettings:
         return rs
 
     def summary(self) -> str:
-        rows = ["RIO settings  " + self.device + "  " + self.substation.strip(),
+        head = (self.vendor + " " + self.model).strip() or self.provenance.fmt.upper()
+        rows = [(head + " settings  " + self.device + "  "
+                 + self.substation.strip()).strip(),
                 "  rating           : " + format(self.vt_secondary_v, ".1f") + " V, "
                 + format(self.ct_secondary_a, ".1f") + " A, "
                 + format(self.frequency, ".0f") + " Hz (secondary)",
                 "  line angle       : " + format(self.line_angle_deg, ".1f") + " deg"]
-        if self.re_rl is not None:
-            k0 = self.k0()
-            rows.append("  RE/RL, XE/XL     : " + format(self.re_rl, ".3f") + ", "
-                        + format(self.xe_xl, ".3f") + "  ->  k0 = "
-                        + format(abs(k0), ".4f") + " angle "
-                        + format(math.degrees(math.atan2(k0.imag, k0.real)), "+.3f") + " deg")
+        k0 = self.k0()
+        if k0 is not None:
+            native = ", ".join(k + "=" + format(v, ".3f")
+                               for k, v in sorted(self.k0_params.items()))
+            rows.append("  k0 (" + self.k0_convention + ")  : " + native
+                        + "  ->  " + format(abs(k0), ".4f") + " angle "
+                        + format(math.degrees(cmath.phase(k0)), "+.3f") + " deg")
         rows.append("  source Z (sec)   : " + format(self.zs_secondary.real, ".3f")
                     + " + j" + format(self.zs_secondary.imag, ".3f"))
         if self.backup:
@@ -354,140 +524,6 @@ class RioSettings:
                         + format(c.reach_x if c else 0.0, "7.3f") + " sec ohm"
                         + ("   (earth X " + format(z.earth.reach_x, ".3f") + ")"
                            if z.earth else ""))
+        if self.unknown:
+            rows.append("  not determined   : " + ", ".join(sorted(self.unknown)))
         return "\n".join(rows)
-
-
-# --------------------------------------------------------------------------
-# parsing
-# --------------------------------------------------------------------------
-def _nums(line: str) -> List[float]:
-    """Numbers in the VALUE part of a line, not in its keyword.
-
-    The keyword itself can contain digits: "TIME1  0.000" would otherwise
-    yield 1.0 as the first number and every zone would read as a one-second
-    zone. So the first whitespace-delimited token is dropped first.
-    """
-    parts = line.strip().split(None, 1)
-    return [float(x) for x in re.findall(NUM, parts[1])] if len(parts) > 1 else []
-
-
-def _key(line: str) -> str:
-    """Upper-cased line with runs of whitespace collapsed.
-
-    The real file writes "BEGIN      TRIPCHAR" with padding but
-    "BEGIN TRIPCHAR-EARTH" with one space. Matching on the raw text drops the
-    phase polygon silently and leaves the earth polygon standing in for it,
-    which is invisible on this corpus for the reactive reach (they are equal)
-    and badly wrong for the resistive extent (6.034 against 18.034 on Z1).
-    """
-    return re.sub(r"\s+", " ", line.strip().upper())
-
-
-def parse_rio(text: str, source_path: str = "") -> RioSettings:
-    raw = text.replace("\x00", "").replace("\r", "")
-    lines = [ln.rstrip() for ln in raw.splitlines()]
-    s = RioSettings(source_path=source_path)
-
-    zone: Optional[RioZone] = None
-    char: Optional[ZoneCharacteristic] = None
-    saw_device = False
-
-    for ln in lines:
-        t = ln.strip()
-        if not t:
-            continue
-        up = _key(t)
-
-        if up.startswith("DEVICE"):
-            s.device = t.split(None, 1)[1].strip() if len(t.split(None, 1)) > 1 else ""
-            saw_device = True
-        elif up.startswith("SUBSTATION"):
-            s.substation = t.split(None, 1)[1].strip() if len(t.split(None, 1)) > 1 else ""
-        elif up.startswith("FEEDER"):
-            s.feeder = t.split(None, 1)[1].strip() if len(t.split(None, 1)) > 1 else ""
-        elif up.startswith("RATING"):
-            v = _nums(t)
-            if len(v) >= 3:
-                s.vt_secondary_v, s.ct_secondary_a, s.frequency = v[0], v[1], v[2]
-        elif up.startswith("LINEANGLE"):
-            v = _nums(t)
-            if v:
-                s.line_angle_deg = v[0]
-        elif up.startswith("RE/RL"):
-            v = _nums(t)
-            if v:
-                s.re_rl = v[0]
-        elif up.startswith("XE/XL"):
-            v = _nums(t)
-            if v:
-                s.xe_xl = v[0]
-        elif up.startswith("ZS"):
-            v = _nums(t)
-            if len(v) >= 2:
-                s.zs_secondary = complex(v[0], v[1])
-        elif up.startswith("DIRCHAR"):
-            v = _nums(t)
-            if len(v) >= 2:
-                s.dirchar_deg = (v[0], v[1])
-        elif up.split(" ")[0] in ("I>>", "I>", "IE>>", "IE>", "3I0>>", "3I0>"):
-            v = _nums(t)
-            if v:
-                sid = up.split(" ")[0]
-                enabled = abs(v[0] - DISABLED_SENTINEL) > SENTINEL_TOL
-                s.backup.append(BackupStage(
-                    id=sid, kind="ef" if sid.startswith(("IE", "3I0")) else "oc",
-                    pickup_secondary_a=v[0], enabled=enabled,
-                    time_s=v[1] if len(v) > 1 else None))
-        elif up.startswith("IMPCORR"):
-            s.impedance_correction = "TRUE" in up
-        elif up.startswith("BEGIN ZONE"):
-            zone = RioZone(name="", overreach="OVERREACH" in up)
-        elif up.startswith("END ZONE"):
-            if zone is not None:
-                if not zone.name:
-                    zone.name = "Z" + str(len(s.zones) + 1)
-                s.zones.append(zone)
-            zone, char = None, None
-        elif zone is not None and up.startswith("NAME"):
-            parts = t.split(None, 1)
-            zone.name = parts[1].strip() if len(parts) > 1 else ""
-        elif zone is not None and up.startswith("TIME1"):
-            v = _nums(t)
-            if v:
-                zone.t1 = v[0]
-        elif zone is not None and up.startswith("TIMEM"):
-            v = _nums(t)
-            if v:
-                zone.tm = v[0]
-        elif up.startswith("BEGIN TRIPCHAR-EARTH"):
-            char = ZoneCharacteristic(kind="earth")
-        elif up.startswith("BEGIN TRIPCHAR"):
-            char = ZoneCharacteristic(kind="phase")
-        elif up.startswith("END TRIPCHAR-EARTH"):
-            if zone is not None and char is not None:
-                zone.earth = char
-            char = None
-        elif up.startswith("END TRIPCHAR"):
-            if zone is not None and char is not None:
-                zone.phase = char
-            char = None
-        elif char is not None and (up.startswith("START") or up.startswith("LINE")):
-            v = _nums(t)
-            if len(v) >= 2:
-                char.vertices.append((v[0], v[1]))
-        elif char is not None and up.startswith("CLOSE"):
-            pass
-
-    if not saw_device:
-        raise RioError("not a RIO file: no DEVICE line found")
-    if not s.zones:
-        s.warnings.append("no zones parsed from the RIO file")
-    if s.re_rl is None or s.xe_xl is None:
-        s.warnings.append("no RE/RL and XE/XL in the file; k0 cannot be derived "
-                          "and must come from the settings sheet")
-    return s
-
-
-def read_rio(path: str) -> RioSettings:
-    with open(path, "r", encoding="latin-1") as fh:
-        return parse_rio(fh.read(), source_path=path)

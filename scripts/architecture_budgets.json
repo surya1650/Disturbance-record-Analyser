@@ -1,8 +1,8 @@
 {
   "files": {
-    "scripts/check_architecture.py": 271,
+    "scripts/check_architecture.py": 321,
     "src/dranalyser/__init__.py": 0,
-    "src/dranalyser/backtest.py": 348,
+    "src/dranalyser/backtest.py": 350,
     "src/dranalyser/cli/__init__.py": 185,
     "src/dranalyser/cli/__main__.py": 9,
     "src/dranalyser/cli/commands.py": 562,
@@ -27,7 +27,9 @@
     "src/dranalyser/registry/__init__.py": 0,
     "src/dranalyser/registry/loader.py": 180,
     "src/dranalyser/registry/model.py": 285,
-    "src/dranalyser/registry/rio.py": 493,
+    "src/dranalyser/registry/settings.py": 529,
+    "src/dranalyser/registry/settings_io/__init__.py": 79,
+    "src/dranalyser/registry/settings_io/rio.py": 218,
     "src/dranalyser/report/__init__.py": 4,
     "src/dranalyser/report/graphics.py": 339,
     "src/dranalyser/report/render.py": 262,

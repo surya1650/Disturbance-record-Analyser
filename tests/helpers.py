@@ -10,7 +10,7 @@ from dranalyser.dsp.pipeline import analyse
 from dranalyser.faultloc.ensemble import TerminalInput, locate
 from dranalyser.registry.loader import load_line
 from dranalyser.registry.model import uniform_line
-from dranalyser.registry.rio import read_rio
+from dranalyser.registry.settings_io import load_settings
 from dranalyser.rules.features import incident_features
 from dranalyser.synth.generator import SynthSpec, TerminalSpec, generate
 
@@ -46,7 +46,7 @@ def real_incident(cfg_path: str, rio_path: Optional[str] = None) -> Dict[str, An
     if rio_path is None:
         cand = os.path.join(os.path.dirname(cfg_path), "DR-1.rio")
         rio_path = cand if os.path.exists(cand) else None
-    rio = read_rio(rio_path) if rio_path else None
+    rio = load_settings(rio_path) if rio_path else None
     rec = read_comtrade(cfg_path, terminal_end="S")
     check(rec, nominal_kv=line.kv)
     an = analyse(rec, vt_type=line.terminals["S"].it.vt_type)

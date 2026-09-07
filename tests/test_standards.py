@@ -9,7 +9,8 @@ import pytest
 
 from dranalyser.cli import build_parser
 from dranalyser.registry.model import uniform_line
-from dranalyser.registry.rio import RioSettings, RioZone, ZoneCharacteristic
+from dranalyser.registry.settings import (PolygonChar, ProtectionSettings,
+                                          Zone)
 from dranalyser.rules.signals import map_signals
 from dranalyser.signals import AnalogMeta, Record
 from dranalyser.standards import (audit_record, audit_settings,
@@ -47,7 +48,7 @@ def _polygon(reach: complex, reverse=False):
         points = [(-r, -x), (r, -x), (r, 0.0), (-r, 0.0)]
     else:
         points = [(-r, 0.0), (r, 0.0), (r, x), (-r, x)]
-    return ZoneCharacteristic("phase", points)
+    return PolygonChar("phase", points)
 
 
 def test_record_that_meets_wg3_minima_passes_the_record_audit():
@@ -87,13 +88,14 @@ def test_settings_audit_accepts_source_aligned_reach_and_timing():
     angle = math.degrees(math.atan2(line.z1.imag, line.z1.real))
     scale = line.terminals["S"].it.vt_ratio / line.terminals["S"].it.ct_ratio
     z1_secondary = 0.8 * line.z1 / scale
-    settings = RioSettings(
-        line_angle_deg=angle, re_rl=1.02, xe_xl=0.8,
+    settings = ProtectionSettings(
+        line_angle_deg=angle, k0_convention="siemens_re_xe",
+        k0_params={"re_rl": 1.02, "xe_xl": 0.8},
         zones=[
-            RioZone("Z1", t1=0.0, phase=_polygon(z1_secondary)),
-            RioZone("Z2", t1=0.35, phase=_polygon(1.2 * line.z1 / scale)),
-            RioZone("Z3", t1=0.70, phase=_polygon(1.5 * line.z1 / scale)),
-            RioZone("Z5", t1=0.35, phase=_polygon(0.2 * line.z1 / scale, reverse=True)),
+            Zone("Z1", t1=0.0, phase=_polygon(z1_secondary)),
+            Zone("Z2", t1=0.35, phase=_polygon(1.2 * line.z1 / scale)),
+            Zone("Z3", t1=0.70, phase=_polygon(1.5 * line.z1 / scale)),
+            Zone("Z5", t1=0.35, phase=_polygon(0.2 * line.z1 / scale, reverse=True)),
         ],
     )
     result = audit_settings(settings, line)

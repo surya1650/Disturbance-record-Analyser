@@ -227,7 +227,7 @@ def cmd_selftest(args) -> int:
 
 def cmd_verdict(args) -> int:
     """Protection-performance verdict. Needs no line constants and no far end."""
-    from ..registry.rio import read_rio
+    from ..registry.settings_io import load_settings
     from ..rules.engine import apply_rules, load_rules
     from ..rules.features import incident_features
 
@@ -252,7 +252,7 @@ def cmd_verdict(args) -> int:
             continue
         ans[end] = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
         if rio:
-            settings[end] = read_rio(rio)
+            settings[end] = load_settings(rio)
 
     if not ans:
         print("no record passed the conformance gate" if (args.S or args.R)
@@ -304,7 +304,7 @@ def cmd_verdict(args) -> int:
 
 def cmd_report(args) -> int:
     """Two-page incident report: page 1 a decision, page 2 the evidence."""
-    from ..registry.rio import read_rio
+    from ..registry.settings_io import load_settings
     from ..report import build, render, write
     from ..rules.engine import apply_rules, load_rules
     from ..rules.features import incident_features
@@ -328,7 +328,7 @@ def cmd_report(args) -> int:
         ans[end] = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
         rio = _find_rio(p)
         if rio:
-            settings[end] = read_rio(rio)
+            settings[end] = load_settings(rio)
     if not ans:
         print("no analysable record given")
         return 2
@@ -513,10 +513,10 @@ def cmd_capture(args) -> int:
 
 def cmd_settings(args) -> int:
     """Read a relay settings export and say what it gives you."""
-    from ..registry.rio import read_rio
+    from ..registry.settings_io import load_settings
     from ..standards import audit_settings
 
-    s = read_rio(args.rio)
+    s = load_settings(args.rio)
     print(BAR)
     print(s.summary())
     for w in s.warnings:

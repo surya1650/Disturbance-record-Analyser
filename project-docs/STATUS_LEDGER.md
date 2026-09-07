@@ -6,6 +6,50 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-09-07 (settings) - The vendor lock-in is gone; a guard rule keeps it gone
+
+`NEXT_SESSION.md` §4, done. `RioSettings` was imported directly by nine call
+sites across `backtest`, `report`, `rules`, `cli`, `standards` and `workbench`,
+so a second vendor could not be added without touching all of them.
+
+Now: `registry/settings.py` is the vendor-neutral model, `registry/settings_io/`
+holds the importers, and the RIO reader lives in `settings_io/rio.py` behind
+`load_settings(path)`. `registry/rio.py` is gone (git mv, history preserved).
+
+**The rule has teeth.** `check_architecture.py` fails the build if anything
+outside `registry/settings_io/` imports a module inside it. Structural, not a
+list of banned names, so a future `scl.py` or `sel.py` is covered without
+editing the guard. Six cases pinned in `--self-test`.
+
+- `Characteristic` is an interface with `contains(z)`. `PolygonChar` (Siemens),
+  `MhoChar` (ABB/SEL - standard circle-through-origin maths, `|D|cos(a-theta)`,
+  not inferred from any file), and `quad_char()` as a **builder returning a
+  PolygonChar** because a quad is a polygon; separate maths would only add a
+  way to be wrong.
+- k0 dispatches on a recorded convention (siemens_re_xe / abb_kn / sel_k0 /
+  impedances / complex_k0) through the converters already in `registry/model.py`.
+  An incomplete convention returns None, never a guess.
+- `provenance` (path, format, importer, sha256, parsed_at, warnings), `raw`
+  (every key seen, untouched) and `unknown` (what could not be determined).
+- `load_settings` sniffs by content, and **refuses when two importers tie**
+  rather than picking one.
+
+**Verified on the real file**, not only in tests: `DR-1.rio` through the new
+path gives k0 = 0.8061 angle -2.417 deg, matching what `dhn-nnr.yaml` records.
+
+**Deliberately not built:** the CSV, XML and TXT importers. §5 still applies -
+there is no real sample of any of them, and one written speculatively will look
+finished, be wrong, and be believed because it has tests.
+
+**Gates:** guard and its self-test pass, **276 tests** pass, Stage-A 10,000
+cases PASS at clean p95 = **0.4403 %**, unchanged for the fourth time.
+
+Next: the `AssetResolver` (§6). The workbench manifest is already the shape it
+should fill - the operator's `source: operator` becomes the resolver's
+`source: resolver`, for the operator to confirm or override.
+
+---
+
 ## 2026-09-07 (P3) - Two relays on one bus now cross-check each other
 
 `workbench/corroborate.py`. Every record the operator put at a terminal is now

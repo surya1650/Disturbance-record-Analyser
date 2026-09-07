@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from typing import Iterable, List, Optional, Sequence
 
 from ..registry.model import Line
-from ..registry.rio import RioSettings
+from ..registry.settings import ProtectionSettings
 from ..rules.signals import map_signals
 from ..signals import PHASE_CURRENTS, PHASE_VOLTAGES, Record
 
@@ -204,7 +204,7 @@ def load_encroachment_min_ohm(
 
 
 def audit_settings(
-    settings: Optional[RioSettings],
+    settings: Optional[ProtectionSettings],
     line: Optional[Line] = None,
     *,
     terminal_end: str = "S",

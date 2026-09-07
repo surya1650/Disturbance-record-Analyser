@@ -29,7 +29,7 @@ import numpy as np
 from ..dsp.pipeline import Analysed
 from ..faultloc.ensemble import LocationResult
 from ..registry.model import Line
-from ..registry.rio import RioSettings
+from ..registry.settings import ProtectionSettings
 from .signals import SignalMap, infer_zone_operated, map_signals
 
 MS = 1000.0
@@ -119,7 +119,7 @@ class TerminalFeatures:
 
 
 def terminal_features(
-    an: Analysed, end: str, settings: Optional[RioSettings] = None,
+    an: Analysed, end: str, settings: Optional[ProtectionSettings] = None,
     ct_ratio: float = 1.0, vt_ratio: float = 1.0, z2_time_s: float = 0.35,
 ) -> TerminalFeatures:
     rec = an.record
@@ -306,7 +306,7 @@ def incident_features(
     terminals: Dict[str, Analysed],
     location: Optional[LocationResult] = None,
     line: Optional[Line] = None,
-    settings: Optional[Dict[str, RioSettings]] = None,
+    settings: Optional[Dict[str, ProtectionSettings]] = None,
     z2_time_s: float = 0.35,
 ) -> Dict[str, Any]:
     """One flat feature dictionary for the whole incident."""

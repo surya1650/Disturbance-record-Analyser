@@ -208,10 +208,12 @@ not scale past one incident, and three things are blocked behind it:
 
 The recommended order:
 
-1. **`ProtectionSettings` interface refactor** — small, mechanical, unblocks
-   everything else. Tests already exist. Half a day.
+1. ~~**`ProtectionSettings` interface refactor**~~ — **done 2026-09-07**, see §4.
 2. **`AssetResolver`** — folder and file to line / terminal / relay. This is
-   the real unlock.
+   the real unlock, and it is now the next thing. The workbench already writes
+   the manifest the resolver should fill in: today the operator declares the
+   assignment with `source: operator`, and the resolver's job is to pre-fill
+   it with `source: resolver` for the operator to confirm or override.
 3. **Pairing**, which is now possible.
 4. **Concrete settings importers**, one per format, *as real sample files
    arrive* — see the warning in §5.
@@ -219,16 +221,54 @@ The recommended order:
 
 ---
 
-## 4. Requirement: universal settings import
+## 4. Universal settings import — **DONE 2026-09-07**
 
-### The problem in the current code
+### The problem that was in the code
 
-`RioSettings` — a Siemens/OMICRON-specific type — is imported directly by
-`backtest.py`, `report/render.py`, `rules/features.py` and `cli/commands.py`.
-A second vendor cannot be added without touching all four. That is the single
-piece of vendor lock-in in the codebase and it should go first.
+`RioSettings` — a Siemens/OMICRON-specific type — was imported directly by
+`backtest.py`, `report/render.py`, `rules/features.py` and `cli/commands.py`
+(and by `standards/` and `workbench/` by the time it was fixed). A second
+vendor could not be added without touching all of them.
 
-### Target shape
+### What was built
+
+`registry/settings.py` holds the vendor-neutral model, `registry/settings_io/`
+holds the importers, and the RIO reader moved into `settings_io/rio.py` behind
+`load_settings(path)`. Nine call sites now name `ProtectionSettings` and
+`load_settings`, and none names a vendor.
+
+**The rule has teeth.** `scripts/check_architecture.py` now fails the build if
+anything outside `registry/settings_io/` imports a module inside it. The rule
+is structural, not a list of banned names, so an `scl.py` or `sel.py` added
+later is covered without editing the guard. Six cases are pinned in the
+guard's own `--self-test`.
+
+`Characteristic` is an interface with `contains(z)`. `PolygonChar` is the
+Siemens shape; `MhoChar` is a self-polarised mho circle for ABB and SEL, whose
+maths is standard (a ray at angle *a* leaves a circle of diameter *D* at angle
+*theta* at `|D|cos(a - theta)`), not inferred from any file; `quad_char()` is
+deliberately a **builder returning a PolygonChar**, because a quadrilateral is
+a polygon and inventing separate maths would add a way to be wrong without
+adding a capability.
+
+k0 now dispatches on a recorded convention — `siemens_re_xe`, `abb_kn`,
+`sel_k0`, `impedances`, `complex_k0` — through the converters already in
+`registry/model.py`. An incomplete convention yields `None`, never a guess.
+
+`ProtectionSettings` carries `provenance` (path, format, importer, sha256,
+parsed_at, warnings), `raw` (every key the importer saw, untouched) and
+`unknown` (what it could not determine, so consumers treat it as unavailable
+— the same discipline the rules engine uses with `requires`).
+
+`load_settings` sniffs by content, takes the best importer, and **refuses when
+two tie**. Verified end to end on the real `DR-1.rio`: k0 comes out at 0.8061
+angle -2.417 deg, matching the value recorded in `dhn-nnr.yaml`.
+
+**Still not built, and §5 still applies:** the CSV, XML and TXT importers. The
+interface, the sniffing and the refusal-on-tie are there; each concrete
+importer waits for one real sample file.
+
+### Target shape, as built
 
 ```
 registry/settings.py          vendor-neutral model, what the analyser consumes

@@ -13,7 +13,7 @@ from dranalyser.dsp.pipeline import analyse
 from dranalyser.faultloc.ensemble import TerminalInput, locate
 from dranalyser.registry.loader import load_line
 from dranalyser.registry.model import uniform_line
-from dranalyser.registry.rio import read_rio
+from dranalyser.registry.settings_io import load_settings
 from dranalyser.report import build, render, write
 from dranalyser.report.graphics import oscillogram, phasor_diagram, rx_diagram
 from dranalyser.report.render import incident_id
@@ -167,7 +167,7 @@ def test_real_record_report_includes_the_relay_characteristic():
     rec = read_comtrade(M2, terminal_end="S")
     check(rec, nominal_kv=line.kv)
     an = analyse(rec, vt_type="CVT")
-    st = read_rio(RIO)
+    st = load_settings(RIO)
     loc = locate(line, {"S": TerminalInput(analysed=an, end="S",
                                            zs1=line.terminals["S"].zs1,
                                            zs0=line.terminals["S"].zs0)})

@@ -12,7 +12,8 @@ import os
 
 import pytest
 
-from dranalyser.registry.rio import RioError, parse_rio, read_rio
+from dranalyser.registry.settings_io import load_settings
+from dranalyser.registry.settings_io.rio import RioError, parse_rio, read_rio
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REAL = os.path.join(ROOT, "DR & Events 9-4-2026", "Main-2", "DR-1", "DR-1.rio")
@@ -263,7 +264,7 @@ def test_a_time_delay_is_read_when_the_export_carries_one():
     assert s.stage("I>").time_s == pytest.approx(0.800)
     # the RIO does not always carry the delay, and that must stay visible
     assert s.stage("I>>").time_s is None
-    assert "not in the RIO export" in s.stage("I>>").describe()
+    assert "not in the settings export" in s.stage("I>>").describe()
 
 
 def test_the_not_set_sentinel_is_read_as_disabled_not_as_21_mega_amps():

@@ -30,7 +30,8 @@ from .comtrade.parser import read_cff, read_comtrade
 from .dsp.pipeline import analyse
 from .faultloc.ensemble import TerminalInput, locate
 from .registry.model import Line
-from .registry.rio import RioSettings, read_rio
+from .registry.settings import ProtectionSettings
+from .registry.settings_io import load_settings
 from .rules.engine import apply_rules, load_rules
 from .rules.features import incident_features
 
@@ -307,7 +308,8 @@ def run(paths: Sequence[str], line: Optional[Line] = None,
 
             an = analyse(rec)
             rio_path = _find_rio(path)
-            settings: Optional[RioSettings] = read_rio(rio_path) if rio_path else None
+            settings: Optional[ProtectionSettings] = (load_settings(rio_path)
+                                                     if rio_path else None)
 
             loc = None
             if line is not None:

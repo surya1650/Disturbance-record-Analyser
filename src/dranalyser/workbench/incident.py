@@ -17,7 +17,7 @@ from ..comtrade.parser import read_cff, read_comtrade
 from ..dsp.pipeline import analyse
 from ..faultloc.ensemble import TerminalInput, locate
 from ..registry.loader import load_line
-from ..registry.rio import read_rio
+from ..registry.settings_io import load_settings
 from ..report import build, render, write
 from ..rules.engine import apply_rules, load_rules
 from ..rules.features import incident_features
@@ -109,7 +109,7 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
         if not sf.name.lower().endswith(".rio"):
             continue
         try:
-            settings["S" if "S" in res.used else "R"] = read_rio(
+            settings["S" if "S" in res.used else "R"] = load_settings(
                 os.path.join(bundle.root, sf.name.replace("/", os.sep)))
         except Exception as exc:                # noqa: BLE001
             res.errors.append(sf.name + ": " + str(exc)[:200])

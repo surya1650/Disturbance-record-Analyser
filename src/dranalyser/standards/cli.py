@@ -7,7 +7,7 @@ import os
 from ..comtrade.conformance import check
 from ..comtrade.parser import read_cff, read_comtrade
 from ..registry.loader import load_line
-from ..registry.rio import read_rio
+from ..registry.settings_io import load_settings
 from .audit import AuditResult, audit_record, audit_settings, load_encroachment_min_ohm
 from .catalogue import context_text, search_chunks
 
@@ -41,7 +41,7 @@ def cmd_standards(args) -> int:
             if os.path.exists(candidate):
                 rio_path = candidate
                 break
-    settings = read_rio(rio_path) if rio_path else None
+    settings = load_settings(rio_path) if rio_path else None
 
     combined = AuditResult()
     if args.record:

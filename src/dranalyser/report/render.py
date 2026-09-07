@@ -23,7 +23,7 @@ import numpy as np
 from ..dsp.pipeline import Analysed
 from ..faultloc.ensemble import LocationResult
 from ..registry.model import Line
-from ..registry.rio import RioSettings
+from ..registry.settings import ProtectionSettings
 from ..rules.engine import RuleResult
 from ..rules.signals import map_signals
 from . import graphics as g
@@ -85,7 +85,7 @@ def _spans(rec, channels: Sequence[str], t0: float) -> List[Tuple[float, float]]
     return out
 
 
-def _trajectory(an: Analysed, settings: Optional[RioSettings], ct: float, vt: float,
+def _trajectory(an: Analysed, settings: Optional[ProtectionSettings], ct: float, vt: float,
                 fault: str) -> List[complex]:
     """Apparent loop impedance per sample, in secondary ohm."""
     if settings is None:
@@ -113,7 +113,7 @@ def _trajectory(an: Analysed, settings: Optional[RioSettings], ct: float, vt: fl
     return out
 
 
-def _zone_polygons(settings: Optional[RioSettings], ground: bool) -> List[Dict[str, object]]:
+def _zone_polygons(settings: Optional[ProtectionSettings], ground: bool) -> List[Dict[str, object]]:
     if settings is None:
         return []
     out = []
@@ -132,7 +132,7 @@ class IncidentReport:
     rules: RuleResult
     location: Optional[LocationResult]
     analysed: Dict[str, Analysed]
-    settings: Dict[str, RioSettings] = field(default_factory=dict)
+    settings: Dict[str, ProtectionSettings] = field(default_factory=dict)
     ground_truth_url: str = ""
     generated_at: str = ""
     html: str = ""
@@ -144,7 +144,7 @@ def build(
     rules: RuleResult,
     location: Optional[LocationResult] = None,
     line: Optional[Line] = None,
-    settings: Optional[Dict[str, RioSettings]] = None,
+    settings: Optional[Dict[str, ProtectionSettings]] = None,
     ground_truth_url: str = "",
 ) -> IncidentReport:
     settings = settings or {}

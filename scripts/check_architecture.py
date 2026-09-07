@@ -137,6 +137,47 @@ def _parser_errors(source: str, label: str) -> list[str]:
     return errors
 
 
+def _vendor_settings_errors(source: str, rel: str) -> list[str]:
+    """Only registry/settings_io/ may name a vendor-specific settings module.
+
+    A Siemens .rio is one importer among several and the fleet is mixed.
+    Before the ProtectionSettings refactor, RioSettings was imported directly
+    by the back-test, the report renderer, the rules engine and the CLI, so a
+    second vendor could not be added without touching all four. The rule is
+    structural rather than a list of banned names, so an scl.py or sel.py
+    added later is covered without editing this function.
+    """
+    if rel.startswith("src/dranalyser/registry/settings_io/"):
+        return []
+    vendors = {p.stem for p in (SRC / "registry" / "settings_io").glob("*.py")
+               if p.stem != "__init__"}
+    if not vendors:
+        return []
+
+    def complain(name: str, line: int) -> str:
+        return (f"{rel}: imports the vendor-specific settings module '{name}' "
+                f"(line {line}). Only registry/settings_io/ may name one; "
+                "everything else goes through load_settings().")
+
+    errors = []
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.Import):
+            for a in node.names:
+                tail = a.name.rsplit("settings_io.", 1)
+                if len(tail) == 2 and tail[1].split(".")[0] in vendors:
+                    errors.append(complain(tail[1].split(".")[0], node.lineno))
+        elif isinstance(node, ast.ImportFrom):
+            mod = node.module or ""
+            tail = mod.rsplit("settings_io.", 1)
+            if len(tail) == 2 and tail[1].split(".")[0] in vendors:
+                errors.append(complain(tail[1].split(".")[0], node.lineno))
+            elif mod.endswith("settings_io") or (node.level and not mod):
+                for a in node.names:
+                    if a.name in vendors:
+                        errors.append(complain(a.name, node.lineno))
+    return errors
+
+
 def _layering_errors(source: str, package: str, label: str) -> list[str]:
     tree = ast.parse(source)
     allowed = ALLOWED_IMPORTS.get(package, set())
@@ -213,6 +254,7 @@ def check() -> list[str]:
         if package == "comtrade":
             errors.extend(_parser_errors(source, rel))
         errors.extend(_layering_errors(source, package, rel))
+        errors.extend(_vendor_settings_errors(source, rel))
         if path.name == "estimators.py":
             errors.extend(_estimator_errors(source, rel))
     errors.extend(_budget_errors())
@@ -238,6 +280,14 @@ def self_test() -> None:
     assert not _purity_errors("import math\nimport numpy as np\nfrom .core import PhasorStream\n", "x")
     assert _parser_errors("import comtrade\n", "x")
     assert not _parser_errors("import numpy as np\n", "x")
+    vs, out = _vendor_settings_errors, "src/dranalyser/backtest.py"
+    assert vs("from ..registry.settings_io.rio import read_rio\n", out)
+    assert vs("from ..registry.settings_io import rio\n", out)
+    assert vs("import dranalyser.registry.settings_io.rio\n", out)
+    assert not vs("from ..registry.settings_io import load_settings\n", out)
+    assert not vs("from ..registry.settings import ProtectionSettings\n", out)
+    assert not vs("from .rio import read_rio\n",
+                  "src/dranalyser/registry/settings_io/__init__.py")
     assert _layering_errors("from ..faultloc.ensemble import locate\n", "comtrade", "x")
     assert not _layering_errors("from ..signals import Record\n", "comtrade", "x")
     assert _estimator_errors("def e1_reactance(v, i, z):\n    return 0.5\n", "x")
