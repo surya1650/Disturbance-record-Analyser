@@ -1,0 +1,68 @@
+"""Command line entry point.
+
+    dranalyse locate --line line.yaml --S a.cfg --R b.cfg
+    dranalyse locate --line line.yaml --S a.cfg              (single-ended)
+    dranalyse inspect record.cfg
+    dranalyse settings relay.rio --ct 800 --vt 2000
+    dranalyse selftest
+    dranalyse template line.yaml
+
+One record gives a single-ended answer, two give a double-ended one, through
+the same code path. The per-method table is always printed: a single number
+with no method attached is never reported.
+"""
+from __future__ import annotations
+
+import argparse
+import sys
+from typing import List, Optional
+
+from .commands import (BAR, cmd_inspect, cmd_locate, cmd_selftest,
+                       cmd_settings, cmd_template)
+
+__all__ = ["main", "build_parser"]
+
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="dranalyse",
+                                description="Two-ended disturbance record analyser")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    q = sub.add_parser("locate", help="locate a fault from one or two records")
+    q.add_argument("--line", required=True, help="line definition YAML")
+    q.add_argument("--S", help="COMTRADE .cfg or .cff at end S")
+    q.add_argument("--R", help="COMTRADE .cfg or .cff at end R")
+    q.set_defaults(func=cmd_locate)
+
+    q = sub.add_parser("inspect", help="parse and describe one record")
+    q.add_argument("record")
+    q.add_argument("--kv", type=float, default=None, help="nominal line kV")
+    q.set_defaults(func=cmd_inspect)
+
+    q = sub.add_parser("selftest", help="synthetic Stage-A acceptance check")
+    q.add_argument("--cases", type=int, default=64)
+    q.set_defaults(func=cmd_selftest)
+
+    q = sub.add_parser("settings", help="read a relay .rio settings export")
+    q.add_argument("rio")
+    q.add_argument("--ct", type=float, help="CT ratio, e.g. 800 for 800/1")
+    q.add_argument("--vt", type=float, help="VT ratio, e.g. 2000 for 220000/110")
+    q.add_argument("--reach", type=float, default=0.80,
+                   help="assumed Zone 1 reach as a fraction of line (default 0.80)")
+    q.add_argument("--ohm-per-km", type=float, dest="ohm_per_km",
+                   help="line X1 per km, to turn the implied Z1 into a length")
+    q.set_defaults(func=cmd_settings)
+
+    q = sub.add_parser("template", help="write a starter line definition")
+    q.add_argument("path")
+    q.set_defaults(func=cmd_template)
+    return p
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    args = build_parser().parse_args(argv)
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

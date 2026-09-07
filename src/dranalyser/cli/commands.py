@@ -1,31 +1,22 @@
-"""Command line entry point.
+"""Implementations of the dranalyse subcommands.
 
-    dranalyse locate --line line.yaml --S a.cfg --R b.cfg
-    dranalyse locate --line line.yaml --S a.cfg              (single-ended)
-    dranalyse inspect record.cfg
-    dranalyse selftest
-    dranalyse template line.yaml
-
-One record gives a single-ended answer, two give a double-ended one, through
-the same code path. The per-method table is always printed: a single number
-with no method attached is never reported.
+Kept apart from the argparse wiring in __init__ so that adding a command is
+adding a function here, and the entry point stays a table of contents.
 """
 from __future__ import annotations
 
-import argparse
 import math
 import os
-import sys
 from typing import Dict, List, Optional
 
 import numpy as np
 
-from .comtrade.conformance import check
-from .comtrade.parser import read_cff, read_comtrade
-from .dsp.pipeline import analyse
-from .faultloc.ensemble import TerminalInput, locate
-from .registry.loader import dump_template, load_line
-from .registry.model import Line
+from ..comtrade.conformance import check
+from ..comtrade.parser import read_cff, read_comtrade
+from ..dsp.pipeline import analyse
+from ..faultloc.ensemble import TerminalInput, locate
+from ..registry.loader import dump_template, load_line
+from ..registry.model import Line
 
 BAR = "=" * 78
 
@@ -184,9 +175,9 @@ def cmd_locate(args) -> int:
 
 def cmd_selftest(args) -> int:
     """Stage-A style check that the estimator chain still meets its target."""
-    from .dsp.pipeline import analyse as _an
-    from .synth.generator import SynthSpec, TerminalSpec, generate
-    from .registry.model import uniform_line
+    from ..dsp.pipeline import analyse as _an
+    from ..synth.generator import SynthSpec, TerminalSpec, generate
+    from ..registry.model import uniform_line
 
     errs: List[float] = []
     n_two = 0
@@ -229,7 +220,7 @@ def cmd_selftest(args) -> int:
 
 def cmd_settings(args) -> int:
     """Read a relay settings export and say what it gives you."""
-    from .registry.rio import read_rio
+    from ..registry.rio import read_rio
 
     s = read_rio(args.rio)
     print(BAR)
@@ -274,46 +265,3 @@ def cmd_template(args) -> int:
     return 0
 
 
-def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="dranalyse",
-                                description="Two-ended disturbance record analyser")
-    sub = p.add_subparsers(dest="cmd", required=True)
-
-    q = sub.add_parser("locate", help="locate a fault from one or two records")
-    q.add_argument("--line", required=True, help="line definition YAML")
-    q.add_argument("--S", help="COMTRADE .cfg or .cff at end S")
-    q.add_argument("--R", help="COMTRADE .cfg or .cff at end R")
-    q.set_defaults(func=cmd_locate)
-
-    q = sub.add_parser("inspect", help="parse and describe one record")
-    q.add_argument("record")
-    q.add_argument("--kv", type=float, default=None, help="nominal line kV")
-    q.set_defaults(func=cmd_inspect)
-
-    q = sub.add_parser("selftest", help="synthetic Stage-A acceptance check")
-    q.add_argument("--cases", type=int, default=64)
-    q.set_defaults(func=cmd_selftest)
-
-    q = sub.add_parser("settings", help="read a relay .rio settings export")
-    q.add_argument("rio")
-    q.add_argument("--ct", type=float, help="CT ratio, e.g. 800 for 800/1")
-    q.add_argument("--vt", type=float, help="VT ratio, e.g. 2000 for 220000/110")
-    q.add_argument("--reach", type=float, default=0.80,
-                   help="assumed Zone 1 reach as a fraction of line (default 0.80)")
-    q.add_argument("--ohm-per-km", type=float, dest="ohm_per_km",
-                   help="line X1 per km, to turn the implied Z1 into a length")
-    q.set_defaults(func=cmd_settings)
-
-    q = sub.add_parser("template", help="write a starter line definition")
-    q.add_argument("path")
-    q.set_defaults(func=cmd_template)
-    return p
-
-
-def main(argv: Optional[List[str]] = None) -> int:
-    args = build_parser().parse_args(argv)
-    return args.func(args)
-
-
-if __name__ == "__main__":
-    sys.exit(main())
