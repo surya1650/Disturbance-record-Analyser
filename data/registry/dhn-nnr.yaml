@@ -1,0 +1,73 @@
+# 220 kV DHONE - NANDYAL, provisional definition.
+#
+# PROVISIONAL. The impedances, length and tower span below are typical
+# 220 kV ACSR Zebra values, NOT the surveyed values for this corridor, and
+# they are here so the pipeline can be exercised end to end on the real
+# records in this repo. Absolute distances from this file are not to be
+# used operationally until the line-section and tower-schedule sheets come
+# back from the substation engineers.
+#
+# What IS real here, read out of the records themselves:
+#   kv           220     (pre-fault 228 kV L-L measured on both relays)
+#   ct_ratio     800/1   (7SA522 CFG, channels iL1..iL3)
+#   vt_ratio     220000/110  (7SA522 CFG, channels uL1..uL3)
+#   k0           RE/RL = 1.020, XE/XL = 0.800, line angle 81 deg
+#                (DR-1.rio, the Siemens settings file next to the record)
+id: DHN-NNR
+name: Dhone - Nandyal 220 kV
+kv: 220
+double_circuit: false
+series_compensated: false
+
+sections:
+  - seq: 1
+    from_km: 0.0
+    to_km: 62.0          # PROVISIONAL
+    r1: 0.0299           # PROVISIONAL - ACSR Zebra typical
+    x1: 0.3990
+    r0: 0.2540
+    x0: 1.1970
+    conductor: ACSR ZEBRA
+
+tower_span_km: 0.35
+
+terminals:
+  S:
+    substation: DHONE
+    ct_ratio: 800
+    vt_ratio: 2000
+    vt_type: CVT
+    vt_location: line
+    zs1: [1.0, 12.0]     # PROVISIONAL
+    zs0: [2.0, 20.0]
+    i_polarity: 1
+    relays:
+      - id: DHONE-M1
+        make: unknown
+        model: unknown
+        function: main1
+        retrieval: unknown
+      - id: DHONE-M2
+        make: Siemens
+        model: 7SA522 V4.7
+        function: main2
+        retrieval: iec60870-5-103
+        settings:
+          - effective_from: "2026-03-18"
+            scheme: PUTT
+            line_angle_deg: 81.0
+            # Native SIPROTEC form, straight out of DR-1.rio. The complex k0
+            # this yields is 0.806 angle -2.41 deg; entering "0.800 angle 0"
+            # from XE/XL alone loses the angle and costs 1-2 % of reach.
+            k0_convention: siemens_re_xe
+            k0_params:
+              re_rl: 1.020
+              xe_xl: 0.800
+  R:
+    substation: NANDYAL
+    ct_ratio: 800
+    vt_ratio: 2000
+    vt_type: CVT
+    zs1: [1.5, 18.0]     # PROVISIONAL
+    zs0: [3.0, 30.0]
+    i_polarity: 1

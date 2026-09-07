@@ -1,0 +1,64 @@
+# ---------------------------------------------------------------------------
+# Real substation data is NOT committed.
+#
+# This repository is public. The disturbance records, the Siemens .rio
+# settings export and the event PDFs in this working directory are live
+# operational data from a 220 kV transmission line: relay settings, CT/VT
+# ratios, fault currents and protection behaviour. They stay local.
+#
+# The test suite is written so that every test touching them skips cleanly
+# when they are absent (see tests/test_real_records.py, needs_corpus).
+# ---------------------------------------------------------------------------
+DR & Events */
+DR */
+DR1/
+dr/
+*.CFG
+*.cfg
+*.DAT
+*.dat
+*.CFF
+*.cff
+*.rio
+*.RIO
+*.pdf
+!data/registry/*.yaml
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# trained model artefacts - regenerate with `dranalyse train`
+models/
+*.pkl
+
+# ---------------------------------------------------------------------------
+# Editors and tools
+# ---------------------------------------------------------------------------
+.qodo/
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# Secrets / site configuration (added alongside the data rules above)
+# ---------------------------------------------------------------------------
+.env
+*.pem
+*.key

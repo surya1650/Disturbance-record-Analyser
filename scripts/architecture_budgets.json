@@ -1,0 +1,28 @@
+{
+  "files": {
+    "scripts/check_architecture.py": 245,
+    "src/dranalyser/__init__.py": 0,
+    "src/dranalyser/cli.py": 249,
+    "src/dranalyser/comtrade/__init__.py": 0,
+    "src/dranalyser/comtrade/conformance.py": 247,
+    "src/dranalyser/comtrade/parser.py": 467,
+    "src/dranalyser/dsp/__init__.py": 0,
+    "src/dranalyser/dsp/core.py": 214,
+    "src/dranalyser/dsp/detect.py": 297,
+    "src/dranalyser/dsp/pipeline.py": 206,
+    "src/dranalyser/faultloc/__init__.py": 0,
+    "src/dranalyser/faultloc/ensemble.py": 436,
+    "src/dranalyser/faultloc/estimators.py": 353,
+    "src/dranalyser/ml/__init__.py": 0,
+    "src/dranalyser/ml/tier1.py": 233,
+    "src/dranalyser/ml/tier2.py": 284,
+    "src/dranalyser/ml/tier3.py": 287,
+    "src/dranalyser/registry/__init__.py": 0,
+    "src/dranalyser/registry/loader.py": 180,
+    "src/dranalyser/registry/model.py": 278,
+    "src/dranalyser/signals.py": 158,
+    "src/dranalyser/synth/__init__.py": 0,
+    "src/dranalyser/synth/generator.py": 462
+  },
+  "exceptions": {}
+}

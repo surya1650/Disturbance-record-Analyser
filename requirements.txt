@@ -1,0 +1,11 @@
+# Runtime dependencies (mirror of [project].dependencies in pyproject.toml — edit both).
+# Kept as a plain file so the substation-side / air-gapped install can be built with:
+#   python -m pip download -r requirements.txt -d wheelhouse
+#   python -m pip install --no-index --find-links wheelhouse -r requirements.txt
+#
+# Do NOT add a third-party COMTRADE parser here. PROJECT_CONTEXT.md §12: we write our own,
+# because every off-the-shelf parser assumes a conformance real vendor files do not have.
+
+numpy>=1.26,<3
+scipy>=1.11
+PyYAML>=6.0

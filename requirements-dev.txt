@@ -1,0 +1,15 @@
+# Development environment for the DR analyser.
+#
+#   python -m venv .venv
+#   .\.venv\Scripts\Activate.ps1
+#   python -m pip install -r requirements-dev.txt
+#   python -m pip install -e .
+#
+# The editable install is what makes `dranalyse` and `import dranalyser` work from any
+# directory. If a change "doesn't show up", check that first — see .claude/skills/still-not-showing.
+
+-e .
+
+pytest>=8.0
+pytest-cov>=5.0
+ruff>=0.6
