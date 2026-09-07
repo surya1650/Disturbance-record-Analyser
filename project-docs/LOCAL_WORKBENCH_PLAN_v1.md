@@ -3,9 +3,19 @@
 Written 2026-09-07. Requested: *"run the program in my localhost … analysed
 with the files with uploading … manual analysis need to be there."*
 
-**Status: P1 and P2 built and verified on 2026-09-07. P3 and P4 not started.**
+**Status: P1, P2 and P3 built and verified on 2026-09-07. P4 not started.**
 Approved with the recommended defaults on both build-shaping questions in §9:
 bound to `127.0.0.1` only, and bundles persist under `out/bundles/`.
+
+P3 landed differently from the plan, deliberately. The plan proposed changing
+`incident_features` and `report/build` to key on a list per terminal. That was
+not done: those signatures are analytical surface, and changing them to add a
+presentation feature risks moving a number for no gain. Instead the
+corroboration lives entirely in `workbench/corroborate.py`, which analyses
+every record at each end, reduces each to quantities two relays can be
+compared on, and raises XR-01 to XR-04 on disagreement. The primary record
+still drives the estimators through the unchanged API. Code is truth; this
+paragraph records the divergence.
 
 ---
 

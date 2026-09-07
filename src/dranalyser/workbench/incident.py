@@ -22,6 +22,7 @@ from ..report import build, render, write
 from ..rules.engine import apply_rules, load_rules
 from ..rules.features import incident_features
 from .bundle import Bundle, BundleFile
+from .corroborate import Disagreement, Measure, corroborate, measure
 
 
 @dataclass
@@ -35,6 +36,10 @@ class IncidentResult:
     used: Dict[str, str] = field(default_factory=dict)      # end -> file name
     excluded: List[str] = field(default_factory=list)       # human-readable
     errors: List[str] = field(default_factory=list)
+    # Every usable record at each end, primary first, reduced to comparable
+    # quantities -- and what the comparison found.
+    measures: Dict[str, List[Measure]] = field(default_factory=dict)
+    disagreements: List[Disagreement] = field(default_factory=list)
 
 
 def _read(bundle: Bundle, bf: BundleFile, end: str):
@@ -77,20 +82,28 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
     ans: Dict[str, Any] = {}
     settings: Dict[str, Any] = {}
     for end in ("S", "R"):
-        f = bundle.primary(end)
-        if f is None:
-            continue
-        try:
-            rec = _read(bundle, f, end)
-            check(rec, nominal_kv=line.kv if line else None)
-            if rec.blocked():
-                res.excluded.append(f.name + " -- blocked by the conformance gate")
-                continue
-            term = line.terminals[end] if line else None
-            ans[end] = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
-            res.used[end] = f.name
-        except Exception as exc:                # noqa: BLE001
-            res.errors.append(f.name + ": " + type(exc).__name__ + " " + str(exc)[:200])
+        # by_end() puts the primary first. Every record at the end is
+        # analysed: the primary drives the estimators, the rest corroborate.
+        # A second relay in the bay is free evidence and refusing to look at
+        # it is how a wiring fault stays invisible.
+        for pos, f in enumerate(bundle.by_end(end)):
+            try:
+                rec = _read(bundle, f, end)
+                check(rec, nominal_kv=line.kv if line else None)
+                if rec.blocked():
+                    res.excluded.append(f.name
+                                        + " -- blocked by the conformance gate")
+                    continue
+                term = line.terminals[end] if line else None
+                an = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
+                res.measures.setdefault(end, []).append(measure(an, f.name))
+                if pos == 0:
+                    ans[end] = an
+                    res.used[end] = f.name
+            except Exception as exc:            # noqa: BLE001
+                res.errors.append(f.name + ": " + type(exc).__name__ + " "
+                                  + str(exc)[:200])
+    res.disagreements = corroborate(res.measures)
 
     for sf in bundle.settings():
         if not sf.name.lower().endswith(".rio"):

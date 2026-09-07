@@ -7,6 +7,7 @@ air-gap capable. Plain forms and plain CSS.
 from __future__ import annotations
 
 import html
+import math
 from typing import List, Optional
 
 from .bundle import Bundle, BundleFile
@@ -172,6 +173,44 @@ def bundle_page(b: Bundle, line_files: List[str], refusals: List[str],
 """)
 
 
+def _corroboration(res: IncidentResult) -> str:
+    """What every relay at each end measured, and where they disagree."""
+    if not res.measures:
+        return ""
+    def amps(x: float) -> str:
+        return (format(x, ".1f") + " A") if math.isfinite(x) else "-"
+
+    rows = ""
+    for end in sorted(res.measures):
+        for i, m in enumerate(res.measures[end]):
+            tag = ('<span class="tag ok">primary</span>' if i == 0
+                   else '<span class="tag mute">corroborating</span>')
+            rows += ("<tr><td>end " + _e(end) + " " + tag
+                     + "</td><td class='mono'>" + _e(m.file) + "</td><td>"
+                     + _e(m.fault_type or "-") + "</td><td>"
+                     + amps(m.i_prefault_a) + "</td><td>"
+                     + amps(m.i_fault_a)
+                     + "</td><td>" + _e(m.zs2_text()) + "</td></tr>")
+    found = ""
+    if res.disagreements:
+        found = ('<div class="err hard"><b>Relays on the same bus disagree</b><ul>'
+                 + "".join("<li><b>" + _e(d.code) + "</b> " + _e(d.text) + "</li>"
+                           for d in res.disagreements)
+                 + "</ul></div>")
+    elif sum(len(v) for v in res.measures.values()) > len(res.measures):
+        found = ('<div class="note">Every pair of relays at a terminal agrees '
+                 "within tolerance. The measurement chain is corroborated by "
+                 "an instrument the analyser did not choose.</div>")
+    return ('<div class="card"><h2>What each relay measured</h2><table>'
+            "<tr><th>terminal</th><th>record</th><th>fault</th>"
+            "<th>pre-fault I1</th><th>fault current</th>"
+            "<th>measured Zs2</th></tr>" + rows + "</table>" + found
+            + '<p class="note">Zs2 = &minus;V2/I2 at the bus. It needs no line '
+              "constants, so two relays in one bay can be compared before the "
+              "registry knows anything about the line. Tolerances here are "
+              "project policy, not standards-derived.</p></div>")
+
+
 def incident_page(b: Bundle, res: IncidentResult,
                   report_url: Optional[str]) -> str:
     used = "".join("<tr><td>end " + _e(e) + "</td><td class='mono'>" + _e(n)
@@ -205,7 +244,7 @@ def incident_page(b: Bundle, res: IncidentResult,
   <p class="note">Every file you uploaded is listed somewhere on this page.
   Nothing was dropped silently.</p>
 </div>
-""" + embed + """
+""" + _corroboration(res) + embed + """
 <p><a href="/bundle/""" + _e(b.bundle_id) + """">&larr; change the assignment</a>
 &middot; <a href="/">upload another</a></p>
 """)

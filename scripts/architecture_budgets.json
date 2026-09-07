@@ -39,13 +39,15 @@
     "src/dranalyser/stagea.py": 341,
     "src/dranalyser/standards/__init__.py": 16,
     "src/dranalyser/standards/audit.py": 303,
+    "src/dranalyser/standards/catalogue.py": 66,
     "src/dranalyser/standards/cli.py": 78,
     "src/dranalyser/synth/__init__.py": 0,
     "src/dranalyser/synth/generator.py": 462,
     "src/dranalyser/workbench/__init__.py": 14,
     "src/dranalyser/workbench/bundle.py": 321,
-    "src/dranalyser/workbench/incident.py": 154,
-    "src/dranalyser/workbench/pages.py": 211,
+    "src/dranalyser/workbench/corroborate.py": 179,
+    "src/dranalyser/workbench/incident.py": 167,
+    "src/dranalyser/workbench/pages.py": 250,
     "src/dranalyser/workbench/server.py": 284
   },
   "exceptions": {}

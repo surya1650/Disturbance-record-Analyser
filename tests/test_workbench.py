@@ -273,3 +273,94 @@ def test_a_zip_bomb_path_cannot_escape_the_bundle_directory(tmp_path):
     finally:
         httpd.shutdown()
         httpd.server_close()
+
+
+# --------------------------------------------------------------------------
+# cross-checking two relays on one bus (P3)
+# --------------------------------------------------------------------------
+from dranalyser.workbench.corroborate import Measure, compare   # noqa: E402
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SPH = os.path.join(ROOT, "drs sphoorthi")
+needs_sphoorthi = pytest.mark.skipif(
+    not os.path.isdir(SPH), reason="Sphoorthi records not present")
+
+
+def _m(name, ftype="CG", ipre=700.0, iflt=1500.0, zs2=complex(2.0, 10.0),
+       scatter=0.01):
+    return Measure(file=name, ok=True, fault_type=ftype, i_prefault_a=ipre,
+                   i_fault_a=iflt, zs2=zs2, zs2_scatter=scatter)
+
+
+def test_two_relays_that_agree_raise_nothing():
+    assert compare("S", [_m("main1.cfg"), _m("main2.cfg", ipre=712.0,
+                                             iflt=1530.0,
+                                             zs2=complex(2.2, 10.4))]) == []
+
+
+def test_one_record_at_a_terminal_is_never_compared_with_itself():
+    assert compare("S", [_m("only.cfg")]) == []
+
+
+def test_disagreement_on_fault_type_is_raised():
+    out = compare("S", [_m("a.cfg", ftype="CG"), _m("b.cfg", ftype="AG")])
+    assert [d.code for d in out] == ["XR-01"]
+
+
+def test_disagreement_on_current_is_raised_separately_for_load_and_fault():
+    pre = compare("S", [_m("a.cfg", ipre=700.0), _m("b.cfg", ipre=300.0)])
+    assert "XR-02" in [d.code for d in pre]
+    flt = compare("S", [_m("a.cfg", iflt=1500.0), _m("b.cfg", iflt=6000.0)])
+    assert "XR-03" in [d.code for d in flt]
+
+
+def test_a_source_impedance_that_differs_by_a_factor_is_raised():
+    out = compare("R", [_m("a.cfg", zs2=complex(154.0, 26.0)),
+                        _m("b.cfg", zs2=complex(2.0, 21.5))])
+    codes = [d.code for d in out]
+    assert "XR-04" in codes
+    assert "suspect the voltage input" in [d for d in out
+                                           if d.code == "XR-04"][0].text
+
+
+def test_a_noisy_source_impedance_is_not_compared_at_all():
+    """A measurement too scattered to trust must not manufacture a finding."""
+    out = compare("R", [_m("a.cfg", zs2=complex(154.0, 26.0), scatter=0.9),
+                        _m("b.cfg", zs2=complex(2.0, 21.5), scatter=0.01)])
+    assert "XR-04" not in [d.code for d in out]
+
+
+@needs_sphoorthi
+def test_the_two_garividi_relays_disagree_on_event_15665(tmp_path):
+    """The real case P3 exists for: same bus, same fault, different Zs2."""
+    import shutil
+
+    from dranalyser.workbench.incident import analyse_bundle
+
+    dest = tmp_path / "15665"
+    for folder, label in (("garividi-maradam-1", "garividi"),
+                          ("maradam-garividi-1", "maradam")):
+        src = os.path.join(SPH, folder)
+        for dp, _d, fns in os.walk(src):
+            for fn in fns:
+                if fn.lower().endswith((".cfg", ".dat")):
+                    rel = os.path.join(label,
+                                       os.path.relpath(os.path.join(dp, fn), src))
+                    os.makedirs(os.path.dirname(str(dest / rel)), exist_ok=True)
+                    shutil.copy2(os.path.join(dp, fn), str(dest / rel))
+
+    b = open_bundle(str(dest), bundle_id="e15665")
+    assert assign(b, {
+        "maradam/Main-1/15665_Main-1_dr.cfg": ("S", "primary"),
+        "garividi/Main-1 D60/15665_Main-1 D60_dr.cfg": ("R", "primary"),
+        "garividi/Main-2 P444/15665_Main-2 P444_dr.cfg": ("R", "corroborating"),
+    }) == []
+
+    res = analyse_bundle(b, out_dir=str(dest))
+    # both Garividi relays were measured, not just the primary
+    assert len(res.measures["R"]) == 2
+    # they agree on the current -- so the disagreement is in the voltage
+    ipre = [m.i_prefault_a for m in res.measures["R"]]
+    assert abs(ipre[0] - ipre[1]) / max(ipre) < 0.05
+    codes = [d.code for d in res.disagreements]
+    assert codes == ["XR-04"]

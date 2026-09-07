@@ -6,6 +6,44 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-09-07 (P3) - Two relays on one bus now cross-check each other
+
+`workbench/corroborate.py`. Every record the operator put at a terminal is now
+analysed, not only the primary: the primary drives the estimators through the
+unchanged API, the rest are reduced to fault type, pre-fault I1, fault current
+(p90 of the fundamental on the worst phase) and the measured negative-sequence
+source impedance `Zs2 = -V2/I2`, and compared. Four findings: XR-01 fault type,
+XR-02 load current, XR-03 fault current, XR-04 source impedance.
+
+**Verified on the real case it was built for.** Event 15665, Garividi end:
+
+| record | pre-fault I1 | fault I (p90) | measured Zs2 |
+|---|---|---|---|
+| GE D60 (primary) | 643.6 A | 727.8 A | 155.97 ohm at 9.7 deg |
+| MiCOM P444 (corroborating) | 648.1 A | 749.2 A | 21.68 ohm at 84.6 deg |
+
+The currents agree to under 3 %, so XR-02 and XR-03 correctly stay silent and
+the disagreement is localised to the **voltage** input: XR-04 fires with "a
+factor of 7.2 and 75 degrees". Before P3 this was invisible - it depended
+entirely on which of the two files was passed as `--R`. The Maradam end
+measures 1750.6 A against Garividi's ~730 A, consistent with the fault sitting
+nearer Maradam.
+
+**Divergence from the plan, recorded deliberately.** The plan proposed changing
+`incident_features` and `report/build` to key on a list per terminal. Not done:
+those are analytical surface and changing them for a presentation feature risks
+moving a number. The cross-check lives entirely in `workbench/`.
+
+Every threshold in `corroborate.py` is **project policy, not standards-derived**,
+and the module says so. A `Zs2` whose own scatter exceeds 10 % is not compared
+at all, so a noisy measurement cannot manufacture a finding.
+
+**Gates:** guard passes, **263 tests** pass, Stage-A 10,000 cases PASS at clean
+p95 = **0.4403 %** - unchanged for the third time this session, which is the
+whole point.
+
+---
+
 ## 2026-09-07 (workbench) - P1 and P2 of the local workbench built and verified
 
 `project-docs/LOCAL_WORKBENCH_PLAN_v1.md`, P1 and P2 done, P3 and P4 not
