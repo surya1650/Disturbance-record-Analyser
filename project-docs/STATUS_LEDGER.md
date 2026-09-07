@@ -6,6 +6,71 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-09-07 (later) - Items 1-6 built, tested and pushed
+
+**State:** pushed through commit `0a42087`. 229 tests pass, architecture guard passes.
+Still NOT verified against a real two-ended pair - none exists in the corpus.
+
+Built this session, in order:
+1. `.rio` settings reader - zone polygons, line angle, RE/RL and XE/XL, source
+   impedance, and the backup O/C / E/F stages. Removes most of the registry's
+   longest-lead-time item, and carries what the relay is ACTUALLY running.
+2. Conclusions engine - 25 rules as YAML data, whitelisted AST evaluation, and a
+   `requires` clause so a rule whose channel was never mapped reports NOT EVALUABLE
+   instead of passing.
+3. Zone-decision back-test - grades the analyser against the relays' own trip
+   decisions. Needs no line length, no far end, no patrol result.
+4. Two-page incident report - self-contained HTML, inline SVG, real zone polygons.
+5. Ground-truth capture - SQLite store, stdlib capture form, accuracy dashboard,
+   Tier-2 gate counter.
+6. Stage-A acceptance sweep - 10^4 to 10^5 cases.
+
+**Stage-A result, 100,000 cases: PASS, clean p95 = 0.465 % against 0.5 %.** Thin
+margin, not comfortable; stable across seeds (0.419-0.468). Zero impossible results
+reached the output without a caveat.
+
+**Biggest known weakness: CT saturation.** Saturated cases average 10.7 % error
+against 0.12 % clean. Detected and down-weighted, NOT compensated. This is the next
+real piece of physics to do.
+
+Defects found and fixed by widening the sweep (none findable at 40 cases):
+- `classify_fault` crashed on non-finite phasors - 6 % of cases.
+- E5 returned roots like m = 6.7 as locations; now declines outside +/-0.5 pu.
+- The ensemble reported those as distances; now refuses, and warns rather than
+  naming a tower for the 1.0-1.5 pu band.
+- A two-ended estimate now needs a better WEIGHT, not just a better residual, to
+  override single-ended ones - a saturated CT satisfies E5's magnitude equality at
+  a wrong m with a small residual.
+
+Field findings from the real records, for APTRANSCO action rather than code:
+- **Main-1 VT cannot pass zero sequence** (575 V of V0 against 1670 A of I0, where
+  Main-2 saw 34 kV). Explains Main-1 tripping Z2 while Main-2 tripped Z1. CHECK THE
+  VT SECONDARY CONNECTION AT DHONE.
+- **IE>> carries the not-set sentinel** - the earth-fault backup is disabled.
+- **7.1 kA fault against a 1600 A I>> pickup produced no O/C pickup** - is that
+  stage in service? Settings export and recorded behaviour disagree.
+- **Main-1 has no carrier-send channel mapped**, so CR-01, the highest-value rule,
+  cannot be evaluated from it anywhere in the corpus.
+- Relay clocks in one bay differ by 1418 s.
+
+Outstanding, in priority order:
+1. A genuine two-ended pair from the Nandyal end. Nothing substitutes for it.
+2. Real Z1/Z0/length/tower schedule. `data/registry/dhn-nnr.yaml` is PROVISIONAL.
+   Open question for Surya: is Dhone-Nandyal about 27 km? The Z1 reach of 8.75 ohm
+   primary implies it. If the line is 50 km, that relay is set to ~44 % and
+   underreaching badly.
+3. CT saturation compensation.
+4. Not built: pairing, transport, edge collector.
+5. Not handled: distributed-parameter model for long lines, three-terminal lines.
+   Series-compensated lines are detected and refused, not approximated.
+
+Process note: three separate times a patch script wrote broken escapes into source
+(literal backspace bytes for ``, a literal CR for ``). They are invisible in an
+editor and in grep. Do not patch source with shell heredoc + Python string
+replacement; use the editor tools.
+
+---
+
 ## 2026-09-07 - First PR built, tested and pushed
 
 **State:** committed and pushed to https://github.com/surya1650/Disturbance-record-Analyser
