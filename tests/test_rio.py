@@ -236,3 +236,47 @@ def test_reads_the_real_settings_file():
     assert s.zone("Z5").reverse
     assert s.zone("Z1B").overreach
     assert not s.warnings
+
+
+# --------------------------------------------------------------------------
+# backup overcurrent / earth fault
+# --------------------------------------------------------------------------
+BACKUP_FIXTURE = FIXTURE.replace(
+    "  LINEANGLE              81.000",
+    "  I>>                     2.000\n"
+    "  I>                      1.200,     0.800\n"
+    "  IE>>                 21474836.470\n"
+    "  LINEANGLE              81.000")
+
+
+def test_backup_stages_are_parsed_with_their_pickups():
+    s = parse_rio(BACKUP_FIXTURE)
+    assert [b.id for b in s.backup] == ["I>>", "I>", "IE>>"]
+    assert s.stage("I>>").kind == "oc"
+    assert s.stage("IE>>").kind == "ef"
+    assert s.stage("I>>").pickup_secondary_a == pytest.approx(2.0)
+    assert s.stage("I>>").pickup_primary_a(800.0) == pytest.approx(1600.0)
+
+
+def test_a_time_delay_is_read_when_the_export_carries_one():
+    s = parse_rio(BACKUP_FIXTURE)
+    assert s.stage("I>").time_s == pytest.approx(0.800)
+    # the RIO does not always carry the delay, and that must stay visible
+    assert s.stage("I>>").time_s is None
+    assert "not in the RIO export" in s.stage("I>>").describe()
+
+
+def test_the_not_set_sentinel_is_read_as_disabled_not_as_21_mega_amps():
+    s = parse_rio(BACKUP_FIXTURE)
+    ie = s.stage("IE>>")
+    assert not ie.enabled
+    assert "disabled" in ie.describe()
+    assert [b.id for b in s.enabled_backup] == ["I>>", "I>"]
+
+
+@needs_corpus
+def test_the_real_relay_has_its_earth_fault_backup_disabled():
+    s = read_rio(REAL)
+    assert s.stage("I>>") is not None and s.stage("I>>").enabled
+    assert s.stage("I>>").pickup_primary_a(800.0) == pytest.approx(1600.0)
+    assert s.stage("IE>>") is not None and not s.stage("IE>>").enabled

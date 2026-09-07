@@ -322,3 +322,74 @@
     Chase the far-end record. Two-ended coverage is the headline health metric
     for the collection layer.
   evidence: [location_mode, location_method, km_from_S]
+
+# ===========================================================================
+# Backup overcurrent and earth fault
+#
+# A distance relay carries definite-time backup O/C and E/F stages behind the
+# distance zones, graded so that distance clears first. They are protection in
+# their own right, and their behaviour on a real fault says whether the
+# grading actually holds.
+# ===========================================================================
+- id: BU-01
+  title: Backup element cleared the fault
+  severity: critical
+  when: "S_backup_operated or R_backup_operated"
+  message: >-
+    A backup overcurrent or earth-fault stage tripped at {S_backup_trip_ms:.0f} ms.
+    If the line was cleared by backup, the distance scheme did not clear it.
+  action: >-
+    Establish why the distance protection did not operate: check the zone
+    reaches, the VT and CT circuits and the teleprotection channel.
+  evidence: [S_oc_trip_ms, S_ef_trip_ms, S_trip_ms, S_backup_grading_ms]
+
+- id: BU-02
+  title: Backup element operated at or before the distance protection
+  severity: critical
+  when: "S_backup_before_distance or R_backup_before_distance"
+  message: >-
+    A backup stage tripped {S_backup_grading_ms:.0f} ms relative to the distance
+    trip. Backup is meant to be graded behind distance, not level with it.
+  action: >-
+    Review the backup time delay against the Zone 2 and Zone 3 times. A backup
+    stage that races the distance element removes selectivity.
+  evidence: [S_backup_trip_ms, S_trip_ms, S_backup_grading_ms, S_oc_setting_time_s]
+
+- id: BU-03
+  title: Backup stage not set
+  severity: investigate
+  requires: [S_backup_settings_known]
+  when: "S_oc_stage_disabled or S_ef_stage_disabled"
+  message: >-
+    A backup stage carries the relay's not-set sentinel, so it is disabled.
+    Earth-fault backup disabled: {S_ef_stage_disabled}. Overcurrent backup
+    disabled: {S_oc_stage_disabled}.
+  action: >-
+    Confirm this is intentional. With the earth-fault backup out of service,
+    a high-resistance earth fault beyond the distance reach has no backup at
+    this terminal.
+  evidence: [S_oc_stage_disabled, S_ef_stage_disabled, S_oc_setting_a, S_ef_setting_a]
+
+- id: BU-04
+  title: Backup picked up and correctly reset
+  severity: info
+  when: "S_backup_picked_up and not S_backup_operated"
+  message: >-
+    A backup element picked up at {S_ef_pickup_ms:.0f} ms and reset without
+    tripping, because the distance protection cleared the fault first at
+    {S_open_ms:.0f} ms. Grading held.
+  action: No action. This is evidence that the backup grading is correct.
+  evidence: [S_ef_pickup_ms, S_oc_pickup_ms, S_open_ms, S_trip_ms]
+
+- id: BU-05
+  title: Fault current exceeded the backup pickup but no pickup was recorded
+  severity: investigate
+  requires: [S_backup_settings_known, S_oc_mapped]
+  when: "S_i_fault_over_oc_setting > 1.2 and not S_oc_pickup"
+  message: >-
+    Fault current reached {S_i_fault_ka:.1f} kA against an overcurrent pickup of
+    {S_oc_setting_a:.0f} A primary, but the relay recorded no overcurrent pickup.
+  action: >-
+    Confirm whether the backup overcurrent stage is actually in service. The
+    setting export and the recorded behaviour disagree.
+  evidence: [S_i_fault_ka, S_oc_setting_a, S_i_fault_over_oc_setting, S_oc_pickup]

@@ -210,3 +210,77 @@ def test_pole_discrepancy_is_not_judged_on_a_single_pole_trip():
     res = apply_rules(real_incident(M2), load_rules())
     assert not any(f.rule_id == "CB-02" for f in res.findings)
     assert any(s.rule_id == "CB-02" for s in res.skipped)
+
+
+# --------------------------------------------------------------------------
+# backup overcurrent / earth fault
+# --------------------------------------------------------------------------
+def test_backup_elements_map_to_their_own_signals_not_to_the_distance_trip():
+    m = map_signals(["O/C PICKUP", "O/C TRIP I>>", "EF Pickup", "EF 3I0> TRIP",
+                     "Dis.Gen. Trip", "Relay PICKUP"])
+    assert m.channel("OC_PICKUP") == "O/C PICKUP"
+    assert m.channel("OC_TRIP") == "O/C TRIP I>>"
+    assert m.channel("EF_PICKUP") == "EF Pickup"
+    assert m.channel("EF_TRIP") == "EF 3I0> TRIP"
+    # and the distance trip is still the distance trip
+    assert m.channel("TRIP") == "Dis.Gen. Trip"
+
+
+def test_backup_clearing_the_fault_is_a_critical_finding():
+    rules = [r for r in load_rules() if r.id in ("BU-01", "BU-02")]
+    feats = {"S_backup_operated": True, "R_backup_operated": False,
+             "S_backup_trip_ms": 820.0, "R_backup_trip_ms": None,
+             "S_backup_before_distance": False, "R_backup_before_distance": False,
+             "S_backup_grading_ms": 400.0, "S_trip_ms": 420.0,
+             "S_oc_trip_ms": 820.0, "S_ef_trip_ms": None,
+             "S_oc_setting_time_s": 0.8}
+    res = apply_rules(feats, rules)
+    assert any(f.rule_id == "BU-01" for f in res.findings)
+    assert res.verdict == "Incorrect operation"
+
+
+def test_backup_racing_the_distance_element_is_flagged():
+    rules = [r for r in load_rules() if r.id == "BU-02"]
+    feats = {"S_backup_before_distance": True, "R_backup_before_distance": False,
+             "S_backup_grading_ms": -5.0, "S_backup_trip_ms": 25.0,
+             "S_trip_ms": 30.0, "S_oc_setting_time_s": 0.0}
+    assert apply_rules(feats, rules).findings[0].rule_id == "BU-02"
+
+
+@needs_corpus
+def test_real_record_shows_backup_grading_holding():
+    """EF picked up at +25 ms and reset when distance cleared at +79 ms."""
+    from tests.helpers import real_incident
+
+    f = real_incident(M2)
+    assert f["S_ef_pickup"] is True
+    assert f["S_ef_trip"] is False
+    assert f["S_backup_operated"] is False
+    assert f["S_backup_picked_up"] is True
+    res = apply_rules(f, load_rules())
+    assert any(x.rule_id == "BU-04" for x in res.findings)
+    assert not any(x.rule_id in ("BU-01", "BU-02") for x in res.findings)
+
+
+@needs_corpus
+def test_real_record_flags_the_disabled_earth_fault_stage():
+    from tests.helpers import real_incident
+
+    f = real_incident(M2)
+    assert f["S_ef_stage_disabled"] is True
+    assert f["S_oc_stage_disabled"] is False
+    assert f["S_oc_setting_a"] == pytest.approx(1600.0)
+    res = apply_rules(f, load_rules())
+    assert any(x.rule_id == "BU-03" for x in res.findings)
+
+
+@needs_corpus
+def test_real_record_questions_the_silent_overcurrent_stage():
+    """7.1 kA against a 1600 A pickup, with no overcurrent pickup recorded."""
+    from tests.helpers import real_incident
+
+    f = real_incident(M2)
+    assert f["S_i_fault_over_oc_setting"] > 4.0
+    assert f["S_oc_pickup"] is False
+    res = apply_rules(f, load_rules())
+    assert any(x.rule_id == "BU-05" for x in res.findings)

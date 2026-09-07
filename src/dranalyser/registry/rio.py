@@ -40,6 +40,49 @@ class RioError(Exception):
     pass
 
 
+# SIPROTEC writes 2^31/100 for a stage that is not set. A stage carrying it
+# is disabled, not set to 21 MA, and reporting it as a threshold would be
+# absurd in one direction and dangerous in the other.
+DISABLED_SENTINEL = 21474836.47
+SENTINEL_TOL = 0.05
+
+
+@dataclass
+class BackupStage:
+    """A backup overcurrent or earth-fault stage.
+
+    A distance relay carries definite-time backup overcurrent and earth-fault
+    elements behind the distance zones, graded to let distance clear first.
+    They are protection in their own right: if one of them cleared the fault,
+    the distance scheme did not, and that is a finding.
+
+    The RIO export carries the PICKUP but not the time delay -- the delays
+    live in the relay parameter set, so they come from the registry YAML.
+    A stage with no known delay is still worth reporting on; it just cannot
+    be graded.
+    """
+
+    id: str                       # "I>>", "I>", "IE>>", "IE>"
+    kind: str                     # "oc" | "ef"
+    pickup_secondary_a: float
+    enabled: bool = True
+    time_s: Optional[float] = None
+    directional: Optional[bool] = None
+
+    def pickup_primary_a(self, ct_ratio: float) -> float:
+        return self.pickup_secondary_a * ct_ratio
+
+    def describe(self, ct_ratio: float = 1.0) -> str:
+        if not self.enabled:
+            return self.id + " not set (disabled)"
+        s = self.id + " " + format(self.pickup_secondary_a, ".3f") + " A sec"
+        if ct_ratio and ct_ratio != 1.0:
+            s += " = " + format(self.pickup_primary_a(ct_ratio), ".0f") + " A pri"
+        s += ", t = " + (format(self.time_s, ".3f") + " s" if self.time_s is not None
+                         else "not in the RIO export")
+        return s
+
+
 @dataclass
 class ZoneCharacteristic:
     """One tripping polygon, in secondary ohm, as (R, X) vertices."""
@@ -148,6 +191,7 @@ class RioSettings:
     dirchar_deg: Tuple[float, float] = (0.0, 0.0)
     impedance_correction: bool = False
     zones: List[RioZone] = field(default_factory=list)
+    backup: List[BackupStage] = field(default_factory=list)
     source_path: str = ""
     warnings: List[str] = field(default_factory=list)
 
@@ -158,6 +202,16 @@ class RioSettings:
             if z.name.strip().upper() == n:
                 return z
         return None
+
+    def stage(self, stage_id: str) -> Optional[BackupStage]:
+        for b in self.backup:
+            if b.id == stage_id:
+                return b
+        return None
+
+    @property
+    def enabled_backup(self) -> List[BackupStage]:
+        return [b for b in self.backup if b.enabled]
 
     @property
     def forward_zones(self) -> List[RioZone]:
@@ -286,6 +340,10 @@ class RioSettings:
                         + format(math.degrees(math.atan2(k0.imag, k0.real)), "+.3f") + " deg")
         rows.append("  source Z (sec)   : " + format(self.zs_secondary.real, ".3f")
                     + " + j" + format(self.zs_secondary.imag, ".3f"))
+        if self.backup:
+            rows.append("  backup stages    :")
+            for b in self.backup:
+                rows.append("     " + b.describe())
         rows.append("  zones            :")
         for z in self.zones:
             c = z.phase or z.earth
@@ -371,6 +429,15 @@ def parse_rio(text: str, source_path: str = "") -> RioSettings:
             v = _nums(t)
             if len(v) >= 2:
                 s.dirchar_deg = (v[0], v[1])
+        elif up.split(" ")[0] in ("I>>", "I>", "IE>>", "IE>", "3I0>>", "3I0>"):
+            v = _nums(t)
+            if v:
+                sid = up.split(" ")[0]
+                enabled = abs(v[0] - DISABLED_SENTINEL) > SENTINEL_TOL
+                s.backup.append(BackupStage(
+                    id=sid, kind="ef" if sid.startswith(("IE", "3I0")) else "oc",
+                    pickup_secondary_a=v[0], enabled=enabled,
+                    time_s=v[1] if len(v) > 1 else None))
         elif up.startswith("IMPCORR"):
             s.impedance_correction = "TRUE" in up
         elif up.startswith("BEGIN ZONE"):

@@ -160,6 +160,15 @@ def terminal_features(
         if len(same_op) > 1:
             disc = (max(same_op) - min(same_op)) * MS
 
+    # Backup overcurrent and earth fault sit behind the distance zones on a
+    # definite-time delay. They are protection in their own right: if one of
+    # them cleared the fault then the distance scheme did not, and if one
+    # operated at or before the distance trip the grading is wrong.
+    oc_pu, oc_tr = first("OC_PICKUP"), first("OC_TRIP")
+    ef_pu, ef_tr = first("EF_PICKUP"), first("EF_TRIP")
+    backup_trips = [t for t in (oc_tr, ef_tr) if t is not None]
+    backup_trip = min(backup_trips) if backup_trips else None
+
     cs, cr = first("CARRIER_SEND"), first("CARRIER_RECV")
     ar_close = first("AR_CLOSE")
     dead = None
@@ -236,6 +245,46 @@ def terminal_features(
             imax = max(imax, float(np.max(np.abs(x))))
     v["i_fault_peak_a"] = imax
     v["i_fault_ka"] = imax / math.sqrt(2.0) / 1000.0
+
+    # ---- backup overcurrent / earth fault -------------------------------
+    v["oc_pickup"] = oc_pu is not None
+    v["oc_pickup_ms"] = _ms(oc_pu, t0)
+    v["oc_trip"] = oc_tr is not None
+    v["oc_trip_ms"] = _ms(oc_tr, t0)
+    v["oc_mapped"] = sm.has("OC_TRIP") or sm.has("OC_PICKUP")
+    v["ef_pickup"] = ef_pu is not None
+    v["ef_pickup_ms"] = _ms(ef_pu, t0)
+    v["ef_trip"] = ef_tr is not None
+    v["ef_trip_ms"] = _ms(ef_tr, t0)
+    v["ef_mapped"] = sm.has("EF_TRIP") or sm.has("EF_PICKUP")
+    v["backup_operated"] = backup_trip is not None
+    v["backup_trip_ms"] = _ms(backup_trip, t0)
+    v["backup_picked_up"] = (oc_pu is not None) or (ef_pu is not None)
+    v["backup_grading_ms"] = (None if (backup_trip is None or trip_t is None)
+                              else (backup_trip - trip_t) * MS)
+    v["backup_before_distance"] = (backup_trip is not None and trip_t is not None
+                                   and backup_trip <= trip_t)
+
+    # settings, where the relay export carried them
+    v["oc_setting_a"] = None
+    v["ef_setting_a"] = None
+    v["oc_setting_time_s"] = None
+    v["ef_setting_time_s"] = None
+    v["oc_stage_disabled"] = None
+    v["ef_stage_disabled"] = None
+    v["backup_settings_known"] = False
+    v["i_fault_over_oc_setting"] = None
+    if settings is not None and settings.backup:
+        v["backup_settings_known"] = True
+        for st in settings.backup:
+            k = "oc" if st.kind == "oc" else "ef"
+            if v[k + "_setting_a"] is None or (st.enabled and not v[k + "_stage_disabled"]):
+                v[k + "_setting_a"] = (st.pickup_primary_a(ct_ratio) if st.enabled else None)
+                v[k + "_setting_time_s"] = st.time_s
+                v[k + "_stage_disabled"] = not st.enabled
+        if v["oc_setting_a"]:
+            v["i_fault_over_oc_setting"] = (
+                imax / math.sqrt(2.0)) / v["oc_setting_a"]
 
     # These exist whether or not settings were supplied: a rule that names a
     # feature which is merely unavailable must evaluate to False, while a rule

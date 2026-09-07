@@ -41,7 +41,8 @@ CANONICAL = (
     "AR_INITIATE", "AR_IN_PROGRESS", "AR_CLOSE", "AR_LOCKOUT", "AR_BLOCK",
     "AR_FAIL",
     "VT_FAIL", "SOTF", "POWER_SWING", "DEFINITIVE_TRIP", "LOCKOUT_86",
-    "MANUAL_CLOSE", "BROKEN_CONDUCTOR", "EARTH_FAULT_TRIP",
+    "MANUAL_CLOSE", "BROKEN_CONDUCTOR",
+    "OC_PICKUP", "OC_TRIP", "EF_PICKUP", "EF_TRIP",
 )
 
 # Function prefixes that mark a channel as belonging to a protection element
@@ -92,15 +93,24 @@ RULES: Tuple[SignalRule, ...] = (
     SignalRule("ANY_POLE_DEAD", r"ANY\s*POLE\s*DEAD|\bPOLE\s*DEAD"),
     SignalRule("CB_OPEN_A", r"(L1|R)\s*[- ]?\s*PH\s*OPEN|1\s*POLE\s*OPEN\s*L1"
                             r"|CB.*R[- ]?PH.*OPEN|^\s*R\s*PH\s*OPEN",
-               prefer=(r"1\s*POLE\s*OPEN|L1|CB",)),
+               prefer=(r"1\s*POLE\s*OPEN|L1|\bCB\b",)),
     SignalRule("CB_OPEN_B", r"(L2|Y)\s*[- ]?\s*PH\s*OPEN|1\s*POLE\s*OPEN\s*L2"
                             r"|CB.*Y[- ]?PH.*OPEN|^\s*Y\s*PH\s*OPEN",
-               prefer=(r"1\s*POLE\s*OPEN|L2|CB",)),
+               prefer=(r"1\s*POLE\s*OPEN|L2|\bCB\b",)),
     SignalRule("CB_OPEN_C", r"(L3|B)\s*[- ]?\s*PH\s*OPEN|1\s*POLE\s*OPEN\s*L3"
                             r"|CB.*B[- ]?PH.*OPEN|^\s*B\s*PH\s*OPEN",
-               prefer=(r"1\s*POLE\s*OPEN|L3|CB",)),
+               prefer=(r"1\s*POLE\s*OPEN|L3|\bCB\b",)),
     SignalRule("LOCKOUT_86", r"^\s*86[AB]?\b|86\s*OPTD|MASTER\s*TRIP"),
     SignalRule("DEFINITIVE_TRIP", r"DEFINITIVE\s*TRIP|FINAL\s*TRIP"),
+    # Backup overcurrent and earth fault are protection in their own right,
+    # graded behind the distance zones. They are claimed here, BEFORE the
+    # distance trip patterns, so that a backup operation is analysed as a
+    # backup operation instead of being discarded as noise on the distance
+    # channels or, worse, mistaken for the distance trip itself.
+    SignalRule("OC_PICKUP", r"O/?C\b.*(PICKUP|START)"),
+    SignalRule("OC_TRIP", r"O/?C\b.*TRIP|TRIP.*\bO/?C\b", avoid=(r"\bSOF\b",)),
+    SignalRule("EF_PICKUP", r"(\bE/?F\b|3I0).*(PICKUP|START)"),
+    SignalRule("EF_TRIP", r"(\bE/?F\b|3I0).*TRIP|EARTH\s*FAULT.*TRIP"),
     SignalRule("TRIP_3P", r"TRIP\s*3\s*P|3\s*P(H|OLE)?\s*TRIP|TRIP\s*L123",
                prefer=(DISTANCE,), avoid=(OTHER_ELEMENT, r"Z[0-9]")),
     SignalRule("TRIP_A", r"TRIP\s*1?P?\s*(A|L1|R)\b|TRIP\s*A\b",
@@ -121,7 +131,6 @@ RULES: Tuple[SignalRule, ...] = (
     SignalRule("SOTF", r"SOTF|SOFO|SWITCH\s*ON\s*TO\s*FAULT|TOR\s*TRIP"),
     SignalRule("MANUAL_CLOSE", r"MAN\w*\.?\s*CLOSE|LINE\s*CLOSURE", avoid=(INPUT_MARK,)),
     SignalRule("BROKEN_CONDUCTOR", r"BROK\w*\.?\s*COND|FAIL\s*CONDUCTOR"),
-    SignalRule("EARTH_FAULT_TRIP", r"E/?F\s*\S*\s*TRIP|EARTH\s*FAULT\s*TRIP"),
     SignalRule("TRIP", r"\bTRIP\b",
                prefer=(DISTANCE, GENERAL),
                avoid=(OTHER_ELEMENT, INPUT_MARK, PER_PHASE, r"Z[0-9]", r"DEFINITIVE")),
