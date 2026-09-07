@@ -119,6 +119,13 @@ class RelaySetting:
     line_angle_deg: float = 80.0
     k0_convention: str = "complex_k0"
     k0_params: Dict[str, float] = field(default_factory=dict)
+    # Zone reaches in primary ohm, keyed by zone name. Populated when the
+    # settings came from a relay export (a .rio, say) rather than from a
+    # per-unit figure on a settings sheet. Reaches in ohms are usable before
+    # the line length is known, which per-unit reaches are not.
+    reach_ohm_primary: Dict[str, Optional[complex]] = field(default_factory=dict)
+    # Z_primary / Z_secondary for the terminal these settings belong to.
+    secondary_to_primary: float = 1.0
 
     def k0(self) -> complex:
         c, p = self.k0_convention, self.k0_params

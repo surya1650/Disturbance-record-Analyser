@@ -36,6 +36,25 @@ def _read_any(path: str, end: str = ""):
     return read_comtrade(path, terminal_end=end)
 
 
+def _find_rio(record_path: str) -> Optional[str]:
+    """A settings export sitting next to the record.
+
+    Relays that write a .rio alongside every disturbance record hand over the
+    zone reaches, the characteristic and k0 for free, which is otherwise the
+    longest-lead-time item in the registry.
+    """
+    import glob
+
+    d = os.path.dirname(os.path.abspath(record_path))
+    base = os.path.splitext(os.path.basename(record_path))[0]
+    exact = [os.path.join(d, base + ext) for ext in (".rio", ".RIO", ".Rio")]
+    for p in exact:
+        if os.path.exists(p):
+            return p
+    found = sorted(glob.glob(os.path.join(d, "*.rio")) + glob.glob(os.path.join(d, "*.RIO")))
+    return found[0] if found else None
+
+
 def _fmt_flags(rec) -> str:
     if not rec.flags:
         return "    (no conformance findings)"
@@ -208,6 +227,47 @@ def cmd_selftest(args) -> int:
     return 0 if ok else 1
 
 
+def cmd_settings(args) -> int:
+    """Read a relay settings export and say what it gives you."""
+    from .registry.rio import read_rio
+
+    s = read_rio(args.rio)
+    print(BAR)
+    print(s.summary())
+    for w in s.warnings:
+        print("  warning:", w)
+    if args.ct and args.vt:
+        k = s.secondary_to_primary(args.ct, args.vt)
+        print(BAR)
+        print("With CT " + format(args.ct, ".0f") + "/1 and VT "
+              + format(args.vt, ".0f") + ":1, secondary x "
+              + format(k, ".3f") + " gives primary ohm")
+        for z in s.zones:
+            r = s.zone_reach_primary(z.name, args.ct, args.vt)
+            if r is None:
+                continue
+            print("   " + format(z.name, "<5") + format(r.real, "8.3f") + " + j"
+                  + format(r.imag, "7.3f") + " primary ohm"
+                  + ("   REVERSE" if z.reverse else "")
+                  + ("   overreach" if z.overreach else ""))
+        z1 = s.implied_line_z1(args.ct, args.vt, args.reach)
+        z0 = s.implied_line_z0(args.ct, args.vt, args.reach)
+        if z1 is not None:
+            print(BAR)
+            print("Line constants IMPLIED by the Zone 1 setting, assuming Z1 is "
+                  + format(args.reach * 100, ".0f") + " % of the line:")
+            print("   Z1 = " + format(z1.real, ".3f") + " + j" + format(z1.imag, ".3f")
+                  + " ohm      Z0 = " + format(z0.real, ".3f") + " + j"
+                  + format(z0.imag, ".3f") + " ohm")
+            if args.ohm_per_km:
+                print("   at " + format(args.ohm_per_km, ".3f") + " ohm/km that is a "
+                      + "line of " + format(z1.imag / args.ohm_per_km, ".1f") + " km")
+            print("   This is NOT a survey. If the real line length disagrees, the "
+                  "Zone 1\n   reach setting is what is wrong, and that is a finding "
+                  "in itself.")
+    return 0
+
+
 def cmd_template(args) -> int:
     dump_template(args.path)
     print("wrote line template to", args.path)
@@ -233,6 +293,16 @@ def build_parser() -> argparse.ArgumentParser:
     q = sub.add_parser("selftest", help="synthetic Stage-A acceptance check")
     q.add_argument("--cases", type=int, default=64)
     q.set_defaults(func=cmd_selftest)
+
+    q = sub.add_parser("settings", help="read a relay .rio settings export")
+    q.add_argument("rio")
+    q.add_argument("--ct", type=float, help="CT ratio, e.g. 800 for 800/1")
+    q.add_argument("--vt", type=float, help="VT ratio, e.g. 2000 for 220000/110")
+    q.add_argument("--reach", type=float, default=0.80,
+                   help="assumed Zone 1 reach as a fraction of line (default 0.80)")
+    q.add_argument("--ohm-per-km", type=float, dest="ohm_per_km",
+                   help="line X1 per km, to turn the implied Z1 into a length")
+    q.set_defaults(func=cmd_settings)
 
     q = sub.add_parser("template", help="write a starter line definition")
     q.add_argument("path")
