@@ -364,3 +364,104 @@ def test_the_two_garividi_relays_disagree_on_event_15665(tmp_path):
     assert abs(ipre[0] - ipre[1]) / max(ipre) < 0.05
     codes = [d.code for d in res.disagreements]
     assert codes == ["XR-04"]
+
+
+# --------------------------------------------------------------------------
+# the resolver pre-filling the form (P4)
+# --------------------------------------------------------------------------
+from dranalyser.registry.model import (InstrumentTransformer,  # noqa: E402
+                                       Relay, Terminal, uniform_line)
+from dranalyser.workbench.resolve import suggest  # noqa: E402
+
+
+def _registry_line():
+    ln = uniform_line("TST-LINE", "Alpha - Beta", 220.0, 50.0,
+                      complex(0.03, 0.4), complex(0.25, 1.2))
+    ln.path_rules = [r"(?i)(?:^|/)(?P<substation>alpha|beta)(?:/|$)"]
+    ln.terminals["S"] = Terminal(end="S", substation="ALPHA",
+                                 it=InstrumentTransformer(800.0, 2000.0),
+                                 relays=[Relay(id="ALPHA-M1")])
+    ln.terminals["R"] = Terminal(end="R", substation="BETA",
+                                 it=InstrumentTransformer(800.0, 2000.0),
+                                 relays=[Relay(id="BETA-M1")])
+    return ln
+
+
+def test_the_resolver_proposes_but_never_decides(tmp_path):
+    """A suggestion is not an assignment. assign() still has to be called."""
+    root = tmp_path / "inc"
+    _write_record(str(root / "alpha"), "a")
+    b = open_bundle(str(root))
+    n = suggest(b, lines=[_registry_line()])
+
+    f = b.records()[0]
+    assert n == 1
+    assert (f.suggested_line_id, f.suggested_end) == ("TST-LINE", "S")
+    assert f.suggested_evidence
+    # nothing was applied
+    assert f.terminal_end == "" and f.assignment_source == ""
+    assert b.primary("S") is None
+
+
+def test_an_unresolvable_record_gets_a_reason_not_a_guess(tmp_path):
+    root = tmp_path / "inc"
+    _write_record(str(root / "somewhere"), "a")     # no path or header match
+    b = open_bundle(str(root))
+    suggest(b, lines=[_registry_line()])
+    f = b.records()[0]
+    assert f.suggested_end == ""
+    assert f.suggested_reason
+
+
+def test_an_earlier_operator_declaration_is_kept_not_argued_with(tmp_path):
+    """Reopening a bundle must not overwrite what a human already decided."""
+    root = tmp_path / "inc"
+    _write_record(str(root / "alpha"), "a")
+    b = open_bundle(str(root))
+    assign(b, {"alpha/a.cfg": ("R", "primary")}, line_id="TST-LINE")
+
+    suggest(b, lines=[_registry_line()])
+    f = b.records()[0]
+    assert f.terminal_end == "R"                 # the operator's choice stands
+    assert f.suggested_end == "R"                # and the manifest is rank 1
+    assert any("manifest" in e for e in f.suggested_evidence)
+
+
+def test_with_no_line_definitions_nothing_is_suggested_and_it_says_why(tmp_path):
+    root = tmp_path / "inc"
+    _write_record(str(root / "alpha"), "a")
+    b = open_bundle(str(root))
+    assert suggest(b, registry_dir=str(tmp_path / "empty")) == 0
+    assert "nothing can be resolved against" in b.records()[0].suggested_reason
+
+
+@needs_sphoorthi
+def test_the_real_folder_tree_resolves_all_three_usable_records(tmp_path):
+    """Including the D60, whose CFG station name is the useless 'Relay-1'."""
+    import shutil
+
+    from dranalyser.registry.assets import load_registry
+
+    registry = load_registry("data/registry")
+    if not any(ln.id == "GRV-MRD-1" for ln in registry):
+        pytest.skip("Garividi-Maradam registry entries not present")
+
+    dest = tmp_path / "tree"
+    for folder in ("garividi-maradam-1", "maradam-garividi-1"):
+        src = os.path.join(SPH, folder)
+        for dp, _d, fns in os.walk(src):
+            for fn in fns:
+                if fn.lower().endswith((".cfg", ".dat")):
+                    rel = os.path.join(folder,
+                                       os.path.relpath(os.path.join(dp, fn), src))
+                    os.makedirs(os.path.dirname(str(dest / rel)), exist_ok=True)
+                    shutil.copy2(os.path.join(dp, fn), str(dest / rel))
+
+    b = open_bundle(str(dest), bundle_id="tree")
+    assert suggest(b, lines=registry) == 3
+    got = {f.name.split("/")[0] + "/" + f.name.split("/")[1]:
+           (f.suggested_line_id, f.suggested_end)
+           for f in b.records() if f.suggested_end}
+    assert got["garividi-maradam-1/Main-1 D60"] == ("GRV-MRD-1", "R")
+    assert got["garividi-maradam-1/Main-2 P444"] == ("GRV-MRD-1", "R")
+    assert got["maradam-garividi-1/Main-1"] == ("GRV-MRD-1", "S")

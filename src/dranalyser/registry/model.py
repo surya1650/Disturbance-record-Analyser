@@ -150,6 +150,9 @@ class Relay:
     function: str = "main1"
     retrieval: str = "iec61850"
     settings: List[RelaySetting] = field(default_factory=list)
+    # Other names this relay answers to in a file, a folder or a CFG header:
+    # "Main-1", "MAin-1 events", "B205_21.1_7SA522". Free text on this fleet.
+    aliases: List[str] = field(default_factory=list)
 
     def setting_at(self, when: str = "") -> Optional[RelaySetting]:
         if not self.settings:
@@ -175,6 +178,8 @@ class Terminal:
     # +1 = current positive from bus INTO the line, which is what every
     # equation in faultloc assumes. A flipped CT here is silent, not an error.
     i_polarity: int = 1
+    # Other names this substation appears under: "DHONE(SWS)", "APTRANSCO_Dhone".
+    aliases: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -195,6 +200,13 @@ class Line:
     towers: List[Tower] = field(default_factory=list)
     double_circuit: bool = False
     series_compensated: bool = False
+    # Other names this line appears under: "DHN-NNR", "DHONE-NANDYAL",
+    # "220KV DHN NNR". Matched after stripping punctuation and case.
+    aliases: List[str] = field(default_factory=list)
+    # Regexes that identify this line from a file path, configured here rather
+    # than coded. Named groups `substation`, `end` and `relay` are used as
+    # evidence when present.
+    path_rules: List[str] = field(default_factory=list)
 
     @property
     def length_km(self) -> float:

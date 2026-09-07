@@ -64,6 +64,12 @@ class BundleFile:
     flags: List[str] = field(default_factory=list)
     blocked: bool = False
     duplicate_of: str = ""
+    # Facts the AssetResolver needs, captured while the record is open so it
+    # is never re-read. kv is measured from the pre-fault voltage, which is
+    # what PROJECT_CONTEXT.md 6 rank 5 asks for.
+    ct_ratio: float = 0.0
+    vt_ratio: float = 0.0
+    kv_nominal: float = 0.0
 
     # The operator's declaration. Empty until assigned; never guessed.
     line_id: str = ""
@@ -71,6 +77,16 @@ class BundleFile:
     relay_id: str = ""
     role: str = ""                  # primary | corroborating | excluded
     assignment_source: str = ""
+
+    # What the AssetResolver proposes, kept separate from what the operator
+    # declared so both survive. The form pre-fills from these; submitting
+    # replaces `assignment_source` with "operator".
+    suggested_line_id: str = ""
+    suggested_end: str = ""
+    suggested_relay_id: str = ""
+    suggested_confidence: float = 0.0
+    suggested_reason: str = ""
+    suggested_evidence: List[str] = field(default_factory=list)
 
     @property
     def usable(self) -> bool:
@@ -151,6 +167,32 @@ def _partner_dat(root: str, rel_cfg: str, names: List[str]) -> str:
     return ""
 
 
+def _instrument_facts(rec) -> Tuple[float, float, float]:
+    """CT ratio, VT ratio and measured nominal kV, or zeros when unavailable.
+
+    Ratios come from the CFG channel definitions; the voltage is MEASURED from
+    the pre-fault window rather than taken from the CFG, because vendors
+    disagree on whether the primary field is phase-ground or phase-phase.
+    """
+    ct = vt = kv = 0.0
+    for name in ("IA", "IB", "IC"):
+        m = rec.analog_meta.get(name)
+        if m and m.secondary:
+            ct = float(m.primary) / float(m.secondary)
+            break
+    for name in ("VA", "VB", "VC"):
+        m = rec.analog_meta.get(name)
+        if m and m.secondary:
+            vt = float(m.primary) / float(m.secondary)
+            break
+    va = rec.analog.get("VA")
+    if va is not None and len(va) > 20:
+        pre = va[: max(20, len(va) // 5)]
+        rms = float((pre.astype(float) ** 2).mean() ** 0.5)
+        kv = rms * (3.0 ** 0.5) / 1000.0
+    return ct, vt, kv
+
+
 def open_bundle(path: str, workdir: Optional[str] = None,
                 bundle_id: str = "") -> Bundle:
     """Resolve a folder or a zip into a bundle.
@@ -224,6 +266,7 @@ def open_bundle(path: str, workdir: Optional[str] = None,
         bf.content_hash = rec.content_hash
         bf.flags = [str(f) for f in rec.flags]
         bf.blocked = rec.blocked()
+        bf.ct_ratio, bf.vt_ratio, bf.kv_nominal = _instrument_facts(rec)
         if rec.content_hash and rec.content_hash in seen_hash:
             bf.duplicate_of = seen_hash[rec.content_hash]
         else:

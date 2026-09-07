@@ -58,6 +58,7 @@ def _terminal(end: str, d: Dict[str, Any]) -> Terminal:
                 k0_params={k: float(v) for k, v in (s.get("k0_params", {}) or {}).items()},
             ))
         relays.append(Relay(
+            aliases=[str(a) for a in (r.get("aliases") or [])],
             id=str(r.get("id", "")), make=str(r.get("make", "")),
             model=str(r.get("model", "")), function=str(r.get("function", "main1")),
             retrieval=str(r.get("retrieval", "iec61850")), settings=settings,
@@ -65,6 +66,7 @@ def _terminal(end: str, d: Dict[str, Any]) -> Terminal:
     return Terminal(
         end=end, substation=str(d.get("substation", end)), it=it,
         zs1=_cx(d.get("zs1")), zs0=_cx(d.get("zs0")), relays=relays,
+        aliases=[str(a) for a in (d.get("aliases") or [])],
         i_polarity=int(d.get("i_polarity", 1)),
     )
 
@@ -107,6 +109,8 @@ def line_from_dict(d: Dict[str, Any]) -> Line:
     return Line(
         id=str(d.get("id", "LINE")), name=str(d.get("name", "")),
         kv=float(d.get("kv", 220.0)), sections=secs, terminals=terms,
+        aliases=[str(a) for a in (d.get("aliases") or [])],
+        path_rules=[str(r) for r in (d.get("path_rules") or [])],
         towers=towers, double_circuit=bool(d.get("double_circuit", False)),
         series_compensated=bool(d.get("series_compensated", False)),
     )

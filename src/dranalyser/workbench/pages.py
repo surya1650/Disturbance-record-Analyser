@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import html
 import math
+import os
 from typing import List, Optional
 
 from .bundle import Bundle, BundleFile
@@ -97,12 +98,32 @@ def _state_tag(f: BundleFile) -> str:
     return '<span class="tag ok">usable</span>'
 
 
+def _suggestion(f: BundleFile) -> str:
+    """What the resolver proposed, and on what evidence."""
+    if not f.usable:
+        return ""
+    if f.suggested_end:
+        head = ('<span class="tag ok">suggests end ' + _e(f.suggested_end)
+                + "</span> " + _e(f.suggested_line_id)
+                + " &middot; confidence " + format(f.suggested_confidence, ".2f"))
+    else:
+        head = '<span class="tag warn">not resolved</span>'
+    detail = ""
+    if f.suggested_reason:
+        detail = '<div class="flag">' + _e(f.suggested_reason) + "</div>"
+    ev = "".join('<div class="flag">' + _e(x) + "</div>"
+                 for x in f.suggested_evidence[:6])
+    return '<div class="sub">' + head + "</div>" + detail + ev
+
+
 def _assign_cell(f: BundleFile) -> str:
     if not f.usable:
         return '<span class="sub">&mdash;</span>'
+    # Pre-filled from the resolver when the operator has not decided yet.
+    chosen = f.terminal_end or f.suggested_end
     opts = ""
     for val, label in (("", "unassigned"), ("S", "end S"), ("R", "end R")):
-        sel = " selected" if f.terminal_end == val else ""
+        sel = " selected" if chosen == val else ""
         opts += '<option value="' + val + '"' + sel + ">" + label + "</option>"
     roles = ""
     for val, label in (("primary", "primary"), ("corroborating", "corroborating")):
@@ -131,13 +152,18 @@ def bundle_page(b: Bundle, line_files: List[str], refusals: List[str],
         for fl in f.flags:
             cls = "flag block" if fl.startswith("[BLOCK") else "flag"
             detail += '<div class="' + cls + '">' + _e(fl) + "</div>"
+        detail += _suggestion(f)
         rows += ("<tr><td>" + _state_tag(f) + "</td><td><span class='mono'>"
                  + _e(f.name) + "</span>" + detail + "</td><td>"
                  + _assign_cell(f) + "</td></tr>")
 
     lines = '<option value="">no line definition (no distance)</option>'
+    hinted = {f.suggested_line_id for f in b.records() if f.suggested_line_id}
     for p in line_files:
-        sel = " selected" if b.line_id and b.line_id in p else ""
+        stem = os.path.splitext(os.path.basename(p))[0].upper()
+        pick = (b.line_id and b.line_id in p) or any(
+            h.upper().replace("-", "") == stem.replace("-", "") for h in hinted)
+        sel = " selected" if pick else ""
         lines += '<option value="' + _e(p) + '"' + sel + ">" + _e(p) + "</option>"
 
     refused = ""
@@ -155,10 +181,13 @@ def bundle_page(b: Bundle, line_files: List[str], refusals: List[str],
   <h2>What was read from each file</h2>
   <table><tr><th>state</th><th>file</th><th>terminal</th></tr>
   """ + rows + """</table>
-  <p class="note">Nothing here is inferred. The station name in a CFG header is
-  evidence, not authority &mdash; on this fleet one Garividi record names its
-  station <code>MARADAM 2</code> and another names <code>BRAHMANAKOTKUR</code>.
-  You decide which end each record is, and that decision is recorded as yours.</p>
+  <p class="note">Where a terminal is pre-selected, the resolver proposed it
+  from the evidence listed under the file &mdash; you are confirming it, not
+  accepting it. The station name in a CFG header is evidence, not authority:
+  on this fleet one Garividi record names its station <code>MARADAM 2</code>
+  and another names <code>BRAHMANAKOTKUR</code>. Whatever you submit is
+  recorded as <b>your</b> decision, and the manifest keeps the resolver&rsquo;s
+  proposal beside it so an override is visible later.</p>
 
   <h2>Incident</h2>
   <p><label class="sub">Line id

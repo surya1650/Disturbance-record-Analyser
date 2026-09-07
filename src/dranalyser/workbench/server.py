@@ -25,6 +25,7 @@ from typing import Dict, List, Optional, Tuple
 from .bundle import MANIFEST_NAME, Bundle, assign, open_bundle, read_manifest, write_manifest
 from .incident import analyse_bundle, default_line_files
 from .pages import bundle_page, incident_page, upload_page
+from .resolve import suggest
 
 # An uploaded record is a waveform file; a few hundred MB of binary DAT is
 # plausible for a long recording, a gigabyte is someone's mistake.
@@ -144,6 +145,9 @@ class Handler(BaseHTTPRequestHandler):
             self._send(upload_page(self.wb.list_bundles(),
                                    "no bundle called " + bundle_id), 404)
             return
+        # The resolver proposes; the form pre-fills from it; the operator
+        # confirms or overrides. Nothing is applied without a submit.
+        suggest(b, self.wb.registry_dir)
         self._send(bundle_page(b, default_line_files(self.wb.registry_dir),
                                refusals or []), status)
 

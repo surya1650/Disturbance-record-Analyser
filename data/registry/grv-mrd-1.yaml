@@ -1,0 +1,87 @@
+# 220 kV GARIVIDI - MARADAM circuit 1 (Maradam LINE 205 / B205).
+#
+# PROVISIONAL, and NOT usable for a distance. The length and impedances below
+# are typical 220 kV ACSR Panther values, not surveyed for this corridor, and
+# project-docs/NEXT_SESSION.md section 7 item 6 is the open request for the
+# real ones. This file exists so the AssetResolver can identify records from
+# this corridor; `dranalyse locate` against it would produce a number with no
+# survey behind it.
+#
+# What IS real here, read out of the Sphoorthi records themselves:
+#   kv           220     (pre-fault 127.0 kV phase-ground measured at both ends)
+#   ct_ratio     800/1   (7SA522 and D60 CFG channel definitions)
+#   vt_ratio     2000    (220000/110 on the 7SA522, 127000/63.5 on the D60)
+#
+# The corridor is DOUBLE CIRCUIT and both recorded events were ground faults,
+# so zero-sequence mutual coupling with circuit 2 is a first-order error
+# source and is not modelled. See NEXT_SESSION section 2b finding 3.
+id: GRV-MRD-1
+name: Garividi - Maradam 1 (220 kV)
+kv: 220
+double_circuit: true
+series_compensated: false
+aliases:
+  - LINE 205
+  - B205
+  - GARIVIDI-MARADAM-1
+# On this fleet the folder is named local-end-first: `garividi-maradam-1`
+# holds the Garividi-end records of circuit 1. That was verified electrically,
+# not assumed -- the records in `garividi-maradam-*` measure the fault current
+# the Garividi end feeds. A plain `garividi/` or `maradam/` folder names the
+# local end directly.
+path_rules:
+  - '(?i)(?:^|/)(?P<substation>garividi|maradam)(?:/|$)'
+  - '(?i)(?:^|/)(?P<substation>garividi|maradam)-(?:garividi|maradam)-1(?:/|$)'
+
+sections:
+  - seq: 1
+    from_km: 0.0
+    to_km: 45.0          # PROVISIONAL
+    r1: 0.1600           # PROVISIONAL - ACSR Panther typical
+    x1: 0.4000
+    r0: 0.3600
+    x0: 1.3000
+    conductor: ACSR PANTHER
+
+tower_span_km: 0.32
+
+terminals:
+  S:
+    substation: MARADAM
+    aliases: ["APTRANSCO_Maradam", "MARADAM 1", "MARADAM 2"]
+    ct_ratio: 800
+    vt_ratio: 2000
+    vt_type: CVT
+    zs1: [1.0, 12.0]     # PROVISIONAL
+    zs0: [2.0, 20.0]
+    i_polarity: 1
+    relays:
+      - id: MRD-205-M1
+        make: Siemens
+        model: 7SA522 V4.7
+        function: main1
+        aliases: ["B205_21.1_7SA522"]
+      - id: MRD-205-M2
+        make: unknown
+        model: unknown
+        function: main2
+  R:
+    substation: GARIVIDI
+    aliases: ["garividi"]
+    ct_ratio: 800
+    vt_ratio: 2000
+    vt_type: CVT
+    zs1: [1.5, 18.0]     # PROVISIONAL
+    zs0: [3.0, 30.0]
+    i_polarity: 1
+    relays:
+      - id: GRV-205-M1
+        make: GE
+        model: D60
+        function: main1
+        aliases: ["Relay-1", "Main-1 D60"]
+      - id: GRV-205-M2
+        make: Alstom
+        model: MiCOM P444
+        function: main2
+        aliases: ["Main-2 P444"]

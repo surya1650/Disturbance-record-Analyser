@@ -3,7 +3,7 @@
 Written 2026-09-07. Requested: *"run the program in my localhost … analysed
 with the files with uploading … manual analysis need to be there."*
 
-**Status: P1, P2 and P3 built and verified on 2026-09-07. P4 not started.**
+**Status: P1 to P4 all built and verified on 2026-09-07. The plan is complete.**
 Approved with the recommended defaults on both build-shaping questions in §9:
 bound to `127.0.0.1` only, and bundles persist under `out/bundles/`.
 
@@ -180,12 +180,17 @@ same 305–310 A of I2. Today nothing surfaces that.
 drove each terminal's estimate and why, and raises the D60/P444 disagreement
 as a finding rather than hiding it behind a choice of `--R`.
 
-### P4 — Manifest as the AssetResolver's contract (not built here)
+### P4 — Manifest as the AssetResolver's contract — **DONE**
 
-When §6's `AssetResolver` lands it pre-fills the assignment form from
-evidence and the operator confirms or overrides, with both the inferred and
-the declared value kept. Listed so P1's manifest schema is designed for it,
-not retrofitted.
+`registry/assets.py` and `workbench/resolve.py`. The form pre-fills from the
+resolver's proposal and the operator confirms or overrides; `suggested_*` and
+the declared `terminal_end` are kept side by side in the manifest, so an
+override is visible later. Reopening a bundle feeds the operator's own earlier
+declaration back in as rank-1 evidence, so the resolver never argues with a
+decision a human already made.
+
+A suggestion is never applied on its own: `assign()` still has to be called,
+and it is still the operator's declaration that reaches the estimators.
 
 ## 6. Test plan
 

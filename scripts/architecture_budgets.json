@@ -25,8 +25,9 @@
     "src/dranalyser/ml/tier2.py": 284,
     "src/dranalyser/ml/tier3.py": 287,
     "src/dranalyser/registry/__init__.py": 0,
-    "src/dranalyser/registry/loader.py": 180,
-    "src/dranalyser/registry/model.py": 285,
+    "src/dranalyser/registry/assets.py": 356,
+    "src/dranalyser/registry/loader.py": 184,
+    "src/dranalyser/registry/model.py": 297,
     "src/dranalyser/registry/settings.py": 529,
     "src/dranalyser/registry/settings_io/__init__.py": 79,
     "src/dranalyser/registry/settings_io/rio.py": 218,
@@ -46,11 +47,12 @@
     "src/dranalyser/synth/__init__.py": 0,
     "src/dranalyser/synth/generator.py": 462,
     "src/dranalyser/workbench/__init__.py": 14,
-    "src/dranalyser/workbench/bundle.py": 321,
+    "src/dranalyser/workbench/bundle.py": 364,
     "src/dranalyser/workbench/corroborate.py": 179,
     "src/dranalyser/workbench/incident.py": 167,
-    "src/dranalyser/workbench/pages.py": 250,
-    "src/dranalyser/workbench/server.py": 284
+    "src/dranalyser/workbench/pages.py": 279,
+    "src/dranalyser/workbench/resolve.py": 112,
+    "src/dranalyser/workbench/server.py": 288
   },
   "exceptions": {}
 }

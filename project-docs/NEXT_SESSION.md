@@ -10,6 +10,9 @@ the "What is different from the brief" section of [`README.md`](../README.md).
 - `inspect` and `verdict` now refuse a record the conformance gate has
   blocked, instead of calling `analyse()` on it and dying with `KeyError:
   'I1'`. `locate`, `report` and `backtest` already gated correctly.
+- The **local workbench** (`dranalyse workbench`) and the **AssetResolver**
+  were built the same day; see `LOCAL_WORKBENCH_PLAN_v1.md` and §6 here.
+- Settings are vendor-neutral now; see §4.
 - `map_channel` and `detect_phase_naming` fall back to the last
   separator-delimited token of a channel id, so a vendor prefix no longer
   defeats the phase match. ABB's `LINE1_A_IL1` / `LINE1_UL1` map now. Only
@@ -28,8 +31,8 @@ cd "e:\dr analyser"
 pip install -e ".[dev]"
 
 python scripts/check_architecture.py     # run FIRST, it is the cheapest gate
-pytest -q                                # 231 tests
-dranalyse stage-a --cases 10000 --workers 1     # PASS, clean p95 = 0.4403 %
+pytest -q                                # 295 tests
+dranalyse stage-a --cases 10000          # PASS, clean p95 = 0.4403 %
 dranalyse verdict --S "DR & Events 9-4-2026/Main-2/DR-1/DR-1.CFG" \
                   --line data/registry/dhn-nnr.yaml
 ```
@@ -91,7 +94,8 @@ test that needs them skips cleanly, so a clone without them still runs green.
   are typical ACSR Zebra values, not surveyed. Absolute distances from it are
   not operational.
 
-**Not built**: pairing, transport, edge collector, asset resolution.
+**Not built**: pairing, transport, edge collector. Asset resolution is built
+(§6) and wired into the workbench form.
 **Not handled**: distributed-parameter model for long lines, three-terminal
 lines, **zero-sequence mutual coupling between the two circuits of a
 double-circuit corridor** -- which the new records in §2b need. Series-
@@ -209,12 +213,13 @@ not scale past one incident, and three things are blocked behind it:
 The recommended order:
 
 1. ~~**`ProtectionSettings` interface refactor**~~ — **done 2026-09-07**, see §4.
-2. **`AssetResolver`** — folder and file to line / terminal / relay. This is
-   the real unlock, and it is now the next thing. The workbench already writes
-   the manifest the resolver should fill in: today the operator declares the
-   assignment with `source: operator`, and the resolver's job is to pre-fill
-   it with `source: resolver` for the operator to confirm or override.
-3. **Pairing**, which is now possible.
+2. ~~**`AssetResolver`**~~ — **done 2026-09-07**, see §6, and wired into the
+   workbench form.
+3. **Pairing** — this is now the next thing, and it is now genuinely possible:
+   the resolver gives every record a line and a terminal, so two records that
+   resolve to the two ends of one line within a plausible window are a pair.
+   Remember §7.5: trigger times spread 13 min 24 s across one event, so
+   electrical corroboration comes before any time filter.
 4. **Concrete settings importers**, one per format, *as real sample files
    arrive* — see the warning in §5.
 5. CT saturation compensation, the largest remaining accuracy gap.
@@ -364,7 +369,51 @@ teaches more than a week of speculation.
 
 ---
 
-## 6. Requirement: mapping folders to substation, line and terminal
+## 6. Mapping folders to substation, line and terminal — **DONE 2026-09-07**
+
+`registry/assets.py`: `RecordFacts`, `AssetHint`, `Assignment`, `Ambiguous`,
+`AssetResolver.resolve(facts, manifest) -> Assignment | Ambiguous`, and
+`load_registry(dir)`. `workbench/resolve.py` pre-fills the assignment form
+from it — plan P4 — and the operator confirms or overrides.
+
+**One divergence from the shape below, on purpose.** `resolve()` takes a
+`RecordFacts` of primitives, not a `Record`. `registry/` deliberately imports
+nothing from the rest of the package (the guard enforces it), and taking a
+`Record` would have reversed the allowed direction. The caller extracts the
+facts, which also means a manifest alone can be resolved with no record open.
+
+Evidence weights, all **project policy, not standards-derived**: manifest
+1.00, path rule 0.60, CFG header 0.50, sibling settings 0.50, electrical 0.30.
+A candidate needs 0.50 and must beat the runner-up by 0.20. A manifest is
+decisive on its own; nothing else is.
+
+Two rules that fell out of the real records and are pinned by tests:
+
+- **A relay MODEL is not an identifier.** Matching `7SA522` would be a
+  confident end signal that means nothing on a fleet where half the relays
+  are 7SA522. Only the relay's id and its configured aliases count.
+- **Evidence that names the line but not the end lifts both ends equally**, so
+  it can decide which line and never which terminal.
+
+Verified on the real folder tree, `drs sphoorthi/`:
+
+| record | resolved | on what |
+|---|---|---|
+| `garividi-maradam-1/Main-1 D60` | GRV-MRD-1 / R, 0.90 | path rule + ratios — its CFG station name is the useless `Relay-1` |
+| `garividi-maradam-1/Main-2 P444` | GRV-MRD-1 / R, 1.10 | header `garividi` + path rule |
+| `maradam-garividi-1/Main-1` | GRV-MRD-1 / S, 1.90 | header names `MARADAM` and `LINE 205`, plus the ratios |
+| `maradam-garividi-1/Main-2` | refused | blocked by the conformance gate |
+
+And it refuses when it should: flatten those files into one `garividi/` folder
+and the two Garividi records come back *"two candidates are too close to call
+(GRV-MRD-1/R at 0.90 against GRV-MRD-2/R at 0.90)"* — because nothing in the
+path or the header says which of the two parallel circuits they belong to.
+That is the double-circuit hazard made concrete rather than guessed past.
+
+`data/registry/grv-mrd-1.yaml` and `grv-mrd-2.yaml` are new and **PROVISIONAL
+for distance** — their lengths and impedances are typical ACSR Panther values,
+not surveyed. They exist so the resolver has something to resolve against; the
+CT/VT ratios and the kV in them are real, read out of the records.
 
 ### What the real folder tree looks like
 

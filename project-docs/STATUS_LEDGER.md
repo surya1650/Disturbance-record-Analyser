@@ -6,6 +6,62 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-09-07 (resolver) - Records resolve themselves to a line and a terminal
+
+`NEXT_SESSION.md` §6 done, and P4 of the workbench plan with it. The workbench
+plan is now complete, P1 to P4.
+
+`registry/assets.py`: `RecordFacts`, `AssetHint`, `Assignment`, `Ambiguous`,
+`AssetResolver.resolve(facts, manifest)`, `load_registry(dir)`.
+`workbench/resolve.py` pre-fills the assignment form; the operator confirms or
+overrides, and both values stay in the manifest so an override is visible.
+
+**Divergence from §6, on purpose:** `resolve()` takes primitives, not a
+`Record`. `registry/` imports nothing from the rest of the package and the
+guard enforces it; taking a `Record` would reverse the allowed direction. It
+also means a manifest alone resolves with no record open.
+
+Weights (**project policy, not standards-derived**): manifest 1.00, path rule
+0.60, header 0.50, sibling settings 0.50, electrical 0.30. A candidate needs
+0.50 and must beat the runner-up by 0.20. Only a manifest decides alone.
+
+Two rules that came straight out of the real records:
+
+- **A relay MODEL is not an identifier.** Matching `7SA522` would be a
+  confident end signal meaning nothing on a fleet where half the relays are
+  7SA522. Only the relay id and its configured aliases count.
+- **Evidence naming the line but not the end lifts both ends equally**, so it
+  can decide the line and never the terminal.
+
+**Verified on the real folder tree**, `drs sphoorthi/`:
+
+| record | resolved | on what |
+|---|---|---|
+| `garividi-maradam-1/Main-1 D60` | GRV-MRD-1 / R, 0.90 | path rule + ratios; its CFG station name is the useless `Relay-1` |
+| `garividi-maradam-1/Main-2 P444` | GRV-MRD-1 / R, 1.10 | header `garividi` + path rule |
+| `maradam-garividi-1/Main-1` | GRV-MRD-1 / S, 1.90 | header names MARADAM and LINE 205, plus the ratios |
+| `maradam-garividi-1/Main-2` | refused | blocked by the conformance gate |
+
+**And it refuses when it should.** Flatten those into one `garividi/` folder
+and the two Garividi records come back "two candidates are too close to call
+(GRV-MRD-1/R at 0.90 against GRV-MRD-2/R at 0.90)" - nothing in the path or
+header says which of the two parallel circuits they are. The double-circuit
+hazard, made concrete instead of guessed past.
+
+New: `data/registry/grv-mrd-1.yaml` and `grv-mrd-2.yaml`. **PROVISIONAL for
+distance** - lengths and impedances are typical ACSR Panther, not surveyed.
+They exist so the resolver has something to resolve against; the kV and the
+CT/VT ratios in them are real, read out of the records.
+
+**Gates:** guard + self-test pass, **295 tests** pass, Stage-A 10,000 cases
+PASS at clean p95 = **0.4403 %**, unchanged for the fifth time.
+
+Next: **pairing** (§5.2), now genuinely possible - every record has a line and
+a terminal. Remember §7.5: 13 min 24 s of clock spread on one event, so
+electrical corroboration comes before any time filter.
+
+---
+
 ## 2026-09-07 (settings) - The vendor lock-in is gone; a guard rule keeps it gone
 
 `NEXT_SESSION.md` §4, done. `RioSettings` was imported directly by nine call
