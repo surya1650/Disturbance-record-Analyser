@@ -393,7 +393,14 @@ def locate(
     # it. The single-ended results stay in the table, and their disagreement
     # with the two-ended answer is itself a diagnostic (rule MS-03 class), but
     # they do not move the number.
-    two_ok = [e for e in usable if e.ends == "two" and e.residual < 0.05]
+    # ...but only when the two-ended estimate is actually the better-supported
+    # one. With a saturated CT, E5 can satisfy its own magnitude equality at a
+    # badly wrong m and still show a small residual, so residual alone is not
+    # enough to let it override everything else.
+    best_single = max((e.diagnostics.get("weight", 0.0) for e in usable
+                       if e.ends == "single"), default=0.0)
+    two_ok = [e for e in usable if e.ends == "two" and e.residual < 0.05
+              and e.diagnostics.get("weight", 0.0) >= best_single]
     blend = two_ok if two_ok else usable
     ws = np.asarray([e.diagnostics["weight"] for e in blend])
     msv_blend = np.asarray([e.m for e in blend])
@@ -415,6 +422,29 @@ def locate(
     else:
         half = max(abs(win[1] - win[0]) / 2.0, disagree / 2.0, 0.002)
     lo, hi = m - half, m + half
+
+    # A distance outside the protected line is a different statement from a
+    # distance along it, and past a point it is not a statement at all. An
+    # out-of-section fault genuinely gives m slightly beyond an end and that
+    # is useful; m = 6.7 pu is corrupt input wearing the costume of an answer.
+    if not (-0.5 <= m <= 1.5):
+        return LocationResult(
+            m=m, km_from_S=float("nan"), km_from_R=float("nan"),
+            interval_pu=(lo, hi), interval_km=(float("nan"),) * 2,
+            method=best.method, mode="none", fault_type=fault,
+            estimates=estimates, caveats=caveats + [
+                "computed distance is " + format(m, ".2f")
+                + " per unit, far outside the line; no location is reported. "
+                  "This is an input problem, not a remote fault - check CT "
+                  "saturation, CT/VT ratios and CT polarity at both ends."],
+            diagnostics={"method_disagreement_pu": disagree,
+                         "_km_fn": lambda x: line.m_to_km(min(max(x, 0.0), 1.0))})
+    if not (-0.02 <= m <= 1.02):
+        caveats.append(
+            "computed distance is " + format(m, ".3f") + " per unit, outside the "
+            "protected line; the fault is most likely beyond the "
+            + ("remote" if m > 1 else "local") + " terminal. The tower band below "
+            "is clamped to the line and should not be patrolled on.")
 
     km = line.m_to_km(min(max(m, 0.0), 1.0))
     klo = line.m_to_km(min(max(lo, 0.0), 1.0))

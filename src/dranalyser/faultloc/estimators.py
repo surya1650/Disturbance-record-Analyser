@@ -332,6 +332,16 @@ def e5_unsynchronised(
     best = min(candidates, key=score)
     other = [c for c in candidates if c is not best]
 
+    # A root far outside the line is not a location, it is evidence that the
+    # inputs are inconsistent -- a saturated CT, a wrong ratio, a reversed
+    # polarity. Returning it as a number invites someone to believe the fault
+    # was six line lengths away, so E5 declines instead.
+    if not (-0.5 <= best["m"] <= 1.5):
+        return _fail("E5", "no root near the line (best root m = "
+                     + format(best["m"], ".2f") + "); the two terminals disagree "
+                     "beyond what a fault location can explain - check CT "
+                     "saturation, CT/VT ratios and polarity")
+
     ms = np.asarray(best["ms"], dtype=float)
     resid = float(np.median([
         e5_residual(best["m"], v2s[k], i2s[k], v2r[k], i2r[k], z1_line)

@@ -28,18 +28,40 @@ out there with reasons.
 | Tier 1 line-parameter estimation | working |
 | Tier 2 hierarchical residual correction | implemented, **gated off** until 100 confirmed events |
 | Tier 3 classifiers trained on synthetic labels | working |
-| Pairing, transport, edge collector, PDF report, rules engine | not started |
+| Relay settings reader (`.rio`), incl. backup O/C and E/F stages | working |
+| Conclusions engine, 25 rules, 21 needing no fault location | working |
+| Zone-decision back-test over an archive | working |
+| Two-page incident report | working |
+| Ground-truth capture: store, form, accuracy dashboard | working |
+| Stage-A acceptance sweep | working |
+| Pairing, transport, edge collector | not started |
 
-**Stage-A acceptance (brief section 13): PASS.** Over a sweep of `m`,
-fault type and fault resistance, through the full DSP chain, with a 1418 s
-clock skew between terminals, a CVT subsidence transient, decaying DC, ADC
-quantisation and mismatched sample rates (1000 Hz vs 1200 Hz):
+### Stage-A acceptance (brief section 13)
+
+**PASS**, measured over 100,000 synthetic incidents sweeping `m`, fault type,
+fault resistance, source impedance ratio, inception angle, CT saturation,
+sample rate, ADC resolution and noise, through the full DSP chain, with up to
+2 s of clock skew between terminals:
 
 ```
-mean error 0.030 %   p90 0.059 %   p95 0.092 %   max 0.152 %   of line length
+clean data   n=42657   mean 0.121 %   p90 0.305 %   p95 0.465 %   max  4.9 %
+everything   n=99221   mean 2.202 %   p90 3.150 %   p95 11.30 %   max  141 %
 ```
 
-The criterion is under 0.5 % in 95 % of clean-data cases.
+The criterion is under 0.5 % in 95 % of clean-data cases. **It passes with a
+thin margin, not a comfortable one** — 0.465 against 0.5, stable across seeds
+(0.419–0.468 over five 5,000-case runs).
+
+Both columns are quoted deliberately. "Clean" means no CT saturation, no weak
+infeed, moderate fault resistance and a full-cycle window; quoting only that
+figure would describe a system nobody recognises in the field. The honest
+summary is that **CT saturation is the dominant unhandled error source**:
+saturated cases average 10.7 % against 0.12 % for clean ones. It is detected
+and down-weighted, not compensated.
+
+Accuracy improves monotonically with sample rate — p95 of 0.47 % at 12
+samples per cycle against 0.31 % at 96 — which is the concrete argument for
+the recording-settings change in the brief's section 4.3.
 
 ---
 
@@ -48,12 +70,17 @@ The criterion is under 0.5 % in 95 % of clean-data cases.
 ```bash
 pip install -e ".[dev]"
 
-dranalyse selftest                          # synthetic Stage-A check
+dranalyse stage-a --cases 10000             # full acceptance sweep
 dranalyse template mylinedata.yaml          # starter line definition
 dranalyse inspect record.cfg --kv 220       # parse and describe one record
-dranalyse locate --line line.yaml --S a.cfg --R b.cfg    # two-ended
-dranalyse locate --line line.yaml --S a.cfg              # single-ended
-pytest -q                                   # 141 tests
+dranalyse settings relay.rio --ct 800 --vt 2000    # read relay settings
+dranalyse locate  --line line.yaml --S a.cfg --R b.cfg   # two-ended
+dranalyse verdict --line line.yaml --S a.cfg             # protection verdict
+dranalyse report  --line line.yaml --S a.cfg -o out.html # two-page report
+dranalyse backtest ARCHIVE/ --line line.yaml             # zone-decision replay
+dranalyse capture --port 8080               # ground-truth capture form
+dranalyse pending / confirm / accuracy      # patrol confirmations
+pytest -q                                   # 229 tests
 ```
 
 Real disturbance records are **not** in this repository (see

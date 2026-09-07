@@ -71,9 +71,12 @@ ALLOWED_IMPORTS = {
     # tower number against an incident id and must keep working when every
     # analytical layer around it changes.
     "groundtruth": set(),
+    # Stage-A validation drives the analysis stack against the synthetic
+    # oracle. It is a consumer, never a dependency of anything it grades.
+    "stagea": {"signals", "dsp", "faultloc", "registry", "synth"},
     "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml",
             "rules", "backtest", "report",
-            "groundtruth"},
+            "groundtruth", "stagea"},
     "signals": set(),
 }
 

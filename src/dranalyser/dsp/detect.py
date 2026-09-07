@@ -1,6 +1,7 @@
 """Detection and classification, steps 7-11 of the brief's section 6."""
 from __future__ import annotations
 
+import cmath
 import math
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
@@ -146,12 +147,23 @@ def classify_fault(
     The relay's own fault-type flag is not trusted: misclassification under
     weak infeed is a documented cause of grossly wrong locations.
     """
+    # A degenerate window, or a record whose pre-fault reference could not be
+    # formed, produces non-finite phasors. Classifying those crashes on the
+    # sector arithmetic; declining to classify is the correct answer and lets
+    # the caller report "not classified" rather than dying.
+    if not all(cmath.isfinite(z) for z in (i1, i2, i0, i1_pre)):
+        return "NONE", {"r2": 0.0, "r0": 0.0, "angle": 0.0}
     di1 = i1 - i1_pre
     m1 = abs(di1)
     if m1 < 1e-9:
         return "NONE", {"r2": 0.0, "r0": 0.0, "angle": 0.0}
     r2, r0 = abs(i2) / m1, abs(i0) / m1
-    ang = (math.degrees(math.atan2((i2 / di1).imag, (i2 / di1).real))) % 360.0
+    ratio = i2 / di1
+    if not cmath.isfinite(ratio):
+        return "NONE", {"r2": r2, "r0": r0, "angle": 0.0}
+    ang = (math.degrees(math.atan2(ratio.imag, ratio.real))) % 360.0
+    if not math.isfinite(ang):
+        return "NONE", {"r2": r2, "r0": r0, "angle": 0.0}
     diag = {"r2": r2, "r0": r0, "angle": ang}
 
     if r2 < r_unbalance and r0 < r_unbalance:

@@ -21,7 +21,7 @@ from typing import List, Optional
 
 from .commands import (BAR, cmd_accuracy, cmd_backtest, cmd_capture,
                        cmd_confirm, cmd_inspect, cmd_locate, cmd_pending,
-                       cmd_report, cmd_selftest, cmd_settings,
+                       cmd_report, cmd_selftest, cmd_settings, cmd_stage_a,
                        cmd_template, cmd_verdict)
 
 __all__ = ["main", "build_parser"]
@@ -66,6 +66,14 @@ def build_parser() -> argparse.ArgumentParser:
     q.add_argument("--db", default="dranalyser.db",
                    help="register the incident here so it can be confirmed later")
     q.set_defaults(func=cmd_report)
+
+    q = sub.add_parser("stage-a", help="full synthetic acceptance sweep (section 13)")
+    q.add_argument("--cases", type=int, default=10000)
+    q.add_argument("--workers", type=int, default=None, help="default: cpus - 1")
+    q.add_argument("--seed", type=int, default=0)
+    q.add_argument("--csv", help="write every case to this CSV")
+    q.add_argument("--quiet", action="store_true")
+    q.set_defaults(func=cmd_stage_a)
 
     q = sub.add_parser("confirm", help="record a patrol-confirmed fault location")
     q.add_argument("incident_id")

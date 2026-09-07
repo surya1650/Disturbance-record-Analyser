@@ -391,6 +391,32 @@ def cmd_backtest(args) -> int:
     return 0
 
 
+def cmd_stage_a(args) -> int:
+    """The full synthetic acceptance sweep from the brief's section 13."""
+    import sys
+    import time
+
+    from .. import stagea
+
+    t0 = time.perf_counter()
+
+    def tick(i, n):
+        if not args.quiet:
+            sys.stderr.write("\r  %d/%d" % (i, n))
+            sys.stderr.flush()
+
+    summ = stagea.run(cases=args.cases, workers=args.workers, seed=args.seed,
+                      progress=tick)
+    if not args.quiet:
+        sys.stderr.write("\r")
+    print(summ.report())
+    print("  elapsed " + format(time.perf_counter() - t0, ".1f") + " s")
+    if args.csv:
+        summ.to_csv(args.csv)
+        print("  wrote " + args.csv)
+    return 0 if summ.passed() else 1
+
+
 def cmd_confirm(args) -> int:
     """Record a patrol-confirmed fault location against an incident."""
     from ..groundtruth import Confirmation, Store
