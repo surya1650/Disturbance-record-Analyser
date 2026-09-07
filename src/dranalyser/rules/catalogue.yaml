@@ -1,0 +1,324 @@
+# Conclusions engine - starter rule catalogue.
+#
+# Rules are DATA. A protection engineer adds one by adding an entry here; no
+# software release is needed. Conditions are evaluated by a whitelisted AST
+# walker (see engine.py), so this file cannot execute code.
+#
+# severity:  info | investigate | critical
+#            critical  -> verdict "Incorrect operation"
+#            investigate -> verdict "Correct but investigate"
+#
+# requires:  features that MUST be present and true for the rule to be judged
+#            at all. If any is missing the rule is reported NOT EVALUABLE with
+#            the reason, never as a pass. Use this for anything that depends
+#            on a channel being wired to the recorder.
+#
+# needs_location: true means the rule is skipped when no fault location was
+#            produced, rather than evaluating against a missing distance.
+#
+# Times are milliseconds from fault inception at that terminal. S_ and R_
+# prefixes are the two line ends.
+
+# ===========================================================================
+# Teleprotection
+# ===========================================================================
+- id: CR-01
+  title: Carrier sent but not received
+  severity: critical
+  requires: [S_carrier_send_mapped, R_carrier_recv_mapped]
+  when: "S_carrier_send and not R_carrier_recv"
+  message: >-
+    Carrier was sent from end S at {S_carrier_send_ms:.0f} ms but no receive was
+    recorded at end R. The teleprotection channel did not deliver.
+  action: >-
+    Test the PLCC / teleprotection channel end to end, including the coupling
+    equipment and the line trap. Until it is proven, in-section faults near the
+    remote end will clear in Zone 2 time.
+  evidence: [S_carrier_send_ms, R_carrier_recv_ms]
+
+- id: CR-01R
+  title: Carrier sent but not received (remote to local)
+  severity: critical
+  requires: [R_carrier_send_mapped, S_carrier_recv_mapped]
+  when: "R_carrier_send and not S_carrier_recv"
+  message: >-
+    Carrier was sent from end R at {R_carrier_send_ms:.0f} ms but no receive was
+    recorded at end S.
+  action: Test the teleprotection channel in the R to S direction.
+  evidence: [R_carrier_send_ms, S_carrier_recv_ms]
+
+- id: CR-02
+  title: Asymmetric clearing between the two ends
+  severity: investigate
+  requires: [two_ended]
+  when: "clear_asymmetry_ms > 100"
+  message: >-
+    The two ends cleared {clear_asymmetry_ms:.0f} ms apart, which is more than a
+    Zone 2 step. One end is not being accelerated.
+  action: >-
+    Check the scheme logic and the teleprotection channel. Sustained asymmetric
+    clearing leaves the line energised into the fault from one end.
+  evidence: [S_clear_ms, R_clear_ms, clear_asymmetry_ms]
+
+- id: CR-03
+  title: Teleprotection channel alarm during the fault
+  severity: investigate
+  when: "S_carrier_fail or R_carrier_fail"
+  message: The relay raised a teleprotection channel failure alarm during the event.
+  action: Investigate the channel; the scheme may have been degraded to stepped distance.
+  evidence: [S_carrier_fail, R_carrier_fail]
+
+# ===========================================================================
+# Breaker performance
+# ===========================================================================
+- id: CB-01
+  title: Breaker operating time out of specification
+  severity: investigate
+  when: "S_breaker_ms > 60 or R_breaker_ms > 60"
+  message: >-
+    Trip contact to current zero measured {S_breaker_ms:.0f} ms at end S and
+    {R_breaker_ms:.0f} ms at end R, against a typical 40-50 ms specification.
+  action: >-
+    Feed the measured time to breaker maintenance. This is an objective
+    measurement of the operating mechanism under real fault duty.
+  evidence: [S_breaker_ms, R_breaker_ms, S_trip_ms, S_open_ms]
+
+- id: CB-02
+  title: Pole discrepancy
+  severity: investigate
+  # Only meaningful when all three poles were commanded together. On a
+  # single-pole trip the healthy poles open later because they were
+  # commanded later, and differencing across the two operations invents a
+  # discrepancy on a perfectly healthy breaker.
+  requires: [S_three_pole_trip]
+  when: "S_pole_discrepancy_ms > 10 or R_pole_discrepancy_ms > 10"
+  message: >-
+    Per-pole current zeros differ by {S_pole_discrepancy_ms:.1f} ms at end S,
+    more than half a cycle.
+  action: Check the operating mechanism and the interrupter timing.
+  evidence: [S_pole_open_a_ms, S_pole_open_b_ms, S_pole_open_c_ms]
+
+- id: CB-03
+  title: Restrike or re-ignition after interruption
+  severity: critical
+  when: "S_restrike or R_restrike"
+  message: >-
+    Current reappeared after the breaker interrupted. This is interrupter
+    degradation and it gets worse.
+  action: Take the breaker out for interrupter inspection at the next opportunity.
+  evidence: [S_restrike, R_restrike, S_open_ms]
+
+- id: CB-04
+  title: Fault not cleared within backup time
+  severity: critical
+  when: "slowest_clear_ms > 500"
+  message: >-
+    The fault was on the system for {slowest_clear_ms:.0f} ms. That is beyond
+    normal backup clearance.
+  action: Check for breaker failure operation and review the whole clearing chain.
+  evidence: [S_clear_ms, R_clear_ms]
+
+# ===========================================================================
+# Auto-reclose
+# ===========================================================================
+- id: AR-02
+  title: Auto-reclose dead time away from setting
+  severity: investigate
+  when: "S_dead_time_ms > 1200 or (defined(S_dead_time_ms) and S_dead_time_ms < 200)"
+  message: Measured auto-reclose dead time was {S_dead_time_ms:.0f} ms.
+  action: Compare against the configured dead time and the scheme design.
+  evidence: [S_dead_time_ms, S_open_ms, S_ar_close_ms]
+
+- id: AR-03
+  title: Auto-reclose locked out
+  severity: investigate
+  when: "S_ar_lockout or R_ar_lockout or S_definitive_trip or R_definitive_trip"
+  message: >-
+    Auto-reclose went to lockout or a definitive three-phase trip was issued.
+    The line stayed out.
+  action: >-
+    Confirm the line was patrolled before re-energising, and record the cause
+    against this incident.
+  evidence: [S_ar_lockout, S_definitive_trip, S_lockout_86]
+
+- id: AR-04
+  title: Evolving fault during the reclose sequence
+  severity: critical
+  when: "(S_definitive_trip or R_definitive_trip) and (S_ar_in_progress or R_ar_in_progress)"
+  message: >-
+    A single-pole trip was followed by a three-phase definitive trip while the
+    reclose was in progress. The fault did not clear or it evolved.
+  action: >-
+    Treat as a permanent fault. Patrol before re-energising, and look for a
+    second phase involved at the same tower.
+  evidence: [S_ar_in_progress, S_definitive_trip, S_lockout_86]
+
+# ===========================================================================
+# Fault character
+# ===========================================================================
+- id: FT-02
+  title: Terminals disagree on the faulted phase
+  severity: critical
+  requires: [two_ended]
+  when: "not fault_type_agreed"
+  message: >-
+    The two ends classified different faults. A cross-country fault, or one end
+    is misreading under weak infeed.
+  action: >-
+    Two-ended location is suppressed. Inspect both ends before dispatching a
+    patrol on a single-ended figure.
+  evidence: [S_fault_type, R_fault_type]
+
+- id: SY-01
+  title: Switch onto fault
+  severity: info
+  when: "S_sotf or R_sotf"
+  message: The relay flagged switch-onto-fault; there was no healthy pre-fault period.
+  action: >-
+    Do not score this as a protection failure. Check why the line was closed
+    onto a fault, including any earth left applied.
+  evidence: [S_sotf, R_sotf]
+
+- id: SY-02
+  title: Power swing detected
+  severity: investigate
+  when: "S_power_swing or R_power_swing"
+  message: The relay detected a power swing during the record.
+  action: Confirm the blocking function operated correctly and did not delay a genuine trip.
+  evidence: [S_power_swing, R_power_swing]
+
+# ===========================================================================
+# Measurement and data integrity
+# ===========================================================================
+- id: MS-01
+  title: CT saturation
+  severity: investigate
+  when: "S_ct_saturation or R_ct_saturation"
+  message: >-
+    CT saturation detected on {S_ct_saturation_channels} at end S. The current
+    is understated and any location from that terminal reads long.
+  action: >-
+    Review the CT knee point against the fault duty and the connected burden.
+  evidence: [S_ct_saturation, S_ct_saturation_channels, R_ct_saturation]
+
+- id: MS-02
+  title: VT supervision operated
+  severity: critical
+  when: "S_vt_fail or R_vt_fail"
+  message: >-
+    The relay raised VT fuse failure or MCB trip. Distance measurement was
+    unreliable for the duration.
+  action: Check the VT secondary circuit and the supervision setting.
+  evidence: [S_vt_fail, R_vt_fail]
+
+- id: MS-04
+  title: VT set cannot pass zero sequence
+  severity: critical
+  when: "(S_available and not S_zero_seq_voltage) or (R_available and not R_zero_seq_voltage)"
+  message: >-
+    A terminal measured essentially no zero-sequence voltage during a ground
+    fault carrying real residual current. The VT secondary is delta or
+    open-delta, so the ground-loop voltage is missing V0 and that relay
+    overreaches on every earth fault.
+  action: >-
+    Check the VT secondary connection and the relay wiring at that terminal.
+    Single-ended earth-fault location from it is suppressed until corrected.
+  evidence: [S_zero_seq_voltage, R_zero_seq_voltage]
+
+- id: MS-05
+  title: Analysis window too short for a full-cycle estimate
+  severity: investigate
+  when: "S_window_cycles < 1.0 or R_window_cycles < 1.0"
+  message: >-
+    Only {S_window_cycles:.2f} cycles of settled fault data were available at
+    end S. Accuracy is degraded.
+  action: >-
+    Lengthen the relay pre-fault and post-fault recording windows. This is a
+    settings change, not an algorithm limit.
+  evidence: [S_window_cycles, R_window_cycles, S_window_mode]
+
+- id: MS-06
+  title: Record blocked by the conformance gate
+  severity: critical
+  when: "S_blocked or R_blocked"
+  message: A record failed a blocking conformance check and did not reach fault location.
+  action: Fix the recording configuration; the flags on the record say which check failed.
+  evidence: [S_flags, R_flags]
+
+- id: MS-07
+  title: Digital channels not mapped
+  severity: info
+  when: "S_signals_unmapped > 4 or R_signals_unmapped > 4"
+  message: >-
+    {S_signals_unmapped} digital channels at end S did not map to a canonical
+    signal, so some rules could not be judged.
+  action: >-
+    Extend the signal map for this relay family, or rename the channels in the
+    relay configuration.
+  evidence: [S_signals_unmapped, R_signals_unmapped]
+
+# ===========================================================================
+# Zone performance - these need a location
+# ===========================================================================
+- id: FL-01
+  title: Zone 1 operated beyond its reach
+  severity: critical
+  needs_location: true
+  when: "S_zone_operated == 'Z1_OR_AIDED' and not S_carrier_recv and m > 0.85"
+  message: >-
+    An unaided fast trip was issued for a fault computed at {m:.3f} per unit,
+    beyond a typical 80 percent Zone 1 reach.
+  action: >-
+    Check the Zone 1 reach setting, the k0 setting and the CT/VT ratios at that
+    terminal. Zone 1 overreach trips for out-of-section faults.
+  evidence: [m, km_from_S, S_zone_operated, S_carrier_recv]
+
+- id: FL-02
+  title: In-zone fault cleared in Zone 2 time
+  severity: critical
+  needs_location: true
+  when: "S_zone_operated == 'Z2' and m < 0.75"
+  message: >-
+    The fault was computed at {m:.3f} per unit, well inside Zone 1, but end S
+    cleared in Zone 2 time ({S_operate_ms:.0f} ms).
+  action: >-
+    Suspect Zone 1 underreach or failed teleprotection. Cross-check CR-01 and
+    the k0 setting; a VT that cannot pass zero sequence causes exactly this.
+  evidence: [m, S_zone_operated, S_operate_ms, S_zero_seq_voltage]
+
+- id: FL-03
+  title: Computed zone disagrees with the zone that operated
+  severity: investigate
+  when: "defined(S_zone_expected) and defined(S_zone_operated) and S_zone_expected != 'beyond_all_zones' and S_zone_operated == 'Z2' and S_zone_expected == 'Z1'"
+  message: >-
+    The measured apparent impedance sits inside {S_zone_expected} but the relay
+    cleared in {S_zone_operated} time.
+  action: >-
+    Compare the relay settings against the measured impedance. This is the
+    zone-decision cross-check and needs no line constants.
+  evidence: [S_z_app_r_sec, S_z_app_x_sec, S_zone_expected, S_zone_operated]
+
+- id: FL-04
+  title: Estimators disagree materially
+  severity: investigate
+  needs_location: true
+  when: "method_disagreement_pu > 0.10"
+  message: >-
+    The location estimators disagree by {method_disagreement_pu:.3f} per unit of
+    line. The reported figure should not be treated as tight.
+  action: >-
+    Check line constants, CT/VT ratios and CT saturation before dispatching on
+    this distance.
+  evidence: [method_disagreement_pu, location_method, location_mode]
+
+- id: FL-05
+  title: Single-ended location only
+  severity: info
+  when: "location_available and location_mode == 'single-ended'"
+  message: >-
+    Only one terminal was available, so the location is single-ended: expect
+    3 to 15 percent of line length, not 0.1 to 1 percent.
+  action: >-
+    Chase the far-end record. Two-ended coverage is the headline health metric
+    for the collection layer.
+  evidence: [location_mode, location_method, km_from_S]

@@ -218,6 +218,80 @@ def cmd_selftest(args) -> int:
     return 0 if ok else 1
 
 
+def cmd_verdict(args) -> int:
+    """Protection-performance verdict. Needs no line constants and no far end."""
+    from ..registry.rio import read_rio
+    from ..rules.engine import apply_rules, load_rules
+    from ..rules.features import incident_features
+
+    line: Line = load_line(args.line) if args.line else None
+    paths = {"S": args.S, "R": args.R}
+    ans, settings = {}, {}
+    for end in ("S", "R"):
+        p = paths[end]
+        if not p:
+            continue
+        rec = _read_any(p, end=end)
+        check(rec, nominal_kv=line.kv if line else None)
+        term = line.terminals[end] if line else None
+        an = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
+        ans[end] = an
+        rio = args.rio if (end == "S" and args.rio) else _find_rio(p)
+        if rio:
+            settings[end] = read_rio(rio)
+        print(BAR)
+        print("END " + end + " : " + rec.summary())
+        print("    settings   : " + (os.path.basename(rio) if rio else "none found"))
+        for f in rec.flags:
+            print("    " + str(f))
+
+    if not ans:
+        print("no records given")
+        return 2
+
+    res = None
+    if line is not None:
+        terms = {e: TerminalInput(analysed=a, end=e, zs1=line.terminals[e].zs1,
+                                  zs0=line.terminals[e].zs0,
+                                  polarity=line.terminals[e].i_polarity)
+                 for e, a in ans.items()}
+        res = locate(line, terms)
+
+    z2 = 0.35
+    for s in settings.values():
+        z = s.zone("Z2")
+        if z:
+            z2 = z.t1
+    feats = incident_features(ans, location=res, line=line, settings=settings,
+                              z2_time_s=z2)
+
+    print(BAR)
+    print("TIMELINE (ms from fault inception at that terminal)")
+    rows = ("start_ms", "trip_ms", "operate_ms", "open_ms", "breaker_ms", "clear_ms",
+            "carrier_send_ms", "carrier_recv_ms", "pole_open_a_ms", "pole_open_b_ms",
+            "pole_open_c_ms", "dead_time_ms")
+    print("    " + format("", "<18") + format("S", ">12") + format("R", ">12"))
+    for k in rows:
+        sv, rv = feats.get("S_" + k), feats.get("R_" + k)
+        fmt = lambda x: ("%12.1f" % x) if isinstance(x, (int, float)) else format("-", ">12")
+        print("    " + format(k, "<18") + fmt(sv) + fmt(rv))
+    for k in ("fault_type", "zone_operated", "zone_expected", "i_fault_ka",
+              "three_pole_trip", "ct_saturation", "zero_seq_voltage", "window_cycles"):
+        sv, rv = feats.get("S_" + k), feats.get("R_" + k)
+        f2 = lambda x: format("-" if x is None else
+                              (("%12.3f" % x) if isinstance(x, float) else str(x)), ">12")
+        print("    " + format(k, "<18") + f2(sv) + f2(rv))
+
+    print(BAR)
+    print(apply_rules(feats, load_rules(args.rules) if args.rules else None).report())
+    if res is not None and res.ok:
+        print(BAR)
+        print("LOCATION  " + res.mode + "  " + format(res.km_from_S, ".3f")
+              + " km from " + line.terminals["S"].substation
+              + "  by " + res.method)
+    return 0
+
+
 def cmd_settings(args) -> int:
     """Read a relay settings export and say what it gives you."""
     from ..registry.rio import read_rio

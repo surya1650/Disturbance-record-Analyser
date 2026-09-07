@@ -61,7 +61,7 @@ select = ["E4", "E7", "E9", "F", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 markers = [
     "slow: trains a model; deselect with -m 'not slow'",
     "corpus: needs real vendor COMTRADE files (skips cleanly when absent)",

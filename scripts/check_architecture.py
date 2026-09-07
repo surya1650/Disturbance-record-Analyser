@@ -58,7 +58,10 @@ ALLOWED_IMPORTS = {
     "registry": set(),
     "synth": {"signals", "registry"},
     "ml": {"signals", "registry", "faultloc", "dsp", "synth"},
-    "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml"},
+    # The conclusions engine sits above the analysis layers and below the CLI.
+    # It reads their results; nothing in dsp/ or faultloc/ may read a rule.
+    "rules": {"signals", "dsp", "faultloc", "registry"},
+    "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml", "rules"},
     "signals": set(),
 }
 
