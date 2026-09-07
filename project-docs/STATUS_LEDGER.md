@@ -8,9 +8,10 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ## 2026-09-07 (handoff) - Session closed; requirements written down
 
-**State: committed on `main` at `bc759d7`, working tree clean, 4 commits ahead
-of `origin/main`, NOT PUSHED.** All four commits authored by R. Surya alone,
-no AI attribution trailers.
+**State: committed on `main`, working tree clean, 5 commits ahead of
+`origin/main`, NOT PUSHED.** The four feature commits below plus `403d9cd`,
+which is this handoff. All authored by R. Surya alone, no AI attribution
+trailers.
 
 ```
 bc759d7  Resolve a record to a line and a terminal from evidence, and pre-fill the form
