@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incident {{ r.incident_id }}</title>
+<style>
+  @page { size: A4 portrait; margin: 12mm 10mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: #1b2733;
+         font-size: 10.5px; line-height: 1.35; margin: 0; background: #fff; }
+  .page { padding: 4mm 2mm; }
+  .page + .page { page-break-before: always; border-top: 2px dashed #cfd6dc; margin-top: 8mm; }
+  h1 { font-size: 15px; margin: 0 0 2px; }
+  h2 { font-size: 11.5px; margin: 12px 0 4px; text-transform: uppercase;
+       letter-spacing: .06em; color: #45535f; border-bottom: 1px solid #dfe3e6;
+       padding-bottom: 2px; }
+  .muted { color: #7a8894; }
+  .hdr { display: flex; justify-content: space-between; align-items: flex-start;
+         border-bottom: 2px solid #1b2733; padding-bottom: 6px; }
+  .hdr .id { text-align: right; font-size: 9.5px; color: #45535f; }
+  .verdict { margin: 10px 0; padding: 9px 12px; border-radius: 3px; color: #fff; }
+  .verdict .v { font-size: 17px; font-weight: 700; letter-spacing: .01em; }
+  .verdict .s { font-size: 10.5px; margin-top: 2px; }
+  .ok   { background: #2e7d32; }
+  .warn { background: #b7791f; }
+  .bad  { background: #b3261e; }
+  .grid { display: flex; gap: 10px; flex-wrap: wrap; }
+  .card { border: 1px solid #dfe3e6; border-radius: 3px; padding: 7px 9px; flex: 1 1 0;
+          min-width: 150px; }
+  .card .lab { font-size: 8.5px; text-transform: uppercase; letter-spacing: .06em;
+               color: #7a8894; }
+  .card .big { font-size: 15px; font-weight: 700; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5px; }
+  th, td { text-align: left; padding: 3px 6px; border-bottom: 1px solid #eceff1; }
+  th { color: #45535f; font-weight: 600; background: #f6f8f9; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .sev-critical { color: #b3261e; font-weight: 700; }
+  .sev-investigate { color: #b7791f; font-weight: 700; }
+  .sev-info { color: #45535f; }
+  .finding { border-left: 3px solid #cfd6dc; padding: 4px 0 4px 8px; margin: 6px 0; }
+  .finding.critical { border-left-color: #b3261e; }
+  .finding.investigate { border-left-color: #b7791f; }
+  .finding .act { color: #45535f; font-size: 9.5px; }
+  .capture { border: 2px solid #1f6feb; border-radius: 3px; padding: 8px 10px;
+             display: flex; gap: 12px; align-items: center; margin-top: 10px; }
+  .capture .url { font-family: Consolas, monospace; font-size: 11px; color: #1f6feb;
+                  word-break: break-all; }
+  .prov { background: #fff6e5; border: 1px solid #e0b872; padding: 5px 8px;
+          border-radius: 3px; margin: 6px 0; font-size: 9.5px; }
+  .foot { margin-top: 10px; font-size: 8.5px; color: #7a8894;
+          border-top: 1px solid #dfe3e6; padding-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ================= PAGE 1 - THE DECISION ================= -->
+<section class="page">
+  <div class="hdr">
+    <div>
+      <h1>{{ line.name if line else f.get('S_station', 'Line') }}</h1>
+      <div class="muted">
+        {% if line %}{{ "%.0f"|format(line.kv) }} kV &middot;
+        {{ sub('S') }} &harr; {{ sub('R') }}{% endif %}
+        {% if line and line.length_km %} &middot; {{ "%.1f"|format(line.length_km) }} km{% endif %}
+      </div>
+    </div>
+    <div class="id">
+      <div><b>{{ r.incident_id }}</b></div>
+      <div>fault {{ r.analysed[ends[0]].record.trigger_time or 'time unknown' }}</div>
+      <div>issued {{ r.generated_at }}</div>
+    </div>
+  </div>
+
+  <div class="verdict {{ vclass }}">
+    <div class="v">{{ verdict }}</div>
+    <div class="s">
+      {% if findings %}{{ findings[0].message }}
+      {% else %}No adverse finding. {{ skipped|length }} rule(s) could not be judged.{% endif %}
+    </div>
+  </div>
+
+  <h2>Fault location</h2>
+  {% if loc and loc.ok %}
+  <div class="grid">
+    <div class="card">
+      <div class="lab">from {{ sub('S') }}</div>
+      <div class="big">{{ "%.2f"|format(loc.km_from_S) }} km</div>
+      <div class="muted">{{ "%.2f"|format(loc.interval_km[0]) }} to
+        {{ "%.2f"|format(loc.interval_km[1]) }} km</div>
+    </div>
+    <div class="card">
+      <div class="lab">from {{ sub('R') }}</div>
+      <div class="big">{{ "%.2f"|format(loc.km_from_R) }} km</div>
+      <div class="muted">m = {{ "%.4f"|format(loc.m) }} pu of reactance</div>
+    </div>
+    <div class="card">
+      <div class="lab">tower</div>
+      <div class="big">
+        {% if loc.towers %}{{ loc.towers[0].number }}&ndash;{{ loc.towers[-1].number }}
+        {% else %}&mdash;{% endif %}
+      </div>
+      <div class="muted">most likely
+        {{ loc.likely_tower.number if loc.likely_tower else '?' }}</div>
+    </div>
+    <div class="card">
+      <div class="lab">method</div>
+      <div class="big">{{ loc.method }}</div>
+      <div class="muted">{{ loc.mode }}</div>
+    </div>
+  </div>
+  {% if loc.mode == 'single-ended' %}
+  <div class="prov"><b>Single-ended.</b> Only one terminal was available, so expect
+    3&ndash;15 % of line length, not 0.1&ndash;1 %. Chase the far-end record and this
+    report will be re-issued.</div>
+  {% endif %}
+  {% else %}
+  <div class="prov">No fault location was produced.
+    {% if loc %}{% for c in loc.caveats %}{{ c }} {% endfor %}{% endif %}</div>
+  {% endif %}
+
+  <h2>Fault summary</h2>
+  <table>
+    <tr><th>Type</th><td>{{ f.fault_type }}</td>
+        <th class="n">Fault current</th><td class="n">
+          {{ fmt(f.get(ends[0] ~ '_i_fault_ka'), '.2f') }} kA</td>
+        <th class="n">Terminals</th><td class="n">{{ f.n_terminals }}</td></tr>
+    <tr><th>Three-pole trip</th><td>{{ fmt(f.get(ends[0] ~ '_three_pole_trip')) }}</td>
+        <th class="n">Poles opened</th>
+        <td class="n">{{ fmt(f.get(ends[0] ~ '_poles_opened'), 'd') }}</td>
+        <th class="n">Slowest clear</th>
+        <td class="n">{{ fmt(f.slowest_clear_ms, '.0f') }} ms</td></tr>
+  </table>
+
+  <h2>Clearing performance</h2>
+  <table>
+    <tr><th>End</th><th class="n">Relay operate</th><th class="n">Breaker</th>
+        <th class="n">Total clear</th><th>Zone operated</th><th>Zone computed</th>
+        <th>Carrier send</th><th>Carrier recv</th></tr>
+    {% for e in ends %}
+    <tr>
+      <td>{{ e }} &middot; {{ sub(e) }}</td>
+      <td class="n">{{ fmt(f.get(e ~ '_operate_ms'), '.1f') }} ms</td>
+      <td class="n">{{ fmt(f.get(e ~ '_breaker_ms'), '.1f') }} ms</td>
+      <td class="n">{{ fmt(f.get(e ~ '_clear_ms'), '.1f') }} ms</td>
+      <td>{{ fmt(f.get(e ~ '_zone_operated')) }}</td>
+      <td>{{ fmt(f.get(e ~ '_zone_expected')) }}</td>
+      <td>{% if not f.get(e ~ '_carrier_send_mapped') %}<span class="muted">not recorded</span>
+          {% else %}{{ fmt(f.get(e ~ '_carrier_send_ms'), '.1f') }} ms{% endif %}</td>
+      <td>{% if not f.get(e ~ '_carrier_recv_mapped') %}<span class="muted">not recorded</span>
+          {% else %}{{ fmt(f.get(e ~ '_carrier_recv_ms'), '.1f') }} ms{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Auto-reclose and backup</h2>
+  <table>
+    <tr><th>End</th><th class="n">Dead time</th><th>Lockout</th><th>Definitive trip</th>
+        <th class="n">Backup pickup</th><th>Backup tripped</th><th>Stage disabled</th></tr>
+    {% for e in ends %}
+    <tr>
+      <td>{{ e }}</td>
+      <td class="n">{{ fmt(f.get(e ~ '_dead_time_ms'), '.0f') }} ms</td>
+      <td>{{ fmt(f.get(e ~ '_ar_lockout')) }}</td>
+      <td>{{ fmt(f.get(e ~ '_definitive_trip')) }}</td>
+      <td class="n">{{ fmt(f.get(e ~ '_ef_pickup_ms'), '.1f') }} ms</td>
+      <td>{{ fmt(f.get(e ~ '_backup_operated')) }}</td>
+      <td>{% if f.get(e ~ '_ef_stage_disabled') %}earth fault{% endif %}
+          {% if f.get(e ~ '_oc_stage_disabled') %}overcurrent{% endif %}
+          {% if not f.get(e ~ '_ef_stage_disabled') and not f.get(e ~ '_oc_stage_disabled') %}
+          &mdash;{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Findings &mdash; top three</h2>
+  {% for x in findings %}
+  <div class="finding {{ x.severity }}">
+    <b class="sev-{{ x.severity }}">{{ x.rule_id }}</b> {{ x.message }}
+    <div class="act">Action: {{ x.action }}</div>
+  </div>
+  {% else %}
+  <div class="muted">No adverse finding.</div>
+  {% endfor %}
+  {% if skipped %}
+  <div class="prov"><b>{{ skipped|length }} rule(s) could not be judged</b> because the
+    recording lacks the channels they need &mdash; this is a recording gap, not a healthy
+    result:
+    {% for s in skipped %}{{ s.rule_id }}{% if not loop.last %}, {% endif %}{% endfor %}.
+  </div>
+  {% endif %}
+
+  <div class="capture">
+    {% if svg.qr %}{{ svg.qr }}{% endif %}
+    <div>
+      <div class="lab" style="font-size:9px;text-transform:uppercase;color:#1f6feb;">
+        Confirm the tower where the fault was found</div>
+      <div class="url">{{ r.ground_truth_url }}</div>
+      <div class="muted">One confirmed location per incident is what makes the accuracy
+        dashboard and the learning layer possible. Without it neither can start.</div>
+    </div>
+  </div>
+
+  <div class="foot">Page 1 of 2 &middot; {{ r.incident_id }} &middot; generated by dranalyser</div>
+</section>
+
+<!-- ================= PAGE 2 - THE EVIDENCE ================= -->
+<section class="page">
+  <div class="hdr">
+    <div><h1>Evidence</h1><div class="muted">{{ line.name if line else '' }}</div></div>
+    <div class="id"><b>{{ r.incident_id }}</b></div>
+  </div>
+
+  <h2>Oscillograms &mdash; aligned on fault inception</h2>
+  {{ svg.oscillogram }}
+
+  <h2>Digital channel timeline</h2>
+  {{ svg.timeline }}
+
+  <div class="grid" style="margin-top:10px;">
+    <div style="flex:1 1 55%;">
+      <h2>Impedance against the relay characteristic</h2>
+      {{ svg.rx }}
+      <div class="muted">Secondary ohm, from the relay's own settings export.
+        Zones are the actual polygons, not an idealised circle.</div>
+    </div>
+    <div style="flex:1 1 35%;">
+      <h2>Phasors at the analysis instant</h2>
+      {{ svg.phasors }}
+    </div>
+  </div>
+
+  <h2>Method comparison</h2>
+  {% if loc %}
+  <table>
+    <tr><th>Method</th><th>Ends</th><th class="n">m (pu)</th><th class="n">km from S</th>
+        <th class="n">Residual</th><th class="n">Weight</th><th>Note</th></tr>
+    {% for e in loc.estimates %}
+    <tr>
+      <td>{{ e.method }}</td><td>{{ e.ends or '-' }}</td>
+      <td class="n">{% if e.ok %}{{ "%.4f"|format(e.m) }}{% else %}&mdash;{% endif %}</td>
+      <td class="n">{% if e.ok and line %}{{ "%.2f"|format(line.m_to_km(
+          [[e.m, 0.0]|max, 1.0]|min)) }}{% else %}&mdash;{% endif %}</td>
+      <td class="n">{% if e.ok %}{{ "%.2e"|format(e.residual) }}{% else %}&mdash;{% endif %}</td>
+      <td class="n">{{ "%.2f"|format(e.diagnostics.get('weight', 0.0)) }}</td>
+      <td class="muted">{{ e.reason }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="muted">No location was attempted: no line definition was supplied.</div>
+  {% endif %}
+
+  <h2>Data quality caveats</h2>
+  {% if caveats %}
+  <ul style="margin:4px 0 0 16px; padding:0;">
+    {% for c in caveats %}<li>{{ c }}</li>{% endfor %}
+  </ul>
+  {% else %}
+  <div class="muted">None raised.</div>
+  {% endif %}
+
+  <h2>All findings</h2>
+  <table>
+    <tr><th>Rule</th><th>Severity</th><th>Finding</th></tr>
+    {% for x in all_findings %}
+    <tr><td>{{ x.rule_id }}</td><td class="sev-{{ x.severity }}">{{ x.severity }}</td>
+        <td>{{ x.message }}</td></tr>
+    {% endfor %}
+    {% for s in skipped %}
+    <tr><td>{{ s.rule_id }}</td><td class="muted">not judged</td>
+        <td class="muted">{{ s.reason }}</td></tr>
+    {% endfor %}
+  </table>
+
+  <div class="foot">Page 2 of 2 &middot; {{ r.incident_id }} &middot;
+    records: {% for e in ends %}{{ e }}={{ r.analysed[e].record.record_id }}
+    (sha {{ r.analysed[e].record.content_hash[:10] }}){% if not loop.last %}, {% endif %}{% endfor %}
+  </div>
+</section>
+
+</body>
+</html>

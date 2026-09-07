@@ -4,6 +4,7 @@
     dranalyse locate --line line.yaml --S a.cfg              (single-ended)
     dranalyse inspect record.cfg
     dranalyse verdict --S a.cfg --R b.cfg --line line.yaml
+    dranalyse report  --S a.cfg --line line.yaml -o incident.html
     dranalyse settings relay.rio --ct 800 --vt 2000
     dranalyse selftest
     dranalyse template line.yaml
@@ -19,7 +20,8 @@ import sys
 from typing import List, Optional
 
 from .commands import (BAR, cmd_backtest, cmd_inspect, cmd_locate,
-                       cmd_selftest, cmd_settings, cmd_template, cmd_verdict)
+                       cmd_report, cmd_selftest, cmd_settings,
+                       cmd_template, cmd_verdict)
 
 __all__ = ["main", "build_parser"]
 
@@ -52,6 +54,15 @@ def build_parser() -> argparse.ArgumentParser:
     q.add_argument("--rio", help="relay settings export (auto-discovered if omitted)")
     q.add_argument("--rules", help="rule catalogue YAML (defaults to the built-in one)")
     q.set_defaults(func=cmd_verdict)
+
+    q = sub.add_parser("report", help="two-page incident report as self-contained HTML")
+    q.add_argument("--S", help="COMTRADE record at end S")
+    q.add_argument("--R", help="COMTRADE record at end R")
+    q.add_argument("--line", help="line definition YAML")
+    q.add_argument("-o", "--out", help="output HTML path")
+    q.add_argument("--confirm-url", dest="confirm_url",
+                   help="ground-truth capture URL printed on page 1")
+    q.set_defaults(func=cmd_report)
 
     q = sub.add_parser("backtest",
                        help="replay an archive against the relays' own zone decisions")

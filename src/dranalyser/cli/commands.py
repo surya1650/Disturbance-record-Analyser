@@ -292,6 +292,68 @@ def cmd_verdict(args) -> int:
     return 0
 
 
+def cmd_report(args) -> int:
+    """Two-page incident report: page 1 a decision, page 2 the evidence."""
+    from ..registry.rio import read_rio
+    from ..report import build, render, write
+    from ..rules.engine import apply_rules, load_rules
+    from ..rules.features import incident_features
+
+    line: Line = load_line(args.line) if args.line else None
+    paths = {"S": args.S, "R": args.R}
+    ans, settings = {}, {}
+    for end in ("S", "R"):
+        p = paths[end]
+        if not p:
+            continue
+        rec = _read_any(p, end=end)
+        check(rec, nominal_kv=line.kv if line else None)
+        if rec.blocked():
+            print("END " + end + " BLOCKED by the conformance gate:")
+            for fl in rec.flags:
+                if fl.severity == "block":
+                    print("    " + str(fl))
+            continue
+        term = line.terminals[end] if line else None
+        ans[end] = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
+        rio = _find_rio(p)
+        if rio:
+            settings[end] = read_rio(rio)
+    if not ans:
+        print("no analysable record given")
+        return 2
+
+    loc = None
+    if line is not None:
+        loc = locate(line, {e: TerminalInput(analysed=a, end=e,
+                                             zs1=line.terminals[e].zs1,
+                                             zs0=line.terminals[e].zs0,
+                                             polarity=line.terminals[e].i_polarity)
+                            for e, a in ans.items()})
+    z2 = 0.35
+    for s in settings.values():
+        if s.zone("Z2"):
+            z2 = s.zone("Z2").t1
+    feats = incident_features(ans, location=loc, line=line, settings=settings,
+                              z2_time_s=z2)
+    rr = apply_rules(feats, load_rules())
+    rep = build(ans, feats, rr, location=loc, line=line, settings=settings,
+                ground_truth_url=args.confirm_url or "")
+    render(rep)
+    out = args.out or (rep.incident_id + ".html")
+    write(rep, out)
+    print("VERDICT: " + rr.verdict)
+    if loc is not None and loc.ok:
+        print("LOCATION: " + format(loc.km_from_S, ".3f") + " km from "
+              + (line.terminals["S"].substation if line else "S")
+              + " by " + loc.method + " (" + loc.mode + ")")
+    print("wrote " + out)
+    if not settings:
+        print("note: no .rio settings export was found next to the records, so the "
+              "R-X diagram and the computed zone are omitted.")
+    return 0
+
+
 def cmd_backtest(args) -> int:
     """Replay an archive and grade it against the relays' own zone decisions."""
     from .. import backtest

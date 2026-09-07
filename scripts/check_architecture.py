@@ -64,8 +64,11 @@ ALLOWED_IMPORTS = {
     # The back-test replays the whole pipeline over an archive; it sits at the
     # top of the analysis stack, below only the CLI.
     "backtest": {"signals", "comtrade", "dsp", "faultloc", "registry", "rules"},
+    # The report renders what the analysis concluded. Nothing analytical may
+    # import it, so a presentation change can never move a number.
+    "report": {"signals", "dsp", "faultloc", "registry", "rules"},
     "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml",
-            "rules", "backtest"},
+            "rules", "backtest", "report"},
     "signals": set(),
 }
 
