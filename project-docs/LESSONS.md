@@ -6,6 +6,50 @@ If a lesson generalises into a rule, move it to `CLAUDE.md` or a skill.
 
 ---
 
+### 2026-09-07 — `BrokenProcessPool` and two ML test failures were one OpenBLAS problem
+
+**Symptom:** `dranalyse stage-a` died with `BrokenProcessPool` at the default worker
+count but worked at `--workers 1`, `2` and `4`; separately,
+`tests/test_ml.py::test_tier3_*` failed with `OpenBLAS error: Memory allocation still
+failed after 10 retries`. They looked like two unrelated environment quirks and the
+first was written off as "machine-level, use `--workers 1`".
+**Cause:** one thing. Every worker process spawns one OpenBLAS thread per core, and on
+a 14-core machine the total allocation exhausts memory. The Stage-A pool and the
+sklearn import hit the same wall from different directions.
+**Resolution:** `OPENBLAS_NUM_THREADS=1` (with `OMP_NUM_THREADS=1`). Everything then
+runs multi-worker, and 10,000 Stage-A cases take 30 s instead of 111 s.
+**The check that catches it next time:** when a parallel gate fails but its
+single-worker form passes, suspect thread-per-core libraries before suspecting the
+code — and confirm by `git stash`-ing `src/` and re-running. It reproduced on a clean
+tree, which is what proved it was not the change under test.
+
+### 2026-09-07 — A CFG station name is not the station
+
+**Symptom:** on the Sphoorthi records, `garividi-maradam-2/Main-1 P444` carries the
+station name `MARADAM 2`, and the ABB REL670 in the same bay carries
+`BRAHMANAKOTKUR` — a substation in a different district entirely.
+**Cause:** the field is populated by whoever configured the relay. Here it appears to
+be a feeder name (the bay named for the remote end) in one case and a configuration
+cloned from another station and never renamed in the other. Both records are
+electrically at Garividi — they measure 15,684 A and ~15,300 A where the far-end
+7SA522 measures 6871 A.
+**The check that catches it next time:** fault-current magnitude. The end nearer the
+fault feeds more current, and the two ends of one line carry the same pre-fault load.
+This is why `AssetResolver` ranks the CFG header third, below a manifest and a path
+rule, and never treats it as authority.
+
+### 2026-09-07 — A relay model number looks like an identifier and is not
+
+**Symptom:** while building `AssetResolver`, a test that should have resolved cleanly
+came back `Ambiguous` because the resolver matched `7SA522` in a CFG header against a
+relay entry at the *wrong* terminal.
+**Cause:** relay `model` was in the list of names a record could be matched on. On a
+fleet where half the relays are 7SA522 that is a confident end signal carrying no
+information, and it fought with the correct substation match.
+**The check that catches it next time:** when adding anything to a match list, ask
+whether the value is unique to one asset. Model, vendor and firmware version are not.
+Only the relay id and the aliases someone deliberately configured are.
+
 ### 2026-09-06 — The other agent overwrote `pyproject.toml` and `.gitignore` mid-session
 
 **Symptom:** config files written 20 minutes earlier came back different — ruff config,

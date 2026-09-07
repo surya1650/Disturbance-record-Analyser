@@ -6,6 +6,62 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-09-07 (handoff) - Session closed; requirements written down
+
+**State: committed on `main` at `bc759d7`, working tree clean, 4 commits ahead
+of `origin/main`, NOT PUSHED.** All four commits authored by R. Surya alone,
+no AI attribution trailers.
+
+```
+bc759d7  Resolve a record to a line and a terminal from evidence, and pre-fill the form
+b0947ed  Make the analyser depend on vendor-neutral settings, and guard the rule
+a60d6d9  Cross-check two relays that watched the same fault from the same bus
+501f9d7  Add the local analysis workbench, and fix two defects the Sphoorthi records exposed
+```
+
+**Gates actually run at `bc759d7`,** not remembered from earlier:
+
+| Gate | Result |
+|---|---|
+| `check_architecture.py --self-test` | pass |
+| `check_architecture.py` (run directly, not piped) | pass |
+| `pytest -q` | **295 passed** (229 at session start) |
+| `dranalyse stage-a --cases 10000` | **PASS**, clean p95 = **0.4403 %** |
+| `ruff check` | 44 findings, all pre-existing, none on a changed line - **not fixed** |
+
+Stage-A came back at 0.4403 % after every one of the four commits. That is the
+point: nothing this session was allowed near the estimators, the DSP chain or
+the parser maths.
+
+**Documents written this session:**
+
+- `project-docs/OPEN_REQUIREMENTS.md` - **new.** Seven items the analyser needs
+  and cannot derive, written as one page so it can be sent to the protection
+  wing as it stands. Items 1 to 3 each block finished work.
+- `project-docs/NEXT_SESSION.md` - rewritten from scratch. It had become a
+  patchwork of in-place edits with stale counts in it.
+- `project-docs/LESSONS.md` - three new entries: the OpenBLAS root cause, the
+  CFG station name that is not the station, and the relay model that looks
+  like an identifier.
+- `project-docs/LOCAL_WORKBENCH_PLAN_v1.md` - marked complete, P1 to P4, with
+  its two deliberate divergences recorded.
+
+**Deliberately left untouched, so the next session does not "fix" them:** the
+`ps=S` block (needs a registry override, never a heuristic); the one-record-
+per-terminal signature of `incident_features` / `report.build`; the 44 ruff
+findings; the Maradam CT polarity, which is reported and not corrected in
+software; and the provisional lengths in every `data/registry/*.yaml`.
+
+**Nothing is ON HOLD or deferred** beyond what `OPEN_REQUIREMENTS.md` lists.
+
+**Other agent:** the `standards/` work was theirs and finished during this
+session; it is inside `501f9d7`, whose message says so. Their `RioSettings`
+import was repointed in `b0947ed`.
+
+**Next:** pairing (§5.2). Needs nothing from anyone.
+
+---
+
 ## 2026-09-07 (resolver) - Records resolve themselves to a line and a terminal
 
 `NEXT_SESSION.md` §6 done, and P4 of the workbench plan with it. The workbench
