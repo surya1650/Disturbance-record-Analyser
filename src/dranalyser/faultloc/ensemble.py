@@ -19,6 +19,7 @@ import numpy as np
 
 from ..dsp.detect import overlap_window
 from ..dsp.pipeline import Analysed
+from ..dsp.window_quality import window_transition
 from ..registry.model import Line, Tower, k0_from_impedances
 from .estimators import (Estimate, e1_reactance, e2_takagi, e3_modified_takagi,
                          e4_synchronised, e5_unsynchronised, loop_quantities)
@@ -333,6 +334,14 @@ def locate(
 
     terms = list(terminals.values())
     fault, caveats, cross_country = _fault_consensus(terms)
+    gates = {end: window_transition(ti.analysed) for end, ti in terminals.items()}
+    if any(g['status'] == 'transition detected' for g in gates.values()):
+        return LocationResult(m=float('nan'), km_from_S=float('nan'), km_from_R=float('nan'),
+                              interval_pu=(float('nan'),)*2, interval_km=(float('nan'),)*2,
+                              method='none', mode='none', fault_type=fault,
+                              diagnostics={'window_gates': gates}, caveats=caveats + [
+                                  'Nonstationary analysis window: distinct settled phasor states detected; '
+                                  'no median across stages. Review separate stage windows.'])
 
     estimates: List[Estimate] = []
     for end, ti in sorted(terminals.items()):

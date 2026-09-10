@@ -210,11 +210,20 @@ def _score(name: str, prefer, avoid) -> float:
     return s - 0.01 * len(name)          # shorter names break ties
 
 
-def map_signals(channel_names: Sequence[str]) -> SignalMap:
+def map_signals(channel_names: Sequence[str], overrides=None) -> SignalMap:
     """Map a record's digital channel names onto canonical signals."""
     out = SignalMap()
     scored: Dict[str, List[Tuple[float, str]]] = {}
     for raw in channel_names:
+        if overrides and raw in overrides:
+            meaning = overrides[raw]
+            if meaning == 'ignore':
+                out.ignored.append(raw)
+            elif meaning in CANONICAL:
+                scored.setdefault(meaning, []).append((100.0, raw))
+            else:
+                raise ValueError('Unsupported reviewed digital meaning: '+str(meaning))
+            continue
         name = " ".join(str(raw).split())
         if not name:
             continue

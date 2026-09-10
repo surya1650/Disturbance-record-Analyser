@@ -99,6 +99,8 @@ def parse_rio(text: str, source_path: str = "") -> ProtectionSettings:
     re_rl: Optional[float] = None
     xe_xl: Optional[float] = None
     seen: Dict[str, object] = {}
+    timed_zones = set()
+    parsed_angle = False
 
     for ln in lines:
         t = ln.strip()
@@ -126,6 +128,7 @@ def parse_rio(text: str, source_path: str = "") -> ProtectionSettings:
             v = _nums(t)
             if v:
                 s.line_angle_deg = v[0]
+                parsed_angle = True
         elif up.startswith("RE/RL"):
             v = _nums(t)
             if v:
@@ -159,6 +162,8 @@ def parse_rio(text: str, source_path: str = "") -> ProtectionSettings:
                 if not zone.name:
                     zone.name = "Z" + str(len(s.zones) + 1)
                 s.zones.append(zone)
+                if id(zone) not in timed_zones:
+                    s.unknown.append('zone.' + zone.name + '.time1')
             zone, char = None, None
         elif zone is not None and up.startswith("NAME"):
             parts = t.split(None, 1)
@@ -167,6 +172,7 @@ def parse_rio(text: str, source_path: str = "") -> ProtectionSettings:
             v = _nums(t)
             if v:
                 zone.t1 = v[0]
+                timed_zones.add(id(zone))
         elif zone is not None and up.startswith("TIMEM"):
             v = _nums(t)
             if v:
@@ -192,6 +198,8 @@ def parse_rio(text: str, source_path: str = "") -> ProtectionSettings:
 
     if not saw_device:
         raise RioError("not a RIO file: no DEVICE line found")
+    if not parsed_angle:
+        s.unknown.append('line_angle_deg')
 
     s.raw = seen
     s.scheme = "PUTT" if s.zone("Z1B") else "STEP"

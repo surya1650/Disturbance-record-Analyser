@@ -1,0 +1,112 @@
+<section class="evidence-appendix" id="relay-evidence">
+  <h1>All-relay evidence</h1>
+  <p>Each record uses its own trigger at <b>0 ms</b>. These axes do not establish
+    synchronization between relays. Detected fault inception is a separate marker.</p>
+  <table><tr><th>Terminal</th><th>Records / analysed</th><th>Trip evidence in this capture</th></tr>
+    {% for t in terminals %}<tr><td>{{ t.end }}</td><td>{{ t.records }} / {{ t.analysed }}</td>
+    <td>{{ t.summary }}</td></tr>{% endfor %}</table>
+  {% if comparisons %}<h2>Same-terminal measurement comparisons</h2><ul>
+    {% for message in comparisons %}<li>{{ message }}</li>{% endfor %}</ul>
+    <p>Disagreement needs review; it does not establish which relay is correct.</p>{% endif %}
+  {% if operations %}
+  <h2>Operation comparisons and onset association</h2>
+  <p>Local durations are relative to each relay's detected inception. Correlation candidates
+    are advisory and are not applied to timestamps, fault location or protection verdicts.
+    Onset correlation covers the initial segment. Separate stage candidates require confirmation; repeated patterns remain ambiguous.</p>
+  {% for pair in operations %}
+  <details class="operation-pair">
+    <summary>{{ pair.scope }}: {{ pair.left }} ({{ pair.left_system }}) / {{ pair.right }} ({{ pair.right_system }}) — {{ pair.status }}</summary>
+    {% set a = pair.association %}
+    <p><b>Onset association:</b> {{ a.status }} — {{ a.reason }}.</p>
+    {% if pair.stage_association %}{% set sa = pair.stage_association %}
+    <h3>Stage association: {{ sa.status }}</h3><p>{{ sa.reason }} {{ sa.basis }}.</p>
+    <p>Source hashes: {{ sa.left_record_hash or 'unavailable' }} / {{ sa.right_record_hash or 'unavailable' }}.</p>
+    <table><tr><th>Left / right interval</th><th>Candidate result</th></tr>
+    {% for sp in sa.pairs %}<tr><td>{{ sp.left_stage }} / {{ sp.right_stage }}</td><td>{{ sp.status }} — {{ sp.reason }}</td></tr>{% endfor %}</table>
+    <p>Confirmation requires {{ sa.requirements|join('; ') }}.</p>{% endif %}
+    {% if a.score is defined %}<p>Shape score: {{ a.score|number }}. Common changing channels: {{ a.channels|join(', ') or 'none' }}.
+      Search grid: {{ a.grid_ms|number }} ms.</p>{% endif %}
+    {% if a.lag_ms is defined and a.lag_ms is not none %}<p><b>Candidate local-time lag:</b> {{ a.lag_ms|number }} ms;
+      right local time = left local time + lag. Near-peak span [{{ a.lag_range_ms[0]|number }}, {{ a.lag_range_ms[1]|number }}] ms
+      describes score sensitivity, not a confidence interval or clock accuracy.</p>{% endif %}
+    {% if a.caveat is defined %}<p>{{ a.caveat }}</p>{% endif %}
+    <ul>{% for note in pair.notes %}<li>{{ note }}</li>{% endfor %}</ul>
+    {% if pair.points %}<table><tr><th>Signal</th><th>Left observation / local ms</th><th>Right observation / local ms</th><th>Comparison</th></tr>
+      {% for p in pair.points %}<tr><td>{{ p.signal }}</td><td>{{ p.left.state }} / {{ p.left.first_edge_inception_ms|number }}</td>
+      <td>{{ p.right.state }} / {{ p.right.first_edge_inception_ms|number }}</td><td>{{ p.comparison }}{% if p.local_duration_difference_ms is not none %};
+      right minus left local duration {{ p.local_duration_difference_ms|number }} ms{% endif %}</td></tr>{% endfor %}</table>{% endif %}
+  </details>{% endfor %}{% endif %}
+  {% for rec in records %}
+  <article class="relay-evidence-record">
+    <h2>End {{ rec.end or 'unassigned' }} · {{ rec.protection_system }} · {{ rec.file }}</h2>
+    {% if rec.channel_mapping %}<h3>Reviewed channel mapping applied</h3>
+    <p>{{ rec.channel_mapping.reason }}<br>Original recording SHA-256 {{ rec.channel_mapping.record_hash }}.
+      Values, ratios and polarity are unchanged; conformance was checked again.</p>
+    <ul>{% for c in rec.channel_inventory if c.reviewed %}<li>{{ c.id }} · {{ c.label }} →
+      {{ rec.channel_mapping[c.kind][c.id] }}</li>{% endfor %}</ul>
+    {% if rec.mapping_original_flags %}<details><summary>Checks before reviewed mapping</summary>
+      <ul>{% for f in rec.mapping_original_flags %}<li>{{ f }}</li>{% endfor %}</ul></details>{% endif %}{% endif %}
+    <p>Device: {{ rec.device_id or 'unknown' }} · Registry relay: {{ rec.relay_id }} · Analysis role: {{ rec.role or 'unassigned' }}</p>
+    {% if rec.status != 'analysed' %}<p>{{ rec.reason }}</p>{% else %}
+    {% include 'stages.html' %}
+    {% if rec.rx_context %}{% set c = rec.rx_context %}
+    <details><summary>Ground-loop and zone input evidence</summary>
+      <p>Ground loops: {{ 'withheld' if c.ground_missing else 'eligible under reviewer declarations' }}.
+        Zone conversion: {{ 'withheld' if c.zone_missing else 'eligible under reviewer declarations' }}.</p>
+      <ul>{% for why in c.ground_missing + c.zone_missing %}<li>{{ why }}</li>{% endfor %}</ul>
+      <p>Settings {{ c.settings_source.file or 'not supplied' }}; SHA-256 {{ c.settings_source.sha256 or 'unavailable' }}.</p>
+      {% if c.review %}<p>Reviewer {{ c.review.reviewer }}: {{ c.review.reason }}.<br>
+        Reviewed record SHA-256 {{ c.review.record_hash }}; settings SHA-256 {{ c.review.settings_hash }}.</p>
+        <p>Settings identity {{ c.review.settings_identity }}; event-time validity {{ c.review.effective_at_event }};
+          phase/scaling/polarity {{ c.review.phase_scaling_polarity }}; zero-sequence VT {{ c.review.zero_sequence_voltage }}.</p>{% endif %}
+      <p>Native compensation {{ c.compensation_source }}. Derived k0 {{ c.k0 }}; I0 = (IA + IB + IC) / 3.<br>
+        Settings CT ratio {{ c.review.ct_ratio if c.review else 'unknown' }};
+        VT ratio {{ c.review.vt_ratio if c.review else 'unknown' }};
+        primary ohm per secondary ohm {{ c.primary_ohm_per_secondary_ohm }}.</p>
+      <p>{{ c.note }}</p>
+    </details>{% endif %}
+    <p><b>Trip evidence:</b> {{ rec.trip_state }}.
+      <b>Operating interval:</b> {{ rec.operate_ms|number }} ms (detected inception to first eligible trip edge).</p>
+    <p>Trigger timestamp: {{ rec.trigger_time or 'unavailable' }} · {{ rec.time_note }}.<br>
+      Detected inception: {{ rec.inception_trigger_ms|number }} ms relative to trigger.
+      Capture starts: {{ rec.start_time or 'unavailable' }}.</p>
+    <p>{{ rec.caveat }} Nominal digital sampling interval: {{ rec.digital_time_resolution_ms|number }} ms.</p>
+    {% set w = rec.measurements.window %}
+    <h3>Phase measurements</h3>
+    <p>Window [{{ w.start_trigger_ms|number }}, {{ w.end_trigger_ms|number }}) ms from trigger;
+      local [{{ w.start_s|number }}, {{ w.end_s|number }}) s; {{ w.sample_count }} samples.
+      Sample RMS includes DC/harmonics. Fundamental RMS is median eligible phasor magnitude.
+      Peak is measured absolute sample peak; no peak/√2 conversion.</p>
+    <table><tr><th>Channel / RYB phase</th><th>Source / P-S declaration</th><th>Units</th><th>Sample RMS</th>
+      <th>Fundamental RMS</th><th>Peak</th><th>Peak time (trigger ms)</th><th>Status</th></tr>
+      {% for c in rec.measurements.channels %}<tr><td>{{ c.channel }} / {{ c.phase }}</td>
+        <td>{{ c.source_channel }} / {{ c.declared_ps or 'unknown' }}</td><td>{{ c.unit }}</td>
+        <td>{{ c.rms|number }}</td><td>{{ c.fundamental_rms|number }}</td><td>{{ c.peak_abs|number }}</td>
+        <td>{{ c.peak_trigger_ms|number }}</td><td>{{ c.status }}</td></tr>{% endfor %}</table>
+    <h3>Recorded digital intervals</h3>
+    <p>An open boundary means onset preceded capture or the point stayed active at capture end.
+      Multiple candidate mappings are retained for review. Point states are observations, not verified breaker positions.</p>
+    <table><tr><th>Meaning / mapping state</th><th>Original point</th><th>Observation</th><th>From → to, trigger ms</th></tr>
+      {% for s in rec.signals if s.points %}{% for p in s.points %}<tr><td>{{ s.signal }} / {{ s.state }}</td>
+        <td>{{ p.channel }}</td><td>{{ p.state }}{% if p.initially_active %}; initially active, onset unknown{% endif %}</td>
+        <td>{% for i in p.intervals %}{{ '≤ ' if i.onset_unknown else '' }}{{ i.start_ms|number }} →
+          {{ '≥ ' if i.continues_at_capture_end else '' }}{{ i.end_ms|number }}<br>{% else %}No active interval observed{% endfor %}</td>
+      </tr>{% endfor %}{% endfor %}</table>
+    <p><b>Not recorded / unmapped:</b> {% for s in rec.signals if not s.points %}{{ s.signal }}{{ ', ' if not loop.last else '' }}{% endfor %}</p>
+    <p><b>Unmapped original points:</b> {{ rec.unmapped_digital|join(', ') or 'none' }}.</p>
+    <p><b>Quality:</b> CT saturation {{ 'detected' if rec.ct_saturation else 'not detected' }};
+      clipped channels: {{ rec.clipped_channels|join(', ') or 'none detected' }}.</p>
+    {% if rec.flags %}<ul>{% for flag in rec.flags %}<li>{{ flag }}</li>{% endfor %}</ul>{% endif %}
+    {% endif %}
+  </article>{% endfor %}
+</section>
+{% if stage_locations %}<section><h2>Reviewed stage locations</h2>
+<p>Separate E5 estimates from guarded local windows. No common clock, blended incident distance, tower assignment or calibrated confidence interval is established.</p>
+{% for s in stage_locations %}<h3>{{ s.group }} · E5 · {{ s.status }}</h3>
+{% if s.status == 'located' %}<p>{{ s.km_from_S|number }} km from S; m={{ s.m }} (series reactance fraction).</p>{% endif %}
+<p>{{ s.reason }}</p>
+{% for end, w in s.windows.items() %}<p>End {{ end }}: {{ w.status }}; local {{ w.window_s }} s. {{ w.reason }}
+Whole-record saturation {{ w.whole_record_saturation }}; local saturation {{ w.local_saturation }}.</p>{% endfor %}
+{% for end, r in s.sources.items() %}<p style="overflow-wrap:anywhere">End {{ end }}: {{ r.file }}; {{ r.stage_id }}.
+Reviewer: {{ r.reviewer or 'unavailable' }}.<br>Record SHA-256 {{ r.record_hash }}.<br>Inventory SHA-256 {{ r.inventory_hash }}.</p>{% endfor %}
+{% endfor %}</section>{% endif %}

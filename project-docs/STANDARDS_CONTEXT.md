@@ -20,9 +20,15 @@ The reference files are intentionally gitignored because the repository is
 public.  This note and `src/dranalyser/standards/` retain the derived,
 reviewable rules without redistributing the originals.
 
+An additional reference, CIGRE TB 854 (December 2021), is held locally at
+`E:/cigre/854.pdf`. Its project-specific extraction is in
+[`CIGRE_TB854_METHODS.md`](CIGRE_TB854_METHODS.md). It supplies technical
+guidance, not APTRANSCO compliance requirements; all of its catalogue entries
+remain `catalogued`. The source manifest records its separate source root.
+
 The repository now contains two machine-readable resources:
 
-- `sources.yaml` inventories all four originals with SHA-256 fingerprints,
+- `sources.yaml` inventories the four standards-pack originals and TB 854 with SHA-256 fingerprints,
   page/sheet coverage and provenance.
 - `catalogue.yaml` divides all normative and diagnostic content into
   source-located chunks.  Each chunk carries asset types, topic tags, its
@@ -35,7 +41,8 @@ future analyzers but is not presented as an automated pass/fail check.
 
 ## FOLD WG-3 disturbance recorder requirements
 
-The analyser implements the following objectively testable requirements:
+The source specifies the following requirements; implementation coverage is
+distinguished below:
 
 - Trigger on the start of any protection function and on trip (pages 10-11).
 - Sampling frequency at least 1000 Hz (pages 12-14).  The report notes that
@@ -52,9 +59,15 @@ The analyser implements the following objectively testable requirements:
   auto-reclose, breaker position, VT fuse fail, carrier send/receive/fail,
   relay/BCU health, time-sync health and LAN health (tables 4-13, pages 28-33).
 
-`audit_record()` checks the sampling rate, actual pre/post capture duration,
-analog coverage and canonical digital-signal coverage.  It also requires a
-mutual-current channel when the registry says `double_circuit: true`.
+`audit_record()` screens sampling, actual pre/post capture duration, analog
+presence and coarse digital groups. Invalid triggers and multi-rate sampling
+produce not-evaluable duration/rate checks. It also looks for a mutual-current
+channel when a supplied registry line says `double_circuit: true`. It does not
+verify full trigger logic, configured capacity, wiring or station monitoring.
+The application now adds explicit per-relay profiles and all rows from base
+tables 5/8/11, with raw-channel matches and unsupported semantics visible;
+conditional/bay additions remain not evaluable. See
+[RECORDING_PHILOSOPHY_VALIDATION.md](RECORDING_PHILOSOPHY_VALIDATION.md).
 
 ## APTRANSCO distance-zone philosophy
 
@@ -101,9 +114,14 @@ export:
   double-circuit feeders require physical CT-neutral mutual compensation to
   avoid ground-distance overreach (page 5).
 
-`audit_settings()` currently proves Zone 1 reach when line constants and
-instrument ratios are known, minimum Zone 2/3 timing, reverse direction and
-delay, and the presence of relay-native zero-sequence compensation values.
+`audit_settings()` screens Zone 1 reach when line constants and instrument
+ratios are supplied, minimum Zone 2/3 timing, reverse characteristic/delay and
+native compensation-parameter availability. Omitted timers/angles and missing
+reverse characteristics are not evaluable; parameter presence does not prove
+enablement. The app's per-relay checklist deliberately withholds primary reach
+without verified per-relay ratios, and always leaves event-time settings validity
+and complete scheme coordination unconfirmed. Minimum-delay screens alone do
+not prove compliance with the applicable grading case.
 The remaining items are retained here for future settings importers and are
 not silently reported as compliant.
 

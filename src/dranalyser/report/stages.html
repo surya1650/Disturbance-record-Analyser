@@ -1,0 +1,24 @@
+{% if rec.clock_quality %}{% set c = rec.clock_quality %}
+<h3>Clock-quality evidence</h3>
+<p>{{ c.status }}. Reported error bound relative to source: {{ c.reported_error_bound_s if c.reported_error_bound_s is not none else 'unavailable' }} s.
+  Verified timing uncertainty: {{ c.uncertainty_s if c.uncertainty_s is not none else 'unavailable' }} s. {{ c.leap_status }}.</p>
+<p>Original CFG fields: {% for key, value in c.raw.items() %}{{ key }}={{ value or 'unavailable' }}; {% endfor %}<br>
+  {{ c.source }} · SHA-256 {{ c.record_hash or 'unavailable' }}. {{ c.reference }}.</p>
+<ul>{% for reason in c.reasons %}<li>{{ reason }}</li>{% endfor %}</ul>{% endif %}
+{% if rec.stages %}{% set s = rec.stages %}
+<h3>Fault-stage observation intervals</h3>
+{% if s.review_status %}<p>Stage review: {{ s.review_status }}. Inventory SHA-256 {{ s.inventory_hash }}.</p>{% endif %}
+{% if s.review %}<p>Reviewer {{ s.review.reviewer }}: {{ s.review.reason }}.<br>Declared groups {{ s.review.groups }}.
+  Reviewer declarations do not verify clocks or authenticate the reviewer.</p>{% endif %}
+<p>{{ s.reason }} {{ s.analysis_window_relation }}. {{ s.caveat }}</p>
+<ul>{% for reason in s.quality_reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
+<table><tr><th>Interval / phase pattern</th><th>Original local interval / trigger ms</th><th>Uncertain start support</th></tr>
+{% for i in s.intervals %}<tr><td>{{ i.id }} · {{ i.kind }}<br>Elevated phases: {{ i.phase_pattern if i.phase_pattern else 'none / unknown' }}</td>
+<td>{{ i.start_s|number }} → {{ i.end_s|number }} s; {{ i.start_trigger_ms|number }} → {{ i.end_trigger_ms|number }} ms.<br>
+  Native samples [{{ i.sample_start }}, {{ i.sample_stop }}).
+  {{ 'Physical onset unknown.' if i.onset_unknown else '' }} {{ 'Capture ends here; continuation unknown.' if i.continues_at_capture_end else '' }}</td>
+<td>{{ i.start_boundary_range_s }} local s.
+{% if i.estimation_window %}<br>Guarded interior: {{ i.estimation_window.status }};
+{{ i.estimation_window.window_s }} local s. {{ i.estimation_window.reason }}{% endif %}
+{% for r in i.reclose_evidence %}<br>Reclose indication {{ r.channel }} at {{ r.assertion_s }} local s.{% endfor %}</td></tr>
+{% endfor %}</table><p>{{ s.method }}. Source SHA-256 {{ s.record_hash or 'unavailable' }}. Estimator windows are unchanged.</p>{% endif %}

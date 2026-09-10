@@ -1,5 +1,155 @@
 # Context for the next session
 
+**2026-09-10 guarded stage-location milestone complete:** **603 tests pass**;
+architecture direct/self-tests, focused Ruff/JS, Stage-A 10,000 and desktop/mobile
+browser checks pass. Read [STAGE_LOCATION_VALIDATION.md](STAGE_LOCATION_VALIDATION.md).
+An independent phase-domain branch network validates evolving/reclose windows.
+The main ensemble now refuses supported nonstationarity. Separate negative-sequence
+E5 requires matching source-bound reviews and explicit stage-location selection at
+both terminal primaries. Local quality is rechecked while original whole-record
+flags remain visible. No time shifting, stage-distance blending, tower assignment
+or calibrated stage confidence interval is added.
+
+Current complete synthetic preview: http://127.0.0.1:8102, incident
+`3833fb155e04488da2c1764a828035b2`, revision 4. Root
+`out/application-stage-location-preview`, one worker, server PID 13056 at handoff.
+All ten earlier application roots/revisions/artifacts are fingerprint-verified
+unchanged. Only the newly created 8102 server was restarted for this milestone.
+The user has requested committing and pushing the accumulated implementation to
+GitHub; historical "not committed" statements below describe those earlier times.
+Check `git log` and remote status for publication state.
+
+Next: broader physical transient/adversarial validation (CT/CVT, weak infeed,
+short or unchanged-pattern evolution), then supported clock-source uncertainty
+before any UTC alignment. TB 854 and field validation remain incomplete. Do not
+repeat completed stage association, clock metadata or bounded stage E5 work.
+
+**2026-09-10 stage/clock milestone complete:** **573 tests pass** (64 added);
+architecture direct/self-tests, focused Ruff/JS, Stage-A 10,000 and browser checks
+pass. Read [STAGE_CLOCK_VALIDATION.md](STAGE_CLOCK_VALIDATION.md) for the local
+stage detector policy, source-bound reviewer contract, clock interpretation,
+validation limits and runtime state. Per-relay initial/evolving/reclose observation
+intervals preserve uncertain bounds and raw markers. Repeated patterns remain
+ambiguous until valid stage-group declarations at both relays. Reviews bind record,
+incident, line, terminal/system, mapping and inventory; stale reviews are withheld.
+Clock metadata retains all four fields and distinguishes reported bounds from
+verified uncertainty. No timestamp shifts, estimator windows or rules changed.
+
+Current complete preview: http://127.0.0.1:8101, synthetic incident
+`bdb558585eb04fc9a026501964d0ebd2`, revision 4; evolving/reclose example
+`f1ad466912fa430b84b97adc02d91b0e`, revision 1. Root `out/application-stage-preview`,
+one embedded worker. All nine earlier application roots, revision rows and saved
+report/navigator artifacts were fingerprint-verified unchanged. Earlier servers
+remain running; no process was stopped. No commit, push, reset or stash.
+
+Next: independently model evolving/reclose network waveforms before enabling
+stage-aware estimator/window gating. The current detector is advisory and can
+miss short, weak-infeed or unchanged-magnitude evolution; the existing saturation
+screen may flag stage transitions. Verified clock-source uncertainty/UTC alignment,
+field settings and complete physical breaker interpretation remain unavailable.
+TB 854 and field validation are still incomplete. Do not restart completed
+mapping, ground/zone or stage/clock contract work from historical entries below.
+
+**2026-09-10 session close:** The reviewed ground-loop/zone-boundary milestone
+is complete. **509 tests pass**; architecture direct/self-tests, focused Ruff,
+JavaScript checks and Stage-A 10,000 pass. Read
+[SESSION_HANDOFF_2026-09-10.md](SESSION_HANDOFF_2026-09-10.md) for exact runtime,
+implementation, validation and next-work details, and
+[RX_INPUT_VALIDATION.md](RX_INPUT_VALIDATION.md) for the input contract.
+Current complete synthetic preview: http://127.0.0.1:8100, incident
+`b81c038543ca4aefa3ddc1fd9f707fe6`, revision 4, isolated `out/application-rx-preview`.
+Ground/zone views depend on explicit per-record reviewer declarations; no field
+inputs or TB 854 validation have been established. All earlier servers and data
+are preserved. Next bounded task: fault-stage association and clock-quality
+contracts, retaining independent trigger-zero timelines when evidence is insufficient.
+
+**2026-09-09 reviewed mapping and native-sample update:** The user approved the
+next-step sequence. Per-record mapping review is now implemented before conformance,
+with exact source hashes, original channel positions/labels, mandatory rationale,
+supported analog/digital meanings, stale/collision/quantity refusal and reversible
+report revisions. Native waveform inspection adds exact selected samples, cursor
+stepping and separate interval RMS/peak measurements. **480 tests pass**. See
+[CHANNEL_MAPPING_VALIDATION.md](CHANNEL_MAPPING_VALIDATION.md) for API contracts,
+browser evidence and limitations. Complete preview: http://127.0.0.1:8099,
+isolated `out/application-native-preview`, demo revision 3. Earlier servers/data
+remain intact; 8098 contains the mapping-only milestone.
+Next: verified ground-loop/zone-overlay prerequisites and fault-stage association.
+Settings API/document/SAP/GIS contracts still need external inputs. Do not promote
+these software gates into TB 854 or field validation; E5/tower gaps remain open.
+
+**2026-09-09 local event navigation update:** Linked local cursor/interval views
+now cover mapped waveform envelopes, phase-phase R-X, digital active intervals
+and a logical SLD with unknown physical breaker positions. A script-free current
+view export includes record hash/revision and caveats. See
+[NAVIGATION_VALIDATION.md](NAVIGATION_VALIDATION.md) for limits and 452-test evidence.
+Current complete synthetic preview: http://127.0.0.1:8097, isolated
+`out/application-navigation-final`. It includes the earlier mixed-case timer and
+new kV plot-label corrections. Earlier servers/data remain intact; 8096 was an
+intermediate preview. Next: reviewed mappings/full-resolution zoom and verified
+ground-loop/zone prerequisites, then external settings/SAP/GIS contracts when supplied.
+No common clock/stage or field validation is established by these display views.
+
+**2026-09-09 recording/philosophy update:** Per-relay checklists now expose
+explicit WG-3 profiles, individual required-point evidence, separate RIO
+association/provenance and bounded philosophy screens in the API/browser/HTML.
+See [RECORDING_PHILOSOPHY_VALIDATION.md](RECORDING_PHILOSOPHY_VALIDATION.md) for
+implemented scope, 437-test evidence and unsupported configuration/coordination.
+Current isolated preview: http://127.0.0.1:8095. Automatic approval review blocked
+the 8094 restart, so its older backend and data remain running. No original app
+data or historical reports were reset. Next: linked channel/R-X navigation and
+SLD-style local event sequence; keep clock, identity and breaker-state limits explicit.
+The final mixed-case missing-timer correction is in the working tree and tests;
+the running 8095 backend loads it on its next normal restart. Its synthetic demo
+uses uppercase zone names and is unaffected. Do not terminate earlier app processes.
+
+**2026-09-09 operational comparison update:** All declared relay pairs now have
+structured operation comparisons and advisory onset-shape correlation. Different
+observations get a review warning separate from the selected-record rule verdict.
+See [OPERATION_ASSOCIATION_VALIDATION.md](OPERATION_ASSOCIATION_VALIDATION.md) for
+the policy, 411-test evidence and limits. Candidates do not establish event/stage
+identity or clock synchronization; ambiguous/unsupported cases retain local times.
+Current preview: http://127.0.0.1:8094 with isolated synthetic data.
+The subsequent checklist milestone is summarized above. Confirmed stage
+association, clock-quality contracts and interactive
+SLD/channel/R-X navigation remain pending. Existing 8091/8093 data is preserved.
+
+**Latest user priority: initial DR operational analysis.** Follow
+[DR_OPERATIONAL_WORKFLOW_PLAN.md](DR_OPERATIONAL_WORKFLOW_PLAN.md): single/both
+ends, per-relay operation evidence, Main-1/Main-2 reconciliation, honest RMS/peak
+measurements, clock fallback, standards/philosophy checks and interactive event
+views. Settings API/document access mapped by SAP bay ID and GIS/GeoJSON joins
+come later. All-relay evidence is now implemented in the API, browser and HTML
+annex, including separate Main-1/Main-2 identity, trigger-zero times, raw digital
+intervals and honest windowed RMS/peak measurements. 384 tests, architecture
+checks and the 10,000-case Stage-A gate pass; these are bounded repository
+evidence, not TB 854 validation. The subsequent comparison/correlation delivery
+is summarized above; complete same-stage association remains unvalidated.
+See the newest ledger entry for scope, test evidence and remaining UI work.
+The first-milestone build remains at http://127.0.0.1:8093 with isolated synthetic
+preview data. Automatic approval review blocked the restart of 8091, which
+remains running with the earlier backend and unchanged saved revisions/reports.
+
+**2026-09-08 validation update:** The
+[TB 854 validation matrix](TB854_VALIDATION_MATRIX.md) now records the repaired
+ensemble refusal test, independent scalar fixtures and catalogue regressions.
+E5 root ties and external results with clamped tower fields remain explicit
+gaps; no new electrical model was implemented. See the newest STATUS_LEDGER
+entry for exact checks and the matrix for the next independent modelling task.
+
+**Original task handoff: TB 854 validation.** Read
+[TB854_VALIDATION_HANDOFF.md](TB854_VALIDATION_HANDOFF.md) for the current
+objective, evidence gaps and first test defect to fix. The 316 passing tests
+below are repository regression evidence, not a completed TB 854 validation suite.
+
+**2026-09-08 update:** A durable local application has been added in the working
+tree. Run `start-local.cmd` and open http://127.0.0.1:8091. Read
+[LOCAL_APPLICATION.md](LOCAL_APPLICATION.md) for manual intake, folder/API
+integration, queue workers and scaling boundaries. Earlier workbench instructions
+below describe the previous interface. CIGRE extraction is in
+[CIGRE_TB854_METHODS.md](CIGRE_TB854_METHODS.md). Changes are not committed.
+Validation: 316 tests pass; architecture checks pass; 10,000-case Stage-A passes
+with clean p95 0.4403%; browser upload/review/report/rerun passes in Chrome.
+
 Written 2026-09-07 at commit `bc759d7`, on `main`, working tree clean,
 **4 commits ahead of `origin/main` and not pushed**.
 

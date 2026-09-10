@@ -1,11 +1,10 @@
 """Cross-check two relays that watched the same fault from the same bus.
 
-Main-1 and Main-2 in one bay measure the same primary current through the
-same CT core group and the same VT. They should agree. When they do, the
-measurement chain is corroborated by something independent of the analyser.
-When they do not, one of them is wrong and the incident report must say so
-rather than quietly using whichever record the operator happened to mark
-primary.
+Main-1 and Main-2 in one bay may use different instrument-transformer cores,
+filters and settings. Agreement provides a consistency check. Disagreement
+requires review of mapping, timing, event stages and measurement chains;
+it does not establish which relay is wrong. The selected analytical primary
+is a comparison reference, not an adjudication of correctness.
 
 This is not a hypothetical. On event 15665 at Garividi the GE D60 and the
 MiCOM P444 measure the same 305-310 A of negative-sequence current and the
@@ -135,8 +134,8 @@ def compare(end: str, measures: Sequence[Measure]) -> List[Disagreement]:
                 "XR-01", "investigate",
                 pair + " disagree on the fault type (" + primary.fault_type
                 + " against " + other.fault_type
-                + "). Two relays on one bus saw one fault; one of them is "
-                  "reading the wrong channels."))
+                + "). Review event/stage association and channel mapping; "
+                  "this does not identify a faulty relay."))
 
         if _ratio_off(primary.i_prefault_a, other.i_prefault_a, I_TOLERANCE):
             out.append(Disagreement(
@@ -144,7 +143,7 @@ def compare(end: str, measures: Sequence[Measure]) -> List[Disagreement]:
                 pair + " disagree on pre-fault load current ("
                 + format(primary.i_prefault_a, ".1f") + " A against "
                 + format(other.i_prefault_a, ".1f")
-                + " A). Same line, same instant: suspect a CT ratio."))
+                + " A). Review capture alignment, load changes and CT scaling."))
 
         if _ratio_off(primary.i_fault_a, other.i_fault_a, I_TOLERANCE):
             out.append(Disagreement(

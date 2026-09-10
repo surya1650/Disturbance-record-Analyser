@@ -35,7 +35,17 @@ out there with reasons.
 | Two-page incident report | working |
 | Ground-truth capture: store, form, accuracy dashboard | working |
 | Stage-A acceptance sweep | working |
-| Pairing, transport, edge collector | not started |
+| Local application, manual upload, durable jobs and report revisions | working |
+| Collector intake through watched folder and push API | working |
+| Reviewed stage associations, clock evidence and guarded stage E5 | implemented; bounded synthetic validation |
+| Autonomous event pairing and direct relay protocol collectors | not started |
+
+Latest validation: **603 tests**, architecture checks, Stage-A 10,000 PASS
+(clean p95 0.4403%) and desktop/mobile browser checks. Separate stage E5 requires
+matching source-bound reviews and explicit selection at both terminal primaries;
+the main ensemble refuses supported nonstationary windows. See
+[stage-location validation](project-docs/STAGE_LOCATION_VALIDATION.md) for
+limitations and runtime details. TB 854 and field validation remain incomplete.
 
 ### Stage-A acceptance (brief section 13)
 
@@ -68,8 +78,41 @@ the recording-settings change in the brief's section 4.3.
 
 ## Install and run
 
+### Local browser application
+
+On Windows, double-click **`start-local.cmd`**, then open
+**http://127.0.0.1:8091**. The launcher creates `.venv` and installs the app
+dependencies on first use. For an existing environment, run
+`powershell -ExecutionPolicy Bypass -File .\start-local.ps1 -Install` once.
+
+Upload matching CFG/DAT files, a CFF, a ZIP, or an entire event folder. Confirm
+the line and terminal assignments, then analyse. The application includes a
+persistent job queue, report history, late-record attachments, retries, a
+watched inbox and a shared intake API. It uses the existing numerical analyser.
+Records and results stay under `out/application`.
+
+See [local application setup and integration contracts](project-docs/LOCAL_APPLICATION.md).
+The current app includes all-relay evidence, separate Main-1/Main-2 identity,
+trigger-relative digital intervals and windowed phase RMS/peak measurements.
+Pairwise operation comparisons and advisory onset-correlation candidates are
+documented in [operation association validation](project-docs/OPERATION_ASSOCIATION_VALIDATION.md).
+Per-relay recording profiles, digital-point completeness and settings screens are
+documented in [checklist validation](project-docs/RECORDING_PHILOSOPHY_VALIDATION.md).
+Linked waveform, phase-phase R-X, digital interval and logical SLD inspection is
+documented in [navigation validation](project-docs/NAVIGATION_VALIDATION.md).
+Exact-record channel mapping review and native waveform interval inspection are
+documented in [mapping and sample validation](project-docs/CHANNEL_MAPPING_VALIDATION.md).
+Reviewed AG/BG/CG and separate phase/earth zone-boundary inspection are documented
+in [R-X input validation](project-docs/RX_INPUT_VALIDATION.md). Reviewer declarations
+do not establish verified field settings or TB 854 validation.
+See the [operational workflow delivery status](project-docs/DR_OPERATIONAL_WORKFLOW_PLAN.md)
+for implemented behavior, bounded validation and remaining work.
+The older `dranalyse workbench` remains available on port 8090.
+
+### Command-line tools
+
 ```bash
-pip install -e ".[dev]"
+pip install -e ".[app,dev]"
 
 dranalyse stage-a --cases 10000             # full acceptance sweep
 dranalyse template mylinedata.yaml          # starter line definition
@@ -83,12 +126,22 @@ dranalyse report  --line line.yaml --S a.cfg -o out.html # two-page report
 dranalyse backtest ARCHIVE/ --line line.yaml             # zone-decision replay
 dranalyse capture --port 8080               # ground-truth capture form
 dranalyse pending / confirm / accuracy      # patrol confirmations
-pytest -q                                   # 229 tests
+pytest -q                                   # regression suite
 ```
 
 The engineering rules derived from the local standards pack, their source
 pages and the boundaries of what can be proved are recorded in
 [`project-docs/STANDARDS_CONTEXT.md`](project-docs/STANDARDS_CONTEXT.md).
+
+CIGRE TB 854 methods, applicability to the current estimators, source cautions,
+and proposed improvements are mapped in
+[`project-docs/CIGRE_TB854_METHODS.md`](project-docs/CIGRE_TB854_METHODS.md).
+Retrieve its advisory entries with
+`dranalyse standards --show-context --source cigre-tb854`.
+
+The [TB 854 validation matrix](project-docs/TB854_VALIDATION_MATRIX.md) separates
+implemented methods, bounded test evidence and unsupported physics. Repository
+test passes are not TB 854 validation or proof of field accuracy.
 
 Real disturbance records are **not** in this repository (see
 [`.gitignore`](.gitignore)); every test that needs them skips cleanly.

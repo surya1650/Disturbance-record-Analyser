@@ -16,6 +16,7 @@ dr/
 drs */
 standard docs/
 out/
+tmp/pdfs/
 *.zip
 *.ZIP
 *.doc

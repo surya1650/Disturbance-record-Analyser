@@ -24,6 +24,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+app = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "python-multipart>=0.0.18", "httpx>=0.27,<1"]
 ml = ["scikit-learn>=1.3"]
 # segno renders the ground-truth QR code; without it the report prints the
 # URL instead. Deliberately optional: a silently wrong QR is worse than none.
@@ -41,7 +42,7 @@ package-dir = { "" = "src" }
 where = ["src"]
 
 [tool.setuptools.package-data]
-dranalyser = ["standards/*.yaml", "rules/*.yaml", "report/*.html"]
+dranalyser = ["standards/*.yaml", "rules/*.yaml", "report/*.html", "application/static/*"]
 
 [tool.ruff]
 target-version = "py311"

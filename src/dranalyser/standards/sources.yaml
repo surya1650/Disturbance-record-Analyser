@@ -1,5 +1,5 @@
 schema_version: 1
-generated: "2026-09-07"
+generated: "2026-09-08"
 source_root: "standard docs"
 sources:
   - id: aptransco-general-philosophy
@@ -31,3 +31,22 @@ sources:
     document_date: "2024-11-27"
     sha256: "16904C9A82C6302A35C001988FCAD1583DB70093D046AEC2A97DF78042FA5C1A"
     extraction: "Every scanned page visually reviewed and normalized."
+  - id: cigre-tb854
+    title: "Analysis and comparison of fault location systems in AC power networks"
+    file: "854.pdf"
+    source_root: "E:/cigre"
+    format: "pdf-text-and-figures"
+    extent: "137 PDF pages; printed page numbers match PDF page positions from page 3"
+    document_date: "2021-12"
+    publisher: "CIGRE"
+    working_group: "B5.52"
+    isbn: "978-2-85873-559-4"
+    source_kind: "technical-guidance-not-compliance-standard"
+    sha256: "0406508FEB3154DFF584A5818823EA6BE01B0DD1E82F523D0D7AC2D8797A7886"
+    extraction: >-
+      Text extracted across all 137 pages. Project-relevant impedance methods,
+      application considerations, operations, and selected annexes reviewed;
+      key equations and tables visually checked. Catalogue contains paraphrased
+      guidance and explicitly labelled project interpretations, not an exhaustive
+      transcription. Original and intermediate extracts remain local.
+    project_note: "project-docs/CIGRE_TB854_METHODS.md"

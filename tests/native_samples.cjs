@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict');
+const m=require('../src/dranalyser/application/static/resolution.js');
+const s=[[10,.01,-3],[11,.02,7],[12,.03,null]];
+assert.equal(m.nearest(s,.011),s[0]);
+assert.equal(m.nearest(s,.026),s[2]);
+assert.equal(m.nearest(s,.02),s[1]);
+assert.equal(m.nearest([],1),null);
+assert.equal(m.nearest(s,NaN),null);
+assert.equal(m.step(s,.011,1),s[1]);
+assert.equal(m.step(s,.019,-1),s[0]);
+assert.equal(m.step(s,.02,1),s[2]);
+assert.equal(m.step(s,.03,1),null);
+assert.equal(m.step(s,.01,-1),null);
+console.log('Native sample cursor: 10 nearest/step/boundary assertions passed');

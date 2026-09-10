@@ -115,7 +115,7 @@ def test_source_manifest_and_catalogue_cover_the_complete_pack():
     sources = load_sources()
     chunks = load_catalogue()
     source_ids = {item["id"] for item in sources}
-    assert len(sources) == 4
+    assert len(sources) == 5
     assert all(len(item["sha256"]) == 64 for item in sources)
     assert len(chunks) >= 35
     assert len({item["id"] for item in chunks}) == len(chunks)

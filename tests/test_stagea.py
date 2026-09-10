@@ -50,7 +50,9 @@ def test_e5_refuses_a_root_far_outside_the_line():
         assert "no root near the line" in est.reason
 
 
-def test_ensemble_refuses_to_report_a_distance_far_outside_the_line():
+@pytest.mark.parametrize("invalid_m", [-5.7, -0.5001, 1.5001, 6.7])
+def test_ensemble_refuses_to_report_a_distance_far_outside_the_line(monkeypatch, invalid_m):
+    from dranalyser.faultloc import ensemble
     from dranalyser.faultloc.estimators import Estimate
 
     line = uniform_line("T", "t", 220, 100, complex(0.03, 0.4), complex(0.25, 1.2))
@@ -58,13 +60,19 @@ def test_ensemble_refuses_to_report_a_distance_far_outside_the_line():
     case = generate(spec)
     an = analyse(case.records["S"])
     ti = TerminalInput(analysed=an, end="S")
+    # Inject BEFORE real weighting/reconciliation; never edit a finished result.
+    supplied = Estimate("E1", invalid_m, 0.0, ends="single")
+    monkeypatch.setattr(ensemble, "_single_ended", lambda *args: [supplied])
+    assert line.towers, "a missing tower schedule would make suppression vacuous"
     res = locate(line, {"S": ti})
-    # force a nonsense estimate through the reconciliation
-    res2 = locate(line, {"S": ti})
-    for e in res2.estimates:
-        if e.ok:
-            e.m = 6.7
-    assert res.mode in ("single-ended", "none")
+    assert supplied in res.estimates
+    assert supplied.diagnostics["weight"] > 0  # reaches the final distance guard
+    assert res.mode == "none" and not res.ok
+    assert res.m == pytest.approx(invalid_m)  # diagnostic retained, never clamped
+    assert math.isnan(res.km_from_S) and math.isnan(res.km_from_R)
+    assert all(math.isnan(km) for km in res.interval_km)
+    assert res.towers == [] and res.likely_tower is None
+    assert any("far outside the line; no location is reported" in c for c in res.caveats)
 
 
 def test_absurd_m_never_reaches_a_tower_band():

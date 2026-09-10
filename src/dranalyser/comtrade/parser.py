@@ -179,6 +179,7 @@ class Cfg:
     tmq_code: str = ""
     leapsec: str = ""
     warnings: List[str] = None
+    local_code: str = ""
 
     @property
     def total_samples(self) -> int:
@@ -262,10 +263,11 @@ def parse_cfg(text: str) -> Cfg:
     if timemult <= 0:
         timemult = 1.0
 
-    time_code = tmq = leap = ""
+    time_code = local_code = tmq = leap = ""
     if j + 4 < len(lines):
         parts = [x.strip() for x in lines[j + 4].split(",")]
         time_code = parts[0] if parts else ""
+        local_code = parts[1] if len(parts) > 1 else ""
     if j + 5 < len(lines):
         parts = [x.strip() for x in lines[j + 5].split(",")]
         tmq = parts[0] if parts else ""
@@ -291,7 +293,7 @@ def parse_cfg(text: str) -> Cfg:
                digitals=digitals, line_freq=lf, nrates=nrates, rates=rates,
                start_time=start, trigger_time=trig, file_type=ftype,
                timemult=timemult, time_code=time_code, tmq_code=tmq,
-               leapsec=leap, warnings=warn)
+               leapsec=leap, warnings=warn, local_code=local_code)
 
 
 # --------------------------------------------------------------------------
@@ -377,7 +379,7 @@ def _derive_time(cfg: Cfg, ts_col: np.ndarray, n: int) -> Tuple[np.ndarray, floa
 
 
 def read_comtrade(
-    cfg_path: str, dat_path: Optional[str] = None, terminal_end: str = ""
+    cfg_path: str, dat_path: Optional[str] = None, terminal_end: str = "", *, channel_mapping=None
 ) -> Record:
     """Read a four-file-form COMTRADE record into a canonical Record."""
     with open(cfg_path, "r", encoding="latin-1") as fh:
@@ -390,10 +392,10 @@ def read_comtrade(
                 break
     if dat_path is None or not os.path.exists(dat_path):
         raise ComtradeError("no DAT file found next to " + cfg_path)
-    return _assemble(cfg, open(dat_path, "rb").read(), cfg_path, dat_path, terminal_end)
+    return _assemble(cfg, open(dat_path, "rb").read(), cfg_path, dat_path, terminal_end, channel_mapping)
 
 
-def read_cff(path: str, terminal_end: str = "") -> Record:
+def read_cff(path: str, terminal_end: str = "", *, channel_mapping=None) -> Record:
     """Read the 2013 single-file .CFF form."""
     raw = open(path, "rb").read()
     text = raw.decode("latin-1")
@@ -412,11 +414,13 @@ def read_cff(path: str, terminal_end: str = "") -> Record:
     else:
         cfg.file_type = "ASCII"
     payload = raw[d.end() :] if cfg.file_type != "ASCII" else text[d.end() :].encode("latin-1")
-    return _assemble(cfg, payload, path, path, terminal_end)
+    return _assemble(cfg, payload, path, path, terminal_end, channel_mapping)
 
 
 def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
-              terminal_end: str) -> Record:
+              terminal_end: str, channel_mapping=None) -> Record:
+    from .channel_review import channel_plan
+    review = channel_mapping or {}
     na, nd = cfg.n_analog, cfg.n_digital
     ftype = cfg.file_type.strip().upper()
     if ftype.startswith("ASCII"):
@@ -427,13 +431,14 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
     t, fs, twarn = _derive_time(cfg, ts, n)
 
     naming = detect_phase_naming([a.ch_id for a in cfg.analogs])
+    targets, digital_keys, inventory, digital_overrides = channel_plan(cfg, naming, map_channel, review)
     analog: Dict[str, np.ndarray] = {}
     raw_analog: Dict[str, np.ndarray] = {}
     meta: Dict[str, AnalogMeta] = {}
     unmapped: List[str] = []
 
     for i, ch in enumerate(cfg.analogs):
-        canon = map_channel(ch.ch_id, ch.uu, ch.ph, naming)
+        canon = targets[i]
         if canon is None or canon in analog:
             unmapped.append(ch.ch_id.strip())
             continue
@@ -455,14 +460,16 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
         )
 
     digital: Dict[str, np.ndarray] = {}
-    for k, name in enumerate(cfg.digitals):
-        digital[name.strip() or ("D" + str(k + 1))] = cols[:, na + k].astype(np.int8)
+    for k, name in enumerate(digital_keys):
+        digital[name] = cols[:, na + k].astype(np.int8)
 
     h = hashlib.sha256()
     h.update(open(cfg_path, "rb").read())
     if dat_path != cfg_path:
         h.update(dat_bytes)
     digest = h.hexdigest()
+    if review and review.get('record_hash') != digest:
+        raise ValueError('Reviewed channel mapping belongs to a different recording hash; review it again.')
 
     rec = Record(
         record_id=os.path.splitext(os.path.basename(cfg_path))[0],
@@ -474,10 +481,15 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
         notes={"edition": cfg.edition, "file_type": ftype, "naming": naming,
                "unmapped_channels": unmapped, "n_analog": na, "n_digital": nd,
                "tmq_code": cfg.tmq_code, "time_code": cfg.time_code,
-               "declared_endsamp": cfg.total_samples},
+               "local_code": cfg.local_code, "leapsec": cfg.leapsec,
+               "declared_endsamp": cfg.total_samples, 'channel_inventory': inventory,
+               'channel_mapping': review, 'digital_overrides': digital_overrides},
     )
     for w in list(cfg.warnings or []) + twarn:
         rec.add_flag("CT-INFO", "info", w)
+    if review:
+        rec.add_flag('CH-REVIEW', 'flag', 'Explicit channel mapping applied to original record '+digest+
+                     '; '+str(review.get('reason', ''))+'; '+str(review.get('analog', {}))+'; '+str(review.get('digital', {})))
     if unmapped:
         rec.add_flag("CH-UNMAPPED", "info",
                      str(len(unmapped)) + " analog channels not mapped to the "

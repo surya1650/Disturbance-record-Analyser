@@ -4,6 +4,8 @@ description: >-
   document. Statements are paraphrases, not substitutes for the controlled originals.
   "active" means the present analyzer can evaluate at least part of the chunk;
   "catalogued" means it is retained for retrieval but not yet machine-enforced.
+  CIGRE TB 854 entries are technical guidance, not compliance requirements;
+  their rules include explicitly labelled project interpretations where needed.
 chunks:
   - id: APG-DIST-ZONE-REACH
     source_id: aptransco-general-philosophy
@@ -480,3 +482,264 @@ chunks:
       - "The workbook covers 220 kV Zebra, Moose, Twin Moose, and AL59 Moose cases and 400 kV Twin Moose, Twin AL59, and Quad Moose cases."
       - "Each case retains conductor/bay rating, line angle, CT ratio, VT ratio, 0.85-per-unit voltage, 1.5 emergency factor, 30-degree load angle, and calculated primary/secondary reach."
       - "Empty workbook sheets contain no additional rules or data."
+  - id: C854-ACCURACY
+    source_id: cigre-tb854
+    locator: "page 6, equations 1-2; page 111, conclusion"
+    asset_types: [line]
+    topics: [fault-location.accuracy, validation, uncertainty]
+    analyzer_state: catalogued
+    summary: "Guidance: express location error with an explicit distance reference and denominator."
+    rules:
+      - "The introduction defines distance error in physical distance and percentage of total line length."
+      - "Model, measurement, fault resistance and operating-state errors affect the estimated search area."
+      - "Project interpretation: record absolute error, signed bias, refusals and interval coverage separately; a narrow window spread is not proof of calibrated confidence."
+      - "TB 854 does not set the project's 0.5 percent acceptance target or ensemble weights."
+  - id: C854-SINGLE-ENDED
+    source_id: cigre-tb854
+    locator: "section 2.1.1, pages 9-11, equations 3-4 and Tables 1-2"
+    asset_types: [line]
+    topics: [fault-location.single-ended, fault-location.takagi, compensation]
+    analyzer_state: catalogued
+    summary: "Guidance: single-ended reactance, Takagi and modified Takagi methods have distinct input and model assumptions."
+    rules:
+      - "Single-ended apparent impedance includes the fault-resistance and remote-infeed contribution."
+      - "Takagi uses pre-fault and fault current with fault voltage; the comparison table describes load compensation subject to its assumptions."
+      - "Modified Takagi offers partial compensation for unequal line/source angles; the overview is not a complete specification of every variant."
+      - "Project interpretation: retain E1-E3 eligibility gates and the reviewed loop-current/sign conventions. Table 1 has an apparent residual-versus-sequence-current inconsistency; see C854-SOURCE-CAUTIONS."
+  - id: C854-ERIKSSON
+    source_id: cigre-tb854
+    locator: "page 10, Table 2; page 112, bibliography reference 11"
+    asset_types: [line]
+    topics: [fault-location.eriksson, source-impedance, mutual-compensation]
+    analyzer_state: catalogued
+    summary: "Candidate method: source-informed single-ended fault location with infeed compensation."
+    rules:
+      - "The comparison lists pre-fault and fault measurements, line and local/remote source impedances, and possible parallel-line zero-sequence current."
+      - "Assumptions include negligible charging and unchanged source magnitudes and angles across the fault."
+      - "Project interpretation: a separate Eriksson estimator is not implemented; obtain the complete reference and actual source/topology inputs before evaluating it."
+  - id: C854-SYNCHRONISED
+    source_id: cigre-tb854
+    locator: "section 2.1.2.1, pages 11-12, equations 5-8"
+    asset_types: [line]
+    topics: [fault-location.two-ended, synchronization, sequence-components]
+    analyzer_state: catalogued
+    summary: "Guidance: synchronized end measurements locate the intersection of fault-point voltage estimates."
+    rules:
+      - "Both ends must describe the same electrical conditions, especially for evolving faults or unequal tripping times."
+      - "The text gives 3 degrees as generally accepted phase-error guidance, not a universal fault-location accuracy guarantee."
+      - "Equation 8 describes a variant using one end's voltage and both ends' synchronized currents; negligible negative sequence prevents its use for balanced faults."
+      - "Project interpretation: keep E4 clock gating, Re(m) and its imaginary diagnostic; do not substitute the magnitude printed in equation 7. At 50 Hz, 3 degrees corresponds to approximately 166.7 microseconds."
+  - id: C854-UNSYNCHRONISED
+    source_id: cigre-tb854
+    locator: "section 2.1.2.2, pages 12-13; bibliography references 14, 18-20 on page 112"
+    asset_types: [line]
+    topics: [fault-location.two-ended, fault-location.unsynchronised, synchronization, sequence-components]
+    analyzer_state: catalogued
+    summary: "Guidance: two-ended location can recover or eliminate the unknown phasor rotation."
+    rules:
+      - "The brochure discusses nonlinear iteration, pre-fault alignment, sequence-magnitude methods and Newton-Raphson angle recovery."
+      - "Pre-fault alignment is unsuitable with minimal pre-fault load or switching onto a fault; variable fault resistance and asymmetry can impair the described methods."
+      - "Negative-sequence methods need an alternative for balanced faults; the text mentions positive sequence."
+      - "Project interpretation: E5 already uses a magnitude-equality quadratic and branch diagnostics, with superimposed positive sequence for ABC faults. The brochure does not specify this exact implementation or its root selection."
+      - "Project interpretation: eliminating absolute clock phase does not eliminate the need to pair the correct incident and fault stage."
+  - id: C854-CURRENT-MATCHING
+    source_id: cigre-tb854
+    locator: "section 2.1.3, pages 13-14; section 3.2.1.1.3, pages 31-33, Table 6"
+    asset_types: [line]
+    topics: [fault-location.current-only, network-model, source-impedance]
+    analyzer_state: catalogued
+    summary: "Candidate method: match measured terminal current magnitudes against a short-circuit network model."
+    rules:
+      - "Search candidate fault positions until simulated end-current ratios match the recorded ratio. The model must represent the fault-time network topology and sources."
+      - "Steady-state current magnitudes do not require common phasor phase; changing waveforms still require comparable fault regimes."
+      - "Fault type, appropriate sequence currents and pre-fault load treatment are needed; unmodelled load or coupling can cause error."
+      - "Project interpretation: potentially useful when voltage evidence is unusable, but not a substitute for missing line constants or a network-model adapter. Table 6 has numerical and search-label cautions."
+  - id: C854-VOLTAGE-DROP
+    source_id: cigre-tb854
+    locator: "section 2.1.4, pages 14-15; Annex A, pages 117-118"
+    asset_types: [line]
+    topics: [fault-location.voltage-drop, distribution, topology]
+    analyzer_state: catalogued
+    summary: "Reference method: distributed voltage measurements and topology identify candidate fault sections."
+    rules:
+      - "Collect and align voltage measurements, calculate fundamental phasors, check their topology consistency, classify the fault and infer the faulted section."
+      - "Annex A derives current from voltage differences and network impedances, then distinguishes feeder and lateral candidates under a resistive-fault assumption."
+      - "Project interpretation: this is a distribution-oriented extension requiring additional monitors and topology. Its timestamp grouping and calibration assumptions must not silently repair our records or replace electrical pairing."
+  - id: C854-MEASUREMENT-CHAIN
+    source_id: cigre-tb854
+    locator: "page 11, error sources; section 3.1 page 24, Table 4; page 105, survey comments"
+    asset_types: [line]
+    topics: [measurement, ct-saturation, cvt-transient, filtering, comtrade]
+    analyzer_state: catalogued
+    summary: "Guidance: acquisition-chain errors and raw-versus-filtered vendor records affect fault-location comparability."
+    rules:
+      - "Instrument-transformer transformation error, saturation, transient response and bandwidth affect the electrical quantities available to the algorithm."
+      - "A survey comment specifically identifies differing sample rates and filtered versus raw recordings as a two-ended analysis difficulty."
+      - "Project interpretation: carry acquisition/filter provenance and known delay alongside rate and clock quality; interpolation does not remove unknown filtering errors."
+      - "TB 854 identifies CT saturation as an error source but does not supply a ready-to-implement saturation reconstruction algorithm or detector thresholds."
+  - id: C854-WINDOWS
+    source_id: cigre-tb854
+    locator: "pages 26-27, Figure 12; page 12, fault-regime caution"
+    asset_types: [line]
+    topics: [dsp.windows, fault-evolution, frequency, breaker]
+    analyzer_state: catalogued
+    summary: "Guidance: balance transient settling against the available interval before circuit changes."
+    rules:
+      - "Pre-fault windows should avoid inception; fault windows must consider system and instrument transients, phasor-filter settling and breaker action."
+      - "One-cycle Fourier windows are common; the 1.5-cycle placement example is not a universal fixed delay."
+      - "Frequency changes affect Fourier phasor estimates and window design."
+      - "Project interpretation: grade both-end windows on the same fault stage, including evolving faults, per-pole opening and unequal end clearing; decline when sufficient usable data do not exist."
+  - id: C854-PARAMETERS
+    source_id: cigre-tb854
+    locator: "pages 24-28, Table 5 and parameter maintenance discussion"
+    asset_types: [line]
+    topics: [line-parameters, parameter-estimation, units, provenance]
+    analyzer_state: catalogued
+    summary: "Guidance: verified impedance data and topology maintenance can improve estimates substantially."
+    rules:
+      - "Retain whether parameters are per-length, total or per-unit, including frequency and impedance bases."
+      - "Table 5 reports 12 ground-fault observations at one location on one line, with mean DFR error of 4.8 km using table parameters and 2.3 km using measured parameters; these are source-reported summaries, with arithmetic cautions in the table."
+      - "Reconductoring, new terminals, substations and parallel circuits can require updated line parameters."
+      - "Project interpretation: version parameter provenance; provisional conductor values are not field validation. A Tier-1 fit must not absorb an omitted coupling or scaling error into Z0."
+  - id: C854-PAIRING
+    source_id: cigre-tb854
+    locator: "pages 28-31, central collection and double-ended applications"
+    asset_types: [line]
+    topics: [pairing, synchronization, autoreclose, collection]
+    analyzer_state: catalogued
+    summary: "Guidance: collecting the correct records and matching the fault stage are prerequisites to central two-ended analysis."
+    rules:
+      - "Clock drift, missing synchronization and time-tag defects complicate matching opposite-end files; autoreclosure creates multiple nearby records."
+      - "A single 124.7 km line example reports errors of 4.6 and 7.9 percent from individual relays versus 0.78 percent after manual alignment and two-ended analysis. This is not validation of our E5 or automatic pairing."
+      - "Project interpretation: keep asset and electrical corroboration ahead of narrow timestamp filters, as required by the existing fleet evidence; retain shot/stage ambiguity visibly."
+  - id: C854-SECTIONS
+    source_id: cigre-tb854
+    locator: "section 3.2.2.1, pages 47-51, equation 24, Tables 8-9 and Figures 42-48"
+    asset_types: [line]
+    topics: [line-model.sections, fault-location.nonhomogeneous, line-parameters]
+    analyzer_state: catalogued
+    summary: "Candidate extension: propagate voltages and currents through each homogeneous section before solving within it."
+    rules:
+      - "For a series-only healthy section, the next voltage is the previous voltage minus section impedance times current, and current remains unchanged."
+      - "Evaluate candidate sections using their own electrical parameters; a general transfer model is required when series-only assumptions are insufficient."
+      - "One overhead/cable field example reports 0.09 mile error with section modelling versus 2.18 miles for a conventional summed-impedance two-ended method. Its terminal naming is inconsistent in the prose."
+      - "Project interpretation: the existing reactance-to-chainage conversion is useful but does not provide a section-aware electrical solution for general varying R/X or Z0/Z1."
+  - id: C854-COUPLING
+    source_id: cigre-tb854
+    locator: "section 3.2.4, pages 53-56, equations 25-27, Table 11; Annex F page 124"
+    asset_types: [line]
+    topics: [line-model.coupling, double-circuit, untransposed, sequence-components]
+    analyzer_state: catalogued
+    summary: "Guidance: asymmetry and inter-circuit coupling can invalidate decoupled scalar sequence models."
+    rules:
+      - "The double-circuit phase model has self and mutual terms in a 6-by-6 impedance matrix; asymmetric geometry can couple sequence networks."
+      - "Adjacent-circuit in-service, open and earthed configurations can change apparent impedances."
+      - "Table 11 lists 11 events but only four inspected locations; one row reports 90.4 km single-ended and 128.9 km two-ended against 98.0 km inspected. This is not a comparison of our implementations."
+      - "Annex F illustrates cross-sequence terms in the positive-sequence voltage equation; it is not a complete coupled-corridor solver."
+      - "Project interpretation: E5's lack of explicit Z0 input does not establish immunity to all coupling. Obtain corridor geometry/parameters and circuit-state evidence before treating the scalar model as validated."
+  - id: C854-LONG-LINE
+    source_id: cigre-tb854
+    locator: "page 11, line-capacitance error; pages 47-48, section transfer models"
+    asset_types: [line]
+    topics: [line-model.capacitance, long-line, charging-current]
+    analyzer_state: catalogued
+    summary: "Guidance: neglected capacitance and inadequate line models can impair phasor fault location."
+    rules:
+      - "The single-ended error inventory includes line capacitance on medium and long EHV lines."
+      - "Project interpretation: section shunt fields do not imply shunt-aware estimation; the current estimator uses series impedance."
+      - "Project interpretation: evaluate a distributed/two-port extension against an independent model with verified admittance data. TB 854 does not supply a complete replacement for E5 or a universal 150 km threshold."
+  - id: C854-SERIES-COMPENSATION
+    source_id: cigre-tb854
+    locator: "section 3.2.3, pages 51-53, Figure 50 and Table 10"
+    asset_types: [line]
+    topics: [line-model.series-compensation, mov, applicability]
+    analyzer_state: catalogued
+    summary: "Guidance: capacitor, MOV and bypass states change the apparent impedance during faults."
+    rules:
+      - "Nonlinear MOV conduction, capacitor bypass and sustained transients complicate impedance-based location."
+      - "The brochure describes utility practices using separately covered uncompensated sections; this depends on knowing which measurements are applicable."
+      - "Project interpretation: preserve the existing series-compensated-line refusal. A typical compensation percentage is not enough to enable the ordinary estimator."
+  - id: C854-SCOPE-BOUNDARIES
+    source_id: cigre-tb854
+    locator: "sections 2.2-2.4, pages 15-23; sections 3.3-3.5, pages 56-78; section 6.1, pages 91-93"
+    asset_types: [line]
+    topics: [applicability, travelling-wave, distribution, multi-terminal, synchrophasors]
+    analyzer_state: catalogued
+    summary: "Reference context: alternative device classes and network topologies have additional prerequisites."
+    rules:
+      - "Travelling-wave analysis requires suitable acquisition bandwidth and wavefront information; phasor recordings cannot recover absent high-frequency data."
+      - "FCIs help distinguish distribution branches; multi-terminal and PMU methods depend on topology and measurement observability."
+      - "Project interpretation: keep travelling-wave location outside the current hardware scope, preserve the two-terminal boundary and do not introduce a GPS dependency for the primary method."
+  - id: C854-GIS
+    source_id: cigre-tb854
+    locator: "section 4.1, pages 79-80; page 90, patrol; page 109, survey comments"
+    asset_types: [line]
+    topics: [gis, towers, patrol, report]
+    analyzer_state: catalogued
+    summary: "Guidance: convert electrical estimates to approximate tower locations and a practical patrol area."
+    rules:
+      - "Use cumulative span lengths and tower coordinates to locate the estimated distance on the actual route."
+      - "Terrain, vegetation and other corridor conditions can guide inspection in the vicinity of the estimate."
+      - "Project interpretation: show the tower interval supported by uncertainty, not a falsely exact tower; require real chainage and coordinates before producing operational patrol guidance."
+  - id: C854-LIGHTNING
+    source_id: cigre-tb854
+    locator: "section 4.2, pages 80-82, Figures 84-86"
+    asset_types: [line]
+    topics: [lightning, gis, cause-corroboration, time-uncertainty]
+    analyzer_state: catalogued
+    summary: "Guidance: lightning data provide uncertain spatial and temporal corroboration."
+    rules:
+      - "Impact locations have probability regions; strokes may be missed, and a flashover can occur several spans from the impact."
+      - "Correlation must account for recorder/SCADA timing, acquisition delay and fault-inception versus trip time."
+      - "A storm-time coincidence can be independent of the electrical fault; lightning evidence alone does not determine restoration action."
+      - "Project interpretation: preserve impact uncertainty and inferred association separately from physics location and confirmed cause. The two-second source example is not a universal matching window."
+  - id: C854-FIRE
+    source_id: cigre-tb854
+    locator: "section 4.3, pages 82-86, Figures 87-92"
+    asset_types: [line]
+    topics: [vegetation-fire, gis, cause-corroboration]
+    analyzer_state: catalogued
+    summary: "Guidance: fire observations near a corridor can support investigation of a suspected flashover cause."
+    rules:
+      - "Satellite fire products have spatial-resolution and detection limitations; match their location and observation time to the line corridor."
+      - "Project interpretation: treat a fire match as supporting evidence rather than exact fault position or established cause."
+      - "The brochure's sensor-resolution examples describe historical systems, not specifications for a current provider."
+  - id: C854-OPERATIONS-FEEDBACK
+    source_id: cigre-tb854
+    locator: "sections 5.1-5.2, pages 87-90, Tables 23-24; page 109, recurring temporary faults"
+    asset_types: [line]
+    topics: [report, ground-truth, autoreclose, recurring-faults, notifications]
+    analyzer_state: catalogued
+    summary: "Guidance: preserve estimates, operations and inspected locations in the same fault-information workflow."
+    rules:
+      - "Document equipment, fault time/phases, protection indications, suspected cause, estimated location, breaker/reclose operations and system impact."
+      - "Retain inspected locations and records alongside calculations; successful reclosure need not end engineering analysis."
+      - "Repeated temporary faults at similar locations can motivate preventive inspection."
+      - "Table 23 is an example notification policy, not a universal utility procedure."
+      - "Project interpretation: build on the incident report and ground-truth store, retain revisions and uncertainty, and keep dispatch/energisation decisions with the authorised operational process."
+  - id: C854-MODEL-BASED-LEARNING
+    source_id: cigre-tb854
+    locator: "section 6.2, pages 93-94, Figure 94"
+    asset_types: [line]
+    topics: [machine-learning, synthetic-validation, distribution]
+    analyzer_state: catalogued
+    summary: "Reference method: simulation and classification can narrow candidates before a physics calculation."
+    rules:
+      - "The described distribution approach compares measured quantities with simulated faults and uses a decision tree to reduce the segment search."
+      - "Its reported training example uses 49,210 simulated scenarios with measurement noise; it is not evidence for training a fault-distance model on a handful of events per relay."
+      - "Project interpretation: preserve the existing ban on per-relay learned fault location and the bounded, validated learning roles in PROJECT_CONTEXT.md."
+  - id: C854-SOURCE-CAUTIONS
+    source_id: cigre-tb854
+    locator: "Table 1 page 10; equation 7 page 11; equation 8 page 12; Table 5 page 25; Table 6 pages 32-33; Figures 45/48 pages 49-50"
+    asset_types: [line]
+    topics: [source-cautions, compensation, validation, units]
+    analyzer_state: catalogued
+    summary: "Extraction review: apparent inconsistencies in the supplied copy require care before copying formulas or benchmarks."
+    rules:
+      - "Project observation, not published errata: Table 1 uses k0*I0 while defining k0=(Z0-Z1)/(3*Z1) and I0 as sequence current. Our convention requires k0*(3*I0)."
+      - "Implementation distinction: equation 7 uses magnitude bars; our E4 deliberately retains the real part and imaginary residual."
+      - "Table 5's first DFR table-parameter row lists 65.8 km versus 60.8 km but prints 6.0 km error; subtraction gives 5.0 km."
+      - "Table 6 step 2 prints remote current 1496 A where the prose uses 1946 A; only the latter fits its stated ratio. Its halving sequence is bisection-style despite the golden-search caption."
+      - "The page 33 example's 0.55 km error is approximately 0.214 percent of the 256.8 km line; the reported 0.475 percent corresponds to the 115.9 km fault-distance denominator."
+      - "Page 49 names terminal Y for the 19.0 mile junction while Table 8 ordering and Figure 48 place it from X. Resolve the reference before constructing a numerical oracle."
+      - "Detailed derivations, applicability decisions and visual-review findings are recorded in project-docs/CIGRE_TB854_METHODS.md."

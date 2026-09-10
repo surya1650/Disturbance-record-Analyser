@@ -1,0 +1,21 @@
+// Semantic browser-model checks: node tests/navigation_model.cjs
+const assert = require('node:assert/strict');
+const m = require('../src/dranalyser/application/static/navigation-model.js');
+const point = {state:'assertion observed',intervals:[{start_s:.1,end_s:.2,continues_at_capture_end:false}]};
+assert.equal(m.pointState(point,.1,[0,.3]),'active indication');
+assert.equal(m.pointState(point,.2,[0,.3]),'inactive indication');
+assert.equal(m.pointState(point,.31,[0,.3]),'unknown');
+assert.equal(m.pointState(null,.1,[0,.3]),'unknown');
+assert.equal(m.pointState({...point,state:'insufficient samples'},.1,[0,.3]),'unknown');
+assert.equal(m.pointState({...point,state:'unavailable for continuous navigation'},.1,[0,.3]),'unknown');
+assert.equal(m.pointState({state:'active at capture start',intervals:[{start_s:0,end_s:.3,continues_at_capture_end:true}]},.3,[0,.3]),'active indication');
+assert.equal(m.axis({trigger_offset_s:.15}).toDisplay(.1), -49.999999999999986);
+assert.equal(m.axis({trigger_offset_s:null}).toDisplay(.1),100);
+assert.ok(Number.isNaN(m.axis({trigger_offset_s:.15}).toDisplay(null)));
+assert.equal(m.axis({trigger_offset_s:.15,lag_ms:1418000}).toLocal(0),.15);
+assert.equal(m.interval(.2,.1,[0,.3]),null);
+assert.equal(m.interval(-.1,.2,[0,.3]),null);
+assert.deepEqual(m.interval(.1,.2,[0,.3]),[.1,.2]);
+assert.deepEqual(m.selectedBins({bins:[[0,.1,-999,999,100],[.2,.3,1,2,100]]},.05,.15),[[0,.1,-999,999,100]]);
+assert.equal(m.events([{...point,channel:'trip',meanings:['TRIP']}],.15,.18)[0].start_s,.1);
+console.log('Navigation model: 16 boundary, time-basis and display-selection assertions passed');

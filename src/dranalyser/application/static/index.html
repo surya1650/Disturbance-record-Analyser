@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DR Analyser · Local workspace</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="#overview"><span class="brand-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M3 17h6l4-10 6 19 4-9h6" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg></span><span>DR Analyser<small>PROTECTION INTELLIGENCE</small></span></a>
+  <div class="nav-label">WORKSPACE</div>
+  <nav><a href="#overview" data-nav="overview"><span>▦</span> Overview</a><a href="#upload" data-nav="upload"><span>↥</span> Upload records</a><a href="#integrations" data-nav="integrations"><span>⇄</span> Integrations</a></nav>
+  <div class="sidebar-note"><span class="dot"></span> Running on this computer<p>Your files and analysis results stay in this local workspace.</p><span class="version">LOCAL APPLICATION · v0.2</span></div>
+</aside>
+<main>
+  <header class="topbar"><span id="breadcrumb">Workspace / Overview</span><span class="local-pill"><span class="dot"></span> Local workspace</span></header>
+  <div id="notice" class="notice" role="alert" hidden></div>
+  <section id="overview" class="view">
+    <div class="page-title"><div><div class="eyebrow">DISTURBANCE RECORD ANALYSIS</div><h1>Incident workspace</h1><p>From relay records to an evidence-backed analysis.</p></div><a class="button primary" href="#upload">＋ Upload records</a></div>
+    <div class="metrics" id="metrics"></div>
+    <div class="panel">
+      <div class="panel-heading"><div><h2>Recent incidents</h2><p>Manual uploads and connected sources, in one place.</p></div><span class="live-label"><span class="dot"></span> Updates automatically</span></div>
+      <div class="toolbar"><input id="search" aria-label="Search incidents" placeholder="Search by incident name or ID…"><select id="state-filter" aria-label="Filter status"><option value="">All statuses</option><option value="needs_review">Needs review</option><option value="queued">Queued</option><option value="running">Processing</option><option value="completed">Completed</option><option value="attention">Needs attention</option><option value="failed">Failed</option></select></div>
+      <div id="incident-list" class="table-wrap"><p class="empty">Loading incidents…</p></div>
+      <div class="pagination"><button class="button quiet" id="prev">← Previous</button><span id="page-label"></span><button class="button quiet" id="next">Next →</button></div>
+    </div>
+    <div class="bottom-grid"><article class="info-card"><span class="icon-box">↥</span><h3>A complete event, together</h3><p>Upload a ZIP, a folder, or matching CFG/DAT files. Include records from both ends when available.</p><a href="#upload">Add an incident →</a></article><article class="info-card"><span class="icon-box">⇄</span><h3>Ready for automated collection</h3><p>Connect an existing collector through a watched folder or the intake API. Review uncertain assignments here.</p><a href="#integrations">Set up intake →</a></article></div>
+  </section>
+  <section id="upload" class="view" hidden>
+    <div class="page-title"><div><div class="eyebrow">MANUAL INTAKE</div><h1>Upload disturbance records</h1><p>Keep all records for one fault in the same incident.</p></div></div>
+    <div class="upload-layout"><form id="upload-form" class="panel form-panel">
+      <label for="incident-name">Incident name</label><input id="incident-name" maxlength="200" required placeholder="e.g. Line 205 · 20 August disturbance">
+      <label for="target-incident">Add to incident <span class="muted">(optional)</span></label><select id="target-incident"><option value="">Create a new incident</option></select><p class="field-help">A late remote-end record creates a new revision and preserves previous reports.</p>
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose disturbance record files"><span class="upload-symbol">↥</span><h2>Drop your records here</h2><p>ZIP archives, COMTRADE CFG + DAT pairs, or CFF files</p><span class="button primary">Choose files</span><small>Up to 400 MB per incident submission</small></div>
+      <input id="file-picker" type="file" multiple hidden><input id="folder-picker" type="file" multiple webkitdirectory hidden>
+      <button id="choose-folder" type="button" class="button quiet">Or choose an entire folder</button>
+      <div id="selected-files" aria-live="polite"></div>
+      <div id="upload-progress" hidden><progress max="100" value="0"></progress><p>Uploading…</p></div>
+      <div class="form-footer"><span class="muted">Original files are retained with checksums.</span><button id="submit-upload" type="submit" class="button primary">Upload & inspect →</button></div>
+    </form><aside class="panel upload-help"><div class="eyebrow">WHAT HAPPENS NEXT</div><ol><li><strong>Check the records</strong><p>We check file integrity, channels, scaling and usable data.</p></li><li><strong>Confirm the assignment</strong><p>Review the line and terminal for each usable relay record.</p></li><li><strong>Analyse the incident</strong><p>View the protection verdict, location method and supporting evidence.</p></li></ol><div class="hint">Missing the far-end record? Start with one terminal and attach the remote files later.</div></aside></div>
+  </section>
+  <section id="integrations" class="view" hidden>
+    <div class="page-title"><div><div class="eyebrow">AUTOMATED INTAKE</div><h1>Connect your record sources</h1><p>Both intake paths use the same checks, review workflow and analyser.</p></div><button id="scan-inbox" class="button primary">Scan inbox now</button></div>
+    <div class="bottom-grid"><article class="panel integration-card"><span class="icon-box">▤</span><h2>Watched folder</h2><span class="badge completed">Enabled</span><p>Have your collector write one folder or ZIP per event into:</p><code id="inbox-path"></code><p>When the copy is complete, create <code>.ready</code> inside the event folder, or <code>event.zip.ready</code> beside its ZIP. Originals stay in place.</p><p class="field-help">Optional <code>intake.json</code> carries a confirmed line and terminal assignment. Otherwise, the incident waits for review.</p></article>
+    <article class="panel integration-card"><span class="icon-box">↔</span><h2>Push API</h2><span class="badge completed">Available locally</span><p>Send multipart files to <code>POST /api/intake</code>. A receipt returns immediately; processing continues in the job queue.</p><p>Read the integration token from:</p><code id="token-path"></code><p class="field-help">Send it in the <code>X-DR-Token</code> header. Protocol collectors can push their completed COMTRADE exports here.</p><a href="/openapi.json" target="_blank" rel="noopener">View API schema ↗</a></article></div>
+    <div class="panel"><div class="panel-heading"><div><h2>Collector activity</h2><p>Persistent receipts make retries and intake problems visible.</p></div></div><div id="receipts" class="table-wrap"></div></div>
+    <div class="hint">Direct relay connections use site-specific collectors. This application accepts their exported records through the folder or API interface; manual upload is always available.</div>
+  </section>
+  <section id="detail" class="view" hidden><div id="detail-content"></div></section>
+  <footer>DR Analyser <span>·</span> Evidence first. Every location carries its method.</footer>
+</main><script src="/static/rx-review.js" defer></script><script src="/static/mapping.js" defer></script><script src="/static/stage-review.js" defer></script><script src="/static/stages.js" defer></script><script src="/static/evidence.js" defer></script><script src="/static/audits.js" defer></script><script src="/static/navigation-model.js" defer></script><script src="/static/resolution.js" defer></script><script src="/static/navigation.js" defer></script><script src="/static/app.js" defer></script>
+</body></html>

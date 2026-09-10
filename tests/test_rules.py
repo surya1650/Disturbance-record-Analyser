@@ -276,11 +276,13 @@ def test_real_record_flags_the_disabled_earth_fault_stage():
 
 @needs_corpus
 def test_real_record_questions_the_silent_overcurrent_stage():
-    """7.1 kA against a 1600 A pickup, with no overcurrent pickup recorded."""
+    """Windowed sample RMS still exceeds pickup, without a peak/sqrt(2) claim."""
     from tests.helpers import real_incident
 
     f = real_incident(M2)
-    assert f["S_i_fault_over_oc_setting"] > 4.0
+    assert f["S_i_fault_ka"] == pytest.approx(5.8683, abs=0.01)
+    assert f["S_i_fault_over_oc_setting"] == pytest.approx(1000*f["S_i_fault_ka"]/f["S_oc_setting_a"])
+    assert f["S_i_fault_over_oc_setting"] > 1.2  # BU-05's actual pickup criterion
     assert f["S_oc_pickup"] is False
     res = apply_rules(f, load_rules())
     assert any(x.rule_id == "BU-05" for x in res.findings)

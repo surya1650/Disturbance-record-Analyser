@@ -6,6 +6,451 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-09-10 - Independent network oracle and guarded stage E5
+
+Completed the next stage-aware location milestone and prepared the accumulated
+application work for the user's requested GitHub publication. The ensemble
+refuses supported nonstationarity; separate E5 stages require matching reviewed
+groups and explicit selection at both terminal primaries. Local interior quality
+is checked independently while original flags, records, timelines and reports
+remain visible. E5 stays unsynchronized. No stage-distance blending or tower/CI
+claim is made. See [STAGE_LOCATION_VALIDATION.md](STAGE_LOCATION_VALIDATION.md).
+
+**603 tests pass**, architecture direct/self-tests, focused Ruff/JS and Stage-A
+10,000 PASS (clean p95 0.4403%; 9,926 located, 74 refused). The three added
+refusals are saturated seeds 2266, 6691 and 9964, not proven physical evolution.
+All 30 new stage tests pass, including independent branch-network truth and
+review/worker/report history. Desktop/mobile Edge QA passed after visual layout
+inspection; no page errors. All ten previous app roots/revisions/artifacts remain
+fingerprint-identical. Preview 8102, synthetic incident
+`3833fb155e04488da2c1764a828035b2`, revision 4. Only this newly created server was
+restarted to load final code. Real records, settings, databases and QA artifacts
+remain ignored. Git history/remote status records the actual publication outcome.
+TB 854, physical transient and field validation remain incomplete.
+
+---
+
+## 2026-09-10 - Source-bound fault-stage review and clock-quality evidence
+
+> Superseded by the guarded stage-location milestone above for estimator-window
+> policy; this entry records the earlier implementation state.
+
+**Implemented locally; not committed or pushed.** Added cycle-block phase-current
+observation intervals with native/local/trigger bounds, uncertain edges, raw
+trip/reclose markers and conservative quality refusal. Initial/evolving/renewed
+current candidates stay separate; reclose labels require a mapped close edge.
+All-pair candidates retain repeated-pattern ambiguity and compare same-terminal
+pairs first. Optional stage reviews bind the exact source, incident, line,
+terminal/system identity, mapping and stage inventory; matching reviewed groups
+associate stages under explicit reviewer declarations. Stale/partial/withdrawn
+reviews retain refusals. Declarations do not authenticate reviewers or establish
+clock synchronization. Parser retention now includes local_code and leapsec;
+clock evidence separates source-reported quality/error bounds from verified
+uncertainty. Browser, saved report and navigator/export expose the new contracts.
+No estimator, window, rule input or waveform was changed. See
+[STAGE_CLOCK_VALIDATION.md](STAGE_CLOCK_VALIDATION.md).
+
+**573 pytest tests passed**, one upstream Starlette warning, 173.19 seconds;
+64 tests added. Independent piecewise sinusoidal states validate observations
+at 1000/1200/2400 Hz; contract tests cover repeated patterns, clocks/trigger offsets,
+quality/source refusal, explicit reviewer groups and invalidation. Application
+revision tests verify stable evidence, immutable older reports and escaped text.
+Architecture direct/self-tests, focused Ruff, JS syntax, 16 navigation-model and
+10 native-cursor assertions, and git diff --check pass. **Stage-A 10,000 PASS**:
+clean p95 **0.4403%**, all-located p95 **11.470%**, 9,929 located / 71 refused,
+CT-saturated mean **11.270%**, p95 **53.902%**. No impossible m without a caveat.
+
+Headless Edge passed four-relay review/refusal/withdrawal/restoration across four
+revisions, independent navigator switching, exported HTML and a second evolving/
+reclose incident. No JavaScript errors or mobile page overflow. Desktop/mobile
+screenshots were inspected. A QA-helper panel-toggle mistake was corrected and
+resumed on the same incident; no application patch was required for that retry.
+Current backend: http://127.0.0.1:8101, isolated `out/application-stage-preview`,
+one worker. Reviewed synthetic incident `bdb558585eb04fc9a026501964d0ebd2`, revision 4;
+evolving/reclose example `f1ad466912fa430b84b97adc02d91b0e`, revision 1. All nine prior
+application roots' revision rows and saved artifacts match read-only fingerprints.
+No process was stopped and existing uncommitted work remains intact.
+
+**Limits:** stage detection is advisory; unchanged-magnitude/short/weak-infeed
+stages may be missed. Existing saturation flags can withhold evolving-stage
+association. Legacy analytical windows may still span incompatible stages;
+independent network oracles and per-stage quality/window gating are the next
+bounded work. Reported clock bounds do not verify UTC or source accuracy, and
+E4 gains no new authorization. E5 remains unsynchronized. TB 854, field validation,
+full breaker interpretation and external settings/SAP/GIS contracts remain open.
+
+---
+
+## 2026-09-10 - Reviewed ground-loop and zone-boundary inspection
+
+**Implemented locally, not committed or pushed.** Added optional per-record R-X
+reviews carrying exact recording/settings hashes, current mapping, reviewer and
+rationale, explicit identity/event-validity/scaling/polarity/zero-sequence VT
+confirmations, and settings-base CT/VT ratios. The navigator adds AG/BG/CG using
+existing phasors and native-derived k0. Exported phase/earth outlines use reviewed
+VT/CT conversion without characteristic fallback. Missing, stale, ambiguous or
+unsupported inputs withhold the affected view; original phase inspection remains
+available within its prior limits. Browser, native-view export and HTML evidence
+retain the declarations and refusals. Estimators, rule inputs, original samples
+and philosophy validity/coordination checks are unchanged. See
+[RX_INPUT_VALIDATION.md](RX_INPUT_VALIDATION.md).
+
+**509 tests passed**, one upstream Starlette warning; 29 tests added. Independent
+phase-domain waveform fixtures recover 5+j12 ohm on all ground loops, with two
+phase rotations and an unrelated neutral channel. Revision/association tests
+verify per-relay isolation, stale-input refusal, separate phase/earth geometry,
+escaping and immutable previous reports. Architecture direct/self-tests, focused
+Ruff, JS syntax, 16 navigation-model and 10 native-cursor assertions pass.
+Stage-A **10,000 PASS**: clean p95 **0.4403%**, all-located p95 **11.470%**,
+9,929 located/71 refused; CT-saturated mean **11.270%**, p95 **53.902%**.
+This is bounded software/scalar evidence, not completed TB 854 or field validation.
+
+Headless Edge passed the review/withholding/mapping-invalidation/restore workflow
+across four revisions, local-relay switching, ground/phase boundaries, HTML export
+and desktop/mobile checks. Current complete synthetic preview:
+http://127.0.0.1:8100/#incident/b81c038543ca4aefa3ddc1fd9f707fe6, revision 4,
+isolated `out/application-rx-preview`. Original 8091 revision/report hashes match
+the preservation snapshot; all earlier app servers remain healthy with empty queues.
+See [SESSION_HANDOFF_2026-09-10.md](SESSION_HANDOFF_2026-09-10.md) for the next session.
+
+## 2026-09-09 - Reviewed channel identities and native waveform inspection
+
+**Implemented locally, not committed or pushed.** Added original channel inventory,
+position/hash-bound analog/digital declarations and an assignment editor with review
+rationale and restoration. CFG/CFF assembly applies reviewed identities before a
+fresh conformance check. Sample values, ratios and polarity stay unchanged. Hash,
+position, quantity and collision errors are refused; blocked records do not bypass
+the gate. Digital overrides reach DSP timing, rules, audits, reports and navigation.
+Original/pre-review evidence and previous report revisions remain visible. Duplicate
+digital labels retain distinct raw positions. See
+[CHANNEL_MAPPING_VALIDATION.md](CHANNEL_MAPPING_VALIDATION.md).
+
+The native-sample endpoint verifies the revision's stored file hash, path and channel
+identity, then returns up to 20,000 exact selected samples. The navigator supports
+sample stepping and separately labelled inclusive-interval sample RMS/peak metrics.
+Changed selections invalidate loaded data and pending responses. Inspection and
+current-view exports do not change original analysis windows or saved reports.
+
+Mapping: **468 tests passed**, 16 added. Native inspection: **480 tests passed**,
+12 more added; 16 navigation-model and 10 native-cursor Node assertions pass.
+Architecture direct/self-tests, focused Ruff, JS syntax and diff checks pass.
+Stage-A **10,000 PASS** after mapping/DSP routing changes: clean p95 **0.4403%**,
+all-located p95 **11.470%**, 9,929 located/71 refused; CT mean **11.270%**, p95
+**53.902%**. These remain software/scalar regression evidence, not TB 854 or field
+validation. No estimator equations or electrical models were changed.
+
+Headless Edge verified four-relay review and missing-reason refusal, blocked-record
+recheck, same-end independence, escaped labels/reasons, restoration/reapplication
+over three revisions, native sample stepping/measurements/export, delayed-response
+invalidation, and unchanged prior reports. Desktop/mobile screenshots inspected;
+no JavaScript errors or page overflow. Complete synthetic preview:
+http://127.0.0.1:8099/#incident/52b238dedbab480fa43865258215811b, revision 3,
+isolated `out/application-native-preview`; 8098 is mapping-only. Earlier servers
+and stored data remain intact. Verified ground-loop/zone prerequisites, same-stage/
+clock association, external settings/SAP/GIS contracts and field validation remain.
+
+## 2026-09-09 - Local event, channel and phase-loop navigator
+
+**Implemented locally, not committed or pushed.** Added linked per-relay local
+cursor/interval controls, waveform extrema envelopes, phase-phase R-X inspection,
+digital active intervals and logical SLD. Unknown physical breaker positions,
+independent trigger-zero axes and unavailable records remain explicit. A current
+view can be exported as script-free HTML with record hash and revision. Display
+selection/thinning cannot change the analysis. Worker artifacts are frozen per
+revision and fetched lazily through a path-contained API. See
+[NAVIGATION_VALIDATION.md](NAVIGATION_VALIDATION.md) for implemented/unsupported scope.
+
+**452 tests pass**, including 15 new independent/boundary/API cases; 16 Node model
+assertions, architecture direct/self-tests, focused Ruff and JS syntax pass.
+Stage-A **10,000 PASS**, clean p95 **0.4403%**, all-located p95 **11.470%**,
+9,929 located/71 refused; CT-saturated mean **11.270%**, p95 **53.902%**.
+An independent 5+j12-ohm sine fixture exposed the initialized mimic-filter window;
+the display now excludes it. Normalized waveform labels use A/V despite original
+kA/kV metadata. Estimators, DSP and analysis windows were not changed.
+
+Headless Edge checks cover single/two-end/four-relay cases, selection/range/cursor
+linkage, unavailable time/records, escaping and standalone export. Desktop/mobile
+and export screenshots inspected; no JavaScript errors or page overflow. Original
+8091 saved revision contents and report hashes match the preservation snapshot.
+Complete synthetic preview: http://127.0.0.1:8097/#incident/a67f761bc9234d8283472fdd00d84d27,
+isolated `out/application-navigation-final`. Earlier applications remain running.
+Full-resolution retrieval, reviewed mappings, ground-loop/zone prerequisites,
+common-stage/clock association and field/TB 854 validation remain unfinished.
+
+## 2026-09-09 - Per-relay recording and philosophy checklists
+
+**Implemented locally, not committed or pushed.** The API, browser and HTML annex
+now retain checklists for every record. Explicit WG-3 profiles cover all 32/14/42
+base-table rows with source locators, matched points and unsupported semantics.
+Settings bind independently by record folder/stem; ambiguous shared/multiple
+exports are refused. File hashes and importer/missing-field provenance are shown.
+Missing timers/angles, reverse characteristics, invalid triggers and unsupported
+multi-rate sampling no longer yield false audit judgments. Generic digital
+points cannot silently satisfy more specific requirements. Full configuration,
+event-effective settings identity, per-relay primary reach and coordination stay
+not evaluable. See [RECORDING_PHILOSOPHY_VALIDATION.md](RECORDING_PHILOSOPHY_VALIDATION.md).
+
+**437 tests pass**, 26 added cases; architecture direct/self-tests, focused Ruff,
+JS syntax and diff checks pass. Stage-A **10,000 PASS**, clean p95 **0.4403%**,
+all-located p95 **11.470%**, 9,929 located/71 refused, CT-saturated mean **11.270%**
+and p95 **53.902%**. These are software/location-regression checks, not TB 854,
+full philosophy or field validation.
+
+Headless Edge desktop/mobile/exported-HTML QA verified four profiles/checklists,
+separate S/Main-1 and S/Main-2 timer evidence, missing remote exports, late
+settings, profile persistence and unchanged prior reports. Screenshots inspected;
+no JavaScript errors or mobile page overflow. Current synthetic preview:
+http://127.0.0.1:8095/#incident/a2d915fe7a3542cdb99f3ce468e7b812, revision 3,
+isolated `out/application-checklist-preview`. Automatic approval review blocked
+stopping/restarting 8094 with "blocked by policy"; that process remains running.
+All earlier app roots are preserved. Next: linked channel/R-X and logical SLD
+event views with honest local trigger-zero time and unknown breaker states.
+
+## 2026-09-09 - Operational comparisons and advisory onset correlation
+
+**State: implemented locally, not committed or pushed.** Added
+[OPERATION_ASSOCIATION_VALIDATION.md](OPERATION_ASSOCIATION_VALIDATION.md), with
+explicit implemented, bounded-validation and unsupported states. Existing
+uncommitted work, local application data and historical report revisions remain.
+
+All declared-terminal relay pairs now retain side-by-side start/trip/zone/carrier/
+breaker-indication/reclose observations and local inception-to-edge durations.
+Changing the analytical primary does not change these comparisons. Unknown or
+repeated protection-system labels require identity review. Different observations
+get a separate **Review relay differences** warning; the original selected-record
+rule assessment remains visible and explicitly labelled. Existing XR text no
+longer claims that disagreement proves a particular wiring/relay fault.
+
+The new pure DSP helper compares fixed-support fundamental-magnitude onset
+templates at unequal sample rates, with source windows, grid, policy thresholds,
+score and candidate local-time lag. It does not use absolute recorder timestamps
+or E5 angle. Insufficient, flat, periodic, boundary, inconsistent or flagged
+signals withhold lag; repeated operation/reclose and changing phase patterns
+withhold a stage candidate. The near-peak range is sensitivity, not calibrated
+uncertainty. Candidates are **never applied** to timestamps, location or rules,
+and cannot prove physical event identity or cross-end order. The current
+generator demo can legitimately lack the required two changing common channels;
+no acceptance threshold was weakened to force it to align.
+
+Validation: **411 tests pass**, including 27 added cases covering analytic onset
+profiles, actual DSP on independent sine/amplitude-step waveforms (1000/1200 Hz,
+40 ms local-coordinate shift, 1418 s recorder-clock skew), refusal cases, stage
+screens, identity/order invariance, revision preservation and review warnings.
+Architecture direct/self-tests, added-code Ruff, JS syntax and diff checks pass.
+Stage-A **10,000 cases PASS**, clean p95 **0.4403%**, all-located p95 **11.470%**,
+9,929 located/71 refused; CT-saturated mean **11.270%**, p95 **53.902%**.
+Stage-A exercises the location path, not the new operational correlation helper.
+None of these gates constitutes TB 854 or field validation.
+
+Isolated headless Edge checks pass on desktop/mobile and exported HTML: four
+relays, six comparisons, candidate lag details, an intentionally different trip
+observation and the review warning; no JS errors or mobile page overflow. A new
+revision retains the earlier report. Ignored artifacts are under `out/qa`.
+Updated preview: **http://127.0.0.1:8094**, isolated
+`out/application-operation-preview` root and synthetic data. The earlier 8091
+service (whose restart was previously blocked) and 8093 preview are intact;
+neither was stopped or reset during this milestone.
+The newly created 8094 preview's Windows reloader did not replace its backend;
+only that isolated preview was stopped and restarted without reload. A new
+analysis revision verifies the current policy while retaining prior reports.
+
+Pending: reviewed field event/stage association, trustworthy clock-quality
+ingestion, full reclose/evolving-fault segmentation, calibrated timing error,
+all-relay protection-philosophy adjudication and interactive common SLD timeline.
+Next UI work is per-relay recording-completeness and philosophy checklists, while
+retaining not-evaluable states for missing settings/evidence. No SAP/GIS adapter
+or new line solver was added. TB 854 distance/model gaps remain as documented.
+
+## 2026-09-08 - All-relay evidence and windowed measurement milestone
+
+**State: implemented locally, not committed or pushed.** Existing uncommitted
+work, application data and historical report revisions are preserved. This is
+the first delivery in [DR_OPERATIONAL_WORKFLOW_PLAN.md](DR_OPERATIONAL_WORKFLOW_PLAN.md),
+not completion of the full operational workflow or TB 854 validation.
+
+- Added shared per-record evidence to incident results, browser and a
+  variable-length HTML report annex, retaining primary/corroborating records,
+  unavailable reasons, source labels, quality flags and same-end comparisons.
+- Added explicit reviewed Main-1/Main-2/other/unknown identity independent of
+  terminal and analytical role, supported by intake metadata and revisions.
+- Each valid record trigger supplies local 0 ms; detected inception stays
+  separate. Invalid trigger metadata remains unavailable. Digital points retain
+  raw intervals, unknown/open boundaries and contradictory mapping evidence.
+  Missing records/points do not imply failed operation. Local trip timing does
+  not prove clearing time, breaker opening or cross-end simultaneity.
+- Added selected-window per-phase waveform RMS, fundamental RMS, measured
+  absolute peak, primary units, ratio declarations and sample/time provenance.
+  Replaced the whole-record peak/sqrt(2) current summary and overcurrent ratio
+  with sample RMS. The DHONE example changes from about 7.1 kA peak-equivalent
+  to 5.8683 kA selected-window sample RMS; its BU05 rule still triggers. No
+  estimator equations or field constants changed, and no saturated-current
+  reconstruction is implied.
+
+Validation: **384 tests passed**, one upstream TestClient warning. New bounded
+fixtures cover DC/harmonics, clipping, out-of-window peaks, missing/unusable
+samples, trigger offsets, invalid trigger metadata, digital evidence states,
+mapping ambiguity, four-relay primary changes, preserved reports and analysis
+failure reasons. Architecture direct check/self-tests pass, new Python modules
+and tests pass Ruff, JavaScript syntax checks pass, and `git diff --check` passes.
+Stage-A **10,000 cases PASS**: clean p95 **0.4403%** (4,283 cases), 9,929 located,
+71 refused; all-located p95 **11.470%**, CT-saturated mean **11.270%** and p95
+**53.902%**. These retain the supported synthetic-domain limitations.
+
+Browser QA used isolated headless Edge and a separate data root after the
+Chrome bridge failed to initialize. Four-relay desktop/mobile display,
+protection-system review/rerun and HTML annex checks pass with no JS errors or
+mobile page overflow. Screenshots/print inspection artifacts remain ignored
+under `out/qa`. Reports have two summary sections plus an annex, not a promise
+of two printed pages. Old incidents need Review & rerun for the new evidence.
+
+Runtime delivery: automatic approval review blocked stopping/restarting the
+8091 process (only reason supplied: blocked by policy). It remains running with
+the earlier backend. The updated build is running on **8093**, using isolated
+`out/application-evidence-preview` storage and a labelled synthetic four-relay
+demo. Browser/API checks there pass. Hash checks verify the original application's
+two revision payloads and two report files remain unchanged. A normal restart
+is still needed to load the new backend into the original 8091 service.
+
+Pending: full operation reconciliation still requires cross-relay/stage
+association, uncertainty and clock fallback; the existing rule verdict follows
+selected terminal records. Standards/philosophy browser integration, mapping
+overrides, linked SLD/channel/R-X navigation and SAP/GIS adapters remain future
+work. TB matrix gaps, including E5 root ties and external-distance/tower
+presentation, remain active; passing repository checks does not resolve them.
+
+## 2026-09-08 - User reprioritized the initial operational DR workflow
+
+Captured [DR_OPERATIONAL_WORKFLOW_PLAN.md](DR_OPERATIONAL_WORKFLOW_PLAN.md) from
+the user's requirements and checked it against the code. Initial scope is
+single/both-end analysis, identifying fault and operation at each relay,
+Main-1/Main-2 ambiguities, cross-end correlation with clock fallback, properly
+identified RMS/peak V/I, SLD-style event intervals, recording-standardization
+and philosophy checks, channel selection/navigation and R-X plots. Future
+settings API/document ingestion uses SAP bay IDs; line GeoJSON/GIS IDs are
+mapped through reviewed SAP associations. Those integrations do not block
+record-based analysis without line constants.
+
+Existing components cover pieces, not this whole integrated workflow. The
+report follows selected terminal records; all-relay comparisons are computed
+but not surfaced by the new app/report. Standards audits remain separate from
+that app pipeline. A concrete measurement issue is the whole-record peak/sqrt(2)
+fault-current summary, which is not a general RMS measurement. First milestone:
+per-record measurements and explicit operation/missing-evidence states, then
+reconciliation, audits and interactive SLD/timeline/channel/R-X views.
+
+The user clarified "OMS" as **0 millisecond, time of fault trigger**. Record
+trigger-zero timelines are required, with detected fault inception separately
+marked; equating two trigger-zero axes must not imply clock synchronization.
+TB validation and distance safety gaps remain documented. This was code
+inspection and documentation only; no runtime change or new test/Stage-A result.
+Existing local application and uncommitted work preserved.
+
+## 2026-09-08 - TB 854 validation matrix and stronger bounded evidence
+
+**State: local changes, not committed or pushed.** Added
+[TB854_VALIDATION_MATRIX.md](TB854_VALIDATION_MATRIX.md): 24 traceable topic rows
+covering all 22 TB catalogue entries, source/model assumptions, implementation,
+independent or existing oracle, tests, project acceptance and open gaps.
+No estimator, DSP, registry constant or application implementation changed.
+Existing uncommitted extraction/application work remains in place.
+
+Repaired the ensemble refusal test: controlled invalid estimates now enter
+before actual weighting/reconciliation. Four cases check refusal, diagnostic m,
+NaN km and interval km, no tower/range, and the caveat. An isolated in-memory
+guard bypass made all four fail. New scalar tests cover an independent phase
+impedance ground-loop fixture, E4 signed/imaginary output, passive sequence
+network angle invariance/reversal, genuinely competing E5 roots, absent-current
+refusal, clock flags, parameter bias and explicit remote orientation. Renamed
+the old constant-phasor E5 test to stop claiming branch discrimination.
+The new branch test also detects a process-local stability bypass (wrong low
+root .4 versus correct high root .6). Reproducible helper is
+`tests/tb854_guard_mutation.py`; it restores functions and never edits production.
+
+Added four retrieval/integration tests for the 22 TB entries: unique IDs and
+locators, manifest fingerprint, source filtering/CLI, catalogued status, and no
+automatic record/settings audit promotion. These are not electrical validation.
+
+**Evidence limits:** E5 can have indistinguishable stable roots and currently
+does not refuse/warn a tie. External m retains a no-patrol warning but still
+returns clamped km/tower fields. New tests document those limits without
+claiming they are solved. Wrong entered Z1 can produce a biased E4 result with
+zero imaginary residual. General mixed-section, coupled and distributed models
+remain unsupported; saturation reconstruction, interval coverage and confirmed
+two-ended field accuracy remain unvalidated. Next independent model: a
+series-only phase section oracle before a section solver, kept separate from
+coupling, shunt and CT reconstruction work. See matrix for safety follow-ups.
+
+**Verification:** final full suite 359 tests passed in 74.22 s, one upstream
+TestClient warning. Architecture guard/self-tests passed; Ruff on the new
+tests and mutation helper passed; `git diff --check` passed. Stage-A 10,000 cases PASS:
+4,283 clean, clean p95 0.4403%; 9,929 located, 71 unlocated; all-located p95
+11.470%, CT-saturated mean 11.270%, p95 53.902%; zero unflagged impossible m.
+App health and root return HTTP 200 at 8091, queue 0, without restarting it.
+Missing dev extras were installed in the existing app virtual environment;
+runtime dependencies were already satisfied. No budgets were changed.
+These results do not establish TB 854 or field validation.
+
+## 2026-09-08 - Local application with shared manual and collector intake
+
+**State: built and running locally, not committed or pushed.** New application
+at http://127.0.0.1:8091; the older workbench remains on 8090. Windows launcher,
+responsive browser UI, uploads/folders/ZIPs, explicit assignment review,
+durable SQLite jobs, leased workers, content checksums, report revisions,
+late records, reruns, retries, watched inbox and token-protected push API.
+Setup, integration contracts, review findings and scaling boundaries are in
+`LOCAL_APPLICATION.md`. A synthetic demonstration incident is clearly labelled.
+
+Fixed RIO association in the shared workbench pipeline: settings now follow
+the primary terminal record's directory; ambiguous associations are flagged.
+No DSP/fault-location equations changed. New architectural import direction
+is application -> workbench/registry; new file budgets were added deliberately.
+
+**Verification:** 316 tests passed (one upstream TestClient deprecation warning),
+architecture guard and self-tests passed, new-code Ruff and JS syntax passed.
+Stage-A in the fresh application virtual environment: 10,000 cases, clean p95
+0.4403%, PASS; all located cases p95 11.470%, 71 unlocated. Chrome upload,
+assignment review, report and rerun passed; desktop/mobile screenshots inspected.
+
+**Remaining:** direct relay protocol collectors, autonomous cross-delivery event
+pairing, multi-host infrastructure and validated field line constants. Current
+queue scaling is multiple workers on one local disk, not distributed deployment.
+
+## 2026-09-08 - CIGRE TB 854 extracted and indexed
+
+**State: local changes, not committed or pushed.** Read the supplied
+`E:/cigre/854.pdf` (137 pages extracted), reviewed project-relevant sections
+and visually checked key equations/tables. Added
+`CIGRE_TB854_METHODS.md` with source pages, method-to-code mapping,
+implementation prerequisites, proposed validation and source cautions.
+
+Added source fingerprint/provenance and **22 searchable guidance chunks** to
+`standards/`. Every new chunk is `catalogued`; none is an active compliance
+check. Updated the source-count assertion from four to five and linked the
+note from README and STANDARDS_CONTEXT. PDF scratch output is gitignored;
+the original remains at its supplied location.
+
+Main findings: general mixed-section electrical propagation is not supplied
+by the existing reactance-to-chainage conversion; asymmetric double-circuit
+coupling can impair scalar sequence estimators even without explicit Z0
+input; fault windows must represent the same circuit stage. Flagged the
+printed residual-current factor, inconsistent example arithmetic and mixed-
+line terminal label. These are observations in this copy, not published
+CIGRE errata. TB 854 does not supply a CT reconstruction implementation.
+
+**Verified this session:** source SHA-256, all 22 retrieval entries and their
+inactive status; `check_architecture.py` passed; `pytest -q` **295 passed**;
+Stage-A **10,000 cases PASS**, clean p95 **0.4403%** (4,283 clean cases).
+The sweep located 9,929 and declined 71; all-located p95 **11.470%**, and
+CT-saturated mean **11.270%**. This does not establish field accuracy.
+Used `OPENBLAS_NUM_THREADS=1`, `PYTHONPATH=src` and
+`python -m dranalyser.cli` because `dranalyse` was not on this shell's PATH.
+
+No estimator, DSP, registry parameter or operational decision logic changed.
+The note's follow-on items are proposals; missing verified field parameters
+and existing physics limitations remain open.
+
+---
+
 ## 2026-09-07 (handoff) - Session closed; requirements written down
 
 **State: committed on `main`, working tree clean, 5 commits ahead of
@@ -391,7 +836,8 @@ Outstanding, in priority order:
    Series-compensated lines are detected and refused, not approximated.
 
 Process note: three separate times a patch script wrote broken escapes into source
-(literal backspace bytes for ``, a literal CR for ``). They are invisible in an
+(literal backspace bytes for ``, a literal CR for `
+`). They are invisible in an
 editor and in grep. Do not patch source with shell heredoc + Python string
 replacement; use the editor tools.
 

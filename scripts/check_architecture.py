@@ -63,7 +63,7 @@ ALLOWED_IMPORTS = {
     "rules": {"signals", "dsp", "faultloc", "registry"},
     # Standards auditing consumes records, relay settings and the canonical
     # signal map.  It is advisory and must never be imported by the maths.
-    "standards": {"signals", "comtrade", "registry", "rules"},
+    "standards": {"signals", "comtrade", "registry", "rules", "dsp"},
     # The back-test replays the whole pipeline over an archive; it sits at the
     # top of the analysis stack, below only the CLI.
     "backtest": {"signals", "comtrade", "dsp", "faultloc", "registry", "rules"},
@@ -81,7 +81,10 @@ ALLOWED_IMPORTS = {
     # serves it locally. It reads the analysis stack; nothing analytical may
     # read it, so an upload or presentation change can never move a number.
     "workbench": {"signals", "comtrade", "dsp", "faultloc", "registry", "rules",
-                  "report", "groundtruth"},
+                  "report", "groundtruth", "standards"},
+    # Application services consume the workbench through a durable queue.
+    # The analytical layers must never depend on HTTP or job persistence.
+    "application": {"workbench", "registry"},
     "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml",
             "rules", "standards", "backtest", "report",
             "groundtruth", "stagea", "workbench"},

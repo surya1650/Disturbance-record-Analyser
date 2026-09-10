@@ -117,8 +117,8 @@ def test_e4_is_exact_when_time_aligned(m, fault):
     assert est.residual < 1e-6
 
 
-def test_e5_root_selection_prefers_the_stable_sync_angle():
-    """Both quadratic roots can sit inside [0,1]; the wrong one is unstable."""
+def test_e5_midpoint_has_constant_recovered_angle_on_repeated_phasors():
+    """Constant inputs exercise midpoint conditioning, not branch discrimination."""
     spec = SynthSpec(m=0.5, fault="AG", rf=30.0)
     _, v2s, i2s, v2r, i2r = _two_ended_inputs(spec, rotate=0.4)
     est = e5_unsynchronised([v2s] * 12, [i2s] * 12, [v2r] * 12, [i2r] * 12,

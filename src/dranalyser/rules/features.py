@@ -20,13 +20,13 @@ Two conventions that matter:
 """
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 
 from ..dsp.pipeline import Analysed
+from ..dsp.measurements import phase_measurements
 from ..faultloc.ensemble import LocationResult
 from ..registry.model import Line
 from ..registry.settings import ProtectionSettings
@@ -123,7 +123,7 @@ def terminal_features(
     ct_ratio: float = 1.0, vt_ratio: float = 1.0, z2_time_s: float = 0.35,
 ) -> TerminalFeatures:
     rec = an.record
-    sm = map_signals(list(rec.digital))
+    sm = map_signals(list(rec.digital), rec.notes.get('digital_overrides'))
     t0 = float(an.notes.get("inception_t", 0.0))
 
     def first(*canon: str) -> Optional[float]:
@@ -238,13 +238,14 @@ def terminal_features(
         "signals_unmapped": len(sm.unmapped),
     }
 
-    imax = 0.0
-    for ph in "ABC":
-        x = rec.analog.get("I" + ph)
-        if x is not None:
-            imax = max(imax, float(np.max(np.abs(x))))
-    v["i_fault_peak_a"] = imax
-    v["i_fault_ka"] = imax / math.sqrt(2.0) / 1000.0
+    measured = phase_measurements(an)
+    currents = [r for r in measured["channels"] if r["channel"] in ("IA", "IB", "IC")
+                and r["status"] == "measured"]
+    rms = max((r["rms"] for r in currents), default=None)
+    v["i_fault_peak_a"] = max((r["peak_abs"] for r in currents), default=None)
+    v["i_fault_ka"] = rms / 1000.0 if rms is not None else None
+    v["i_fault_measurement"] = "maximum phase sample RMS in selected fault window"
+    v["measurement_window"] = measured["window"]
 
     # ---- backup overcurrent / earth fault -------------------------------
     v["oc_pickup"] = oc_pu is not None
@@ -282,9 +283,8 @@ def terminal_features(
                 v[k + "_setting_a"] = (st.pickup_primary_a(ct_ratio) if st.enabled else None)
                 v[k + "_setting_time_s"] = st.time_s
                 v[k + "_stage_disabled"] = not st.enabled
-        if v["oc_setting_a"]:
-            v["i_fault_over_oc_setting"] = (
-                imax / math.sqrt(2.0)) / v["oc_setting_a"]
+        if v["oc_setting_a"] and rms is not None:
+            v["i_fault_over_oc_setting"] = rms / v["oc_setting_a"]
 
     # These exist whether or not settings were supplied: a rule that names a
     # feature which is merely unavailable must evaluate to False, while a rule

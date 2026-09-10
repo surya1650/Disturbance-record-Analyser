@@ -1,9 +1,9 @@
-"""Builds the two-page incident report.
+"""Builds the incident summary and all-relay evidence annex.
 
-Page 1 is a decision, readable in ninety seconds by a shift engineer.
-Page 2 is the evidence for it. Everything else belongs in the interactive
-event view, not here: the two-page discipline is what stops the report
-becoming a wall of waveforms nobody reads.
+The first section is a decision, readable in ninety seconds by a shift engineer.
+The second contains selected waveforms and rules. A variable-length annex
+retains every relay's observations and measurement provenance; physical print
+pagination depends on the evidence and renderer.
 
 The output is one self-contained HTML file with inline SVG. No web fonts, no
 CDN, no plotting library, so it renders on an isolated network and converts
@@ -26,7 +26,10 @@ from ..registry.model import Line
 from ..registry.settings import ProtectionSettings
 from ..rules.engine import RuleResult
 from ..rules.signals import map_signals
+from ..rules.evidence import relay_evidence, terminal_evidence
+from ..rules.operation_compare import compare_operations
 from . import graphics as g
+from .evidence import render_evidence
 
 TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "template.html")
 
@@ -136,6 +139,12 @@ class IncidentReport:
     ground_truth_url: str = ""
     generated_at: str = ""
     html: str = ""
+    relay_evidence: List[dict] = field(default_factory=list)
+    comparisons: List[str] = field(default_factory=list)
+    operation_comparisons: List[dict] = field(default_factory=list)
+    standards_audits: List[dict] = field(default_factory=list)
+    standards_sources: List[dict] = field(default_factory=list)
+    stage_locations: List[dict] = field(default_factory=list)
 
 
 def build(
@@ -165,6 +174,9 @@ def render(rep: IncidentReport) -> str:
     from jinja2 import Template
 
     f, ends = rep.features, sorted(rep.analysed)
+    if not rep.relay_evidence:
+        rep.relay_evidence = [relay_evidence(a, end=e, role="primary") for e, a in rep.analysed.items()]
+    rep.operation_comparisons = rep.operation_comparisons or compare_operations(rep.relay_evidence)
     line = rep.line
     ground = bool(f.get("is_ground_fault"))
 
@@ -195,7 +207,7 @@ def render(rep: IncidentReport) -> str:
                        "traces": {p: rec.analog["V" + p][sel] / 1000.0 for p in "ABC"
                                   if "V" + p in rec.analog},
                        "events": ev})
-        sm = map_signals(list(rec.digital))
+        sm = map_signals(list(rec.digital), rec.notes.get('digital_overrides'))
         for sig in TIMELINE_ORDER:
             chans = sm.channels(sig)
             if not chans:
@@ -249,6 +261,9 @@ def render(rep: IncidentReport) -> str:
         verdict=rep.rules.verdict, vclass=VERDICT_CLASS.get(rep.rules.verdict, "warn"),
         findings=rep.rules.top(3), all_findings=rep.rules.findings,
         skipped=rep.rules.skipped, loc=rep.location, fmt=_fmt,
+        terminal_evidence=terminal_evidence(rep.relay_evidence),
+        relay_evidence_html=render_evidence(rep.relay_evidence, rep.comparisons, rep.operation_comparisons or None,
+                                           rep.standards_audits, rep.standards_sources, rep.stage_locations),
         settings=rep.settings, sub=lambda e: (line.terminals[e].substation
                                               if line else e),
     )

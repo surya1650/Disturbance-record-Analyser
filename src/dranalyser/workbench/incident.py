@@ -9,20 +9,29 @@ PROJECT_CONTEXT.md §2.4: one fault, one report, many records.
 from __future__ import annotations
 
 import os
+import json
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from ..comtrade.conformance import check
 from ..comtrade.parser import read_cff, read_comtrade
 from ..dsp.pipeline import analyse
+from ..dsp.correlation import onset_profile
 from ..faultloc.ensemble import TerminalInput, locate
 from ..registry.loader import load_line
-from ..registry.settings_io import load_settings
 from ..report import build, render, write
+from ..report.navigation import navigation_record
 from ..rules.engine import apply_rules, load_rules
 from ..rules.features import incident_features
+from ..rules.evidence import relay_evidence, terminal_evidence
+from ..rules.operation_compare import compare_operations
 from .bundle import Bundle, BundleFile
 from .corroborate import Disagreement, Measure, corroborate, measure
+from .settings import settings_by_record
+from .stage_review import apply_stage_review
+from .stage_location import stage_locations
+from .audits import audit_bundle
+from ..standards.checklist import reference_pack
 
 
 @dataclass
@@ -40,12 +49,19 @@ class IncidentResult:
     # quantities -- and what the comparison found.
     measures: Dict[str, List[Measure]] = field(default_factory=dict)
     disagreements: List[Disagreement] = field(default_factory=list)
+    relay_evidence: List[dict] = field(default_factory=list)
+    terminal_evidence: List[dict] = field(default_factory=list)
+    operation_comparisons: List[dict] = field(default_factory=list)
+    standards_audits: List[dict] = field(default_factory=list)
+    standards_sources: List[dict] = field(default_factory=list)
+    navigator_path: str = ""
+    stage_locations: List[dict] = field(default_factory=list)
 
 
 def _read(bundle: Bundle, bf: BundleFile, end: str):
     full = os.path.join(bundle.root, bf.name.replace("/", os.sep))
-    rec = (read_cff(full, terminal_end=end) if full.lower().endswith(".cff")
-           else read_comtrade(full, terminal_end=end))
+    rec = (read_cff(full, terminal_end=end, channel_mapping=bf.channel_mapping) if full.lower().endswith(".cff")
+           else read_comtrade(full, terminal_end=end, channel_mapping=bf.channel_mapping))
     return rec
 
 
@@ -80,7 +96,11 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
             res.errors.append("line definition not loaded: " + str(exc)[:200])
 
     ans: Dict[str, Any] = {}
+    profiles = {}
+    records = {}
+    navigation = []
     settings: Dict[str, Any] = {}
+    by_record, bindings, settings_errors = settings_by_record(bundle, [f.name for f in bundle.records()])
     for end in ("S", "R"):
         # by_end() puts the primary first. Every record at the end is
         # analysed: the primary drives the estimators, the rest corroborate.
@@ -89,6 +109,7 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
         for pos, f in enumerate(bundle.by_end(end)):
             try:
                 rec = _read(bundle, f, end)
+                records[f.name] = rec
                 check(rec, nominal_kv=line.kv if line else None)
                 if rec.blocked():
                     res.excluded.append(f.name
@@ -97,6 +118,17 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
                 term = line.terminals[end] if line else None
                 an = analyse(rec, vt_type=term.it.vt_type if term else "CVT")
                 res.measures.setdefault(end, []).append(measure(an, f.name))
+                res.relay_evidence.append(relay_evidence(an, f.name, end, f.role, f.relay_id,
+                                                        getattr(f, "protection_system", "unknown")))
+                res.relay_evidence[-1]['mapping_original_flags'] = f.mapping_original_flags
+                apply_stage_review(res.relay_evidence[-1], f.stage_review, bundle.line_id, bundle.bundle_id)
+                profiles[f.name] = onset_profile(an)
+                try:
+                    nav = navigation_record(an, res.relay_evidence[-1], by_record.get(f.name), bindings[f.name], f.rx_review)
+                    navigation.append(nav)
+                    res.relay_evidence[-1]['rx_context'] = nav.get('rx', {}).get('context')
+                except Exception as exc:
+                    navigation.append({'file': f.name, 'status': 'unavailable', 'reason': str(exc)[:200]})
                 if pos == 0:
                     ans[end] = an
                     res.used[end] = f.name
@@ -104,15 +136,30 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
                 res.errors.append(f.name + ": " + type(exc).__name__ + " "
                                   + str(exc)[:200])
     res.disagreements = corroborate(res.measures)
+    analysed_files = {r["file"] for r in res.relay_evidence}
+    for f in bundle.records():
+        if f.name not in analysed_files:
+            res.relay_evidence.append({"file": f.name, "end": f.terminal_end, "role": f.role,
+                                      "device_id": f.device_id, "relay_id": f.relay_id or "unknown",
+                                      "protection_system": getattr(f, "protection_system", "unknown"),
+                                      'channel_mapping': f.channel_mapping, 'channel_inventory': f.channel_inventory,
+                                      'mapping_original_flags': f.mapping_original_flags,
+                                      "status": "unavailable", "reason":
+                                      next((e for e in res.errors + res.excluded if e.startswith(
+                                          (f.name + ":", f.name + " --"))), _why_excluded(f) or "not analysed")})
+    res.terminal_evidence = terminal_evidence(res.relay_evidence)
+    res.operation_comparisons = compare_operations(res.relay_evidence, profiles)
+    res.stage_locations = stage_locations(line, ans, res.relay_evidence, res.used)
 
-    for sf in bundle.settings():
-        if not sf.name.lower().endswith(".rio"):
-            continue
-        try:
-            settings["S" if "S" in res.used else "R"] = load_settings(
-                os.path.join(bundle.root, sf.name.replace("/", os.sep)))
-        except Exception as exc:                # noqa: BLE001
-            res.errors.append(sf.name + ": " + str(exc)[:200])
+    settings = {end: by_record[name] for end, name in res.used.items() if name in by_record}
+    res.errors.extend(settings_errors)
+    res.standards_audits = audit_bundle(bundle, records, by_record, bindings)
+    res.standards_sources = reference_pack()
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+        res.navigator_path = os.path.join(out_dir, 'navigator.json')
+        with open(res.navigator_path, 'w', encoding='utf-8') as stream:
+            json.dump({'version': 1, 'records': navigation}, stream, allow_nan=False)
 
     for f in bundle.files:
         why = _why_excluded(f)
@@ -139,6 +186,11 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
     rr = apply_rules(feats, load_rules())
     rep = build(ans, feats, rr, location=loc, line=line, settings=settings,
                 ground_truth_url=confirm_url)
+    rep.relay_evidence = res.relay_evidence
+    rep.comparisons = [d.text for d in res.disagreements]
+    rep.operation_comparisons = res.operation_comparisons
+    rep.stage_locations = res.stage_locations
+    rep.standards_audits, rep.standards_sources = res.standards_audits, res.standards_sources
     render(rep)
 
     out = out_dir or bundle.root

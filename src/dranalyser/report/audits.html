@@ -1,0 +1,34 @@
+{% macro audit_table(checks) %}
+<table><tr><th>Check / status</th><th>Expected</th><th>Recorded evidence</th><th>Source / action</th></tr>
+{% for c in checks %}<tr><td>{{ c.id }} · {{ c.title }}<br><b>{{ c.status }}</b></td>
+  <td>{{ c.expected }}</td><td>{{ c.actual }}{% if c.channels %}<br>{{ c.channels|join(', ') }}{% endif %}</td>
+  <td>{{ c.source }}{% if c.action %}<br>{{ c.action }}{% endif %}</td></tr>{% endfor %}</table>
+{% endmacro %}
+{% if audits %}<section class="evidence-appendix" id="standards-audits">
+  <h1>Recording and philosophy checklists</h1>
+  <p>Advisory reference-pack evidence checks. A pass covers only the stated check.
+    Gaps do not establish incorrect protection operation or TB 854 noncompliance.</p>
+  {% for a in audits %}<details class="standards-audit-record">
+    <summary>End {{ a.end or 'unassigned' }} · {{ a.protection_system }} · {{ a.file }} —
+      {% if a.error %}Audit unavailable{% else %}Recording {{ a.recording_summary.status }} / Settings {{ a.settings_summary.status }}{% endif %}</summary>
+    {% if a.error %}<p>{{ a.error }}</p>{% else %}
+    <p>{{ a.scope }}</p>
+    {% if a.blocked %}<p><b>Blocked from analysis.</b> Inventory checks do not remove the conformance block.</p>{% endif %}
+    <h3>Recording completeness</h3>{{ audit_table(a.recording_checks) }}
+    <h3>{{ a.digital_profile.label }}</h3><p>{{ a.digital_profile.note }}</p>
+    {{ audit_table(a.digital_profile.points) }}
+    <h3>Settings source and validity</h3>{% set s = a.settings_source %}
+    <p>{{ s.status }} · {{ s.file or 'No associated export' }}<br>{{ s.reason }}</p>
+    {% if s.sha256 %}<p>SHA-256 {{ s.sha256 }}<br>Format {{ s.format }} · Importer {{ s.importer }}</p>{% endif %}
+    {% if s.warnings %}<ul>{% for w in s.warnings %}<li>{{ w }}</li>{% endfor %}</ul>{% endif %}
+    {% if s.unsupported_files %}<p>Other exports, unsupported here: {{ s.unsupported_files|join(', ') }}</p>{% endif %}
+    {% if s.unknown_fields %}<p>Unexposed fields: {{ s.unknown_fields|join(', ') }}</p>{% endif %}
+    <h3>Protection-philosophy evidence</h3>
+    <p>Exported values only. Event-time identity, enablement and complete scheme coordination remain unconfirmed.</p>
+    {{ audit_table(a.settings_checks) }}
+    <h3>Source guidance requiring engineering review</h3>{{ audit_table(a.guidance) }}
+    {% if a.quality_flags %}<ul>{% for f in a.quality_flags %}<li>{{ f }}</li>{% endfor %}</ul>{% endif %}
+    {% endif %}</details>{% endfor %}
+  <h3>Reference pack and source fingerprints</h3>
+  <ul>{% for s in sources %}<li>{{ s.title }} {{ s.document_date }}<br>SHA-256 {{ s.sha256 }}</li>{% endfor %}</ul>
+</section>{% endif %}

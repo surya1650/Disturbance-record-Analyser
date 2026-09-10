@@ -16,6 +16,7 @@ from ..registry.model import Line
 from ..registry.settings import ProtectionSettings
 from ..rules.signals import map_signals
 from ..signals import PHASE_CURRENTS, PHASE_VOLTAGES, Record
+from ..dsp.measurements import trigger_reference
 
 FOLD = "FOLD Working Group 3 report (2023)"
 APTRANSCO_2014 = "APTRANSCO general distance-protection philosophy"
@@ -111,17 +112,20 @@ def _mutual_current_recorded(rec: Record) -> bool:
 def audit_record(rec: Record, line: Optional[Line] = None) -> AuditResult:
     """Check whether one COMTRADE record contains the WG-3 minimum evidence."""
     result = AuditResult()
+    sample_known = rec.nrates <= 1 and math.isfinite(rec.fs) and rec.fs > 0
     result.checks.append(_check(
-        "DR-SAMPLE", "Sampling frequency", rec.fs >= 1000.0,
-        ">= 1000 Hz", format(rec.fs, ".1f") + " Hz", FOLD + ", pages 12-14",
+        "DR-SAMPLE", "Sampling frequency", rec.fs >= 1000.0 if sample_known else None,
+        ">= 1000 Hz", format(rec.fs, ".1f") + " Hz" if sample_known else
+        "All segment rates are not established by the representative sampling rate", FOLD + ", pages 12-14",
         "Increase the relay DR sampling rate where the model permits it.",
     ))
 
-    trigger = rec.trigger_offset_s()
-    pre_ok = None if trigger is None else trigger >= 0.500 - 1e-6
+    trigger, trigger_note = trigger_reference(rec)
+    pre = None if trigger is None else trigger - float(rec.t[0])
+    pre_ok = None if pre is None else pre >= 0.500 - 1e-6
     result.checks.append(_check(
         "DR-PRE", "Pre-trigger capture", pre_ok, ">= 500 ms",
-        "trigger time unavailable" if trigger is None else format(trigger * 1000.0, ".1f") + " ms",
+        trigger_note if pre is None else format(pre * 1000.0, ".1f") + " ms",
         FOLD + ", pages 15-16",
         "Set the disturbance-record pre-trigger window to at least 500 ms.",
     ))
@@ -145,7 +149,7 @@ def audit_record(rec: Record, line: Optional[Line] = None) -> AuditResult:
         "Configure the missing neutral or phase quantities in the relay DR.",
     ))
 
-    mapped = map_signals(list(rec.digital))
+    mapped = map_signals(list(rec.digital), rec.notes.get('digital_overrides'))
     groups = (
         ("protection start", ("START", "Z1", "Z2", "Z3", "Z4")),
         ("protection trip", ("TRIP", "TRIP_A", "TRIP_B", "TRIP_C", "TRIP_3P",
@@ -162,7 +166,7 @@ def audit_record(rec: Record, line: Optional[Line] = None) -> AuditResult:
     )
     missing_groups = [label for label, names in groups if not _has_any(mapped, names)]
     result.checks.append(_check(
-        "DR-DIGITAL", "Line-protection digital evidence", not missing_groups,
+        "DR-DIGITAL", "Digital evidence groups (coarse screen)", not missing_groups,
         "start, trip, zone, breaker, AR, carrier, VT, relay, time-sync and LAN status",
         "complete" if not missing_groups else "missing " + ", ".join(missing_groups),
         FOLD + ", tables 5, 6, 8, 9 and 11 (pages 28-32)",
@@ -226,7 +230,7 @@ def audit_settings(
     ct = terminal.it.ct_ratio if terminal else None
     vt = terminal.it.vt_ratio if terminal else None
     z1 = settings.zone("Z1")
-    if line is None or ct is None or vt is None or z1 is None:
+    if line is None or ct is None or vt is None or z1 is None or 'line_angle_deg' in settings.unknown:
         result.checks.append(_check(
             "SET-Z1", "Zone 1 reach", None, "80% of protected-line Z1",
             "line, instrument ratios or Z1 characteristic unavailable", APTRANSCO_2014,
@@ -247,30 +251,34 @@ def audit_settings(
     for name, minimum, source in (("Z2", 0.35, APTRANSCO_2024 + ", pages 1-2"),
                                   ("Z3", 0.70, APTRANSCO_2024 + ", pages 1-2")):
         zone = settings.zone(name)
+        known = zone is not None and 'zone.' + zone.name + '.time1' not in settings.unknown and math.isfinite(zone.t1)
         result.checks.append(_check(
             "SET-" + name + "-TIME", name + " time delay",
-            None if zone is None else zone.t1 >= minimum - 1e-6,
+            None if not known else zone.t1 >= minimum - 1e-6,
             ">= " + format(minimum, ".2f") + " s",
-            "zone not present" if zone is None else format(zone.t1, ".3f") + " s",
+            "zone or timer not exposed by export" if not known else format(zone.t1, ".3f") + " s",
             source, "Review time grading against adjacent protection.",
         ))
 
-    reverse = [z for z in settings.zones if z.reverse]
+    reverse = [z for z in settings.zones if z.reverse and 'zone.' + z.name + '.time1' not in settings.unknown
+               and math.isfinite(z.t1)]
     reverse_zone = min(reverse, key=lambda z: abs(z.t1 - 0.35)) if reverse else None
     result.checks.append(_check(
         "SET-REVERSE", "Reverse-zone direction and delay",
-        False if reverse_zone is None else abs(reverse_zone.t1 - 0.35) <= 0.03,
+        None if reverse_zone is None else abs(reverse_zone.t1 - 0.35) <= 0.03,
         "reverse-looking zone at 0.35 s",
-        "no reverse zone" if reverse_zone is None else reverse_zone.name + " at "
+        "reverse characteristic or timer not exposed by export" if reverse_zone is None else reverse_zone.name + " at "
         + format(reverse_zone.t1, ".3f") + " s",
         APTRANSCO_2024 + ", pages 1-2",
         "Configure the reverse reach for local-bus backup and verify its direction.",
     ))
 
-    k0 = settings.k0()
+    k0 = None if 'line_angle_deg' in settings.unknown else settings.k0()
+    if k0 is not None and not all(math.isfinite(v) for v in (k0.real, k0.imag)):
+        k0 = None
     result.checks.append(_check(
-        "SET-K0", "Zero-sequence compensation evidence", None if k0 is None else True,
-        "enabled with the relay-native compensation values",
+        "SET-K0", "Zero-sequence parameter availability (not enablement)", None if k0 is None else True,
+        "relay-native compensation values exposed by export",
         "not exposed by export" if k0 is None else format(abs(k0), ".4f") + " at "
         + format(math.degrees(math.atan2(k0.imag, k0.real)), "+.2f") + " deg",
         APTRANSCO_2014,

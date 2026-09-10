@@ -75,6 +75,14 @@ class BundleFile:
     line_id: str = ""
     terminal_end: str = ""
     relay_id: str = ""
+    protection_system: str = "unknown"  # operator-declared, independent of primary role
+    recording_profile: str = "unconfirmed"  # declared reference-table applicability
+    channel_inventory: List[dict] = field(default_factory=list)
+    channel_mapping: dict = field(default_factory=dict)
+    mapping_original_flags: List[str] = field(default_factory=list)
+    rx_review: dict = field(default_factory=dict)
+    stage_review: dict = field(default_factory=dict)
+    settings_source: dict = field(default_factory=dict)
     role: str = ""                  # primary | corroborating | excluded
     assignment_source: str = ""
 
@@ -264,6 +272,8 @@ def open_bundle(path: str, workdir: Optional[str] = None,
         bf.start_time = str(rec.start_time or "")
         bf.trigger_time = str(rec.trigger_time or "")
         bf.content_hash = rec.content_hash
+        from .channel_mapping import inventory_for
+        bf.channel_inventory = inventory_for(rec)
         bf.flags = [str(f) for f in rec.flags]
         bf.blocked = rec.blocked()
         bf.ct_ratio, bf.vt_ratio, bf.kv_nominal = _instrument_facts(rec)

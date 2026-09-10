@@ -74,6 +74,13 @@ class Analysed:
 def _find_cb_open(rec: Record, inception_t: float) -> Optional[float]:
     """Breaker opening from a digital channel, else from current collapse."""
     for nm in rec.digital:
+        override = rec.notes.get('digital_overrides', {}).get(nm)
+        if override is not None:
+            if override in ('CB_OPEN_A', 'CB_OPEN_B', 'CB_OPEN_C', 'ANY_POLE_DEAD', 'ALL_POLE_DEAD'):
+                t = rec.first_assert(nm)
+                if t is not None and t > inception_t:
+                    return t
+            continue
         if nm.strip().upper().replace("-", "_") in [
             c.upper().replace("-", "_") for c in CB_OPEN_NAMES
         ] or "OPEN" in nm.upper() or "POLE DEAD" in nm.upper():
@@ -101,7 +108,8 @@ def _find_cb_open(rec: Record, inception_t: float) -> Optional[float]:
 
 
 def _find_trip(rec: Record) -> Optional[float]:
-    cands = [nm for nm in rec.digital if "TRIP" in nm.upper()]
+    reviewed = rec.notes.get('digital_overrides', {})
+    cands = [nm for nm in rec.digital if ('TRIP' in reviewed[nm] if nm in reviewed else 'TRIP' in nm.upper())]
     times = [rec.first_assert(nm) for nm in cands]
     times = [t for t in times if t is not None]
     return min(times) if times else None
