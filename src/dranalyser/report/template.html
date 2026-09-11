@@ -129,6 +129,7 @@
     3&ndash;15 % of line length, not 0.1&ndash;1 %. Chase the far-end record and this
     report will be re-issued.</div>
   {% endif %}
+  <p class="muted">The displayed interval is diagnostic estimator spread, not a calibrated confidence interval.</p>
   {% else %}
   <div class="prov">No fault location was produced.
     {% if loc %}{% for c in loc.caveats %}{{ c }} {% endfor %}{% endif %}</div>
@@ -254,8 +255,7 @@
     <tr>
       <td>{{ e.method }}</td><td>{{ e.ends or '-' }}</td>
       <td class="n">{% if e.ok %}{{ "%.4f"|format(e.m) }}{% else %}&mdash;{% endif %}</td>
-      <td class="n">{% if e.ok and line %}{{ "%.2f"|format(line.m_to_km(
-          [[e.m, 0.0]|max, 1.0]|min)) }}{% else %}&mdash;{% endif %}</td>
+      <td class="n">{% if e.ok and line and 0 <= e.m <= 1 %}{{ "%.2f"|format(line.m_to_km(e.m)) }}{% else %}&mdash;{% endif %}</td>
       <td class="n">{% if e.ok %}{{ "%.2e"|format(e.residual) }}{% else %}&mdash;{% endif %}</td>
       <td class="n">{{ "%.2f"|format(e.diagnostics.get('weight', 0.0)) }}</td>
       <td class="muted">{{ e.reason }}</td>

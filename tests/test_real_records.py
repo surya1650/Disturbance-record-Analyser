@@ -211,7 +211,6 @@ def test_main_1_vt_does_not_pass_zero_sequence_and_is_detected():
     a2 = analyse(read_comtrade(M2))
     assert a1.zero_seq_voltage is False
     assert a2.zero_seq_voltage is True
-    assert "VT-NO-ZERO" in read_comtrade(M1).flag_codes() or True   # flag set in analyse
     assert any(f.code == "VT-NO-ZERO" for f in a1.record.flags)
     assert not any(f.code == "VT-NO-ZERO" for f in a2.record.flags)
 

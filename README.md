@@ -2,8 +2,11 @@
 
 Automated analysis of disturbance records from distance protection relays at
 **one or both** terminals of a transmission line. For every line fault it
-produces a fault location with a defensible confidence interval, the method
+produces a fault location with a diagnostic interval, the method
 that produced it, and the evidence for and against.
+
+The interval is not calibrated confidence coverage. Operational field accuracy
+requires verified line data and independent patrol-confirmed outcomes.
 
 Single-ended and double-ended are one code path, not two. The ensemble takes
 whatever terminals are present and gates each estimator on what the data can
@@ -40,16 +43,20 @@ out there with reasons.
 | Reviewed stage associations, clock evidence and guarded stage E5 | implemented; bounded synthetic validation |
 | Autonomous event pairing and direct relay protocol collectors | not started |
 
-Latest validation: **603 tests**, architecture checks, Stage-A 10,000 PASS
-(clean p95 0.4403%) and desktop/mobile browser checks. Separate stage E5 requires
+Latest validation: **666 tests**, architecture checks, Stage-A 10,000 PASS
+(clean located p95 0.4361%; 25/4,283 clean cases refused) and desktop/mobile browser checks. Separate stage E5 requires
 matching source-bound reviews and explicit selection at both terminal primaries;
 the main ensemble refuses supported nonstationary windows. See
 [stage-location validation](project-docs/STAGE_LOCATION_VALIDATION.md) for
-limitations and runtime details. TB 854 and field validation remain incomplete.
+limitations and runtime details. The main solver also refuses indistinguishable
+E5 roots, external patrol assignments and declared unsupported electrical models.
+See the [TB/field validation audit](project-docs/TB854_FIELD_VALIDATION_2026-09-11.md)
+for completed software checks and the verified-data requirements still blocking
+full TB 854 and field validation.
 
 ### Stage-A acceptance (brief section 13)
 
-**PASS**, measured over 100,000 synthetic incidents sweeping `m`, fault type,
+**Historical baseline before the 2026-09-11 refusal changes:** PASS over 100,000 synthetic incidents sweeping `m`, fault type,
 fault resistance, source impedance ratio, inception angle, CT saturation,
 sample rate, ADC resolution and noise, through the full DSP chain, with up to
 2 s of clock skew between terminals:

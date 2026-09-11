@@ -6,6 +6,37 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-09-11 - TB refusal/domain corrections and field-evidence audit
+
+Completed the available TB software follow-ups: numerical E5 tie refusal,
+insufficient paired-input refusal without an unsafe single-ended fallback,
+external-output suppression, and scalar-model gates for declared unsupported
+topologies/sections. Added an independent section nodal oracle and waveform
+stress tests. Diagnostic intervals are no longer described as calibrated
+confidence. See [TB854_FIELD_VALIDATION_2026-09-11.md](TB854_FIELD_VALIDATION_2026-09-11.md).
+
+**666 tests pass**, 63 added; architecture direct/self-tests, focused Ruff,
+process-local distance/branch/ambiguity/external/domain mutations and Edge
+refusal/report checks pass. Stage-A 10,000 PASS: 9,707 located, 293 refused;
+clean total 4,283, 25 refused, located p95 0.4361%; 4,095/4,283 clean cases
+within 0.5%. Difficult-case tails and abstentions remain reported. An intermediate
+single-ended fallback regression was found and corrected through refusal.
+
+Read-only local field audit: 16 recordings, 11 analysed, five ratio/P-S-blocked;
+three provisional registry files with generated tower grids; zero stored patrol
+confirmations. Actual field acceptance remains blocked by verified identities,
+line/topology/scaling data, surveyed towers and independent patrol truth.
+General section/coupled/distributed/CT-reconstruction models and calibrated
+coverage remain incomplete. No field values or confirmations were fabricated.
+
+Updated preview 8102, existing data root and one worker, backend PID 45132.
+Synthetic refusal incident 19637ed2855b45cd840f6c6e5ec6119b rev 1. Original rows
+and saved artifacts in all eleven app roots remain unchanged; one additional
+8091 revision appeared and was preserved. Only 8102 was restarted. Publication
+is authorized by the user; Git history records the commit/push outcome.
+
+---
+
 ## 2026-09-10 - Independent network oracle and guarded stage E5
 
 Completed the next stage-aware location milestone and prepared the accumulated

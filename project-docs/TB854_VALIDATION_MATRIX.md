@@ -1,10 +1,13 @@
 # TB 854 validation matrix
 
-Updated 2026-09-08. **Implemented does not mean validated, and passing the
+Updated 2026-09-11. The current follow-up results and remaining field blockers are in
+[TB854_FIELD_VALIDATION_2026-09-11.md](TB854_FIELD_VALIDATION_2026-09-11.md).
+The detailed baseline tables below retain the 2026-09-08 assessment except where updated. **Implemented does not mean validated, and passing the
 repository suite does not establish TB 854 validation.** This is a traceable,
 bounded assessment of the existing analyser, not certification or reproduction
-of the brochure's method inventory. No production electrical model, estimator,
-DSP algorithm, line constant or application behavior changed in this work.
+of the brochure's method inventory. The initial matrix-only milestone changed no production behavior. The 2026-09-11
+follow-up adds estimator, model-domain and external-output refusals; line constants
+and original records remain unchanged.
 
 Source: CIGRE WG B5.52, *Analysis and comparison of fault location systems in
 AC power networks*, TB 854, December 2021, local `E:/cigre/854.pdf` (137 pages).
@@ -56,15 +59,15 @@ work, expected behavior, criterion and status for each topic. Paths are under
 | V03 E3 | p. 10, Table 2: partial homogeneity correction | `e3_modified_takagi`, known source Z0, ground faults only; iterative beta sign is a project derivation | Implemented; existing synthetic improvement and new zero-sequence refusal tests; no independent resistive field validation |
 | V04 E4 | pp. 11-12, eqs. 5-8: equal fault-point voltage | `e4_synchronised`; returns Re(q), signed Im(q) diagnostic and abs(Im(q)) residual; not eq. 7's printed magnitude. Eq. 8's reduced measurement variant is not separately implemented | Implemented variant; signed/imaginary behavior and passive scalar circuit validated |
 | V05 E5 invariance/reversal | pp. 12-13, section 2.1.2.2: unknown remote angle | `e5_unsynchronised`; exact quadratic is project-derived; arbitrary common rotation of remote V/I, unchanged fault stage | Implemented; independent passive sequence fixture and existing waveform/synthetic tests |
-| V06 E5 branches/identifiability | pp. 12-13 discuss unsynchronised methods; branch policy is project-specific | `e5_roots`, angle stability, in-line preference; distinguish variable competing branches from identical repeated samples | Stable competing branch validated; unresolved ties remain an **open safety gap** |
+| V06 E5 branches/identifiability | pp. 12-13 discuss unsynchronised methods; branch policy is project-specific | `e5_roots`, angle stability, in-line preference; distinguish variable competing branches from identical repeated samples | Stable competing branch and numerical-tie refusal validated; noisy near-tie discrimination remains uncalibrated |
 | V07 Weak/absent sequence | p. 12: balanced faults need an alternative to negative sequence | E1-E5 current gates; `ensemble._two_ended` uses superimposed positive sequence for ABC/ABCG | Exact absent-current refusal validated; weak noisy sequence identifiability not established |
 | V08 Clock and same-stage gates | p. 12; pp. 26-27, Fig. 12: synchronization cannot repair incompatible circuit stages | `ensemble._two_ended`, `dsp/detect.py:overlap_window`; E4 requires both clock flags; E5 still needs same stage | Clock Boolean gate validated; evolving-stage alignment only partially supported |
 | V09 Impossible distance refusal | p. 11 error sources; numerical bounds are project policy | `ensemble.locate` final guard outside [-0.5,1.5]; after actual weighting/reconciliation | Repaired test proves refusal, NaN km/interval km, no towers; mutation detected |
-| V10 External indication / orientation | pp. 11-12, eqs. 5-6; report safeguards are project policy | `locate`: R-only `m_S=1-m_R`; beyond [-0.02,1.02] caveat; external band within [-0.5,1.5] remains reportable | Orientation and external caveat validated; **clamped km/tower output remains an open gap** |
+| V10 External indication / orientation | pp. 11-12, eqs. 5-6; report safeguards are project policy | `locate`: R-only `m_S=1-m_R`; all m outside [0,1] are non-location external indications, beyond [-0.5,1.5] remain impossible | Orientation validated; external km, intervals and towers suppressed in outputs and rule inputs; bypass detected |
 | V11 Parameters and shared bias | pp. 24-28, Table 5: erroneous line constants | `registry/model.py`, `ml/tier1.py`; measured versus provisional provenance matters; small residual cannot prove correct Z1 | Conversion/fitting implemented; independent E4 parameter-bias counterexample validated; field constants unverified |
-| V12 Mixed sections | pp. 47-51, eq. 24, Tables 8-9 | `Line.m_to_km` walks section X; estimators still use summed Z; differing R/X, Z0/Z1 and boundaries need electrical propagation | Chainage conversion implemented/tested; general section-aware electrical solver **unsupported** |
-| V13 Parallel/asymmetric coupling | pp. 53-56, eqs. 25-27, Table 11; Annex F p. 124 | Requires phase/self/mutual matrices and adjacent circuit state; scalar sequence E5 does not establish immunity | Coupled-network solver and independent oracle **unsupported** |
-| V14 Charging / long lines | p. 11; pp. 47-48: capacitance invalidates constant-current propagation | `LineSection.b1/b0` fields exist; scalar estimators omit shunt terms | Distributed/two-port electrical solve **unsupported**; no validated length switch threshold |
+| V12 Mixed sections | pp. 47-51, eq. 24, Tables 8-9 | `Line.m_to_km` walks section X; estimators still use summed Z; differing R/X, Z0/Z1 and boundaries need electrical propagation | Independent section nodal oracle and proportional-section limit tested; nonproportional sections explicitly refused; general section solver **unsupported** |
+| V13 Parallel/asymmetric coupling | pp. 53-56, eqs. 25-27, Table 11; Annex F p. 124 | Requires phase/self/mutual matrices and adjacent circuit state; scalar sequence E5 does not establish immunity | Declared double circuits explicitly refused; coupled-network solver and six-conductor oracle **unsupported** |
+| V14 Charging / long lines | p. 11; pp. 47-48: capacitance invalidates constant-current propagation | `LineSection.b1/b0` fields exist; scalar estimators omit shunt terms | Declared shunt parameters explicitly refused; pi-oracle counterexample tested; distributed solve **unsupported**, no validated length threshold |
 | V15 CT/CVT/acquisition/windows | p. 11; p. 24 Table 4; pp. 26-27 Fig. 12; p. 105 | `dsp/core.py`, `detect.py`, `pipeline.py`, ensemble weighting; saturation detection, CVT window exclusion, sample-rate handling | Detection and synthetic stresses implemented/tested; saturation reconstruction and vendor filter compensation **unsupported** |
 | V16 Series compensation | pp. 51-53, Fig. 50, Table 10 | `Line.series_compensated`, `ensemble.locate`; requires truthful registry flag | Electrical solve **unsupported**; explicit suppression implemented/tested |
 | V17 Pairing and field validation | pp. 28-31: collection, unreliable clocks and reclose | `workbench/`, `registry/assets.py`, `application/`; explicit identities, incident revisions, late records; no order-based terminal inference | Intake/assignment integration implemented/tested; autonomous cross-delivery pairing unsupported; confirmed-distance two-ended field validation absent |
@@ -76,7 +79,11 @@ work, expected behavior, criterion and status for each topic. Paths are under
 | V23 Model-based learning | pp. 93-94, Fig. 94: model/data combination | `ml/tier1.py`, `tier2.py`, `tier3.py`; parameter estimation, fleet pooling, capped correction, physics first | Implemented project methods with synthetic tests; not a reproduction of TB learning method; field benefit unvalidated |
 | V24 Catalogue / source cautions | All 22 C854 chunks; Table 1 p. 10, eq. 7 p. 11, Table 5 p. 25, Table 6 pp. 32-33, Figs. 45/48 pp. 49-50 | `standards/sources.yaml`, `catalogue.yaml`, `catalogue.py`, audit/CLI; source cautions are observations, not CIGRE errata | Retrieval/integration validated; **all 22 remain catalogued**, no automatic TB compliance checks |
 
-## Oracles, tests and acceptance
+## Original 2026-09-08 oracles, tests and acceptance
+
+Historical table: the current V06-V18 changes are recorded in the linked 2026-09-11
+validation report. Claims below about unrefused ties and clamped external fields
+are retained as the defects that motivated the now-tested corrections.
 
 Test paths use these abbreviations: **N** =
 [`tests/test_tb854_validation.py`](../tests/test_tb854_validation.py), **M** =
@@ -115,7 +122,7 @@ scalar physics. It cannot validate omitted section/coupled/distributed physics.
 | V23 | `tests/test_ml.py` Tier-1 recovery/refusal, Tier-2 100-event gate/cap/leave-line-out, Tier-3 second-opinion tests; synthetic labels | Preserve physics precedence, fleet rather than per-relay correction, raw output and capped residuals | Ground-truth event diversity and identifiability; fitted k0 may absorb omitted physics; no field improvement claim |
 | V24 | C manifest/unique locators/status, source filtering, CLI rendering and record/settings audit non-promotion tests; prior source fingerprint; pp. 10-11 visual recheck | Exactly 22 unique chunk IDs/locators, expected source hash (case-insensitive hex), all catalogued; active retrieval excludes them; audit emits no TB checks | Source-to-algorithm evidence review remains separate. No TB example accuracy reproduced; do not copy inconsistent printed factors, magnitudes or error denominators |
 
-## New evidence and limits that passing tests must not hide
+## Historical 2026-09-08 findings that motivated the corrections
 
 The repaired refusal test supplies controlled estimates **before** `_weigh` and
 the final guard. It no longer edits an unused result after `locate` returns.
@@ -149,7 +156,11 @@ test nor Stage-A's zero-unflagged-impossible counter validates those tower
 fields as an external location. This matrix keeps that gap visible instead
 of calling all refusal/reporting behavior validated.
 
-## Next independent modelling task
+## Historical next-work recommendation (2026-09-08)
+
+The V06/V10 numerical/refusal follow-ups and V12 independent section oracle below
+are now implemented; general section solving and the listed field evidence remain
+outstanding. Refer to the 2026-09-11 report for current next work.
 
 First address V06 ambiguity and V10 external-output policy as bounded safety
 follow-ups with controlled counterexamples and report checks. This validation

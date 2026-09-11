@@ -3,6 +3,7 @@ import numpy as np
 
 from ..dsp.stage_windows import stage_window
 from .estimators import e5_roots, e5_unsynchronised
+from .model_domain import scalar_model_reasons
 
 
 def stage_e5(line, s, r, stage_s, stage_r, polarity_s=1, polarity_r=1):
@@ -12,8 +13,9 @@ def stage_e5(line, s, r, stage_s, stage_r, polarity_s=1, polarity_r=1):
            'caveats': ['Reviewed same-stage, stationary negative-sequence windows are required.',
                        'Relative-position sample pairing is not timestamp synchronization.',
                        'No blended incident distance, tower clamp or calibrated confidence interval is produced.']}
-    if line.series_compensated:
-        out['reason'] = 'Series-compensated line unsupported.'
+    domain_reasons = scalar_model_reasons(line)
+    if domain_reasons:
+        out['reason'] = ' '.join(domain_reasons)
         return out
     if any(w['status'] != 'eligible' for w in windows.values()):
         out['reason'] = 'At least one local stage interior fails quality or window prerequisites.'

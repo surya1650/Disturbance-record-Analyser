@@ -98,17 +98,14 @@ def test_e5_selects_stable_angle_when_two_in_line_branches_compete():
     assert est.diagnostics["delta_std_deg"] < 1e-5
 
 
-def test_e5_root_separation_exposes_but_does_not_resolve_ambiguity():
+def test_e5_refuses_distinct_roots_with_indistinguishable_angle_stability():
     # Both .2 and 1/3 fit the same constant observations with fixed angles.
-    # Test diagnostic evidence only: the current method DOES NOT refuse ties.
-    # No unique-location validation is claimed for this fixture (matrix V06).
+    # Neither candidate is identifiable; root separation must cause refusal.
     for m in (0.2, 1/3):
         assert abs(0.6-2*m) == pytest.approx(abs(0.6-(1-m)))
     est = e5_unsynchronised([0.6]*6, [2]*6, [0.6]*6, [1]*6, 1+0j)
     assert est.diagnostics["root_separation"] == pytest.approx(2/15, abs=1e-12)
-    assert est.residual < 1e-12
-    assert est.diagnostics["delta_std_deg"] < 1e-5
-    # This residual/stability combination cannot certify either candidate.
+    assert not est.ok and math.isnan(est.m) and 'ambiguous roots' in est.reason
 
 
 @pytest.mark.parametrize("method", ["E1", "E2", "E3", "E4", "E5"])
@@ -150,11 +147,13 @@ def test_external_indication_is_distinct_from_impossible_distance(monkeypatch, t
     ti, line = terminal_and_line
     monkeypatch.setattr(ensemble, "_single_ended", lambda *args: [Estimate("E1", m, 0, ends="single")])
     res = ensemble.locate(line, {"S": ti})
-    assert res.ok and res.m == pytest.approx(m)  # signed diagnostic survives
+    assert not res.ok and res.mode == 'external' and res.m == pytest.approx(m)
     assert any("beyond the " + terminal in c and "should not be patrolled" in c for c in res.caveats)
     assert not any("input problem" in c for c in res.caveats)
-    # Existing implementation still clamps km/towers. This is NOT validated
-    # external-fault chainage; see the explicit report-safety gap in V10.
+    assert math.isnan(res.km_from_S) and math.isnan(res.km_from_R)
+    assert all(math.isnan(v) for v in res.interval_km)
+    assert not res.towers and res.likely_tower is None
+    assert math.isnan(res._km(m))
 
 
 def test_remote_only_estimate_is_mapped_to_s_without_argument_order_inference(monkeypatch, terminal_and_line):

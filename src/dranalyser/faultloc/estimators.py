@@ -277,13 +277,19 @@ def e5_unsynchronised(
 
     Root selection: the physically correct root gives a recovered sync angle
     that is CONSTANT across the analysis window (the two clocks do not drift
-    measurably in 1-2 cycles). The spurious root gives an angle that wanders.
-    That test needs no clock, no timestamps and no GPS, which is the whole
+    measurably in 1-2 cycles). A spurious root may wander; indistinguishable
+    branches are refused. This needs no clock, timestamps or GPS, which is the whole
     point of E5, unlike the timestamp comparison the brief proposes.
     """
-    n = min(len(v2s), len(i2s), len(v2r), len(i2r))
-    if n == 0:
-        return _fail("E5", "empty analysis window")
+    lengths = [len(v) for v in (v2s, i2s, v2r, i2r)]
+    n = lengths[0]
+    if n < 2 or len(set(lengths)) != 1:
+        out = _fail("E5", "equal windows with at least two samples required")
+        out.ends, out.diagnostics = 'two', {'insufficient_window': 1.0}
+        return out
+    if (not np.isfinite(z1_line) or abs(z1_line) == 0 or
+            not np.all(np.isfinite([v2s, i2s, v2r, i2r]))):
+        return _fail("E5", "nonfinite phasors or invalid line impedance")
 
     per_sample: List[List[float]] = []
     conds: List[float] = []
@@ -331,6 +337,15 @@ def e5_unsynchronised(
 
     best = min(candidates, key=score)
     other = [c for c in candidates if c is not best]
+    tied = [c for c in other if score(c)[0] == score(best)[0] and
+            abs(c['m']-best['m']) > 1e-4 and abs(c['delta_std']-best['delta_std']) <= 1e-6]
+    if tied:
+        out = _fail('E5', 'ambiguous roots: distinct candidates have indistinguishable angle stability')
+        out.ends = 'two'
+        out.diagnostics = {'ambiguous_roots': 1.0, 'root_separation': abs(best['m']-tied[0]['m']),
+                           'candidate_low_m': min(best['m'], tied[0]['m']),
+                           'candidate_high_m': max(best['m'], tied[0]['m'])}
+        return out
 
     # A root far outside the line is not a location, it is evidence that the
     # inputs are inconsistent -- a saturated CT, a wrong ratio, a reversed

@@ -1,5 +1,38 @@
 # Context for the next session
 
+**2026-09-11 TB software follow-ups complete; field acceptance still blocked:**
+**666 tests pass** (63 added), architecture direct/self-tests, focused Ruff,
+five process-local mutation experiments and desktop/mobile refusal/report checks.
+Read [TB854_FIELD_VALIDATION_2026-09-11.md](TB854_FIELD_VALIDATION_2026-09-11.md).
+The user asked to finish TB/field validation and has authorized GitHub publication.
+Check Git history/remote for the publication outcome rather than older entries.
+
+Main E5 now refuses numerical branch ties and invalid/insufficient paired input;
+ties/insufficient samples cannot silently fall back without usable E4. External
+indications retain signed m but no protected-line km, interval km or towers, and
+do not feed location-dependent rules. Both main/stage paths refuse declared
+double circuits, shunts, nonproportional sections and invalid geometry. The new
+independent section nodal oracle verifies boundary physics, physical reversal
+and the proportional-section limit; it does not implement a section solver.
+
+Stage-A 10,000 PASS: 9,707 located / 293 refused; clean 4,283 total, 4,258 located,
+25 refused, p95 0.4361%; 4,095 of all 4,283 clean cases within 0.5%.
+Current preview remains http://127.0.0.1:8102, backend PID 45132, one worker.
+New synthetic model-refusal incident `19637ed2855b45cd840f6c6e5ec6119b` rev 1;
+earlier stage example remains at rev 4. All original rows/artifacts in eleven app
+roots are unchanged; an additional 8091 revision appeared and was preserved.
+
+The read-only field inventory found 16 recordings, 11 analysable and five blocked
+by ratio/P-S declarations. All three registry files are provisional and use
+generated tower grids; `out/dranalyser.db` has zero confirmations. Required next
+inputs: verified S/R same-stage identity and scaling, approved event-effective
+line/topology data, surveyed towers, independent patrol location/uncertainty and
+held-out cases. The user was asked where these exist; no answer was supplied yet.
+Detailed inventory stays local at `out/field-validation/evidence-inventory.json`.
+Do not call unavailable models, noisy-root discrimination, CT/CVT reconstruction,
+calibrated coverage or field accuracy complete. Do not redo the now-completed
+refusal fixes, independent section oracle or waveform stress screens.
+
 **2026-09-10 guarded stage-location milestone complete:** **603 tests pass**;
 architecture direct/self-tests, focused Ruff/JS, Stage-A 10,000 and desktop/mobile
 browser checks pass. Read [STAGE_LOCATION_VALIDATION.md](STAGE_LOCATION_VALIDATION.md).

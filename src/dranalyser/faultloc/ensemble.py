@@ -23,6 +23,7 @@ from ..dsp.window_quality import window_transition
 from ..registry.model import Line, Tower, k0_from_impedances
 from .estimators import (Estimate, e1_reactance, e2_takagi, e3_modified_takagi,
                          e4_synchronised, e5_unsynchronised, loop_quantities)
+from .model_domain import scalar_model_reasons
 
 SLG = ("AG", "BG", "CG")
 
@@ -56,7 +57,7 @@ class LocationResult:
     interval_pu: Tuple[float, float]
     interval_km: Tuple[float, float]
     method: str
-    mode: str                       # "two-ended" | "single-ended" | "none"
+    mode: str                       # "two-ended" | "single-ended" | "external" | "none"
     fault_type: str
     estimates: List[Estimate] = field(default_factory=list)
     towers: List[Tower] = field(default_factory=list)
@@ -66,7 +67,7 @@ class LocationResult:
 
     @property
     def ok(self) -> bool:
-        return self.mode != "none" and math.isfinite(self.m)
+        return self.mode in ("two-ended", "single-ended") and math.isfinite(self.m)
 
     def table(self) -> str:
         w = ["method  ends     m        km from S    residual    weight   note"]
@@ -86,6 +87,8 @@ class LocationResult:
         return "\n".join(w)
 
     def _km(self, m: float) -> float:
+        if not 0 <= m <= 1:
+            return float('nan')
         return self.diagnostics.get("_km_fn", lambda x: float("nan"))(m)
 
 
@@ -334,6 +337,12 @@ def locate(
 
     terms = list(terminals.values())
     fault, caveats, cross_country = _fault_consensus(terms)
+    domain_reasons = scalar_model_reasons(line)
+    if domain_reasons:
+        return LocationResult(m=float('nan'), km_from_S=float('nan'), km_from_R=float('nan'),
+                              interval_pu=(float('nan'),)*2, interval_km=(float('nan'),)*2,
+                              method='none', mode='none', fault_type=fault,
+                              caveats=caveats+domain_reasons, diagnostics={'model_domain': 'unsupported'})
     gates = {end: window_transition(ti.analysed) for end, ti in terminals.items()}
     if any(g['status'] == 'transition detected' for g in gates.values()):
         return LocationResult(m=float('nan'), km_from_S=float('nan'), km_from_R=float('nan'),
@@ -388,6 +397,17 @@ def locate(
             e.reason = "series compensated line"
 
     _weigh(estimates, terminals)
+
+    ambiguous = any(e.method == 'E5' and (e.diagnostics.get('ambiguous_roots') or
+                                        e.diagnostics.get('insufficient_window')) for e in estimates)
+    aligned = any(e.method == 'E4' and e.ok and e.residual < .05 and
+                  e.diagnostics.get('weight', 0) > 0 for e in estimates)
+    if ambiguous and not aligned:
+        return LocationResult(m=float('nan'), km_from_S=float('nan'), km_from_R=float('nan'),
+                              interval_pu=(float('nan'),)*2, interval_km=(float('nan'),)*2,
+                              method='E5', mode='none', fault_type=fault, estimates=estimates,
+                              caveats=caveats+['Ambiguous E5 roots or insufficient paired samples; single-ended fallback '
+                                              'is withheld until the two-ended evidence is resolved.'])
 
     usable = [e for e in estimates if e.ok and e.diagnostics.get("weight", 0.0) > 0]
     if not usable:
@@ -448,12 +468,15 @@ def locate(
                   "saturation, CT/VT ratios and CT polarity at both ends."],
             diagnostics={"method_disagreement_pu": disagree,
                          "_km_fn": lambda x: line.m_to_km(min(max(x, 0.0), 1.0))})
-    if not (-0.02 <= m <= 1.02):
-        caveats.append(
-            "computed distance is " + format(m, ".3f") + " per unit, outside the "
-            "protected line; the fault is most likely beyond the "
-            + ("remote" if m > 1 else "local") + " terminal. The tower band below "
-            "is clamped to the line and should not be patrolled on.")
+    if not 0 <= m <= 1:
+        return LocationResult(
+            m=m, km_from_S=float('nan'), km_from_R=float('nan'), interval_pu=(lo, hi),
+            interval_km=(float('nan'),)*2, method=best.method, mode='external',
+            fault_type=fault, estimates=estimates, caveats=caveats + [
+                'External indication beyond the '+('remote' if m > 1 else 'local')+
+                ' terminal (m='+format(m, '.5f')+'). No protected-line chainage or tower is assigned; '
+                'the protected line should not be patrolled on this indication.'],
+            diagnostics={'method_disagreement_pu': disagree})
 
     km = line.m_to_km(min(max(m, 0.0), 1.0))
     klo = line.m_to_km(min(max(lo, 0.0), 1.0))
