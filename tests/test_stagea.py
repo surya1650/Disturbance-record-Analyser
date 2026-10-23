@@ -34,8 +34,8 @@ def test_classifier_declines_rather_than_crashing_on_non_finite_phasors():
     assert kind == "NONE"
 
 
-def test_e5_refuses_a_root_far_outside_the_line():
-    """m = 6.7 pu is corrupt input, not a remote fault."""
+def test_e5_refuses_terminals_with_no_real_magnitude_solution():
+    """This fixture has no real root; the old 6.7 pu vertex was not a root."""
     z1 = complex(3.0, 40.0)
     # inconsistent terminals: the magnitudes cannot be reconciled anywhere near
     # the line, which is what a saturated CT does to E5
@@ -44,10 +44,8 @@ def test_e5_refuses_a_root_far_outside_the_line():
     v2r = complex(80.0, 5.0)
     i2r = complex(0.4, 0.05)
     est = e5_unsynchronised([v2s] * 6, [i2s] * 6, [v2r] * 6, [i2r] * 6, z1)
-    if est.ok:
-        assert -0.5 <= est.m <= 1.5
-    else:
-        assert "no root near the line" in est.reason
+    assert not est.ok and math.isnan(est.m)
+    assert est.diagnostics.get('inconsistent_window')
 
 
 @pytest.mark.parametrize("invalid_m", [-5.7, -0.5001, 1.5001, 6.7])

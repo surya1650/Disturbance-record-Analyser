@@ -173,9 +173,12 @@ class Intake:
                 sort_keys=True).encode()).hexdigest()
             for filename, entry in inventory.items():
                 dest = self.blobs / entry["sha256"]
-                if not dest.exists():
-                    # Atomic replacement is harmless for identical hash content.
-                    os.replace(stage / filename, dest)
+                try:
+                    # Staging and blobs share a filesystem. Link complete bytes
+                    # atomically without replacing an existing reader's file.
+                    os.link(stage / filename, dest)
+                except FileExistsError:
+                    pass  # another identical delivery published this hash first
             return self.store.submit(name=name.strip(), source=source, files=list(files.values()),
                                      metadata=meta, fingerprint=fingerprint, incident_id=target_id,
                                      expected=expected if expected is not None else

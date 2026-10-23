@@ -188,6 +188,8 @@ def e4_synchronised(
     Both currents must be positive from bus INTO the line. Requires the two
     phasors to share a time reference, i.e. good clock quality at both ends.
     """
+    if not all(np.isfinite(v) for v in (v2s, i2s, v2r, i2r, z1_line)):
+        return _fail('E4', 'nonfinite phasors or invalid line impedance')
     den = z1_line * (i2s + i2r)
     if abs(den) < 1e-9:
         return _fail("E4", "I2S + I2R is zero (no negative sequence)")
@@ -203,20 +205,27 @@ def e4_synchronised(
 # --------------------------------------------------------------------------
 def stable_quadratic(a: float, b: float, c: float) -> Tuple[List[float], str]:
     """Roots of a*m^2 + b*m + c, without the cancellation of the naive form."""
+    if not all(math.isfinite(v) for v in (a, b, c)):
+        return [], "nonfinite polynomial coefficients"
+    coefficient_scale = max(abs(a), abs(b), abs(c))
+    if coefficient_scale == 0:
+        return [], "degenerate: all coefficients vanish"
+    a, b, c = a/coefficient_scale, b/coefficient_scale, c/coefficient_scale
     scale = max(abs(b), abs(c), 1e-300)
     if abs(a) < 1e-12 * scale:
         if abs(b) < 1e-300:
             return [], "degenerate: a and b both vanish"
-        return [-c / b], "linear (near-degenerate leading coefficient)"
+        root = -c/b
+        return ([root] if math.isfinite(root) else []), "linear (near-degenerate leading coefficient)"
     disc = b * b - 4.0 * a * c
     if disc < 0.0:
-        return [-b / (2.0 * a)], "no real root; vertex returned"
+        return [], "no real root: negative discriminant"
     sq = math.sqrt(disc)
     q = -0.5 * (b + math.copysign(sq, b if b != 0.0 else 1.0))
     roots = [q / a]
     if abs(q) > 1e-300:
         roots.append(c / q)
-    return sorted(set(roots)), "quadratic"
+    return sorted(set(r for r in roots if math.isfinite(r))), "quadratic"
 
 
 def e5_terms(v2s: complex, i2s: complex, v2r: complex, i2r: complex,
@@ -232,6 +241,14 @@ def e5_terms(v2s: complex, i2s: complex, v2r: complex, i2r: complex,
 def e5_roots(v2s: complex, i2s: complex, v2r: complex, i2r: complex,
              z1_line: complex) -> Tuple[List[float], Dict[str, float], str]:
     A, B, C, D = e5_terms(v2s, i2s, v2r, i2r, z1_line)
+    # Normalize BEFORE products: scaling already squared coefficients is too
+    # late to prevent underflow/overflow. Diagnostics below are dimensionless.
+    if not all(np.isfinite(v) for v in (A, B, C, D)):
+        return [], {"conditioning": 0.0}, "nonfinite constraint terms"
+    scale = max(abs(A), abs(B), abs(C), abs(D))
+    if scale == 0:
+        return [], {"conditioning": 0.0}, "degenerate: all constraint terms vanish"
+    A, B, C, D = A/scale, B/scale, C/scale, D/scale
     a = abs(B) ** 2 - abs(D) ** 2
     b = -2.0 * ((A * B.conjugate()).real + (C * D.conjugate()).real)
     c = abs(A) ** 2 - abs(C) ** 2
@@ -245,7 +262,11 @@ def e5_delta(m: float, v2s: complex, i2s: complex, v2r: complex,
     """Recovered synchronisation angle, radians, wrapped to (-pi, pi]."""
     left = v2s - m * z1_line * i2s
     right = v2r - (1.0 - m) * z1_line * i2r
-    if abs(left) < 1e-12 or abs(right) < 1e-12:
+    # A repeated quadratic root can lose sqrt(eps) in m. Phase recovered
+    # from that cancellation-scale voltage is numerical noise, not a clock.
+    floor = math.sqrt(np.finfo(float).eps) * max(abs(v2s), abs(m*z1_line*i2s),
+                                               abs(v2r), abs((1-m)*z1_line*i2r))
+    if abs(left) <= max(floor, 1e-12) or abs(right) <= max(floor, 1e-12):
         return float("nan")
     d = cmath.phase(left) - cmath.phase(right)
     return (d + math.pi) % TWO_PI - math.pi
@@ -289,13 +310,20 @@ def e5_unsynchronised(
         return out
     if (not np.isfinite(z1_line) or abs(z1_line) == 0 or
             not np.all(np.isfinite([v2s, i2s, v2r, i2r]))):
-        return _fail("E5", "nonfinite phasors or invalid line impedance")
+        out = _fail("E5", "nonfinite phasors or invalid line impedance")
+        out.ends, out.diagnostics = 'two', {'inconsistent_window': 1.0}
+        return out
 
     per_sample: List[List[float]] = []
     conds: List[float] = []
     how_last = ""
     for k in range(n):
         roots, diag, how = e5_roots(v2s[k], i2s[k], v2r[k], i2r[k], z1_line)
+        if not roots:
+            out = _fail('E5', 'inconsistent magnitude constraint at paired sample ' + str(k) + ': ' + how)
+            out.ends = 'two'
+            out.diagnostics = {'inconsistent_window': 1.0, 'invalid_sample': float(k), 'n_samples': float(n)}
+            return out
         per_sample.append(roots)
         conds.append(diag["conditioning"])
         how_last = how
@@ -336,6 +364,10 @@ def e5_unsynchronised(
         return (penalty, c["delta_std"])
 
     best = min(candidates, key=score)
+    if not np.isfinite(best['delta_std']) or not np.isfinite(best['delta']):
+        out = _fail('E5', 'recovered fault-point angle is undefined; magnitude equality cannot identify rotation')
+        out.ends, out.diagnostics = 'two', {'undefined_angle': 1.0}
+        return out
     other = [c for c in candidates if c is not best]
     tied = [c for c in other if score(c)[0] == score(best)[0] and
             abs(c['m']-best['m']) > 1e-4 and abs(c['delta_std']-best['delta_std']) <= 1e-6]

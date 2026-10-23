@@ -399,14 +399,16 @@ def locate(
     _weigh(estimates, terminals)
 
     ambiguous = any(e.method == 'E5' and (e.diagnostics.get('ambiguous_roots') or
-                                        e.diagnostics.get('insufficient_window')) for e in estimates)
+                                        e.diagnostics.get('insufficient_window') or
+                                        e.diagnostics.get('inconsistent_window') or
+                                        e.diagnostics.get('undefined_angle')) for e in estimates)
     aligned = any(e.method == 'E4' and e.ok and e.residual < .05 and
                   e.diagnostics.get('weight', 0) > 0 for e in estimates)
     if ambiguous and not aligned:
         return LocationResult(m=float('nan'), km_from_S=float('nan'), km_from_R=float('nan'),
                               interval_pu=(float('nan'),)*2, interval_km=(float('nan'),)*2,
                               method='E5', mode='none', fault_type=fault, estimates=estimates,
-                              caveats=caveats+['Ambiguous E5 roots or insufficient paired samples; single-ended fallback '
+                              caveats=caveats+['E5 paired constraints are ambiguous, inconsistent or insufficient; single-ended fallback '
                                               'is withheld until the two-ended evidence is resolved.'])
 
     usable = [e for e in estimates if e.ok and e.diagnostics.get("weight", 0.0) > 0]
