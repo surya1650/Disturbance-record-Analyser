@@ -83,6 +83,7 @@
     "src/dranalyser/validation/__init__.py": 1,
     "src/dranalyser/validation/acceptance.py": 126,
     "src/dranalyser/validation/replay.py": 95,
+    "src/dranalyser/validation/section_study.py": 77,
     "src/dranalyser/validation/sequence_envelope.py": 94,
     "src/dranalyser/workbench/__init__.py": 14,
     "src/dranalyser/workbench/audits.py": 25,

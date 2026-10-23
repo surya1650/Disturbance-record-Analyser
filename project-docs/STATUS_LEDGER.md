@@ -6,6 +6,37 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-10-23 - Numerical robustness and independent section feasibility
+
+Implemented scale-normalized real-root solving, structural E5/undefined-angle
+refusal and incident propagation without single-ended fallback unless usable
+aligned E4 exists. E4 nonfinite input is no longer marked ok. An existing
+Windows intake race was reproduced with a stale check and held-open reader;
+complete hash blobs now publish without replacement using atomic hard links.
+
+Independent passive-sequence study: 7,200 planned, 7,199 located, one refused.
+Noise p95 errors: .0385%/.3950%/1.9605% for .1%/1%/5% phasor noise. Common
+line impedance +20% gives p95 13.0246%; remote current ratio +10% gives 2.8191%.
+Every biased case still locates and its diagnostic interval misses truth;
+small residuals do not validate field parameters or calibrate confidence.
+Aligned mixed-section study recovers independent phase-network chainages,
+junctions and physical reversal, retaining ambiguous fits. It is validation
+only; production mixed-section/coupling/shunt refusals stay active.
+
+Worktree full suite: **820 passed, 28 corpus skips**, one upstream warning;
+architecture direct/self-tests and focused Ruff pass. Stage-A 10,000 PASS:
+9,242 located, 758 refused; clean 4,258 located, 25 refused, p95 .4361%.
+All-located p95 6.677%; saturated located p95 39.805% (1,203 cases). Additional
+abstentions and remaining difficult tails are explicit. Independent review and
+primary-checkout publication verification follow in the handoff/Git history.
+See [NUMERICAL_VALIDATION_2026-10-23.md](NUMERICAL_VALIDATION_2026-10-23.md).
+
+No field inputs or operational acceptance fabricated. Existing app roots,
+preview processes, private snapshots and local Dash findings are preserved.
+Unsupported broader models and independent patrol evidence remain pending.
+
+---
+
 ## 2026-10-23 - Source catalogue, acceptance replay and Dash source findings
 
 Implemented immutable source import, conservative reciprocal candidates,

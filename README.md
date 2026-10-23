@@ -63,6 +63,13 @@ for verification results, source limits and the separate local Dash findings.
 DHN-NNR is Dhone–Nansuralla, as confirmed by the user. Its model remains withheld
 pending circuit, length, topology and instrument review.
 
+The subsequent [numerical robustness milestone](project-docs/NUMERICAL_VALIDATION_2026-10-23.md)
+adds real-root/invalid-window refusal, a reproducible independent phasor envelope
+and an aligned mixed-section feasibility study. Stage-A still passes: 9,242
+located, 758 refused, clean located p95 0.4361%. Additional abstentions and
+remaining saturated-CT/parameter-bias tails are documented. The section study
+does not enable production section location or establish field accuracy.
+
 ### Stage-A acceptance (brief section 13)
 
 **Historical baseline before the 2026-09-11 refusal changes:** PASS over 100,000 synthetic incidents sweeping `m`, fault type,
@@ -278,8 +285,9 @@ src/dranalyser/
 - No far-end record exists in the source corpus, so the two-ended path has
   never run on real data. Recovering a genuine two-ended pair is the single
   highest-priority work item.
-- Long lines use a lumped series model. Above roughly 150 km at 400 kV the
-  distributed-parameter correction is needed before the quoted accuracy holds.
+- The supported line model is series-only. Declared charging/shunt parameters
+  are refused; distributed propagation is unsupported. No universal safe length
+  threshold has been validated.
 - Series-compensated lines are detected and **refused**, not approximated.
 - Three-terminal and tapped lines are not handled.
 - Autonomous cross-delivery pairing and direct relay protocol collectors are

@@ -1,5 +1,29 @@
 # Context for the next session
 
+**2026-10-23 numerical continuation:** structural E5 failures now refuse incident
+fallback, finite real-root arithmetic is scale-normalized and a concurrent
+Windows immutable-blob publication race is fixed. Independent phasor envelope:
+7,200 cases, 7,199 located/one refused; biased parameters remain a demonstrated
+limit. Aligned mixed-section search is a validation-only study, not enabled in
+main/stage location. Read
+[NUMERICAL_VALIDATION_2026-10-23.md](NUMERICAL_VALIDATION_2026-10-23.md) and its
+machine-readable synthetic aggregate.
+
+Worktree full suite: **820 passed, 28 corpus skips**, one upstream warning;
+architecture direct/self-tests and focused Ruff pass. Stage-A 10,000 PASS:
+9,242 located/758 refused; clean 4,258 located, 25 refused, p95 0.4361% unchanged.
+All-located p95 6.677%, saturated located p95 39.805%; the additional 465
+abstentions must be reported, not treated as an unconditional accuracy gain.
+The final review and primary-checkout publication verification are recorded
+in Git history and the subsequent handoff update.
+
+No source workbook, field record, app database, Dash findings or existing
+preview process was changed. Existing running processes need a normal restart
+to load updated numerical modules. Remaining: production general/unsynchronised
+section model and integration, coupling, charging/distributed models, CT/CVT
+reconstruction, noisy-root confidence calibration and verified field acceptance.
+Do not redo the now-reproduced no-real-root, nonfinite-window and blob races.
+
 **2026-10-23 source/acceptance milestone complete locally:** **744 tests pass**,
 architecture direct/self-tests, focused Ruff, JS syntax and 26 JS assertions;
 Dash's eight offline audit tests pass. Stage-A 10,000 PASS, unchanged numerical

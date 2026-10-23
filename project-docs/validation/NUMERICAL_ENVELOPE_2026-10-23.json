@@ -1,0 +1,167 @@
+{
+  "schema": "dranalyser.numerical-envelope.v1",
+  "seed": 854,
+  "repetitions": 20,
+  "window_samples": 24,
+  "interval_roundoff_pu": 7.105427357601002e-15,
+  "summary": {
+    "planned": 7200,
+    "located": 7199,
+    "refused": 1,
+    "located_fraction": 0.9998611111111111,
+    "mae_pct": 1.1055554453889942,
+    "p95_error_pct": 5.075687226570117,
+    "max_error_pct": 15.797292713075596,
+    "within_half_percent_all_planned_fraction": 0.6779166666666666,
+    "interval_cases": 7199,
+    "diagnostic_interval_contains_truth_fraction": 0.666620363939436,
+    "refusal_reasons": {
+      "inconsistent magnitude constraint at paired sample 7: no real root: negative discriminant": 1
+    }
+  },
+  "by_scenario": {
+    "ideal": {
+      "planned": 1200,
+      "located": 1200,
+      "refused": 0,
+      "located_fraction": 1.0,
+      "mae_pct": 1.3739009929736312e-14,
+      "p95_error_pct": 3.3306690738754696e-14,
+      "max_error_pct": 8.881784197001252e-14,
+      "within_half_percent_all_planned_fraction": 1.0,
+      "interval_cases": 1200,
+      "diagnostic_interval_contains_truth_fraction": 1.0,
+      "refusal_reasons": {}
+    },
+    "noise_0_1pct": {
+      "planned": 1200,
+      "located": 1200,
+      "refused": 0,
+      "located_fraction": 1.0,
+      "mae_pct": 0.014061469230356031,
+      "p95_error_pct": 0.03848059161684457,
+      "max_error_pct": 0.10101671775761822,
+      "within_half_percent_all_planned_fraction": 1.0,
+      "interval_cases": 1200,
+      "diagnostic_interval_contains_truth_fraction": 1.0,
+      "refusal_reasons": {}
+    },
+    "noise_1pct": {
+      "planned": 1200,
+      "located": 1200,
+      "refused": 0,
+      "located_fraction": 1.0,
+      "mae_pct": 0.14741770872072452,
+      "p95_error_pct": 0.39503410963993196,
+      "max_error_pct": 0.884441088991994,
+      "within_half_percent_all_planned_fraction": 0.975,
+      "interval_cases": 1200,
+      "diagnostic_interval_contains_truth_fraction": 1.0,
+      "refusal_reasons": {}
+    },
+    "noise_5pct": {
+      "planned": 1200,
+      "located": 1199,
+      "refused": 1,
+      "located_fraction": 0.9991666666666666,
+      "mae_pct": 0.7061648325946607,
+      "p95_error_pct": 1.9605220217511832,
+      "max_error_pct": 4.926993810172831,
+      "within_half_percent_all_planned_fraction": 0.4925,
+      "interval_cases": 1199,
+      "diagnostic_interval_contains_truth_fraction": 1.0,
+      "refusal_reasons": {
+        "inconsistent magnitude constraint at paired sample 7: no real root: negative discriminant": 1
+      }
+    },
+    "line_impedance_plus_20pct": {
+      "planned": 1200,
+      "located": 1200,
+      "refused": 0,
+      "located_fraction": 1.0,
+      "mae_pct": 4.740153745317098,
+      "p95_error_pct": 13.024563501003174,
+      "max_error_pct": 15.797292713075596,
+      "within_half_percent_all_planned_fraction": 0.15,
+      "interval_cases": 1200,
+      "diagnostic_interval_contains_truth_fraction": 0.0,
+      "refusal_reasons": {}
+    },
+    "remote_ct_plus_10pct": {
+      "planned": 1200,
+      "located": 1200,
+      "refused": 0,
+      "located_fraction": 1.0,
+      "mae_pct": 1.0252020909604482,
+      "p95_error_pct": 2.819125332291103,
+      "max_error_pct": 2.9807331065469844,
+      "within_half_percent_all_planned_fraction": 0.45,
+      "interval_cases": 1200,
+      "diagnostic_interval_contains_truth_fraction": 0.0,
+      "refusal_reasons": {}
+    }
+  },
+  "by_source_ratio": {
+    "0.1": {
+      "planned": 1800,
+      "located": 1799,
+      "refused": 1,
+      "located_fraction": 0.9994444444444445,
+      "mae_pct": 0.7457748012522446,
+      "p95_error_pct": 2.980733106546979,
+      "max_error_pct": 3.6743622731054,
+      "within_half_percent_all_planned_fraction": 0.7011111111111111,
+      "interval_cases": 1799,
+      "diagnostic_interval_contains_truth_fraction": 0.6664813785436353,
+      "refusal_reasons": {
+        "inconsistent magnitude constraint at paired sample 7: no real root: negative discriminant": 1
+      }
+    },
+    "1": {
+      "planned": 1800,
+      "located": 1800,
+      "refused": 0,
+      "located_fraction": 1.0,
+      "mae_pct": 0.7682285033473171,
+      "p95_error_pct": 3.033896593149865,
+      "max_error_pct": 4.676384022956048,
+      "within_half_percent_all_planned_fraction": 0.6383333333333333,
+      "interval_cases": 1800,
+      "diagnostic_interval_contains_truth_fraction": 0.6666666666666666,
+      "refusal_reasons": {}
+    },
+    "10": {
+      "planned": 1800,
+      "located": 1800,
+      "refused": 0,
+      "located_fraction": 1.0,
+      "mae_pct": 1.3113662057635542,
+      "p95_error_pct": 10.003796268673392,
+      "max_error_pct": 12.878630384578448,
+      "within_half_percent_all_planned_fraction": 0.6655555555555556,
+      "interval_cases": 1800,
+      "diagnostic_interval_contains_truth_fraction": 0.6666666666666666,
+      "refusal_reasons": {}
+    },
+    "1000": {
+      "planned": 1800,
+      "located": 1800,
+      "refused": 0,
+      "located_fraction": 1.0,
+      "mae_pct": 1.5966523930572292,
+      "p95_error_pct": 12.469650869781246,
+      "max_error_pct": 15.797292713075596,
+      "within_half_percent_all_planned_fraction": 0.7066666666666667,
+      "interval_cases": 1800,
+      "diagnostic_interval_contains_truth_fraction": 0.6666666666666666,
+      "refusal_reasons": {}
+    }
+  },
+  "limits": "Synthetic passive negative-sequence branch experiment only. Noise is independently specified complex Gaussian phasor noise, not a CT/CVT acquisition or phase-fault model. Source ratio controls the remote negative-sequence source impedance. Errors are conditional on in-line located cases; all planned cases remain in success/refusal fractions. Interval containment allows 32 machine eps solely for floating-point roundoff; it is descriptive, not calibrated confidence, field accuracy or TB 854 acceptance.",
+  "source_sha256_utf8_lf": {
+    "src/dranalyser/faultloc/estimators.py": "a626dd39eab20a241ed8e024e2786ef27879dd31b710de2ee869e4223afa6bfb",
+    "src/dranalyser/validation/sequence_envelope.py": "4db8320efa9ed42faf0bbd85bf93506874c89efb36a6f86217a640199cadc2a4",
+    "src/dranalyser/validation/section_study.py": "4e1eac34db3ae3188500d8322f83c0ec709a372bfb6399b7ffa075d9c65cab5a",
+    "tests/section_network_oracle.py": "e1d4efbefc14efe6754afcf572e83fb4a4cea5e23d1bf7e5f5023a8452c21cf8"
+  }
+}
