@@ -1,0 +1,558 @@
+{
+  "seed": 854,
+  "planned": 7056,
+  "located": 5186,
+  "refused": 1870,
+  "scenarios": {
+    "ideal": {
+      "planned": 1008,
+      "located": 1008,
+      "refused": 0,
+      "p95_error_km": 8.526512829121202e-14,
+      "max_error_km": 1.5631940186722204e-13,
+      "worst_located_case": {
+        "status": "located",
+        "reason": "Unique section-compatible location across every paired sample.",
+        "mode": "unsynchronised",
+        "geometry": 2,
+        "true_km": 99,
+        "phase": 1,
+        "resistance_ohm": 50,
+        "reversed": false,
+        "remote_rotation_rad": -2.4,
+        "error_km": 1.5631940186722204e-13,
+        "reported_km": 98.99999999999984,
+        "contains_truth": true
+      },
+      "descriptive_spread_contains_truth": 1008,
+      "refusal_reasons": {},
+      "by_mode": {
+        "aligned": {
+          "planned": 252,
+          "located": 252,
+          "refused": 0,
+          "p95_error_km": 7.865930129469233e-14,
+          "max_error_km": 1.4210854715202004e-13,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "aligned",
+            "geometry": 2,
+            "true_km": 75,
+            "phase": 0,
+            "resistance_ohm": 50,
+            "reversed": false,
+            "remote_rotation_rad": 0,
+            "error_km": 1.4210854715202004e-13,
+            "reported_km": 74.99999999999986,
+            "contains_truth": true
+          },
+          "descriptive_spread_contains_truth": 252,
+          "refusal_reasons": {}
+        },
+        "unsynchronised": {
+          "planned": 756,
+          "located": 756,
+          "refused": 0,
+          "p95_error_km": 8.526512829121202e-14,
+          "max_error_km": 1.5631940186722204e-13,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "unsynchronised",
+            "geometry": 2,
+            "true_km": 99,
+            "phase": 1,
+            "resistance_ohm": 50,
+            "reversed": false,
+            "remote_rotation_rad": -2.4,
+            "error_km": 1.5631940186722204e-13,
+            "reported_km": 98.99999999999984,
+            "contains_truth": true
+          },
+          "descriptive_spread_contains_truth": 756,
+          "refusal_reasons": {}
+        }
+      }
+    },
+    "noise_0.1pct": {
+      "planned": 1008,
+      "located": 984,
+      "refused": 24,
+      "p95_error_km": 0.06545708386897742,
+      "max_error_km": 0.15635770735649634,
+      "worst_located_case": {
+        "status": "located",
+        "reason": "Unique section-compatible location across every paired sample.",
+        "mode": "aligned",
+        "geometry": 0,
+        "true_km": 1,
+        "phase": 0,
+        "resistance_ohm": 1,
+        "reversed": false,
+        "remote_rotation_rad": 0,
+        "error_km": 0.15635770735649634,
+        "reported_km": 0.8436422926435037,
+        "contains_truth": true
+      },
+      "descriptive_spread_contains_truth": 974,
+      "refusal_reasons": {
+        "Multiple distinct in-line section roots; no automatic selection.": 11,
+        "No in-line section candidate satisfies the measurements.": 13
+      },
+      "by_mode": {
+        "aligned": {
+          "planned": 252,
+          "located": 228,
+          "refused": 24,
+          "p95_error_km": 0.06393885101171774,
+          "max_error_km": 0.15635770735649634,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "aligned",
+            "geometry": 0,
+            "true_km": 1,
+            "phase": 0,
+            "resistance_ohm": 1,
+            "reversed": false,
+            "remote_rotation_rad": 0,
+            "error_km": 0.15635770735649634,
+            "reported_km": 0.8436422926435037,
+            "contains_truth": true
+          },
+          "descriptive_spread_contains_truth": 226,
+          "refusal_reasons": {
+            "Multiple distinct in-line section roots; no automatic selection.": 11,
+            "No in-line section candidate satisfies the measurements.": 13
+          }
+        },
+        "unsynchronised": {
+          "planned": 756,
+          "located": 756,
+          "refused": 0,
+          "p95_error_km": 0.06564556375117547,
+          "max_error_km": 0.13902065871781843,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "unsynchronised",
+            "geometry": 0,
+            "true_km": 25,
+            "phase": 1,
+            "resistance_ohm": 1,
+            "reversed": false,
+            "remote_rotation_rad": -2.4,
+            "error_km": 0.13902065871781843,
+            "reported_km": 24.86097934128218,
+            "contains_truth": true
+          },
+          "descriptive_spread_contains_truth": 748,
+          "refusal_reasons": {}
+        }
+      }
+    },
+    "noise_1pct": {
+      "planned": 1008,
+      "located": 671,
+      "refused": 337,
+      "p95_error_km": 0.48622352413522374,
+      "max_error_km": 1.2429689827879855,
+      "worst_located_case": {
+        "status": "located",
+        "reason": "Unique section-compatible location across every paired sample.",
+        "mode": "unsynchronised",
+        "geometry": 0,
+        "true_km": 25,
+        "phase": 2,
+        "resistance_ohm": 50,
+        "reversed": false,
+        "remote_rotation_rad": 1.1,
+        "error_km": 1.2429689827879855,
+        "reported_km": 23.757031017212014,
+        "contains_truth": true
+      },
+      "descriptive_spread_contains_truth": 663,
+      "refusal_reasons": {
+        "Multiple distinct in-line section roots; no automatic selection.": 10,
+        "No in-line section candidate satisfies the measurements.": 284,
+        "Recovered angle or distance is unstable across the paired window.": 43
+      },
+      "by_mode": {
+        "aligned": {
+          "planned": 252,
+          "located": 53,
+          "refused": 199,
+          "p95_error_km": 0.33427365811911713,
+          "max_error_km": 0.5667049319191051,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "aligned",
+            "geometry": 2,
+            "true_km": 99,
+            "phase": 1,
+            "resistance_ohm": 1,
+            "reversed": false,
+            "remote_rotation_rad": 0,
+            "error_km": 0.5667049319191051,
+            "reported_km": 98.4332950680809,
+            "contains_truth": true
+          },
+          "descriptive_spread_contains_truth": 53,
+          "refusal_reasons": {
+            "Multiple distinct in-line section roots; no automatic selection.": 10,
+            "No in-line section candidate satisfies the measurements.": 184,
+            "Recovered angle or distance is unstable across the paired window.": 5
+          }
+        },
+        "unsynchronised": {
+          "planned": 756,
+          "located": 618,
+          "refused": 138,
+          "p95_error_km": 0.49263186939057485,
+          "max_error_km": 1.2429689827879855,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "unsynchronised",
+            "geometry": 0,
+            "true_km": 25,
+            "phase": 2,
+            "resistance_ohm": 50,
+            "reversed": false,
+            "remote_rotation_rad": 1.1,
+            "error_km": 1.2429689827879855,
+            "reported_km": 23.757031017212014,
+            "contains_truth": true
+          },
+          "descriptive_spread_contains_truth": 610,
+          "refusal_reasons": {
+            "No in-line section candidate satisfies the measurements.": 100,
+            "Recovered angle or distance is unstable across the paired window.": 38
+          }
+        }
+      }
+    },
+    "noise_5pct": {
+      "planned": 1008,
+      "located": 3,
+      "refused": 1005,
+      "p95_error_km": 1.2180909788181948,
+      "max_error_km": 1.3244131615568904,
+      "worst_located_case": {
+        "status": "located",
+        "reason": "Unique section-compatible location across every paired sample.",
+        "mode": "unsynchronised",
+        "geometry": 1,
+        "true_km": 40,
+        "phase": 1,
+        "resistance_ohm": 50,
+        "reversed": true,
+        "remote_rotation_rad": 0,
+        "error_km": 1.3244131615568904,
+        "reported_km": 38.67558683844311,
+        "contains_truth": false
+      },
+      "descriptive_spread_contains_truth": 2,
+      "refusal_reasons": {
+        "No in-line section candidate satisfies the measurements.": 460,
+        "Recovered angle or distance is unstable across the paired window.": 545
+      },
+      "by_mode": {
+        "aligned": {
+          "planned": 252,
+          "located": 0,
+          "refused": 252,
+          "p95_error_km": null,
+          "max_error_km": null,
+          "worst_located_case": null,
+          "descriptive_spread_contains_truth": 0,
+          "refusal_reasons": {
+            "No in-line section candidate satisfies the measurements.": 252
+          }
+        },
+        "unsynchronised": {
+          "planned": 756,
+          "located": 3,
+          "refused": 753,
+          "p95_error_km": 1.2180909788181948,
+          "max_error_km": 1.3244131615568904,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "unsynchronised",
+            "geometry": 1,
+            "true_km": 40,
+            "phase": 1,
+            "resistance_ohm": 50,
+            "reversed": true,
+            "remote_rotation_rad": 0,
+            "error_km": 1.3244131615568904,
+            "reported_km": 38.67558683844311,
+            "contains_truth": false
+          },
+          "descriptive_spread_contains_truth": 2,
+          "refusal_reasons": {
+            "No in-line section candidate satisfies the measurements.": 208,
+            "Recovered angle or distance is unstable across the paired window.": 545
+          }
+        }
+      }
+    },
+    "remote_current_plus10pct": {
+      "planned": 1008,
+      "located": 990,
+      "refused": 18,
+      "p95_error_km": 4.163800477713365,
+      "max_error_km": 5.4994034046605265,
+      "worst_located_case": {
+        "status": "located",
+        "reason": "Unique section-compatible location across every paired sample.",
+        "mode": "unsynchronised",
+        "geometry": 2,
+        "true_km": 25,
+        "phase": 2,
+        "resistance_ohm": 50,
+        "reversed": true,
+        "remote_rotation_rad": 0,
+        "error_km": 5.4994034046605265,
+        "reported_km": 30.499403404660526,
+        "contains_truth": false
+      },
+      "descriptive_spread_contains_truth": 0,
+      "refusal_reasons": {
+        "No in-line section candidate satisfies the measurements.": 18
+      },
+      "by_mode": {
+        "aligned": {
+          "planned": 252,
+          "located": 234,
+          "refused": 18,
+          "p95_error_km": 4.40144169947224,
+          "max_error_km": 5.447411055921183,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "aligned",
+            "geometry": 2,
+            "true_km": 25,
+            "phase": 2,
+            "resistance_ohm": 50,
+            "reversed": true,
+            "remote_rotation_rad": 0,
+            "error_km": 5.447411055921183,
+            "reported_km": 30.447411055921183,
+            "contains_truth": false
+          },
+          "descriptive_spread_contains_truth": 0,
+          "refusal_reasons": {
+            "No in-line section candidate satisfies the measurements.": 18
+          }
+        },
+        "unsynchronised": {
+          "planned": 756,
+          "located": 756,
+          "refused": 0,
+          "p95_error_km": 4.1638004777133615,
+          "max_error_km": 5.4994034046605265,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "unsynchronised",
+            "geometry": 2,
+            "true_km": 25,
+            "phase": 2,
+            "resistance_ohm": 50,
+            "reversed": true,
+            "remote_rotation_rad": 0,
+            "error_km": 5.4994034046605265,
+            "reported_km": 30.499403404660526,
+            "contains_truth": false
+          },
+          "descriptive_spread_contains_truth": 0,
+          "refusal_reasons": {}
+        }
+      }
+    },
+    "first_section_z_plus20pct": {
+      "planned": 1008,
+      "located": 972,
+      "refused": 36,
+      "p95_error_km": 5.337380176988319,
+      "max_error_km": 7.871881969412868,
+      "worst_located_case": {
+        "status": "located",
+        "reason": "Unique section-compatible location across every paired sample.",
+        "mode": "unsynchronised",
+        "geometry": 0,
+        "true_km": 75,
+        "phase": 1,
+        "resistance_ohm": 1,
+        "reversed": true,
+        "remote_rotation_rad": -2.4,
+        "error_km": 7.871881969412868,
+        "reported_km": 67.12811803058713,
+        "contains_truth": false
+      },
+      "descriptive_spread_contains_truth": 0,
+      "refusal_reasons": {
+        "No in-line section candidate satisfies the measurements.": 36
+      },
+      "by_mode": {
+        "aligned": {
+          "planned": 252,
+          "located": 216,
+          "refused": 36,
+          "p95_error_km": 6.282189010711207,
+          "max_error_km": 7.717323879190985,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "aligned",
+            "geometry": 0,
+            "true_km": 75,
+            "phase": 1,
+            "resistance_ohm": 1,
+            "reversed": true,
+            "remote_rotation_rad": 0,
+            "error_km": 7.717323879190985,
+            "reported_km": 67.28267612080901,
+            "contains_truth": false
+          },
+          "descriptive_spread_contains_truth": 0,
+          "refusal_reasons": {
+            "No in-line section candidate satisfies the measurements.": 36
+          }
+        },
+        "unsynchronised": {
+          "planned": 756,
+          "located": 756,
+          "refused": 0,
+          "p95_error_km": 5.337380176988319,
+          "max_error_km": 7.871881969412868,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "unsynchronised",
+            "geometry": 0,
+            "true_km": 75,
+            "phase": 1,
+            "resistance_ohm": 1,
+            "reversed": true,
+            "remote_rotation_rad": -2.4,
+            "error_km": 7.871881969412868,
+            "reported_km": 67.12811803058713,
+            "contains_truth": false
+          },
+          "descriptive_spread_contains_truth": 0,
+          "refusal_reasons": {}
+        }
+      }
+    },
+    "remote_polarity_reversed": {
+      "planned": 1008,
+      "located": 558,
+      "refused": 450,
+      "p95_error_km": 59.52854233172496,
+      "max_error_km": 78.86975738692472,
+      "worst_located_case": {
+        "status": "located",
+        "reason": "Unique section-compatible location across every paired sample.",
+        "mode": "unsynchronised",
+        "geometry": 2,
+        "true_km": 99,
+        "phase": 1,
+        "resistance_ohm": 50,
+        "reversed": false,
+        "remote_rotation_rad": 0,
+        "error_km": 78.86975738692472,
+        "reported_km": 20.130242613075282,
+        "contains_truth": false
+      },
+      "descriptive_spread_contains_truth": 0,
+      "refusal_reasons": {
+        "No in-line section candidate satisfies the measurements.": 450
+      },
+      "by_mode": {
+        "aligned": {
+          "planned": 252,
+          "located": 0,
+          "refused": 252,
+          "p95_error_km": null,
+          "max_error_km": null,
+          "worst_located_case": null,
+          "descriptive_spread_contains_truth": 0,
+          "refusal_reasons": {
+            "No in-line section candidate satisfies the measurements.": 252
+          }
+        },
+        "unsynchronised": {
+          "planned": 756,
+          "located": 558,
+          "refused": 198,
+          "p95_error_km": 59.52854233172496,
+          "max_error_km": 78.86975738692472,
+          "worst_located_case": {
+            "status": "located",
+            "reason": "Unique section-compatible location across every paired sample.",
+            "mode": "unsynchronised",
+            "geometry": 2,
+            "true_km": 99,
+            "phase": 1,
+            "resistance_ohm": 50,
+            "reversed": false,
+            "remote_rotation_rad": 0,
+            "error_km": 78.86975738692472,
+            "reported_km": 20.130242613075282,
+            "contains_truth": false
+          },
+          "descriptive_spread_contains_truth": 0,
+          "refusal_reasons": {
+            "No in-line section candidate satisfies the measurements.": 198
+          }
+        }
+      }
+    }
+  },
+  "max_oracle_kcl_residual_a": 3.519638739074529e-10,
+  "source_sha256_utf8_lf": {
+    "src/dranalyser/faultloc/sections.py": "0fc4c525c34ee642513f0f4a50aaeee542a2401f3802c4b021728204580ed068",
+    "src/dranalyser/faultloc/section_location.py": "cdf5b97ec9e85dbc906cae6569c59b196bafbe4c3f18b6f23f29efc0615d53c6",
+    "src/dranalyser/faultloc/stage_location.py": "40af657579a82a320f132fc503d642b735679e9b99a6918810c30a2c41ccd7c7",
+    "tests/section_network_oracle.py": "e1d4efbefc14efe6754afcf572e83fb4a4cea5e23d1bf7e5f5023a8452c21cf8",
+    "scripts/section_numerical_validation.py": "3186c571075c66c07a5e7c8d4afe3d2e4a4aa875af3ca298dae39aa8d2742975"
+  },
+  "protocol": {
+    "geometry_count": 3,
+    "chainages_km": [
+      1,
+      25,
+      40,
+      50,
+      60,
+      75,
+      99
+    ],
+    "phases": [
+      "AG",
+      "BG",
+      "CG"
+    ],
+    "fault_resistance_ohm": [
+      1,
+      50
+    ],
+    "reversal": true,
+    "samples_per_window": 8,
+    "modes": [
+      "aligned@0",
+      "unsynchronised@0",
+      "unsynchronised@-2.4rad",
+      "unsynchronised@1.1rad"
+    ],
+    "noise": "Complex Gaussian RMS relative to stronger V2/I2 terminal, independent at each sample.",
+    "spread_roundoff_km": 7.105427357601002e-13
+  },
+  "limits": "Synthetic phase-nodal phasors, Z2=Z1; fixed source impedances, no charging/coupling/EMT, no field accuracy, calibrated confidence or safety guarantee for undeclared parameter/polarity bias."
+}

@@ -1,5 +1,12 @@
 # TB 854 validation matrix
 
+Current section continuation: [SECTION_VALIDATION_2026-10-23.md](SECTION_VALIDATION_2026-10-23.md)
+supersedes the previous production mixed-section limitation only for an explicit
+opt-in, reviewed, uncoupled series-section negative-sequence model. Independent
+phase nodal evidence: 7,056 cases, all 1,008 ideal locations recovered; noise,
+parameter and polarity counterexamples remain explicit. No field validation or
+certification is established, and no operational line is enabled.
+
 Current numerical extension, 2026-10-23: see
 [NUMERICAL_VALIDATION_2026-10-23.md](NUMERICAL_VALIDATION_2026-10-23.md) for
 real-root/invalid-window refusals, the independent 7,200-case phasor envelope,
@@ -72,7 +79,7 @@ work, expected behavior, criterion and status for each topic. Paths are under
 | V09 Impossible distance refusal | p. 11 error sources; numerical bounds are project policy | `ensemble.locate` final guard outside [-0.5,1.5]; after actual weighting/reconciliation | Repaired test proves refusal, NaN km/interval km, no towers; mutation detected |
 | V10 External indication / orientation | pp. 11-12, eqs. 5-6; report safeguards are project policy | `locate`: R-only `m_S=1-m_R`; all m outside [0,1] are non-location external indications, beyond [-0.5,1.5] remain impossible | Orientation validated; external km, intervals and towers suppressed in outputs and rule inputs; bypass detected |
 | V11 Parameters and shared bias | pp. 24-28, Table 5: erroneous line constants | `registry/model.py`, `ml/tier1.py`; measured versus provisional provenance matters; small residual cannot prove correct Z1 | Conversion/fitting implemented; independent E4 parameter-bias counterexample validated; field constants unverified |
-| V12 Mixed sections | pp. 47-51, eq. 24, Tables 8-9 | `Line.m_to_km` walks section X; production estimators still use summed Z; validation-only aligned section search propagates healthy prefixes/suffixes | Independent phase nodal oracle validates aligned study, junctions, reversal and ambiguity retention; production nonproportional sections remain refused; general operational/unsynchronised section solver **unsupported** |
+| V12 Mixed sections | pp. 47-51, eq. 24, Tables 8-9 | `faultloc/sections.py` propagates section prefixes/suffixes, solves aligned continuity or unsynchronised magnitude constraints and returns global X fraction/physical chainage; strict registry opt-in in main/reviewed stages | **Implemented / bounded validation** against independent phase nodal oracle, reversal, rotation, junctions and ambiguity; disabled models retain scalar refusal; balanced/coupled/charged section extensions and field validation remain unsupported |
 | V13 Parallel/asymmetric coupling | pp. 53-56, eqs. 25-27, Table 11; Annex F p. 124 | Requires phase/self/mutual matrices and adjacent circuit state; scalar sequence E5 does not establish immunity | Declared double circuits explicitly refused; coupled-network solver and six-conductor oracle **unsupported** |
 | V14 Charging / long lines | p. 11; pp. 47-48: capacitance invalidates constant-current propagation | `LineSection.b1/b0` fields exist; scalar estimators omit shunt terms | Declared shunt parameters explicitly refused; pi-oracle counterexample tested; distributed solve **unsupported**, no validated length threshold |
 | V15 CT/CVT/acquisition/windows | p. 11; p. 24 Table 4; pp. 26-27 Fig. 12; p. 105 | `dsp/core.py`, `detect.py`, `pipeline.py`, ensemble weighting; saturation detection, CVT window exclusion, sample-rate handling | Detection and synthetic stresses implemented/tested; saturation reconstruction and vendor filter compensation **unsupported** |

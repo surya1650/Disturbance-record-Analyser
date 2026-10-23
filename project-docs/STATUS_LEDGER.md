@@ -6,6 +6,26 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-10-23 - Guarded section-aware solver and independent phase-nodal sweep
+
+Implemented per-section aligned/unsynchronised negative-sequence solving and
+strict boolean opt-in main/stage dispatch. Distinct roots, degenerate/undefined
+constraints and unusable/unstable windows refuse. Physical junctions deduplicate;
+global reactance fraction maps to physical chainage. Existing model review and
+unsupported-topology gates remain. No operational line enabled, scalar fallback
+or automatic towers. Two nodal sinusoidal record cases also exercise actual DSP.
+
+Independent sweep: 7,056 planned, 5,186 located, 1,870 refused; all 1,008 ideal
+cases recover chainage. Noise and parameter/polarity bias are reported with
+denominators: reversed remote current can still locate 558/1,008 cases and err
+by 78.87 km. This is a demonstrated input-identifiability limit, not a safety or
+field-accuracy pass. Model remains advanced prototype / pre-pilot, zero accepted
+field cases. See [SECTION_VALIDATION_2026-10-23.md](SECTION_VALIDATION_2026-10-23.md)
+for reproducibility, numerical limits and final verification/review evidence.
+Dash findings, workbook, app database and preview processes remain untouched.
+
+---
+
 ## 2026-10-23 - Numerical robustness and independent section feasibility
 
 Implemented scale-normalized real-root solving, structural E5/undefined-angle

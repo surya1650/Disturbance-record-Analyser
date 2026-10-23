@@ -1,5 +1,17 @@
 # Context for the next session
 
+**2026-10-23 section continuation:** opt-in main and reviewed-stage series-section
+negative-sequence solving is implemented. Read
+[SECTION_VALIDATION_2026-10-23.md](SECTION_VALIDATION_2026-10-23.md) and its JSON
+aggregate before continuing; the previous aligned-study-only limitation below
+is historical. Strict boolean `section_solver_enabled` defaults false; no
+operational registry is enabled and model-review/coupling/charging/compensation
+gates stay active. All 1,008 ideal phase-nodal cases recover physical chainage;
+the 7,056-case sweep locates 5,186 and refuses 1,870. Wrong current polarity,
+gain and line parameters can still give stable wrong results; no field claim.
+No scalar fallback or automatic towers on the enabled section path. Pending
+broader models, uncertainty calibration and field acceptance remain in the report.
+
 **2026-10-23 numerical continuation:** structural E5 failures now refuse incident
 fallback, finite real-root arithmetic is scale-normalized and a concurrent
 Windows immutable-blob publication race is fixed. Independent phasor envelope:

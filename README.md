@@ -27,6 +27,7 @@ out there with reasons.
 | Conformance gate | working, 13 checks |
 | DSP chain (frequency tracking, mimic filter, sliding DFT, sequence, superimposed, inception, classification, CT saturation, window selection) | working |
 | Estimators E1, E2, E3, E4, E5 + E6 ensemble | working |
+| Opt-in mixed-section E4/E5 negative-sequence solver | implemented; bounded independent numerical validation |
 | Synthetic fault generator (the test oracle) | working |
 | Tier 1 line-parameter estimation | working |
 | Tier 2 hierarchical residual correction | implemented, **gated off** until 100 confirmed events |
@@ -68,7 +69,15 @@ passes **851 tests** and adds real-root/invalid-window refusal, a reproducible i
 and an aligned mixed-section feasibility study. Stage-A still passes: 9,242
 located, 758 refused, clean located p95 0.4361%. Additional abstentions and
 remaining saturated-CT/parameter-bias tails are documented. The section study
-does not enable production section location or establish field accuracy.
+did not enable production section location or establish field accuracy.
+
+The [section-solver continuation](project-docs/SECTION_VALIDATION_2026-10-23.md)
+adds guarded main/stage dispatch via a strict `section_solver_enabled: true`
+registry opt-in (default false; no operational line enabled). Independent phase
+nodal validation covers 7,056 planned cases: 5,186 located / 1,870 refused;
+all 1,008 ideal cases recover chainage. Biased parameters and polarity remain
+demonstrated failure modes, with errors/refusals reported explicitly. This is
+an advanced prototype / pre-pilot, with zero accepted field cases.
 
 ### Stage-A acceptance (brief section 13)
 

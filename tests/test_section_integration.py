@@ -4,18 +4,22 @@ Phasor replacement isolates section dispatch; it is not waveform acquisition QA.
 """
 import copy
 from dataclasses import asdict
+import datetime as dt
 
 import numpy as np
 import pytest
 
 from dranalyser.dsp.stage_windows import stage_window
+from dranalyser.dsp.pipeline import analyse
 from dranalyser.faultloc.ensemble import TerminalInput, locate
 from dranalyser.faultloc.stage_location import stage_e5
 from dranalyser.registry.loader import line_from_dict
+from dranalyser.signals import AnalogMeta, Record
 from dranalyser.workbench.stage_location import stage_locations
 from tests.test_model_domain import MIXED, definition
 from tests.test_section_solver import quantities
 from tests.test_stage_location import reviewed_pair
+from tests.section_network_oracle import solve
 
 
 @pytest.fixture(scope='module')
@@ -52,6 +56,7 @@ def test_enabled_main_solver_reports_physical_chainage_without_scalar_blend_or_t
     assert all(e.ends == 'two' for e in result.estimates)
     assert not result.towers and result.likely_tower is None
     assert result.diagnostics['section_solver']['status'] == 'located'
+    assert '75.000' in result.table()
 
 
 @pytest.mark.parametrize('problem', ['disabled', 'review', 'coupling', 'capacitor', 'shunt', 'missing',
@@ -136,3 +141,30 @@ def test_registry_defaults_to_scalar_refusal_and_preserves_review_gate():
     data.update(section_solver_enabled=True, model_review_required=True)
     result = line_from_dict(data)
     assert result.section_solver_enabled is True and result.model_review_required is True
+
+
+@pytest.mark.parametrize('km,rotation', [(25, 0), (75, 1.3)])
+def test_phase_nodal_sinusoidal_records_pass_through_actual_dsp_and_section_dispatch(km, rotation):
+    """No phasor replacement: steady sinusoidal states, not an EMT model."""
+    quiet, fault = solve(MIXED, km, resistance=1e12), solve(MIXED, km)
+    terms = {}
+    for end, fs, pre in [('S', 2400, .12), ('R', 1200, .173)]:
+        t = np.arange(round((pre+.5)*fs))/fs
+        physical = t-pre
+        analog = {}
+        for kind in ('V', 'I'):
+            phasors = np.where(physical[None, :] < 0, quiet[kind+end][:, None], fault[kind+end][:, None])
+            wave = np.sqrt(2)*np.real(phasors*np.exp(1j*(2*np.pi*50*physical+(rotation if end == 'R' else 0))))
+            analog.update({kind+phase: wave[i] for i, phase in enumerate('ABC')})
+        start = dt.datetime(2026, 10, 23)+dt.timedelta(seconds=1418 if end == 'R' else 0)
+        rec = Record('nodal-'+end, 'SYNTHETIC', 'Main-1', '2013', start, start+dt.timedelta(seconds=pre),
+                     fs, 50, t, analog, {}, terminal_end=end, time_basis='synthetic')
+        rec.analog_meta = {k: AnalogMeta(k, 'A' if k[0] == 'I' else 'V', 1, 0, 1, 1, 'P', -1e9, 1e9,
+                                       normalised=True) for k in analog}
+        terms[end] = TerminalInput(analyse(rec), end)
+    line = definition(MIXED)
+    line.section_solver_enabled = True
+    result = locate(line, terms)
+    assert result.ok, result
+    assert result.km_from_S == pytest.approx(km, abs=.05)
+    assert not result.towers

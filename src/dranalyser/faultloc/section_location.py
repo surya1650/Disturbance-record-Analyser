@@ -76,4 +76,5 @@ def section_incident(line, terminals, fault, caveats, cross_country=False):
                estimates=[Estimate(out['method'], m, result['diagnostics']['relative_voltage_mismatch'],
                                    ends='two', diagnostics=result['diagnostics'], spread=interval)])
     out['caveats'].append('Relative-position pairing is not timestamp synchronization or same-stage proof.')
+    out['diagnostics']['_km_fn'] = line.m_to_km
     return out
