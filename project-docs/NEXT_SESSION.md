@@ -13,8 +13,13 @@ be 82.58km wrong; their operational gates remain unchanged. Source asymmetry is
 at terminal boundaries, not validation of a coupled/asymmetric line model.
 No production source changes or operational model enablement. New oracle is
 interior-only; terminal CT-zone, EMT, calibration and field acceptance remain
-pending. Worktree full 1,028 passed/28 corpus skips, one upstream warning, 150.53s;
+pending. Post-fix worktree full 1,033 passed/28 corpus skips, one upstream warning, 85.78s;
 Stage-A 10,000 PASS, 56.2s with unchanged metrics. Historical source hashes preserved.
+Independent review found/fixed one Important oracle-failure accounting issue:
+failed numerical networks now retain their nine planned windows/strata and
+return failed evidence/CLI exit2; configuration errors leave no output. Five
+focused regressions pass; the final nominal CLI rerun has zero oracle failures
+and exactly preserves all previous numerical and guarded outcomes.
 
 **2026-10-23 section continuation:** opt-in main and reviewed-stage series-section
 negative-sequence solving is implemented. Read

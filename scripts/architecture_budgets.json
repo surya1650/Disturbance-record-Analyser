@@ -6,7 +6,7 @@
     "scripts/field_evidence_inventory.py": 104,
     "scripts/numerical_envelope.py": 27,
     "scripts/section_numerical_validation.py": 138,
-    "scripts/source_fault_validation.py": 222,
+    "scripts/source_fault_validation.py": 251,
     "src/dranalyser/__init__.py": 0,
     "src/dranalyser/application/__init__.py": 1,
     "src/dranalyser/application/__main__.py": 39,

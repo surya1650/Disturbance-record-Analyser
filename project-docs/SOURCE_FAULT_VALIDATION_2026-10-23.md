@@ -71,6 +71,18 @@ Python/NumPy versions, source hashes, worst-case witnesses, refusal reasons and
 source/fault/reference/infeed/source-fault breakdowns. All relevant margins sum
 to their full denominators. No oracle case or high-error result is dropped.
 
+Numerical oracle failures retain all nine affected reference/noise windows in
+their source/fault/reference denominators, with `oracle_failed_windows` counts,
+typed failure reasons, up to 20 physical failure witnesses and an explicit
+omitted-witness count. Failed observations have no fabricated infeed ratio;
+their ratio stratum is `oracle_failure`. The run becomes
+`completion_status: oracle_failure`, returns CLI exit 2 and does not claim a
+guarded-DSP run. Surviving cases retain their seeded noise realizations.
+Invalid configuration remains an explicit exception. Computation and strict
+JSON serialization happen before exclusive publication, so those errors leave
+no empty output file. `complete` means the experiment completed, not that every
+location met an accuracy requirement.
+
 Grid: 2 geometries, 3 chainages (10/40/75 km), 8 source profiles, 11 connections,
 R=1/50 ohms, 2 physical orientations, 3 references (aligned, unsynchronised
 0/1.1 rad remote rotation), 3 noise scenarios, 8 pairs/window. This is
@@ -169,7 +181,41 @@ clean 4,258 located / 25 refused, located clean p95 .4361%. All-located p95
 6.677%, saturated located p95 39.805%, zero impossible outputs without caveat.
 This legacy scalar regression does not replace the new section/source evidence.
 Architecture direct/self-tests and focused Ruff pass. Final full-suite and
-independent review evidence follow after completion.
+independent review evidence are recorded below.
+
+Final pre-review worktree full suite: **1,028 passed, 28 corpus-dependent skips**,
+one upstream warning, 150.53s. Task completion rechecked the wider runner/DSP
+tests: **18 passed**, 49.69s; the 60 oracle tests also pass. All new evidence
+source hashes and all ten historical section-evidence hashes match current
+sources. `git diff 897087d -- src` is empty: this milestone changes validation
+and documentation, not production algorithms. Both local Dash findings retain
+their previous hashes. The fresh whole-branch review is recorded below after
+its verdict and any required fix pass.
+
+The fresh read-only reviewer independently passed **78 tests** (49.53s),
+reproduced the saved phasor aggregate and all source hashes, checked every
+scenario margin, and verified reversal/internal KCL across another 176
+profile/connection/geometry combinations. Verdict: one Important finding,
+no Critical or deferred Minor findings. A numerical oracle exception could
+abort denominator accounting and leave an empty exclusive output. Four
+failure-injection/configuration tests reproduced the issue RED. The single
+fix pass now passes all five focused failure tests, including a mixed
+success/failure check proving surviving seeded numerical outcomes do not move.
+No second review is used; a fresh full-suite and nominal evidence rerun verify
+the fix. Production algorithms remain untouched.
+
+Post-fix worktree full suite: **1,033 passed, 28 corpus-dependent skips**,
+one upstream warning, 85.78s. A fresh complete CLI experiment reports zero
+oracle failures and exactly reproduces every previous nominal numerical and
+guarded outcome. Both new and historical evidence hashes still match.
+
+Review rulings preserve the disclosed terminal CT-zone, wider line physics,
+EMT/nonlinear/inverter/instrument and noisy guarded-record/timestamp limits.
+Field accuracy, certification, calibration and exhaustive coverage remain
+unclaimed; accuracy outside this evidence remains unknown. The runner continues
+to require a source checkout with test utilities. Dash/workbook/field/app/preview
+states remain outside mutation scope, and primary integration/push verification
+are completion requirements, not deferred work.
 
 ## Remaining limits
 

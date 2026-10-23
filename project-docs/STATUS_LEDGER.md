@@ -20,11 +20,18 @@ large abstention; conditional error is not unconditional accuracy.
 can err 82.58km; existing main/stage balanced gates remain. Each actual-DSP
 matrix locates 72/72 unbalanced and refuses 16/16 balanced controls. No field
 accuracy, confidence calibration or wider line-physics support claimed.
-Worktree full 1,028 passed/28 corpus-dependent skips, one upstream warning, 150.53s;
+Post-fix worktree full 1,033 passed/28 corpus-dependent skips, one upstream warning, 85.78s;
 architecture direct/self-tests and focused Ruff pass. Stage-A 10,000 PASS, 56.2s
 retains 9,242 located / 758 refused and clean p95 .4361%. New and historical hashes
 match. See [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md)
 for exact circuits, denominators, review/delivery evidence and remaining limits.
+Independent review reproduced the aggregate/hashes and passed78 focused tests;
+one Important accounting issue was reproduced RED and fixed. Oracle numerical
+failures now retain all planned strata/windows, mark the experiment failed and
+publish valid failure evidence with exit2; configuration errors leave no output.
+Five focused failure checks pass; no Critical or deferred Minor findings.
+Final nominal CLI rerun has zero oracle failures and exactly preserves previous
+numerical and guarded outcomes. Primary integration/delivery evidence follows.
 
 ---
 

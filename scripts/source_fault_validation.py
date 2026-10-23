@@ -44,6 +44,7 @@ def summarize(rows, *, witness=True):
     errors = [r['error_km'] for r in located]
     coverage = [r['contains_truth'] for r in located if r.get('contains_truth') is not None]
     out = dict(planned=len(rows), located=len(located), refused=len(rows)-len(located),
+               oracle_failed_windows=sum(bool(r.get('oracle_failure')) for r in rows),
                p95_error_km=float(np.percentile(errors, 95)) if errors else None,
                max_error_km=float(max(errors)) if errors else None,
                located_error_above_1km=sum(e > 1 for e in errors),
@@ -58,7 +59,7 @@ def summarize(rows, *, witness=True):
 def cohorts(rows):
     unbalanced = [r for r in rows if r['fault'] not in BALANCED]
     screened = [dict(r, status='withheld', reason='Measured negative-sequence strength screen failed.')
-                if not r['strength_eligible'] else r for r in unbalanced]
+                if not r['strength_eligible'] and not r.get('oracle_failure') else r for r in unbalanced]
     return dict(unbalanced=summarize(unbalanced), screened_unbalanced=summarize(screened),
                 balanced_controls=summarize([r for r in rows if r['fault'] in BALANCED]))
 
@@ -81,7 +82,7 @@ def measurement_scales(negative, positive_voltage, positive_currents):
 def run(seed=854):
     rng = np.random.default_rng(seed)
     all_rows = {name: [] for name in NOISE}
-    max_residual, case_id = 0.0, 0
+    max_residual, case_id, oracle_failures, failure_witnesses = None, 0, 0, []
     for geometry, original in enumerate(GEOMETRIES):
         for km in (10, 40, 75):
             for profile in PROFILES:
@@ -91,8 +92,30 @@ def run(seed=854):
                         for reverse in (False, True):
                             sections = original[::-1] if reverse else original
                             position = 100-km if reverse else km
-                            state = solve(sections, position, fault, resistance, sources=sources, reverse_sources=reverse)
-                            max_residual = max(max_residual, state['residual'])
+                            try:
+                                state = solve(sections, position, fault, resistance, sources=sources, reverse_sources=reverse)
+                            except (ArithmeticError, np.linalg.LinAlgError) as error:
+                                oracle_failures += 1
+                                reason = f'Oracle failure: {type(error).__name__}: {error}'
+                                if len(failure_witnesses) < 20:
+                                    failure_witnesses.append(dict(geometry=geometry, true_km=position, profile=profile,
+                                        fault=fault, resistance_ohm=resistance, reversed=reverse,
+                                        error_type=type(error).__name__, reason=reason, first_case_id=case_id+1))
+                                for aligned, rotation in REFERENCES:
+                                    reference = 'aligned' if aligned else f'unsynchronised@{rotation}'
+                                    for scenario, noise in NOISE.items():
+                                        case_id += 1
+                                        if noise:
+                                            # Preserve the seeded noise stream for surviving cases.
+                                            rng.normal(size=(4, 8))
+                                            rng.normal(size=(4, 8))
+                                        all_rows[scenario].append(dict(case_id=case_id, scenario=scenario, geometry=geometry,
+                                            profile=profile, fault=fault, resistance_ohm=resistance, reversed=reverse,
+                                            true_km=position, reference=reference, remote_rotation_rad=rotation,
+                                            measured_infeed_ratio=None, infeed_bin='oracle_failure', strength_eligible=False,
+                                            source_fault=profile+'/'+fault, status='withheld', oracle_failure=True, reason=reason))
+                                continue
+                            max_residual = max(max_residual or 0, state['residual'])
                             q = np.array([sequence(state[k], 2) for k in ('VS', 'IS', 'VR', 'IR')])
                             v1 = max(abs(sequence(state[k], 1)) for k in ('VS', 'VR'))
                             i1 = np.array([abs(sequence(state[k], 1)) for k in ('IS', 'IR')])
@@ -145,6 +168,8 @@ def run(seed=854):
              'src/dranalyser/faultloc/sections.py', 'src/dranalyser/faultloc/section_location.py',
              'src/dranalyser/faultloc/stage_location.py', 'src/dranalyser/faultloc/ensemble.py']
     result.update(seed=seed, scenarios=scenarios, max_oracle_kcl_residual_a=max_residual,
+        completion_status='oracle_failure' if oracle_failures else 'complete', oracle_failures=oracle_failures,
+        oracle_failure_witnesses=failure_witnesses, omitted_failure_witnesses=max(0, oracle_failures-20),
         runtime=dict(python=sys.version.split()[0], numpy=np.__version__),
         source_sha256_utf8_lf={p: hashlib.sha256((ROOT/p).read_text(encoding='utf-8').replace('\r\n', '\n').encode()).hexdigest()
                               for p in paths},
@@ -207,16 +232,20 @@ def main():
     parser.add_argument('--seed', type=int, default=854)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
+    if args.output.exists():
+        parser.error('Output already exists; choose a new evidence path.')
+    result = run(args.seed)
+    result['guarded_actual_dsp'] = (dict(status='not_run', reason='Phasor experiment has oracle failures.')
+                                    if result['oracle_failures'] else guarded_cases())
+    payload = json.dumps(result, indent=2, allow_nan=False)+'\n'
     try:
         with args.output.open('x', encoding='utf-8') as handle:
-            result = run(args.seed)
-            result['guarded_actual_dsp'] = guarded_cases()
-            json.dump(result, handle, indent=2, allow_nan=False)
-            handle.write('\n')
+            handle.write(payload)
     except FileExistsError:
         parser.error('Output already exists; choose a new evidence path.')
     print(json.dumps({k: result[k] for k in ('planned', 'located', 'refused')}))
+    return 2 if result['oracle_failures'] else 0
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())
