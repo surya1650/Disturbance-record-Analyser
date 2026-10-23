@@ -4,6 +4,7 @@ import numpy as np
 from ..dsp.stage_windows import stage_window
 from .estimators import e5_roots, e5_unsynchronised
 from .model_domain import scalar_model_reasons
+from .sections import section_model_reasons, section_window
 
 
 def stage_e5(line, s, r, stage_s, stage_r, polarity_s=1, polarity_r=1):
@@ -13,9 +14,15 @@ def stage_e5(line, s, r, stage_s, stage_r, polarity_s=1, polarity_r=1):
            'caveats': ['Reviewed same-stage, stationary negative-sequence windows are required.',
                        'Relative-position sample pairing is not timestamp synchronization.',
                        'No blended incident distance, tower clamp or calibrated confidence interval is produced.']}
-    domain_reasons = scalar_model_reasons(line)
+    section_enabled = line.section_solver_enabled is not False
+    domain_reasons = section_model_reasons(line) if section_enabled else scalar_model_reasons(line)
+    if section_enabled and line.section_solver_enabled is not True:
+        domain_reasons.append('Section solver opt-in must be a boolean true.')
     if domain_reasons:
         out['reason'] = ' '.join(domain_reasons)
+        return out
+    if section_enabled and any(st['phase_pattern'] in ('ABC', 'ABCG') for st in (stage_s, stage_r)):
+        out['reason'] = 'Balanced faults are outside the negative-sequence section model.'
         return out
     if any(w['status'] != 'eligible' for w in windows.values()):
         out['reason'] = 'At least one local stage interior fails quality or window prerequisites.'
@@ -38,6 +45,12 @@ def stage_e5(line, s, r, stage_s, stage_r, polarity_s=1, polarity_r=1):
         quantities.extend([an.ps.phasors['V2'][ids], i2*polarity])
     if not np.all(np.isfinite(quantities)):
         out['reason'] = 'Nonfinite sequence phasors.'
+        return out
+    if section_enabled:
+        result = section_window(line, *quantities)
+        out.update(method='E5-sections', status=result['status'], m=result['m'],
+                   km_from_S=result['km_from_S'], reason=result['reason'], diagnostics=result['diagnostics'])
+        out['caveats'].append('Uncoupled series sections with Z2=Z1; opt-in numerical model, no field acceptance.')
         return out
     # The legacy solver's phase-stability tiebreak can be ambiguous on a
     # steady stage. Do not choose between two distinct in-line roots here.

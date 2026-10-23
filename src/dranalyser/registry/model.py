@@ -210,6 +210,7 @@ class Line:
     # evidence when present.
     path_rules: List[str] = field(default_factory=list)
     model_review_required: bool = False
+    section_solver_enabled: bool = False
 
     @property
     def length_km(self) -> float:

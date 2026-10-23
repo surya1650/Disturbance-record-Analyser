@@ -24,6 +24,7 @@ from ..registry.model import Line, Tower, k0_from_impedances
 from .estimators import (Estimate, e1_reactance, e2_takagi, e3_modified_takagi,
                          e4_synchronised, e5_unsynchronised, loop_quantities)
 from .model_domain import scalar_model_reasons
+from .section_location import section_incident
 
 SLG = ("AG", "BG", "CG")
 
@@ -337,6 +338,8 @@ def locate(
 
     terms = list(terminals.values())
     fault, caveats, cross_country = _fault_consensus(terms)
+    if line.section_solver_enabled is not False:
+        return LocationResult(**section_incident(line, terminals, fault, caveats, cross_country))
     domain_reasons = scalar_model_reasons(line)
     if domain_reasons:
         return LocationResult(m=float('nan'), km_from_S=float('nan'), km_from_R=float('nan'),

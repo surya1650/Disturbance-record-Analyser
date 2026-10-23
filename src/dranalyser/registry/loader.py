@@ -6,8 +6,7 @@ traced to a stated number rather than to a constant buried in code.
 """
 from __future__ import annotations
 
-import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import yaml
 
@@ -78,6 +77,9 @@ def load_line(path: str) -> Line:
 
 
 def line_from_dict(d: Dict[str, Any]) -> Line:
+    section_enabled = d.get('section_solver_enabled', False)
+    if type(section_enabled) is not bool:
+        raise ValueError('section_solver_enabled must be a boolean.')
     secs: List[LineSection] = []
     for i, s in enumerate(d.get("sections", []) or []):
         secs.append(LineSection(
@@ -114,6 +116,7 @@ def line_from_dict(d: Dict[str, Any]) -> Line:
         towers=towers, double_circuit=bool(d.get("double_circuit", False)),
         series_compensated=bool(d.get("series_compensated", False)),
         model_review_required=bool(d.get('model_review_required', False)),
+        section_solver_enabled=section_enabled,
     )
 
 
