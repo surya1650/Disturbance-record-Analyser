@@ -32,6 +32,11 @@ post-fix worktree **950 passed / 28 corpus skips**, one upstream warning,
 142.92s; fresh Stage-A **10,000 PASS**, 91.6s, unchanged error/refusal metrics.
 Architecture direct/self-tests pass. Focused Ruff passes; two pre-existing CLI
 E731 findings are documented separately in the report.
+Final primary checkout: **978 passed**, no skips, one upstream warning, 112.05s.
+Reviewed/fixed implementation `fcb5c2c` was pushed and remote HEAD verified;
+final verification documentation follows in Git history. QA/review/execution
+records are preserved under ignored `out/qa/section-validation-2026-10-23/`.
+Both local Dash findings retain their previous hashes.
 
 ---
 

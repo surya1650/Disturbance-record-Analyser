@@ -32,11 +32,11 @@
 
 **Interfaces:** `section_model_reasons(line) -> list[str]`; `section_candidates(line, vs, is_, vr, ir, *, aligned=False) -> dict`; `section_window(line, vs, is_, vr, ir, *, aligned=False) -> dict`. Located window returns status, m, km_from_S, interval_pu, diagnostics; refusals contain no distance. Candidates expose chainage, reactance fraction, section identifiers and recovered angle.
 
-- [ ] Write nodal-oracle tests for mixed/junction/reversed/rotated cases and invalid models/windows, asserting physical chainage within 1e-7 km for ideal located cases and explicit ambiguity refusal.
-- [ ] Run `python -m pytest tests/test_section_solver.py -q`; observe missing solver RED.
-- [ ] Implement section propagation, normalized E5 roots, aligned continuity, junction-only deduplication and conservative window screens from spec.
-- [ ] Run focused tests and `python -m pytest -q`; inspect all output.
-- [ ] Commit pure solver/tests, record RED/GREEN and complete task ledger.
+- [x] Write nodal-oracle tests for mixed/junction/reversed/rotated cases and invalid models/windows, asserting physical chainage within 1e-7 km for ideal located cases and explicit ambiguity refusal.
+- [x] Run `python -m pytest tests/test_section_solver.py -q`; observe missing solver RED.
+- [x] Implement section propagation, normalized E5 roots, aligned continuity, junction-only deduplication and conservative window screens from spec.
+- [x] Run focused tests and `python -m pytest -q`; inspect all output.
+- [x] Commit pure solver/tests, record RED/GREEN and complete task ledger.
 
 ### Task 2: Guarded registry and main/stage integration
 
@@ -44,10 +44,10 @@
 
 **Interfaces:** `Line.section_solver_enabled: bool = False`, loader rejects non-booleans. Adapter consumes Task 1 and TerminalInput with existing LocationResult. Stage dispatch consumes existing reviewed, eligible local windows; main dispatch requires both ends and explicit good clocks for aligned mode, otherwise uses unsynchronised mode.
 
-- [ ] Write real-DSP/nodal-phasor tests for opt-in chainage, default refusal, no single-ended fallback/towers, review/coupling/shunt/compensation gates, balanced/weak/saturated/missing evidence and reviewed-stage results.
-- [ ] Run `python -m pytest tests/test_section_integration.py -q`; observe missing enabled behavior RED.
-- [ ] Implement strict opt-in loading, dedicated adapter and dispatch without touching scalar method selection.
-- [ ] Run focused tests and full suite; commit and record task evidence.
+- [x] Write real-DSP/nodal-phasor tests for opt-in chainage, default refusal, no single-ended fallback/towers, review/coupling/shunt/compensation gates, balanced/weak/saturated/missing evidence and reviewed-stage results.
+- [x] Run `python -m pytest tests/test_section_integration.py -q`; observe missing enabled behavior RED.
+- [x] Implement strict opt-in loading, dedicated adapter and dispatch without touching scalar method selection.
+- [x] Run focused tests and full suite; commit and record task evidence.
 
 ### Task 3: Reproducible independent numerical evidence and delivery
 
@@ -55,8 +55,8 @@
 
 **Interfaces:** offline `run(seed=854) -> dict` reports scenario counts/errors/refusal reasons; exclusive-output CLI refuses overwrites. Consumes tests' phase oracle, not production synthetic generator.
 
-- [ ] Write runner tests proving all planned cases accounted for, ideal aligned error <1e-7 km, rotational/reversal invariance, nonzero perturbed errors, strict JSON and exclusive output; run RED.
-- [ ] Implement seeded sweep over geometry/phase/resistance/rotation plus noise, gain and impedance bias. Run fresh aggregate and document all denominators and model limits.
-- [ ] Run full suite, architecture direct/self-test, focused Ruff and Stage-A 10,000; preserve logs.
-- [ ] Obtain one fresh whole-branch reviewer per executing-plans. Reproduce material findings RED, fix once, repeat affected checks and final full suite.
-- [ ] Commit final evidence, fast-forward main, run primary full suite, push and verify remote HEAD. Archive managed worktree after preserving QA; verify Dash hashes unchanged.
+- [x] Write runner tests proving all planned cases accounted for, ideal aligned error <1e-7 km, rotational/reversal invariance, nonzero perturbed errors, strict JSON and exclusive output; run RED.
+- [x] Implement seeded sweep over geometry/phase/resistance/rotation plus noise, gain and impedance bias. Run fresh aggregate and document all denominators and model limits.
+- [x] Run full suite, architecture direct/self-test, focused Ruff and Stage-A 10,000; preserve logs.
+- [x] Obtain one fresh whole-branch reviewer per executing-plans. Reproduce material findings RED, fix once, repeat affected checks and final full suite.
+- [x] Commit final evidence, fast-forward main, run primary full suite, push and verify remote HEAD. Archive managed worktree after preserving QA; verify Dash hashes unchanged.

@@ -194,6 +194,17 @@ both predate this work. The CLI passes with only those E731 findings excluded;
 the one changed clock-gate line adds no lint finding. They were not rewritten
 as part of the numerical fix pass.
 
+Final integration evidence: `main` was fast-forwarded to the reviewed/fixed
+implementation and the primary checkout passed **978 tests**, no skips,
+one upstream Starlette/httpx warning, **112.05 seconds**. Architecture direct
+and self-tests pass there, and all ten numerical source hashes match. Core
+implementation `fcb5c2c` was pushed and verified on `origin/main`; subsequent
+documentation records this final verification. Test/review/execution records
+and both Stage-A runs are preserved locally under
+`out/qa/section-validation-2026-10-23/`. Both local Dash findings retain their
+previous SHA-256 hashes. Field inputs, operational registry, workbook, active
+app database and preview processes were not edited.
+
 ## Pending work
 
 Field acceptance still requires verified event-effective line/instrument data,

@@ -20,6 +20,10 @@ Post-fix worktree full suite: 950 passed / 28 corpus-dependent skips, one upstre
 warning. Fresh Stage-A10000 PASS, unchanged 9242 located / 758 refused and clean
 p95 .4361%. Architecture direct/self-tests and focused Ruff pass; two existing
 CLI E731 findings are documented, no new lint finding on the changed gate line.
+Final primary checkout: **978 passed**, no skips, one upstream warning, 112.05s.
+Reviewed/fixed core `fcb5c2c` is published on `origin/main`; Git history records
+the final verification documentation. QA is local under
+`out/qa/section-validation-2026-10-23/`. Dash hashes remain unchanged.
 
 **2026-10-23 numerical continuation:** structural E5 failures now refuse incident
 fallback, finite real-root arithmetic is scale-normalized and a concurrent

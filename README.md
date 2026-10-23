@@ -78,6 +78,9 @@ nodal validation covers 7,056 planned cases: 5,186 located / 1,870 refused;
 all 1,008 ideal cases recover chainage. Biased parameters and polarity remain
 demonstrated failure modes, with errors/refusals reported explicitly. This is
 an advanced prototype / pre-pilot, with zero accepted field cases.
+Final primary-checkout verification: **978 tests passed**, no skips, one upstream
+warning; independent review's two Important findings were reproduced and fixed.
+Stage-A 10,000 PASS retains the documented metrics and refusal counts.
 
 ### Stage-A acceptance (brief section 13)
 
