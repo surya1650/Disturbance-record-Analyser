@@ -61,4 +61,4 @@
 - [x] Implement piecewise healthy-section voltage propagation and bounded candidate evaluation; deduplicate only the same physical junction and retain all distinct candidates.
 - [x] Verify focused/full tests, architecture/Ruff and Stage-A 10,000. Document exact envelopes, tails, limits and remaining model gaps.
 - [x] Commit with message `Validate aligned mixed-section feasibility and document limits`; dispatch one whole-branch review, fix important findings RED→GREEN and rerun full suite.
-- [ ] Integrate/publish as authorized, verify Git remote and preserve Dash findings locally.
+- [x] Integrate/publish as authorized, verify Git remote and preserve Dash findings locally.

@@ -27,8 +27,11 @@ Worktree full suite: **823 passed, 28 corpus skips**, one upstream warning;
 architecture direct/self-tests and focused Ruff pass. Stage-A 10,000 PASS:
 9,242 located, 758 refused; clean 4,258 located, 25 refused, p95 .4361%.
 All-located p95 6.677%; saturated located p95 39.805% (1,203 cases). Additional
-abstentions and remaining difficult tails are explicit. Independent review and
-primary-checkout publication verification follow in the handoff/Git history.
+abstentions and remaining difficult tails are explicit. Independent review found
+one Important E4 refusal escape, fixed by three observed RED-to-GREEN real-DSP
+regressions; no Critical or deferred Minor findings. Final primary-checkout
+suite: **851 passed**, no skips, one upstream warning, 141.03s. Final Stage-A
+rerun retained the stated metrics. Git history/remote records publication.
 See [NUMERICAL_VALIDATION_2026-10-23.md](NUMERICAL_VALIDATION_2026-10-23.md).
 
 No field inputs or operational acceptance fabricated. Existing app roots,

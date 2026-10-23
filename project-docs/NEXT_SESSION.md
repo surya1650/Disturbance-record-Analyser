@@ -14,8 +14,12 @@ architecture direct/self-tests and focused Ruff pass. Stage-A 10,000 PASS:
 9,242 located/758 refused; clean 4,258 located, 25 refused, p95 0.4361% unchanged.
 All-located p95 6.677%, saturated located p95 39.805%; the additional 465
 abstentions must be reported, not treated as an unconditional accuracy gain.
-The final review and primary-checkout publication verification are recorded
-in Git history and the subsequent handoff update.
+Independent review found an impossible/external E4 escape into blended distance;
+three real-DSP regressions reproduced it and now withhold distance/towers.
+Primary checkout after fast-forward: **851 passed**, no skips, one upstream
+warning, 141.03s. Final Stage-A rerun retained the stated results. Git history
+and `origin/main` record the publication outcome; all meaningful QA logs and
+the execution ledger are preserved locally under ignored `out/qa`.
 
 No source workbook, field record, app database, Dash findings or existing
 preview process was changed. Existing running processes need a normal restart

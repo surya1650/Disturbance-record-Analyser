@@ -64,7 +64,7 @@ DHN-NNR is Dhone–Nansuralla, as confirmed by the user. Its model remains withh
 pending circuit, length, topology and instrument review.
 
 The subsequent [numerical robustness milestone](project-docs/NUMERICAL_VALIDATION_2026-10-23.md)
-adds real-root/invalid-window refusal, a reproducible independent phasor envelope
+passes **851 tests** and adds real-root/invalid-window refusal, a reproducible independent phasor envelope
 and an aligned mixed-section feasibility study. Stage-A still passes: 9,242
 located, 758 refused, clean located p95 0.4361%. Additional abstentions and
 remaining saturated-CT/parameter-bias tails are documented. The section study

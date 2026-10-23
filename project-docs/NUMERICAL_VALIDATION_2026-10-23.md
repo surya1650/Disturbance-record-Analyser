@@ -106,9 +106,11 @@ tail remains unsuitable as a general accuracy claim; fewer estimates are not
 proof of better field performance. Zero unflagged impossible outputs were found.
 
 Full worktree suite: **823 passed, 28 corpus-dependent skips**, one upstream
-Starlette/httpx deprecation warning, 139.39 seconds. Final whole-branch review
-and primary-checkout verification are recorded after completion below and in
-the newest handoff entry. Focused section/domain tests
+Starlette/httpx deprecation warning, 139.39 seconds. After the review correction
+and fast-forward integration, the primary checkout passed **851 tests**, with
+no skips and one upstream warning, in 141.03 seconds. The final 10,000-case
+Stage-A rerun also passed in 91.1 seconds with the metrics above. Independent
+review and decisions are recorded below. Focused section/domain tests
 passed 80 cases; envelope/section tests passed 82; architecture direct/self-tests
 and focused Ruff passed. Worktree field-corpus tests skip because real records
 were not copied into the isolated checkout. The primary checkout's original
@@ -175,3 +177,9 @@ Decisions carried from the execution/review ledger:
 
 No deferred Minor findings were reported. The fix is verified by regression
 tests and a full suite, with no second review substituted for those checks.
+
+The reviewed branch was fast-forwarded into the existing `main`. Publication
+was authorized; Git history and the remote record its outcome. Detailed QA
+logs, both phasor-report revisions and the execution ledger are preserved in
+the primary checkout's ignored `out/qa` before temporary-worktree cleanup.
+Dash findings remain local and hash-identical to the previous milestone.
