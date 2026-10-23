@@ -22,7 +22,7 @@ the oracle. Reject invalid geometry, source and fault specifications explicitly.
 Publish a deterministic seeded phasor sweep with 2 line geometries, chainages
 10/40/75 km, 11 connections, R=1/50 ohms, physical reversal, 8 source profiles,
 3 references (aligned, unsynchronised 0/1.1 radians) and ideal/.1%/1% complex
-noise: 38,016 raw numerical windows of 8 pairs. Profiles: baseline; weak S/R
+noise: 19,008 raw numerical windows of 8 pairs. Profiles: baseline; weak S/R
 source impedance scales 100 and 10,000; remote voltage magnitude .85 and angle
 -.35 rad; negative/zero sequence source EMF; passive phase-asymmetric source Z.
 Do not use truth to select a root. Report located/refused/error/denominators

@@ -41,7 +41,7 @@
 **Files:** Create `scripts/source_fault_validation.py`, `tests/source_fault_records.py`, `tests/test_source_fault_validation.py`, `tests/test_source_fault_integration.py`; add only new script architecture budget if needed. Minimal production fix only after a reproduced failure.
 **Interfaces:** offline `run(seed=854) -> dict`, exclusive-output CLI `--output PATH`; consumes Task 1 oracle and existing `section_window`, never uses truth for candidate selection. Records helper `records(sections, km, fault, resistance, profile, rotation) -> dict[S/R,Record]` emits steady sinusoidal states for real DSP. Runner reports all planned/refused/location counts and complete stratum breakdowns, measured strength screens, balanced controls and witnesses.
 
-- [ ] Write accounting tests for exactly 38,016 windows/12,672 per noise scenario, all ideal located unbalanced errors <1e-6 km, balanced-control separation, weak/source-asymmetry coverage, nonzero noisy errors, strict JSON and exclusive output.
+- [ ] Write accounting tests for exactly 19,008 windows/6,336 per noise scenario, all ideal located unbalanced errors <1e-6 km, balanced-control separation, weak/source-asymmetry coverage, nonzero noisy errors, strict JSON and exclusive output.
 - [ ] Write actual-DSP tests for LL/DLG/SLG with unequal/asymmetric sources and balanced refusal without phasor substitution; run focused RED before implementation.
 - [ ] Implement runner/record helper, investigate any numerical failure systematically, preserve all failures/refusals rather than filtering by error/truth.
 - [ ] Run focused tests/full suite; generate aggregate JSON, source hashes and scenario/stratum summaries; commit.
