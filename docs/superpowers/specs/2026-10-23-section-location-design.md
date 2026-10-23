@@ -57,3 +57,15 @@ standards matrix/status, commit and push the analyser. Keep Dash, field records,
 workbook, active app database and preview processes unchanged. Project remains
 pre-pilot with zero accepted field cases; coupling, charging, balanced section
 faults, instrument reconstruction and calibrated uncertainty remain pending.
+
+## Independent-review amendments
+
+Every observation in both selected terminal supports must participate: use the
+union of relative sample positions, not a 24-pair cap or the shorter support's
+grid. No interpolation is implied. Stage sequence strength must hold at each
+observation, not just its median. Main aligned dispatch additionally requires
+`TerminalInput.phasor_reference_aligned=True` at both ends, independently of
+`clock_good`; local-record DFT references are not aligned by good timestamps.
+The shared CLI must not infer alignment from any nonempty CFG quality code.
+These amendments fix the two Important review findings without enabling a line
+or implementing automatic clock/reference correction.

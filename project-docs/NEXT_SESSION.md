@@ -11,6 +11,15 @@ the 7,056-case sweep locates 5,186 and refuses 1,870. Wrong current polarity,
 gain and line parameters can still give stable wrong results; no field claim.
 No scalar fallback or automatic towers on the enabled section path. Pending
 broader models, uncertainty calibration and field acceptance remain in the report.
+Independent review found and fixed two Important adapter issues: every selected
+observation at both rates now participates; section E4 additionally requires
+`phasor_reference_aligned=True` on both TerminalInputs. Good clock metadata
+alone does not rotate record-local DFT phasors. Shared CLI clock-code promotion
+is removed; ordinary DSP inputs use E5. Final focused section suite: 127 passed.
+Post-fix worktree full suite: 950 passed / 28 corpus-dependent skips, one upstream
+warning. Fresh Stage-A10000 PASS, unchanged 9242 located / 758 refused and clean
+p95 .4361%. Architecture direct/self-tests and focused Ruff pass; two existing
+CLI E731 findings are documented, no new lint finding on the changed gate line.
 
 **2026-10-23 numerical continuation:** structural E5 failures now refuse incident
 fallback, finite real-root arithmetic is scale-normalized and a concurrent

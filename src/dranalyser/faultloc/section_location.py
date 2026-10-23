@@ -9,6 +9,18 @@ from .estimators import Estimate
 from .sections import section_model_reasons, section_window
 
 
+def section_pair_indices(indices):
+    """Pair by relative position, covering every observation at BOTH terminals.
+
+    The union prevents higher-rate observations disappearing on a shorter grid.
+    No interpolation or phasor rotation is implied by this stationary-window pairing.
+    """
+    if any(len(ids) < 2 for ids in indices):
+        return [np.array([], dtype=int), np.array([], dtype=int)]
+    positions = np.unique(np.concatenate([np.linspace(0, 1, len(ids)) for ids in indices]))
+    return [ids[np.rint(positions*(len(ids)-1)).astype(int)] for ids in indices]
+
+
 def section_incident(line, terminals, fault, caveats, cross_country=False):
     """Return LocationResult fields, keeping all scalar fallback paths closed."""
     nan = float('nan')
@@ -48,22 +60,21 @@ def section_incident(line, terminals, fault, caveats, cross_country=False):
         return refuse('Insufficient corresponding local-window support; no scalar fallback.')
     spans = [(overlap.t_start, overlap.t_end), (overlap.t_start-shift, overlap.t_end-shift)]
     indices = [ti.analysed.ps.window_indices(*span) for ti, span in zip((s, r), spans, strict=True)]
-    count = min(24, *(len(i) for i in indices))
-    if count < 2:
+    picks = section_pair_indices(indices)
+    if len(picks[0]) < 2:
         return refuse('At least two complete paired phasor supports are required.')
     quantities = []
-    for ti, ids in zip((s, r), indices, strict=True):
+    for ti, ids, selected in zip((s, r), indices, picks, strict=True):
         an = ti.analysed
         values = np.array([an.ps.phasors[n][ids] for n in (*NAMES, 'V2', 'I2', 'I1')])
         if not np.all(np.isfinite(values)):
             return refuse('Nonfinite phase or sequence measurements within the selected support.')
-        # Check the complete selected window before the bounded solver sampling.
+        # Check the complete selected window, including individual weak observations.
         i2, i1 = an.ps.phasors['I2'][ids], an.ps.phasors['I1'][ids]
         if np.min(abs(i2)) < max(.01*float(np.median(abs(i1))), 1e-6):
             return refuse('Insufficient negative sequence at a terminal; section location withheld.')
-        picks = ids[np.linspace(0, len(ids)-1, count).round().astype(int)]
-        quantities.extend([an.ps.phasors['V2'][picks], an.ps.phasors['I2'][picks]*ti.polarity])
-    aligned = s.clock_good is True and r.clock_good is True
+        quantities.extend([an.ps.phasors['V2'][selected], an.ps.phasors['I2'][selected]*ti.polarity])
+    aligned = all(t.clock_good is True and t.phasor_reference_aligned is True for t in (s, r))
     result = section_window(line, *quantities, aligned=aligned)
     out['diagnostics']['section_solver'] = result
     out['method'] = 'E4-sections' if aligned else 'E5-sections'

@@ -44,6 +44,8 @@ class TerminalInput:
     zs0: complex = 0j
     clock_good: bool = False
     polarity: int = 1
+    # Section E4 requires phasors already transformed to a common reference.
+    phasor_reference_aligned: bool = False
 
     @property
     def sat(self) -> bool:

@@ -518,10 +518,15 @@
   "max_oracle_kcl_residual_a": 3.519638739074529e-10,
   "source_sha256_utf8_lf": {
     "src/dranalyser/faultloc/sections.py": "0fc4c525c34ee642513f0f4a50aaeee542a2401f3802c4b021728204580ed068",
-    "src/dranalyser/faultloc/section_location.py": "cdf5b97ec9e85dbc906cae6569c59b196bafbe4c3f18b6f23f29efc0615d53c6",
-    "src/dranalyser/faultloc/stage_location.py": "40af657579a82a320f132fc503d642b735679e9b99a6918810c30a2c41ccd7c7",
+    "src/dranalyser/faultloc/section_location.py": "835149c785df9b61e639d0a60acd1a6ff4ece2cfc255e979a9227ba02127a472",
+    "src/dranalyser/faultloc/stage_location.py": "5dbd787e412a6dce148cd38baffafed5571d44e92660d1d0d8e99a351a6dec43",
     "tests/section_network_oracle.py": "e1d4efbefc14efe6754afcf572e83fb4a4cea5e23d1bf7e5f5023a8452c21cf8",
-    "scripts/section_numerical_validation.py": "3186c571075c66c07a5e7c8d4afe3d2e4a4aa875af3ca298dae39aa8d2742975"
+    "scripts/section_numerical_validation.py": "fc34b38fab5445ffe3c9cfa0ba42e9cd49772c9df12275a8d48817e7ee1e34b9",
+    "src/dranalyser/faultloc/ensemble.py": "958b6e3b76108a70a33a5af1cc139aade497faa4c2ba835e86f9cbc38e464849",
+    "src/dranalyser/cli/commands.py": "33b690e5509768a20f72cd6b7aa44eed5e53643b8215dfb2d3ed516e6a5ef9eb",
+    "tests/test_section_integration.py": "47867d11ec2392711347432a91dabe7d776d3754ed643ff828c004a10a56cde0",
+    "src/dranalyser/registry/loader.py": "d983d8547335142b70a7f08b469944777e48bf801775a7d0265eeab0ff8a31a8",
+    "src/dranalyser/registry/model.py": "4131e4b99fa16dff45682c5e990df779baee97bc3651aa92bf9cf66fed1c92e5"
   },
   "protocol": {
     "geometry_count": 3,

@@ -5,6 +5,7 @@ from ..dsp.stage_windows import stage_window
 from .estimators import e5_roots, e5_unsynchronised
 from .model_domain import scalar_model_reasons
 from .sections import section_model_reasons, section_window
+from .section_location import section_pair_indices
 
 
 def stage_e5(line, s, r, stage_s, stage_r, polarity_s=1, polarity_r=1):
@@ -32,14 +33,19 @@ def stage_e5(line, s, r, stage_s, stage_r, polarity_s=1, polarity_r=1):
         return out
     indices = [an.ps.window_indices(*windows[end]['window_s']) for end, an in [('S', s), ('R', r)]]
     count = min(24, *(len(i) for i in indices))
-    picks = [ids[np.linspace(0, len(ids)-1, count).round().astype(int)] for ids in indices]
+    picks = (section_pair_indices(indices) if section_enabled else
+             [ids[np.linspace(0, len(ids)-1, count).round().astype(int)] for ids in indices])
     quantities = []
     for an, ids, polarity in [(s, picks[0], polarity_s), (r, picks[1], polarity_r)]:
         if any(n not in an.ps.phasors for n in ('V2', 'I2', 'I1')):
             out['reason'] = 'Sequence phasors unavailable.'
             return out
         i2, i1 = an.ps.phasors['I2'][ids], an.ps.phasors['I1'][ids]
-        if np.median(abs(i2)) < max(.01*np.median(abs(i1)), 1e-6):
+        if section_enabled and not np.all(np.isfinite([an.ps.phasors['V2'][ids], i2, i1])):
+            out['reason'] = 'Nonfinite negative-sequence support.'
+            return out
+        strength = np.min(abs(i2)) if section_enabled else np.median(abs(i2))
+        if strength < max(.01*np.median(abs(i1)), 1e-6):
             out['reason'] = 'Insufficient negative sequence; balanced/weak-sequence stage path withheld.'
             return out
         quantities.extend([an.ps.phasors['V2'][ids], i2*polarity])

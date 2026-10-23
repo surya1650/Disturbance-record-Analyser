@@ -13,6 +13,13 @@ review of relevant sections and visual checks of key equations and tables.
 This note does not certify the analyser or turn the brochure into a settings
 standard. The original PDF, full extracted text and rendered pages stay local.
 
+Implementation update 2026-10-23: the mixed-section P1 below now has an opt-in
+two-ended negative-sequence series-section solver in main/reviewed stages.
+See [section validation](SECTION_VALIDATION_2026-10-23.md) for independent phase
+nodal evidence and parameter/polarity counterexamples. Coupling, charging,
+balanced section faults and verified field acceptance remain open; this update
+does not change the source extraction or assert reproduction of TB field cases.
+
 ## 1. What matters most to this project
 
 The brochure supports using existing relay recordings for centralised

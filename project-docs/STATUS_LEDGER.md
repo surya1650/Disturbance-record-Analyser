@@ -23,6 +23,15 @@ field-accuracy pass. Model remains advanced prototype / pre-pilot, zero accepted
 field cases. See [SECTION_VALIDATION_2026-10-23.md](SECTION_VALIDATION_2026-10-23.md)
 for reproducibility, numerical limits and final verification/review evidence.
 Dash findings, workbook, app database and preview processes remain untouched.
+Independent review found two Important issues (no Critical or deferred Minor):
+24-pair sampling omitted unusable observations, and clock flags did not establish
+common DFT references. Both were reproduced and fixed in one pass; complete
+support pairing and explicit reference-alignment declarations now guard section
+E4. Shared CLI CFG-code promotion was removed. Final focused 127 passed;
+post-fix worktree **950 passed / 28 corpus skips**, one upstream warning,
+142.92s; fresh Stage-A **10,000 PASS**, 91.6s, unchanged error/refusal metrics.
+Architecture direct/self-tests pass. Focused Ruff passes; two pre-existing CLI
+E731 findings are documented separately in the report.
 
 ---
 

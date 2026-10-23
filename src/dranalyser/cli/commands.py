@@ -139,7 +139,7 @@ def cmd_locate(args) -> int:
               + " | type " + an.fault_type
               + " | window " + format(an.window.cycles, ".2f") + " cyc (" + an.window.mode + ")"
               + " | CT sat " + str(an.saturation.detected))
-        clock_good = bool(rec.notes.get("tmq_code"))
+        clock_good = False  # CFG clock codes do not align record-local DFT phasors.
         terminals[end] = TerminalInput(analysed=an, end=end, zs1=term.zs1, zs0=term.zs0,
                                        clock_good=clock_good,
                                        polarity=term.i_polarity)

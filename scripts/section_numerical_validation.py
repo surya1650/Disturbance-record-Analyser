@@ -102,7 +102,9 @@ def run(seed=854):
                                     for mode in ('aligned', 'unsynchronised')}
     paths = ['src/dranalyser/faultloc/sections.py', 'src/dranalyser/faultloc/section_location.py',
              'src/dranalyser/faultloc/stage_location.py', 'tests/section_network_oracle.py',
-             'scripts/section_numerical_validation.py']
+             'scripts/section_numerical_validation.py', 'src/dranalyser/faultloc/ensemble.py',
+             'src/dranalyser/cli/commands.py', 'tests/test_section_integration.py',
+             'src/dranalyser/registry/loader.py', 'src/dranalyser/registry/model.py']
     return dict(seed=seed, planned=sum(r['planned'] for r in results.values()),
         located=sum(r['located'] for r in results.values()), refused=sum(r['refused'] for r in results.values()),
         scenarios=results, max_oracle_kcl_residual_a=max_kcl,
