@@ -31,7 +31,12 @@ failures now retain all planned strata/windows, mark the experiment failed and
 publish valid failure evidence with exit2; configuration errors leave no output.
 Five focused failure checks pass; no Critical or deferred Minor findings.
 Final nominal CLI rerun has zero oracle failures and exactly preserves previous
-numerical and guarded outcomes. Primary integration/delivery evidence follows.
+numerical and guarded outcomes. Final primary checkout **1,061 passed, no skips**,
+one upstream warning, 171.01s. Implementation `2777621` pushed to `origin/main`
+and remote HEAD verified; final verification record follows in Git history.
+QA/review/ledger preserved locally under ignored
+`out/qa/source-fault-validation-2026-10-23/`; managed worktree archived and both
+Dash findings retain their previous hashes.
 
 ---
 

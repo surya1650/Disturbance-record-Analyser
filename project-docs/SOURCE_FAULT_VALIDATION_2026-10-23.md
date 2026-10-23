@@ -189,8 +189,8 @@ tests: **18 passed**, 49.69s; the 60 oracle tests also pass. All new evidence
 source hashes and all ten historical section-evidence hashes match current
 sources. `git diff 897087d -- src` is empty: this milestone changes validation
 and documentation, not production algorithms. Both local Dash findings retain
-their previous hashes. The fresh whole-branch review is recorded below after
-its verdict and any required fix pass.
+their previous hashes. The fresh whole-branch review and required fix pass
+are recorded below.
 
 The fresh read-only reviewer independently passed **78 tests** (49.53s),
 reproduced the saved phasor aggregate and all source hashes, checked every
@@ -216,6 +216,14 @@ unclaimed; accuracy outside this evidence remains unknown. The runner continues
 to require a source checkout with test utilities. Dash/workbook/field/app/preview
 states remain outside mutation scope, and primary integration/push verification
 are completion requirements, not deferred work.
+
+Final primary checkout: **1,061 passed, no skips**, one upstream warning,
+171.01s. Validated implementation `2777621` was pushed to `origin/main` and
+the remote HEAD was verified. This final verification record follows it in
+Git history. All QA outputs, review package and execution ledger are preserved
+locally under ignored `out/qa/source-fault-validation-2026-10-23/`. The managed
+worktree is archived; only the primary checkout remains. Both local Dash
+findings retain their previous hashes.
 
 ## Remaining limits
 

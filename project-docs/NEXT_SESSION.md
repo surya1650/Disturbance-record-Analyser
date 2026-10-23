@@ -20,6 +20,10 @@ failed numerical networks now retain their nine planned windows/strata and
 return failed evidence/CLI exit2; configuration errors leave no output. Five
 focused regressions pass; the final nominal CLI rerun has zero oracle failures
 and exactly preserves all previous numerical and guarded outcomes.
+Final primary suite: **1,061 passed, no skips**, one upstream warning, 171.01s.
+Implementation `2777621` was pushed and remote HEAD verified; final verification
+documentation follows in Git history. QA/review/ledger are preserved locally in
+ignored `out/qa/source-fault-validation-2026-10-23/`; managed worktree archived.
 
 **2026-10-23 section continuation:** opt-in main and reviewed-stage series-section
 negative-sequence solving is implemented. Read
