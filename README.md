@@ -82,6 +82,15 @@ Final primary-checkout verification: **978 tests passed**, no skips, one upstrea
 warning; independent review's two Important findings were reproduced and fixed.
 Stage-A 10,000 PASS retains the documented metrics and refusal counts.
 
+The [source/fault validation continuation](project-docs/SOURCE_FAULT_VALIDATION_2026-10-23.md)
+adds an independent oracle for weak/unequal/phase-asymmetric sources and SLG,
+LL and DLG faults. Its 19,008 raw windows include 3,456 balanced controls kept
+outside operational accuracy claims. All 5,184 ideal unbalanced windows recover
+chainage; 1% phasor noise locates 2,017/5,184 and refuses 3,167. Actual-DSP main
+and reviewed-stage workflows each locate 72 unbalanced cases and refuse 16
+balanced controls. Production algorithms, model gates and operational registry
+enablement remain unchanged; this is bounded synthetic validation.
+
 ### Stage-A acceptance (brief section 13)
 
 **Historical baseline before the 2026-09-11 refusal changes:** PASS over 100,000 synthetic incidents sweeping `m`, fault type,

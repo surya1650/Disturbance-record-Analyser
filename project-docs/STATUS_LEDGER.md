@@ -6,6 +6,28 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-10-23 - Weak-infeed, source-asymmetry and physical fault validation
+
+Added a separate independent phase nodal oracle and refusal-aware source/fault
+sweep; previous oracles/artifacts and production source remain unchanged.
+SLG/LL/DLG faults, weak S/R impedance scales 100/10000, source voltage/phase
+unbalance and passive phase-asymmetric source matrices are covered. All 5,184
+ideal unbalanced windows recover chainage. At1% phasor noise 2,017/5,184 locate,
+3,167 refuse; located p95 .73141 km, max2.05788km. Weak-source subsets exhibit
+large abstention; conditional error is not unconditional accuracy.
+
+19,008 raw windows include 3,456 balanced controls. Raw low-level balanced fits
+can err 82.58km; existing main/stage balanced gates remain. Each actual-DSP
+matrix locates 72/72 unbalanced and refuses 16/16 balanced controls. No field
+accuracy, confidence calibration or wider line-physics support claimed.
+Worktree full 1,028 passed/28 corpus-dependent skips, one upstream warning, 150.53s;
+architecture direct/self-tests and focused Ruff pass. Stage-A 10,000 PASS, 56.2s
+retains 9,242 located / 758 refused and clean p95 .4361%. New and historical hashes
+match. See [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md)
+for exact circuits, denominators, review/delivery evidence and remaining limits.
+
+---
+
 ## 2026-10-23 - Guarded section-aware solver and independent phase-nodal sweep
 
 Implemented per-section aligned/unsynchronised negative-sequence solving and

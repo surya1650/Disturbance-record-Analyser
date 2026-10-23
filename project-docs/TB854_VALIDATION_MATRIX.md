@@ -1,5 +1,13 @@
 # TB 854 validation matrix
 
+Latest source/fault evidence: [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md).
+Weak/unequal/asymmetric terminal sources and SLG/LL/DLG connections are now
+covered by a separate phase-nodal oracle and refusal-aware 19,008-window sweep.
+All 5,184 ideal unbalanced windows locate; noise causes explicit refusals.
+Balanced raw controls remain outside operational accuracy claims; actual-DSP
+main/stage matrices each refuse all 16 balanced controls. Production model gates,
+calibration and field acceptance remain unchanged; this is bounded evidence.
+
 Current section continuation: [SECTION_VALIDATION_2026-10-23.md](SECTION_VALIDATION_2026-10-23.md)
 supersedes the previous production mixed-section limitation only for an explicit
 opt-in, reviewed, uncoupled series-section negative-sequence model. Independent

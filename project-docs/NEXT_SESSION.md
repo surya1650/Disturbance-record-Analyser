@@ -1,5 +1,21 @@
 # Context for the next session
 
+**2026-10-23 source/fault continuation:** read
+[SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md)
+and its JSON aggregate. Independent new phase-nodal oracle covers weak S/R
+impedance scales 100/10000, source voltage/unbalance, passive asymmetric source
+matrices and 11 physical connections. The 19,008 raw windows contain 15,552
+unbalanced and 3,456 balanced controls. All 5,184 ideal unbalanced windows locate;
+at 1% noise 2,017 locate/3,167 refuse, located p95 .73141 km (100 km lines). Weak
+profiles show substantial refusal. Both actual-DSP main/stage matrices locate
+72 unbalanced and refuse 16 balanced cases. Raw balanced mathematical fits can
+be 82.58km wrong; their operational gates remain unchanged. Source asymmetry is
+at terminal boundaries, not validation of a coupled/asymmetric line model.
+No production source changes or operational model enablement. New oracle is
+interior-only; terminal CT-zone, EMT, calibration and field acceptance remain
+pending. Worktree full 1,028 passed/28 corpus skips, one upstream warning, 150.53s;
+Stage-A 10,000 PASS, 56.2s with unchanged metrics. Historical source hashes preserved.
+
 **2026-10-23 section continuation:** opt-in main and reviewed-stage series-section
 negative-sequence solving is implemented. Read
 [SECTION_VALIDATION_2026-10-23.md](SECTION_VALIDATION_2026-10-23.md) and its JSON
