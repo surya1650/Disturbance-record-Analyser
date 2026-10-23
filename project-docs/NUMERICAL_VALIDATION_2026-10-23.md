@@ -21,6 +21,10 @@ absolute floor). Undefined phase, invalid samples and nonfinite inputs now
 propagate to incident refusal. A separately usable clock-authorized E4 may
 still supply a result; a single-ended fallback cannot conceal these failures.
 E4 also refuses nonfinite input rather than returning an `ok` NaN estimate.
+Its exception to a structural E5 refusal requires an in-line position and
+enough weight to qualify for actual two-ended reconciliation. A low residual
+or positive weight alone cannot admit an impossible/external E4 and then blend
+it with single-ended estimates into a plausible protected-line distance.
 
 The original corpus-free baseline exposed a Windows duplicate-upload race:
 an existence check followed by replacement could overwrite a published hash
@@ -101,8 +105,8 @@ All-located p95 is **6.677%**, maximum **91.361%**. Saturated-CT located cases:
 tail remains unsuitable as a general accuracy claim; fewer estimates are not
 proof of better field performance. Zero unflagged impossible outputs were found.
 
-Full worktree suite: **820 passed, 28 corpus-dependent skips**, one upstream
-Starlette/httpx deprecation warning, 136.85 seconds. Final whole-branch review
+Full worktree suite: **823 passed, 28 corpus-dependent skips**, one upstream
+Starlette/httpx deprecation warning, 139.39 seconds. Final whole-branch review
 and primary-checkout verification are recorded after completion below and in
 the newest handoff entry. Focused section/domain tests
 passed 80 cases; envelope/section tests passed 82; architecture direct/self-tests
@@ -138,3 +142,36 @@ present phasor experiment does not close those domains. Verified field identity,
 event-effective parameters/wiring, surveyed towers and independent held-out
 patrol truth remain prerequisites for field acceptance. No TB catalogue entry
 is promoted to certification or automatic compliance by these results.
+
+## Independent review and decisions
+
+The first reviewer invocation returned no findings because that model's usage
+was unavailable. A fresh independent reviewer on an available model reviewed
+the whole branch and passed 104 focused tests. It reported no Critical or Minor
+items and one Important issue: an impossible E4 could bypass structural E5
+refusal and blend into an in-line single-ended distance/tower. Real-DSP tests
+reproduced the defect for E4 positions -2, 1.2 and 6 pu before the fix. They now
+withhold distance, intervals and towers; valid aligned E4 remains supported.
+The focused numerical/Stage-A/TB set passed 76 tests after this correction.
+
+Decisions carried from the execution/review ledger:
+
+- A handwritten scaling fixture originally encoded a double root rather than
+  the stated two roots. It was corrected by independent polynomial expansion;
+  incorrect test data must not dictate production behavior. Otherwise the
+  scaling-validation claim itself would be false.
+- The existing intake publication race was fixed within this milestone, using
+  atomic hard links on the user's C:/E: NTFS filesystems. Portability to filesystems
+  without hard links remains a deployment constraint; they fail explicitly and
+  need a separately validated strategy.
+- Broader unsynchronised sections, coupling, charging and acquisition models
+  remain deferred. Their scope is not established by the aligned study, so
+  production gates stay in place to prevent overgeneralization.
+- Field accuracy and confidence remain outside the available evidence; the
+  synthetic study cannot authorize operational acceptance or interval calibration.
+- Extreme mixed-exponent/subnormal arithmetic is outside the common-scaling
+  envelope tested here. The reviewer reported no material location-scale effect
+  in considered examples; this is not full floating-point-domain validation.
+
+No deferred Minor findings were reported. The fix is verified by regression
+tests and a full suite, with no second review substituted for those checks.

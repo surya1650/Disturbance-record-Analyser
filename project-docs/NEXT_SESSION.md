@@ -9,7 +9,7 @@ main/stage location. Read
 [NUMERICAL_VALIDATION_2026-10-23.md](NUMERICAL_VALIDATION_2026-10-23.md) and its
 machine-readable synthetic aggregate.
 
-Worktree full suite: **820 passed, 28 corpus skips**, one upstream warning;
+Worktree full suite: **823 passed, 28 corpus skips**, one upstream warning;
 architecture direct/self-tests and focused Ruff pass. Stage-A 10,000 PASS:
 9,242 located/758 refused; clean 4,258 located, 25 refused, p95 0.4361% unchanged.
 All-located p95 6.677%, saturated located p95 39.805%; the additional 465

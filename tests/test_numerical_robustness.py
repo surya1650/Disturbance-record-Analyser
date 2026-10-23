@@ -99,3 +99,31 @@ def test_incident_preserves_structural_e5_refusal_unless_aligned_e4_is_usable(pr
     else:
         assert result.mode == 'none' and math.isnan(result.km_from_S)
         assert not result.towers and result.likely_tower is None
+
+
+@pytest.mark.parametrize('impossible_or_external_m', [-2, 1.2, 6])
+def test_external_or_impossible_aligned_e4_cannot_unlock_structural_e5_refusal(impossible_or_external_m):
+    # |2*p+.06j-2*m| = |-p+m| has no real solution, while E4's
+    # real part is p and its apparently small imaginary residual is .02.
+    def recorder():
+        return TerminalSpec(fs=2400, prefault_s=.12, post_s=.5, trip_delay_s=.3,
+                            noise_pct=0, cvt_transient=False, adc_bits=24)
+    case = generate(SynthSpec(m=.3, fault='AG', rf=1, dc_offset=False, S=recorder(), R=recorder()))
+    line = uniform_line('TEST', 'Synthetic contradiction', 220, 100, .03+.4j, .2+1.2j)
+    p = impossible_or_external_m
+    quantities = [2*p+.06j, 2/line.z1, 1-p, 1/line.z1]
+    terminals = {}
+    for end, (voltage, current) in zip(('S', 'R'), (quantities[:2], quantities[2:]), strict=True):
+        an = analyse(case.records[end])
+        an.zero_seq_voltage = True
+        an.ps.phasors['V2'][:] = voltage
+        an.ps.phasors['I2'][:] = current
+        terminals[end] = TerminalInput(an, end, clock_good=True)
+    result = locate(line, terminals)
+    e4, e5 = (next(e for e in result.estimates if e.method == name) for name in ('E4', 'E5'))
+    assert e4.m == pytest.approx(p) and e4.residual == pytest.approx(.02)
+    assert e5.diagnostics.get('inconsistent_window') and not e5.ok
+    assert result.mode == 'none' and not result.ok
+    assert math.isnan(result.km_from_S) and math.isnan(result.km_from_R)
+    assert all(math.isnan(value) for value in result.interval_km)
+    assert not result.towers and result.likely_tower is None

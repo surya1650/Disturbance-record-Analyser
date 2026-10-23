@@ -1,6 +1,6 @@
 # Numerical Validation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Strengthen structural E5 refusal and independently measure scalar and mixed-section numerical behavior.
 
@@ -32,11 +32,11 @@
 
 **Interfaces:** Consumes stable_quadratic(a,b,c), e5_roots and e5_unsynchronised; preserves their signatures. Produces finite real root lists or an empty list plus reason, and failed Estimate diagnostics `inconsistent_window`/`undefined_angle` as applicable. Ensemble consumes those flags alongside existing ambiguity/insufficient-window flags.
 
-- [ ] Write coefficient-scale, no-real-root, partial-invalid-window and zero-fault-voltage refusal tests; independently specified roots and counterexamples.
-- [ ] Run focused tests; observe RED for the intended numerical/structural behavior.
-- [ ] Normalize coefficient arithmetic and explicitly reject structurally invalid E5 windows; preserve aligned-E4 escape only when usable.
-- [ ] Run focused and full suite; record failures/refusals and update architecture budget for changed files.
-- [ ] Commit with message `Fix structural E5 root and window failures` and ledger the result.
+- [x] Write coefficient-scale, no-real-root, partial-invalid-window and zero-fault-voltage refusal tests; independently specified roots and counterexamples.
+- [x] Run focused tests; observe RED for the intended numerical/structural behavior.
+- [x] Normalize coefficient arithmetic and explicitly reject structurally invalid E5 windows; preserve aligned-E4 escape only when usable.
+- [x] Run focused and full suite; record failures/refusals and update architecture budget for changed files.
+- [x] Commit with message `Fix structural E5 root and window failures` and ledger the result.
 
 ### Task 2: Reproducible independent scalar envelope
 
@@ -44,11 +44,11 @@
 
 **Interfaces:** `sequence_case(m, source_ratio, rotation)` returns terminal quantities and true m from independent branch Ohm laws. `run_envelope(seed=854, repetitions=20)` returns a finite JSON-compatible dict with all-case and per-scenario counts, error tails, refusals, interval containment and explicit limits. Script writes a new output via exclusive creation, never overwrites prior output.
 
-- [ ] Write failing oracle-law, deterministic envelope/accounting and exclusive-output tests; hand-derived midpoint and parameter-bias expectations.
-- [ ] Run focused tests; observe RED because the interfaces do not yet exist.
-- [ ] Implement independent branches and deterministic zero/noise/weak-infeed/parameter-bias groups, retaining rejected cases and using no estimator to generate expected quantities.
-- [ ] Run focused tests, full suite and real sweep. Do not require noisy groups to meet a clean-data target; report actual behavior.
-- [ ] Commit with message `Add independent scalar numerical envelope` and ledger results.
+- [x] Write failing oracle-law, deterministic envelope/accounting and exclusive-output tests; hand-derived midpoint and parameter-bias expectations.
+- [x] Run focused tests; observe RED because the interfaces do not yet exist.
+- [x] Implement independent branches and deterministic zero/noise/weak-infeed/parameter-bias groups, retaining rejected cases and using no estimator to generate expected quantities.
+- [x] Run focused tests, full suite and real sweep. Do not require noisy groups to meet a clean-data target; report actual behavior.
+- [x] Commit with message `Add independent scalar numerical envelope` and ledger results.
 
 ### Task 3: Bounded mixed-section feasibility study and handoff
 
@@ -56,9 +56,9 @@
 
 **Interfaces:** `aligned_section_candidates(line, vs, is_, vr, ir)` returns all eligible section-local positions with mismatch diagnostics and a unique/ambiguous/withheld status. Consumes negative-sequence phasors with a supplied common reference; never called by production main/stage paths.
 
-- [ ] Write failing tests against independent phase nodal network: junctions, AG/BG/CG, physical reversal, resistance, uniform limit, unsupported/invalid model and ambiguity/no-candidate behavior.
-- [ ] Run tests; observe RED because the study interface is absent.
-- [ ] Implement piecewise healthy-section voltage propagation and bounded candidate evaluation; deduplicate only the same physical junction and retain all distinct candidates.
-- [ ] Verify focused/full tests, architecture/Ruff and Stage-A 10,000. Document exact envelopes, tails, limits and remaining model gaps.
-- [ ] Commit with message `Validate aligned mixed-section feasibility and document limits`; dispatch one whole-branch review, fix important findings RED→GREEN and rerun full suite.
+- [x] Write failing tests against independent phase nodal network: junctions, AG/BG/CG, physical reversal, resistance, uniform limit, unsupported/invalid model and ambiguity/no-candidate behavior.
+- [x] Run tests; observe RED because the study interface is absent.
+- [x] Implement piecewise healthy-section voltage propagation and bounded candidate evaluation; deduplicate only the same physical junction and retain all distinct candidates.
+- [x] Verify focused/full tests, architecture/Ruff and Stage-A 10,000. Document exact envelopes, tails, limits and remaining model gaps.
+- [x] Commit with message `Validate aligned mixed-section feasibility and document limits`; dispatch one whole-branch review, fix important findings RED→GREEN and rerun full suite.
 - [ ] Integrate/publish as authorized, verify Git remote and preserve Dash findings locally.

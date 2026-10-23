@@ -23,7 +23,7 @@ Aligned mixed-section study recovers independent phase-network chainages,
 junctions and physical reversal, retaining ambiguous fits. It is validation
 only; production mixed-section/coupling/shunt refusals stay active.
 
-Worktree full suite: **820 passed, 28 corpus skips**, one upstream warning;
+Worktree full suite: **823 passed, 28 corpus skips**, one upstream warning;
 architecture direct/self-tests and focused Ruff pass. Stage-A 10,000 PASS:
 9,242 located, 758 refused; clean 4,258 located, 25 refused, p95 .4361%.
 All-located p95 6.677%; saturated located p95 39.805% (1,203 cases). Additional

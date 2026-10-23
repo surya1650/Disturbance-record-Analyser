@@ -402,8 +402,11 @@ def locate(
                                         e.diagnostics.get('insufficient_window') or
                                         e.diagnostics.get('inconsistent_window') or
                                         e.diagnostics.get('undefined_angle')) for e in estimates)
-    aligned = any(e.method == 'E4' and e.ok and e.residual < .05 and
-                  e.diagnostics.get('weight', 0) > 0 for e in estimates)
+    best_single = max((e.diagnostics.get('weight', 0.0) for e in estimates
+                       if e.ok and e.ends == 'single'), default=0.0)
+    aligned = any(e.method == 'E4' and e.ok and 0 <= e.m <= 1 and e.residual < .05 and
+                  e.diagnostics.get('weight', 0) > 0 and
+                  e.diagnostics.get('weight', 0) >= best_single for e in estimates)
     if ambiguous and not aligned:
         return LocationResult(m=float('nan'), km_from_S=float('nan'), km_from_R=float('nan'),
                               interval_pu=(float('nan'),)*2, interval_km=(float('nan'),)*2,
@@ -428,8 +431,6 @@ def locate(
     # one. With a saturated CT, E5 can satisfy its own magnitude equality at a
     # badly wrong m and still show a small residual, so residual alone is not
     # enough to let it override everything else.
-    best_single = max((e.diagnostics.get("weight", 0.0) for e in usable
-                       if e.ends == "single"), default=0.0)
     two_ok = [e for e in usable if e.ends == "two" and e.residual < 0.05
               and e.diagnostics.get("weight", 0.0) >= best_single]
     blend = two_ok if two_ok else usable

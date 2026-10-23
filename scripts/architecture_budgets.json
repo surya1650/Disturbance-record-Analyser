@@ -36,7 +36,7 @@
     "src/dranalyser/dsp/stages.py": 98,
     "src/dranalyser/dsp/window_quality.py": 45,
     "src/dranalyser/faultloc/__init__.py": 0,
-    "src/dranalyser/faultloc/ensemble.py": 500,
+    "src/dranalyser/faultloc/ensemble.py": 501,
     "src/dranalyser/faultloc/estimators.py": 410,
     "src/dranalyser/faultloc/model_domain.py": 31,
     "src/dranalyser/faultloc/stage_location.py": 63,
