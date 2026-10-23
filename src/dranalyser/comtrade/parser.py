@@ -435,12 +435,19 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
     analog: Dict[str, np.ndarray] = {}
     raw_analog: Dict[str, np.ndarray] = {}
     meta: Dict[str, AnalogMeta] = {}
+    inspection_analog, inspection_meta = {}, {}
     unmapped: List[str] = []
 
     for i, ch in enumerate(cfg.analogs):
         canon = targets[i]
         if canon is None or canon in analog:
             unmapped.append(ch.ch_id.strip())
+            source_id = f'A{i+1}'
+            inspection_analog[source_id] = cols[:, i]*ch.a+ch.b
+            inspection_meta[source_id] = AnalogMeta(
+                raw_id=ch.ch_id.strip(), unit=ch.uu.strip(), a=ch.a, b=ch.b,
+                primary=ch.primary, secondary=ch.secondary, ps=ch.ps,
+                adc_min=ch.minv, adc_max=ch.maxv, phase=ch.ph, normalised=False)
             continue
         raw = cols[:, i]
         vals = raw * ch.a + ch.b
@@ -477,6 +484,7 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
         start_time=cfg.start_time, trigger_time=cfg.trigger_time,
         fs=fs, line_freq=cfg.line_freq, t=t, analog=analog, digital=digital,
         analog_meta=meta, raw_analog=raw_analog, source_path=cfg_path,
+        inspection_analog=inspection_analog, inspection_meta=inspection_meta,
         content_hash=digest, terminal_end=terminal_end, nrates=cfg.nrates,
         notes={"edition": cfg.edition, "file_type": ftype, "naming": naming,
                "unmapped_channels": unmapped, "n_analog": na, "n_digital": nd,

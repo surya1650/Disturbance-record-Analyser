@@ -18,7 +18,7 @@ def sample_interval(root, revision, filename, channel, lo, hi):
     if not item or not evidence:
         raise ValueError('This revision has no analysed evidence for the requested record.')
     selected = next((c for c in item.get('channel_inventory', [])
-                     if c['kind'] == 'analog' and c['selected'] == channel), None)
+                     if c['kind'] == 'analog' and (c['selected'] == channel or c['id'] == channel and not c['selected'])), None)
     if not selected:
         raise ValueError('Channel identity is unavailable in this revision; review and rerun if it predates channel inventories.')
     allowed = (Path(root)/'runs'/revision['incident_id']/str(revision['number'])).resolve()
@@ -37,7 +37,7 @@ def sample_interval(root, revision, filename, channel, lo, hi):
     if rec.content_hash != evidence['record_hash'] or rec.content_hash != item['content_hash']:
         raise ValueError('Stored recording checksum differs from the analysed revision.')
     current = next((c for c in rec.notes['channel_inventory']
-                    if c['kind'] == 'analog' and c['selected'] == channel), None)
+                    if c['kind'] == 'analog' and (c['selected'] == channel or c['id'] == channel and not c['selected'])), None)
     if not current or current['id'] != selected['id'] or current['label'] != selected['label']:
         raise ValueError('Replayed channel identity differs from the frozen revision.')
     if rec.n < 2 or not np.all(np.isfinite(rec.t)) or np.any(np.diff(rec.t) <= 0):
@@ -48,7 +48,8 @@ def sample_interval(root, revision, filename, channel, lo, hi):
     ids = np.flatnonzero((rec.t >= lo-1e-12) & (rec.t <= hi+1e-12))
     if len(ids) > MAX_SAMPLES:
         raise ValueError('Interval exceeds 20000 native samples; narrow the selected view.')
-    values = rec.analog[channel][ids]
+    inspection = channel in rec.inspection_analog
+    values = (rec.inspection_analog if inspection else rec.analog)[channel][ids]
     finite = np.isfinite(values)
     metrics = {'status': 'measured' if len(ids) and np.all(finite) else 'no samples' if not len(ids) else 'non-finite samples',
                'rms': None, 'peak_abs': None, 'peak_local_s': None, 'sample_count': len(ids),
@@ -58,10 +59,11 @@ def sample_interval(root, revision, filename, channel, lo, hi):
         amplitude = float(abs(values[peak_index]))
         metrics.update(rms=amplitude*float(np.sqrt(np.mean((values/amplitude)**2))) if amplitude else 0.0,
                        peak_abs=amplitude, peak_local_s=float(rec.t[ids[peak_index]]))
-    meta = rec.analog_meta[channel]
+    meta = (rec.inspection_meta if inspection else rec.analog_meta)[channel]
     return {'file': filename, 'channel': channel, 'source': selected['label'], 'source_id': selected['id'],
             'record_hash': rec.content_hash, 'revision': revision['number'], 'range_s': [lo, hi],
-            'unit': ('A' if channel.startswith('I') else 'V') if meta.normalised else 'unknown',
+            'unit': (meta.unit or 'undeclared') if inspection else ('A' if channel.startswith('I') else 'V') if meta.normalised else 'unknown',
+            'scaling': 'a*x+b in declared source units; no CT/VT or k-unit conversion; excluded from analysis' if inspection else 'parser-normalized primary',
             'samples': [[int(i), float(rec.t[i]), float(v) if good else None] for i, v, good in zip(ids, values, finite, strict=True)],
-            'metrics': metrics, 'note': 'Original zero-based sample indices and parser-normalized values; no resampling, inversion or interpolation. '
+            'metrics': metrics, 'note': 'Original zero-based sample indices; values use the explicitly stated scaling. No resampling, inversion or interpolation. '
             'Sources and reviewed channel identities are verified against this revision. Read-only inspection does not update stored analysis.'}

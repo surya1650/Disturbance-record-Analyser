@@ -219,6 +219,9 @@ def test_main_1_vt_does_not_pass_zero_sequence_and_is_detected():
 def test_a_terminal_without_zero_sequence_refuses_rather_than_guessing():
     """Main-1 must decline the ground-loop calculation, not answer it wrongly."""
     line = load_line(LINE)
+    # Isolate VT gating with the historical provisional circuit fixture. The
+    # actual registry now refuses its unreviewed model before estimator work.
+    line.model_review_required = False
     out = {}
     for tag, path in (("M1", M1), ("M2", M2)):
         rec = read_comtrade(path, terminal_end="S")

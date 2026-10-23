@@ -113,6 +113,7 @@ def line_from_dict(d: Dict[str, Any]) -> Line:
         path_rules=[str(r) for r in (d.get("path_rules") or [])],
         towers=towers, double_circuit=bool(d.get("double_circuit", False)),
         series_compensated=bool(d.get("series_compensated", False)),
+        model_review_required=bool(d.get('model_review_required', False)),
     )
 
 

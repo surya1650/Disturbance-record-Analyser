@@ -6,6 +6,40 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-10-23 - Source catalogue, acceptance replay and Dash source findings
+
+Implemented immutable source import, conservative reciprocal candidates,
+source-bound reviewed exports, gated provisional candidates and a searchable
+catalogue. Added held-out acceptance replay with frozen cohorts, hash-bound
+inputs/truth, refusal accounting and leakage/uncertainty guards. Unmapped source
+analogs support inspection without analytical normalization. Settings validity,
+patrol-label scoring and truth reassignment guards were strengthened. A race
+found in independent Superpowers review was reproduced and fixed using atomic
+SQLite validation/write transactions across independent connections.
+
+**744 tests pass**, architecture direct/self-tests, focused Ruff, JS syntax,
+16 navigation and 10 native-sample assertions. Stage-A 10,000 PASS: 9,707
+located, 293 refused; clean located p95 0.4361%, all-located p95 8.0513%,
+CT-saturated located p95 35.2249%. No new field-accuracy claim follows.
+See [SOURCE_CATALOGUE_VALIDATION_2026-10-23.md](SOURCE_CATALOGUE_VALIDATION_2026-10-23.md).
+
+User-confirmed DHN-NNR is Dhone–Nansuralla. All 13 TL sheet tabs imported:
+1,961 rows, 1,940 electrically parseable, 21 requiring value review. The supplied
+Excel has 1,218 rows; Dash's old CSV comparison gives 298 workbook-only,
+8 CSV-only and 20 changed common IDs. Dash now has an offline auditor, eight
+passing tests and a documented source reconciliation, including the unresolved
+Dhone–Nansuralla circuit/length conflict. No live DB/telemetry migration.
+
+Preview 8113 uses the private source-candidate registry; launcher PID 40072,
+one worker. Only this new preview was restarted. All 16 original recording
+hashes remain unchanged; zero patrol confirmations; empty acceptance remains
+`not_ready`. Source values/audits remain local under ignored runtime paths.
+The user subsequently authorized committing and pushing the analyser milestone;
+Git history/remote state record the outcome. Dash has no Git metadata or remote
+and remains local. Field inputs and unsupported physical models remain outstanding.
+
+---
+
 ## 2026-09-11 - TB refusal/domain corrections and field-evidence audit
 
 Completed the available TB software follow-ups: numerical E5 tie refusal,

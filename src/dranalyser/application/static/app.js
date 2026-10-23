@@ -189,7 +189,7 @@ async function route() {
   if (!config) return;
   notice(); current=null;
   const [view,id,revision]=(location.hash.slice(1)||'overview').split('/');
-  const name=view==='incident'?'detail':['overview','upload','integrations'].includes(view)?view:'overview';
+  const name=view==='incident'?'detail':['overview','upload','integrations','catalogue'].includes(view)?view:'overview';
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==name);
   document.querySelectorAll('[data-nav]').forEach(v=>v.classList.toggle('active',v.dataset.nav===(name==='detail'?'overview':name)));
   $('breadcrumb').textContent=`Workspace / ${name==='detail'?'Incident':name[0].toUpperCase()+name.slice(1)}`;
@@ -197,6 +197,7 @@ async function route() {
     if(name==='overview') await overview();
     if(name==='upload') await uploadView(id);
     if(name==='integrations') await integrations();
+    if(name==='catalogue') await catalogueView();
     if(name==='detail') await detail(id,revision);
   }catch(error){notice(error.message);}
 }

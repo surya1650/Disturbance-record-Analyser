@@ -15,5 +15,14 @@ main{margin-left:240px;min-height:100vh}.topbar{height:76px;background:#fff;bord
 [data-stage-file], .stage-clock-evidence, .stage-association { overflow-wrap: anywhere; }
 [data-stage-file] label:not(.rx-check) { display: block; margin: 12px 0; }
 [data-stage-file] label:not(.rx-check) input { display: block; width: 100%; }
+#catalogue-content small { display:block; margin-top:.3rem; color:#647983; }
+#catalogue-content th, #catalogue-content td { white-space:normal; overflow-wrap:anywhere; }
+#catalogue-content .toolbar label { display:flex; align-items:center; gap:.5rem; font-size:12px; }
+#catalogue-content input[type=checkbox] { width:auto; }
+#catalogue-summary { padding:0 20px; }
+#catalogue-detail { scroll-margin-top:24px; }
+#catalogue-detail p, #catalogue-detail li { font-size:12px; line-height:1.8; overflow-wrap:anywhere; }
+#catalogue-detail h3 { margin-top:24px; }
+@media(max-width:700px) { nav { flex-wrap:wrap; } #catalogue-content .toolbar { padding-top:18px; } }
 label.rx-check { display: flex; align-items: flex-start; gap: .6rem; margin: .8rem 0; }
 .rx-check input[type="checkbox"] { width: auto; min-height: 0; flex: 0 0 auto; margin: .25rem 0 0; }

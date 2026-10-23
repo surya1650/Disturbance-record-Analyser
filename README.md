@@ -41,9 +41,11 @@ out there with reasons.
 | Local application, manual upload, durable jobs and report revisions | working |
 | Collector intake through watched folder and push API | working |
 | Reviewed stage associations, clock evidence and guarded stage E5 | implemented; bounded synthetic validation |
+| Source catalogue, source-bound registry drafts and held-out acceptance replay | implemented; field evidence still required |
+| Unmapped analog inspection with native samples | working; excluded from analytical inputs |
 | Autonomous event pairing and direct relay protocol collectors | not started |
 
-Latest validation: **666 tests**, architecture checks, Stage-A 10,000 PASS
+Latest numerical validation: Stage-A 10,000 PASS
 (clean located p95 0.4361%; 25/4,283 clean cases refused) and desktop/mobile browser checks. Separate stage E5 requires
 matching source-bound reviews and explicit selection at both terminal primaries;
 the main ensemble refuses supported nonstationary windows. See
@@ -53,6 +55,13 @@ E5 roots, external patrol assignments and declared unsupported electrical models
 See the [TB/field validation audit](project-docs/TB854_FIELD_VALIDATION_2026-09-11.md)
 for completed software checks and the verified-data requirements still blocking
 full TB 854 and field validation.
+
+The October continuation adds an immutable settings catalogue, reviewed registry
+exports, acceptance-evidence replay and stronger patrol/settings guards. See
+[source catalogue and acceptance validation](project-docs/SOURCE_CATALOGUE_VALIDATION_2026-10-23.md)
+for verification results, source limits and the separate local Dash findings.
+DHN-NNR is Dhone–Nansuralla, as confirmed by the user. Its model remains withheld
+pending circuit, length, topology and instrument review.
 
 ### Stage-A acceptance (brief section 13)
 
@@ -273,5 +282,9 @@ src/dranalyser/
   distributed-parameter correction is needed before the quoted accuracy holds.
 - Series-compensated lines are detected and **refused**, not approximated.
 - Three-terminal and tapped lines are not handled.
-- Pairing, transport, the rules engine and the two-page PDF report are
-  specified in the brief but not built.
+- Autonomous cross-delivery pairing and direct relay protocol collectors are
+  not built. Folder/API intake, advisory comparisons, the rules engine and HTML
+  incident reports are implemented.
+- Source catalogues do not establish event-effective settings, verified wiring,
+  surveyed tower chainages or independent patrol truth. Field acceptance remains
+  unavailable until those inputs are supplied and reviewed.

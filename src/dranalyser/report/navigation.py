@@ -79,6 +79,13 @@ def navigation_record(an, evidence, settings=None, binding=None, review=None):
                        'declared_unit': meta.unit if meta else 'unknown',
                        'scaling': 'declared primary' if meta and meta.normalised else 'unconfirmed',
                        'bins': envelope(rec.t, values)})
+    for name, values in list(rec.inspection_analog.items())[:max(0, MAX_CHANNELS-len(analog))]:
+        meta = rec.inspection_meta[name]
+        analog.append({'name': name, 'source': meta.raw_id, 'unit': meta.unit or 'undeclared',
+                       'declared_unit': meta.unit or 'undeclared',
+                       'scaling': 'Unmapped/ignored source: a*x+b in declared units; no CT/VT or k-unit conversion. '
+                                  'P/S='+meta.ps+'; excluded from analysis.',
+                       'bins': envelope(rec.t, values)})
     digital = []
     continuous = rec.nrates <= 1 and not np.any(np.diff(rec.t) > 1.5 / rec.fs)
     for name in list(rec.digital)[:MAX_CHANNELS]:
@@ -99,9 +106,10 @@ def navigation_record(an, evidence, settings=None, binding=None, review=None):
             'capture_s': [float(rec.t[0]), float(rec.t[-1])], 'sample_count': rec.n,
             'analog': analog, 'digital': digital, 'rx': rx,
             'stages': evidence.get('stages'), 'clock_quality': evidence.get('clock_quality'),
-            'omitted_analog': list(rec.analog)[MAX_CHANNELS:], 'omitted_digital': list(rec.digital)[MAX_CHANNELS:],
+            'omitted_analog': (list(rec.analog)+list(rec.inspection_analog))[MAX_CHANNELS:], 'omitted_digital': list(rec.digital)[MAX_CHANNELS:],
             'unmapped_analog': list(rec.notes.get('unmapped_channels') or []),
             'note': 'Display only. Each envelope bin retains min/max, support and sample count; it is not an exact cursor sample. '
-                    'At most 64 mapped analog and 64 digital channels are displayed. Unmapped analogs remain in the source file. '
+                    'At most 64 analog and 64 digital channels are displayed. Unmapped analogs use declared source engineering units, '
+                    'not verified primary A/V; they never feed analysis. '
                     'Digital continuity is withheld for gaps/multi-rate data or more than 2000 active intervals. '
                     'Neither cursor selection nor display thinning changes analysis windows, times, rules or location.'}

@@ -1,4 +1,7 @@
-# 220 kV DHONE - NANDYAL, provisional definition.
+# 220 kV DHONE - NANSURALLA, provisional definition.
+# Corridor identity corrected by the user on 2026-10-23. The newly supplied
+# operational workbook values and their candidate registry remain local under
+# out/source-data/registry; the historical placeholders below are not approved.
 #
 # PROVISIONAL. The impedances, length and tower span below are typical
 # 220 kV ACSR Zebra values, NOT the surveyed values for this corridor, and
@@ -14,10 +17,11 @@
 #   k0           RE/RL = 1.020, XE/XL = 0.800, line angle 81 deg
 #                (DR-1.rio, the Siemens settings file next to the record)
 id: DHN-NNR
-name: Dhone - Nandyal 220 kV
+name: Dhone - Nansuralla 220 kV
 kv: 220
 double_circuit: false
 series_compensated: false
+model_review_required: true   # historical placeholders are not a reviewed model
 
 sections:
   - seq: 1
@@ -29,7 +33,7 @@ sections:
     x0: 1.1970
     conductor: ACSR ZEBRA
 
-tower_span_km: 0.35
+# No surveyed tower schedule is available; do not generate patrol tower IDs.
 
 terminals:
   S:
@@ -64,7 +68,7 @@ terminals:
               re_rl: 1.020
               xe_xl: 0.800
   R:
-    substation: NANDYAL
+    substation: NANSURALLA
     ct_ratio: 800
     vt_ratio: 2000
     vt_type: CVT

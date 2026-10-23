@@ -22,11 +22,13 @@ Two things this deliberately does NOT do:
 from __future__ import annotations
 
 import datetime as _dt
+import math
 import os
 import sqlite3
 import threading
-from dataclasses import dataclass, field
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from contextlib import contextmanager
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Sequence
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS incident (
@@ -100,6 +102,12 @@ class Scored:
     def error_km(self) -> Optional[float]:
         if self.km_estimated is None or self.km_actual is None:
             return None
+        if self.cause == 'not found' or not all(isinstance(v, (int, float)) and math.isfinite(v) and v >= 0
+                                                for v in (self.km_estimated, self.km_actual)):
+            return None
+        if self.line_km is not None and (not math.isfinite(self.line_km) or self.line_km <= 0
+                or self.km_estimated > self.line_km or self.km_actual > self.line_km):
+            return None
         return self.km_estimated - self.km_actual
 
     @property
@@ -138,6 +146,14 @@ class Store:
             self.conn.commit()
             return cur
 
+    @contextmanager
+    def _transaction(self):
+        # Lock both same-object threads and other SQLite connections before
+        # reading the state on which a mutation's validation depends.
+        with self._lock, self.conn:
+            self.conn.execute('BEGIN IMMEDIATE')
+            yield self.conn
+
     def close(self) -> None:
         with self._lock:
             self.conn.close()
@@ -158,12 +174,16 @@ class Store:
         cols = ("fault_time", "fault_type", "m", "km_from_S", "line_km",
                 "method", "mode", "verdict", "report_path")
         vals = {c: kw.get(c) for c in cols}
-        self._write(
-            "INSERT INTO incident (incident_id, line_id, " + ", ".join(cols)
-            + ", created_at) VALUES (?, ?, " + ", ".join("?" * len(cols)) + ", ?)"
-            " ON CONFLICT(incident_id) DO UPDATE SET "
-            + ", ".join(c + "=excluded." + c for c in cols),
-            [incident_id, line_id] + [vals[c] for c in cols] + [_now()])
+        with self._transaction() as db:
+            existing = self.incident(incident_id)
+            if existing is not None and existing['line_id'] != line_id and self.latest_confirmation(incident_id) is not None:
+                raise ValueError('An incident with patrol truth cannot be rebound to a different line.')
+            db.execute(
+                "INSERT INTO incident (incident_id, line_id, " + ", ".join(cols)
+                + ", created_at) VALUES (?, ?, " + ", ".join("?" * len(cols)) + ", ?)"
+                " ON CONFLICT(incident_id) DO UPDATE SET "
+                + ", ".join(c + "=excluded." + c for c in ('line_id', *cols)),
+                [incident_id, line_id] + [vals[c] for c in cols] + [_now()])
 
     def incident(self, incident_id: str) -> Optional[sqlite3.Row]:
         rows = self._query("SELECT * FROM incident WHERE incident_id = ?",
@@ -182,15 +202,26 @@ class Store:
     def confirm(self, c: Confirmation) -> int:
         if not c.incident_id:
             raise ValueError("a confirmation must name its incident")
-        if c.tower_no is None and c.chainage_km is None and c.cause != "not found":
-            raise ValueError("give a tower number, a chainage, or record it as not found")
-        cur = self._write(
-            "INSERT INTO ground_truth (incident_id, tower_no, chainage_km, cause,"
-            " confirmed_by, confirmed_at, confidence, notes)"
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            (c.incident_id, c.tower_no, c.chainage_km, c.cause, c.confirmed_by,
-             c.confirmed_at or _now(), c.confidence, c.notes))
-        return int(cur.lastrowid)
+        with self._transaction() as db:
+            incident = self.incident(c.incident_id)
+            if incident is None:
+                raise ValueError('A confirmation must reference a stored incident.')
+            if c.chainage_km is not None:
+                if isinstance(c.chainage_km, bool) or not isinstance(c.chainage_km, (int, float)) or not math.isfinite(c.chainage_km) or c.chainage_km < 0:
+                    raise ValueError('Patrol chainage must be finite and nonnegative.')
+                if incident['line_km'] is not None and c.chainage_km > incident['line_km']:
+                    raise ValueError('Patrol chainage is outside the stored line.')
+                if c.cause == 'not found':
+                    raise ValueError('A not-found patrol cannot also provide a confirmed chainage.')
+            if c.tower_no is None and c.chainage_km is None and c.cause != "not found":
+                raise ValueError("give a tower number, a chainage, or record it as not found")
+            cur = db.execute(
+                "INSERT INTO ground_truth (incident_id, tower_no, chainage_km, cause,"
+                " confirmed_by, confirmed_at, confidence, notes)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (c.incident_id, c.tower_no, c.chainage_km, c.cause, c.confirmed_by,
+                 c.confirmed_at or _now(), c.confidence, c.notes))
+            return int(cur.lastrowid)
 
     def latest_confirmation(self, incident_id: str) -> Optional[sqlite3.Row]:
         rows = self._query(
@@ -234,11 +265,13 @@ class Store:
         """
         rows = [s for s in self.scored(line_id) if s.error_km is not None]
         n_conf = len([s for s in self.scored(line_id)])
+        trainable = [s for s in rows if s.error_pct is not None]
         out: Dict[str, Any] = {
             "confirmations": n_conf,
             "scorable": len(rows),
             "tier2_gate": 100,
-            "tier2_ready": n_conf >= 100,
+            "tier2_ready": len(trainable) >= 100,
+            "tier2_eligible_events": len(trainable),
             "by_mode": {},
         }
         if not rows:
@@ -276,7 +309,7 @@ class Store:
                 rows.append("     " + format(mode, "<14") + "n=" + format(d["n"], "<4")
                             + " mean " + format(d["mae_km"], ".3f")
                             + " km   p90 " + format(d["p90_km"], ".3f") + " km")
-        rows.append("  Tier 2 gate   : " + str(a["confirmations"]) + "/"
+        rows.append("  Tier 2 gate   : " + str(a["tier2_eligible_events"]) + "/"
                     + str(a["tier2_gate"]) + " confirmed events"
                     + ("  READY" if a["tier2_ready"]
                        else "  not yet -- the residual model stays gated off"))

@@ -24,6 +24,8 @@ from .commands import (BAR, cmd_accuracy, cmd_backtest, cmd_capture,
                        cmd_report, cmd_selftest, cmd_settings, cmd_stage_a,
                        cmd_template, cmd_verdict)
 from .wb import cmd_bundle, cmd_workbench
+from .catalogue import add_catalogue_parser
+from .acceptance import add_acceptance_parser
 from ..standards.cli import cmd_standards
 
 __all__ = ["main", "build_parser"]
@@ -33,6 +35,8 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="dranalyse",
                                 description="Two-ended disturbance record analyser")
     sub = p.add_subparsers(dest="cmd", required=True)
+    add_catalogue_parser(sub)
+    add_acceptance_parser(sub)
 
     q = sub.add_parser("locate", help="locate a fault from one or two records")
     q.add_argument("--line", required=True, help="line definition YAML")

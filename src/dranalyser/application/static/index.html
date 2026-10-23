@@ -6,7 +6,7 @@
 <aside class="sidebar">
   <a class="brand" href="#overview"><span class="brand-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M3 17h6l4-10 6 19 4-9h6" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg></span><span>DR Analyser<small>PROTECTION INTELLIGENCE</small></span></a>
   <div class="nav-label">WORKSPACE</div>
-  <nav><a href="#overview" data-nav="overview"><span>▦</span> Overview</a><a href="#upload" data-nav="upload"><span>↥</span> Upload records</a><a href="#integrations" data-nav="integrations"><span>⇄</span> Integrations</a></nav>
+  <nav><a href="#overview" data-nav="overview"><span>▦</span> Overview</a><a href="#upload" data-nav="upload"><span>↥</span> Upload records</a><a href="#catalogue" data-nav="catalogue"><span>▤</span> Source catalogue</a><a href="#integrations" data-nav="integrations"><span>⇄</span> Integrations</a></nav>
   <div class="sidebar-note"><span class="dot"></span> Running on this computer<p>Your files and analysis results stay in this local workspace.</p><span class="version">LOCAL APPLICATION · v0.2</span></div>
 </aside>
 <main>
@@ -43,7 +43,8 @@
     <div class="panel"><div class="panel-heading"><div><h2>Collector activity</h2><p>Persistent receipts make retries and intake problems visible.</p></div></div><div id="receipts" class="table-wrap"></div></div>
     <div class="hint">Direct relay connections use site-specific collectors. This application accepts their exported records through the folder or API interface; manual upload is always available.</div>
   </section>
+  <section id="catalogue" class="view" hidden><div class="page-title"><div><div class="eyebrow">SOURCE DATA</div><h1>Line and relay catalogue</h1><p>Inspect source rows, input issues and candidate terminal associations.</p></div></div><div id="catalogue-content" class="panel"></div></section>
   <section id="detail" class="view" hidden><div id="detail-content"></div></section>
   <footer>DR Analyser <span>·</span> Evidence first. Every location carries its method.</footer>
 </main><script src="/static/rx-review.js" defer></script><script src="/static/mapping.js" defer></script><script src="/static/stage-review.js" defer></script><script src="/static/stages.js" defer></script><script src="/static/evidence.js" defer></script><script src="/static/audits.js" defer></script><script src="/static/navigation-model.js" defer></script><script src="/static/resolution.js" defer></script><script src="/static/navigation.js" defer></script><script src="/static/app.js" defer></script>
-</body></html>
+<script src="/static/catalogue.js" defer></script></body></html>

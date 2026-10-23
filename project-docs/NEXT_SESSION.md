@@ -1,5 +1,52 @@
 # Context for the next session
 
+**2026-10-23 source/acceptance milestone complete locally:** **744 tests pass**,
+architecture direct/self-tests, focused Ruff, JS syntax and 26 JS assertions;
+Dash's eight offline audit tests pass. Stage-A 10,000 PASS, unchanged numerical
+results: 9,707 located, 293 refused, clean located p95 0.4361%; difficult tails
+remain reported. Read
+[SOURCE_CATALOGUE_VALIDATION_2026-10-23.md](SOURCE_CATALOGUE_VALIDATION_2026-10-23.md).
+The user subsequently requested committing and pushing this analyser milestone
+to GitHub. Git history and `origin/main` record the publication outcome; Dash
+findings, source snapshots and operational registry candidates stay local.
+
+The user supplied the Google settings sheet and `C:/Users/rscvr/Downloads/lines list.xlsx`,
+and explicitly confirmed **DHN-NNR = Dhone–Nansuralla**. Nandyal references below
+are historical. Imported 1,961 TL rows from 13 tabs with cell locators and hashes;
+1,940 parse electrically, 21 need value review, 1,166 lack bus IDs. A private
+source candidate uses the sheet values but retains `model_review_required: true`.
+The tracked placeholder now also refuses location and has no generated towers.
+The workbook names circuit 2 and disagrees on length; the corridor ruling does
+not resolve circuit, topology, scaling or event-effective settings.
+
+New CLI catalogue import/review/candidate/export and frozen-cohort acceptance
+replay are available. Empty field protocol correctly yields `not_ready` (exit 2).
+Unmapped/ignored analog inspection preserves source `a*x+b` units, without
+feeding those channels to analysis. Event-time settings gaps/overlaps refuse;
+truth guards exclude invalid/unscorable labels. Independent Superpowers review
+found a confirmation/reassignment race; RED tests reproduced it and atomic
+SQLite transactions fixed it across threads and independent connections.
+
+New preview: http://127.0.0.1:8113/#catalogue, root
+`out/application-catalogue-preview`, private registry `out/source-data/registry`,
+one worker, launcher PID 40072 at handoff. Only this new preview was restarted.
+Original recording hashes are unchanged; fresh inventory still has 16 records,
+11 analysable, five blocked and zero patrol confirmations. Earlier previews
+and saved reports were not reset. Runtime snapshots/audits stay ignored.
+
+Dash updates are local at `E:/dash/aptransco-grid-dashboard`, with report
+`docs/LINE_MASTER_FINDINGS_2026-10-23.md`, reproducible offline audit script and
+eight tests. The supplied workbook has 1,218 rows; comparison with old CSVs:
+298 additions, 8 removals, 20 changed IDs. These are source differences, not a
+live-DB migration. Dash has no Git metadata/remote; no GitHub update was pushed.
+
+Next: resolve the documented circuit/length/topology questions and provide
+event-effective settings, verified wiring, surveyed towers and independent
+held-out patrol cases. General section/coupled/distributed models, CT/CVT
+reconstruction, calibrated uncertainty and direct relay collectors remain
+separate unimplemented work. This milestone does not establish field accuracy
+or complete TB 854 validation. Do not reimport or redo completed source guards.
+
 **2026-09-11 TB software follow-ups complete; field acceptance still blocked:**
 **666 tests pass** (63 added), architecture direct/self-tests, focused Ruff,
 five process-local mutation experiments and desktop/mobile refusal/report checks.

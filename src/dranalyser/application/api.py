@@ -22,6 +22,7 @@ from .intake import MAX_BYTES, Intake
 from .store import Conflict, Store
 from .watcher import Watcher
 from .worker import Worker, registry_entries, validate_assignments
+from .catalogue import install_catalogue
 
 
 class Review(BaseModel):
@@ -82,6 +83,7 @@ def create_app(root="out/application", registry="data/registry", inbox=None, wor
     app.state.store, app.state.intake, app.state.watcher = store, intake, watcher
     app.add_middleware(LimitedBody)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost', '[::1]', 'testserver'])
+    install_catalogue(app, store.root)
 
     @app.middleware('http')
     async def local_access(request, call_next):

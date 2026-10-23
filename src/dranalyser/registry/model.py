@@ -164,7 +164,9 @@ class Relay:
             for s in self.settings
             if s.effective_from <= when and (not s.effective_to or when < s.effective_to)
         ]
-        return c[-1] if c else self.settings[-1]
+        # A gap or overlapping effective versions is not permission to use the
+        # newest settings. Preserve an explicit unavailable/ambiguous result.
+        return c[0] if len(c) == 1 else None
 
 
 @dataclass
@@ -200,13 +202,14 @@ class Line:
     towers: List[Tower] = field(default_factory=list)
     double_circuit: bool = False
     series_compensated: bool = False
-    # Other names this line appears under: "DHN-NNR", "DHONE-NANDYAL",
+    # Other names this line appears under: "DHN-NNR", "DHONE-NANSURALLA",
     # "220KV DHN NNR". Matched after stripping punctuation and case.
     aliases: List[str] = field(default_factory=list)
     # Regexes that identify this line from a file path, configured here rather
     # than coded. Named groups `substation`, `end` and `relay` are used as
     # evidence when present.
     path_rules: List[str] = field(default_factory=list)
+    model_review_required: bool = False
 
     @property
     def length_km(self) -> float:

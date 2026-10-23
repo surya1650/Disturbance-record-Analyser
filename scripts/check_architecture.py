@@ -87,7 +87,9 @@ ALLOWED_IMPORTS = {
     "application": {"workbench", "registry"},
     "cli": {"signals", "comtrade", "dsp", "faultloc", "registry", "synth", "ml",
             "rules", "standards", "backtest", "report",
-            "groundtruth", "stagea", "workbench"},
+            "groundtruth", "stagea", "workbench", "validation"},
+    # Frozen acceptance is an independent consumer; production code cannot depend on it.
+    "validation": {"signals", "comtrade", "dsp", "faultloc", "registry"},
     "signals": set(),
 }
 

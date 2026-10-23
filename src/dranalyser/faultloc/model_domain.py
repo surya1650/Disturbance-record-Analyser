@@ -6,6 +6,8 @@ import numpy as np
 
 def scalar_model_reasons(line):
     reasons = []
+    if line.model_review_required:
+        reasons.append('Source-supplied line candidate: electrical model/topology review remains required; distance withheld.')
     if line.series_compensated:
         reasons.append('The line is series compensated: capacitor behavior is unsupported.')
     if line.double_circuit:

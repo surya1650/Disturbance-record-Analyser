@@ -83,6 +83,10 @@ class Record:
     terminal_end: str = ""
     nrates: int = 1
     notes: Dict[str, object] = field(default_factory=dict)
+    # Read-only source engineering values for unmapped/ignored channels. These
+    # are not canonical primary A/V and must never feed DSP, rules or estimators.
+    inspection_analog: Dict[str, np.ndarray] = field(default_factory=dict)
+    inspection_meta: Dict[str, AnalogMeta] = field(default_factory=dict)
 
     # ---- convenience -----------------------------------------------------
     @property
