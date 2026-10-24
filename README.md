@@ -21,6 +21,12 @@ out there with reasons.
 
 ## Status
 
+The [noisy DSP and timestamp-recovery study](project-docs/NOISY_DSP_VALIDATION_2026-10-24.md)
+adds guarded raw-waveform/ASCII COMTRADE evidence and blocking provenance for invalid
+DAT timing/sample numbering. Its180 incidents produce72 located/288 refused outcomes;
+all positive-noise outcomes refuse in this bounded grid. Local time recovery does
+not authorize synchronization, and noisy-input readiness remains unestablished.
+
 | Area | State |
 |---|---|
 | COMTRADE parser (1991 / 1999 / 2013, ASCII / BINARY / BINARY32 / FLOAT32, `.CFF`) | working |

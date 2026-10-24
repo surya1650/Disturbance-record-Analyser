@@ -1,5 +1,12 @@
 # TB 854 validation matrix
 
+Latest raw-input evidence: [NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md).
+180 noisy waveform/ASCII parsing incidents exercise local DAT recovery and guarded
+DSP. Invalid acquisition timing now blocks explicitly. All .1%/1% noise outcomes
+refuse under existing quality gates; noisy-input operational accuracy is not
+established. Local recovery and metadata-skew invariance are not UTC alignment,
+physical drift correction, field acceptance or certification.
+
 Latest source/fault evidence: [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md).
 Weak/unequal/asymmetric terminal sources and SLG/LL/DLG connections are now
 covered by a separate phase-nodal oracle and refusal-aware 19,008-window sweep.

@@ -1,5 +1,23 @@
 # Context for the next session
 
+**2026-10-24 noisy DSP/local timestamp continuation:** read
+[NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md)
+and its tracked JSON. DAT-only recovery now validates finite/increasing timing,
+bounded trend/interval deviation and sample numbering; invalid acquisition adds
+TIME-DAT/TIME-SAMPLE blocks and explicit display-only provenance. Declared rates
+remain authoritative. Clock quality is never promoted to E4 eligibility.
+180 actual parsed noisy-waveform incidents/360 main+reviewed-stage outcomes:
+72 located288 refused0 numerical failures; all270 unbalanced/90 balanced retained.
+All .1%/1% waveform-noise outcomes refuse; third-difference saturation and stage
+quality gates respond strongly to this noise model. This is a demonstrated
+coverage gap, not positive-noise accuracy. Do not relax gates against this grid.
+All72 metadata-only remote clock-skew workflow comparisons equal their declared
+counterparts; all72 gap outcomes refuse. No physical drift/UTC recovery claim.
+Historical artifacts/oracles, Dash, workbook, field/app inputs and previews stay
+unchanged. Next software study: independently validate noise-aware quality/CT
+screens, colored/ADC noise and varying-frequency/clock-drift cases. Field
+acceptance/calibration and wider electrical/instrument models remain pending.
+
 **2026-10-23 source/fault continuation:** read
 [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md)
 and its JSON aggregate. Independent new phase-nodal oracle covers weak S/R

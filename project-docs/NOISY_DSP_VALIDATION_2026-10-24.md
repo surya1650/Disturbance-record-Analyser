@@ -1,0 +1,157 @@
+# Noisy waveform DSP and local timestamp recovery
+
+Project level remains **advanced prototype / pre-pilot, zero accepted field
+cases**. This continuation fixes silent acceptance of invalid local acquisition
+timing and adds bounded noisy-waveform evidence. It does not establish TB854
+certification, calibrated confidence, field accuracy or noisy-input readiness.
+
+## Changes and reproduced defects
+
+The public COMTRADE reader previously fitted DAT timestamps to a uniform grid
+without validating their continuity. Repeated/reset/gapped/nonfinite stamps,
+unusable timing and nonconsecutive sample numbers could therefore lose their
+acquisition defects. Invalid timestamp multipliers could silently become one.
+Public-parser regressions reproduced these behaviors before implementation.
+
+The reader now retains `notes.timestamp_recovery`: declared/recovered/invalid
+status, method, multiplier, fitted period and maximum trend/interval deviations.
+Invalid DAT timing adds blocking `TIME-DAT`; invalid sample numbering adds
+blocking `TIME-SAMPLE`. Source CFG/DAT hashes and clock fields remain intact.
+No samples, scaling ratios or polarities are repaired. A finite display-only
+placeholder accompanies invalid recovery so inspection can continue; its rate
+must never be advertised as recovered acquisition or used to authorize location.
+The main section adapter and reviewed stage window already refuse blocked input.
+
+Declared single-rate CFG remains authoritative, including zero DAT stamps. For
+`nrates=0`, at least three finite, strictly increasing stamps are required, with
+a positive finite centered least-squares slope. Subtracting the timestamp origin
+before scaling protects local precision at large constant offsets. Maximum
+interval and fitted-trend residual deviations must each be <=10% of fitted
+period. Nonunity multipliers are applied before fitting; nonpositive/nonfinite/
+malformed multipliers block. Sample numbers must be finite, nonnegative,
+integral and consecutive. This **10% tolerance is an executor-selected bounded
+software policy, not a COMTRADE standard tolerance, UTC error bound or drift
+correction method**. It can refuse otherwise usable data outside this policy.
+
+Source clock-quality codes retain their previous interpretation. Local recovery
+never establishes continuous clock lock, UTC accuracy, E4 alignment eligibility
+or same-event/stage identity. E5 remains usable without timestamp synchronization.
+
+## Reproducible raw-waveform experiment
+
+```powershell
+$env:PYTHONPATH='src;.'
+$env:OPENBLAS_NUM_THREADS='1'
+python scripts/noisy_dsp_validation.py --seed 854 --output out/qa/NEW-noisy-dsp.json
+python -m pytest tests/test_timestamp_recovery.py tests/test_noisy_dsp.py tests/test_noisy_dsp_validation.py -q
+```
+
+The source checkout and test utilities are required. The new helper uses the
+previous independent phase-nodal source/fault oracle and sinusoidal state splice,
+then writes six-channel primary A/V ASCII COMTRADE pairs and reparses them through
+the public reader. No production synthesizer, phasor substitution, quality-flag
+override or truth-based root selection is used. Record-level noise is applied
+before parsing/DSP. This is not EMT, a real instrument transfer function or a
+physical sampling-aperture jitter model.
+
+180 incidents / **360 workflow outcomes**: baseline, weak_R_100 and source voltage
+unbalance; AG, BC, ABG and ABC balanced control; waveform noise0/.1%/1%; declared,
+rounded, bounded_jitter, clock_skew and gap timing modes. Geometry is the previous
+40/60km mixed-section line, fault75km, R4ohms, 2400/1200Hz, remote phase1.1rad.
+Both main and source-bound reviewed-stage workflows run. Stage identity is
+explicitly declared from the known synthetic one-step schedule, not inferred
+from field records. A record with no stable eligible stage stays unreviewed and
+withheld; the driver no longer attempts to submit an invalid empty review.
+
+Noise is IID real Gaussian per waveform/channel. Sigma is the stated fraction
+of the stronger terminal maximum phase RMS, separately for V and I, over the
+ideal capture. Thus noise remains nonzero at weak terminals and does not vanish
+with negative sequence. This is an absolute family-based noise model; a weak
+phase may have far worse relative SNR than the stated percentage. The seed is
+854+100*profile_index+10*fault_index. Perturbations are matched across timing
+modes and noise amplitudes: these are metamorphic comparisons, not independent
+field events or a confidence-calibration sample.
+
+Rounded and jitter modes use timestamp-only CFG (`nrates=0`, multiplier1);
+rounded stamps are integral microseconds. Jitter adds uniform +/-5us before
+rounding. Clock_skew uses declared rates and shifts both remote CFG dates by
+1418s while retaining identical local samples/support. Gap uses timestamp-only
+CFG and adds10ms to the second half of remote DAT stamps. Clock skew is metadata
+invariance, not successful reconstruction of a physical varying clock error.
+
+## Measured results
+
+Each noise row contains90 unbalanced workflow outcomes, plus30 balanced controls.
+
+| Waveform noise | Unbalanced located | Unbalanced refused | Located max error, km | Balanced refused/planned |
+|---|---:|---:|---:|---:|
+| 0 | 72 | 18 | 1.45e-12 | 30/30 |
+| .1% | 0 | 90 | unavailable | 30/30 |
+| 1% | 0 | 90 | unavailable | 30/30 |
+
+Noiseless gap cases account for all18 noiseless unbalanced refusals. Each of the
+four nongap timing modes locates all18 noiseless unbalanced outcomes. Overall:
+**72 located / 288 refused / zero numerical failures**, with270 unbalanced and90
+balanced outcomes. Both workflows independently locate36/180 and refuse144/180;
+all45 balanced controls per workflow refuse. Located errors come entirely from
+noise-free cases: they provide **no positive-noise accuracy evidence**.
+
+All72 gap outcomes refuse. All36 metadata clock-skew comparisons (three profiles
+x four faults x three noise levels), in both workflows, retain corresponding
+declared-rate outcomes without any applied clock correction or E4 promotion.
+Rounded/jitter local recovery preserves clean chainage within numerical roundoff.
+These results do not establish recovery from time-varying clock drift, missing
+events, unknown trigger latency or automatic inter-terminal record pairing.
+
+The key practical limitation is **zero location coverage at the two positive
+noise levels in this grid**. On baseline AG at .1% noise, the current third-
+difference saturation detector marks phase-current channels, and local stage
+quality also refuses. The synthetic input contains Gaussian noise and no
+physical CT saturation; the diagnostic is therefore a quality-screen response,
+not proof of magnetic CT behavior. Weak noisy inputs can additionally lose
+stable stage inventory or fault classification. Per-terminal saturation channels,
+severity, clipping, classification and stage-quality reasons are retained in the
+aggregate. No gate was relaxed or tuned to increase this grid's acceptance.
+
+The [tracked aggregate](validation/NOISY_DSP_ENVELOPE_2026-10-24.json) retains every
+case, recovery/clock metadata, hashes, frequencies, DSP quality, refusal reasons,
+conditional error and witnesses. Every workflow/noise/timing/source/fault margin
+includes separate unbalanced and balanced cohorts. Numerical exceptions retain
+both failed workflow outcomes and fail the run explicitly. Configuration errors
+remain exceptions. Strict JSON is computed before exclusive output creation;
+existing evidence and concurrently published files cannot be overwritten.
+
+## Verification, review and delivery
+
+Baseline worktree:1,033 passed/28 corpus-dependent skips, one upstream
+Starlette/httpx warning,186.59s. Timing fixtures were corrected before accepting
+the intended RED failures. Timestamp/clock focused49 pass, including four bad
+multiplier regressions. Task1 full1,059 passed/28 skips202.60s preceded the final
+malformed multiplier test; subsequent full suites cover that final guard.
+Task2 initial focused12 pass; a real weak-noisy case exposed the driver's empty
+stage review, reproduced RED then fixed. Missing quality evidence and mixed-
+control strata were separately observed RED. Final focused15 pass7.21s.
+
+Fresh Stage-A10,000 **PASS**,53.1s:9,242 located/758 refused; clean4,258 located/
+25 refused, clean p95 .4361%, all-located p95 6.677%, saturated located p95
+39.805%, zero impossible outputs without a caveat. Architecture direct/self-
+tests and focused Ruff pass. Historical numerical artifacts/oracles stay frozen.
+Final pre-review worktree suite: **1,075 passed, 28 corpus-dependent skips**,
+one upstream warning,251.70s. All16 new source hashes and both historical
+section/source manifests match; prior oracles/artifacts have no diff. All72
+workflow clock-skew comparisons match exactly and no alignment is promoted.
+Both local Dash findings retain their previous hashes. Independent review and
+publication evidence follow after completion.
+
+## Pending work and limits
+
+A noise-aware acquisition/CT quality model needs independently validated
+distortion/CT scenarios and sensitivity analysis before gate changes are justified.
+Remaining software studies include varying frequency/clock drift, ADC quantization,
+colored/correlated noise, binary format noise roundtrips, multirate acquisition,
+CT/CVT transient reconstruction and wider line physics. Timestamp integrity
+policy does not recover missing samples or authorize UTC synchronization.
+Confidence calibration, patrol-confirmed field acceptance and event-effective
+electrical/scaling settings still require independent evidence. No operational
+line was enabled, and no Dash findings, workbook, field record, app database or
+preview process was changed.

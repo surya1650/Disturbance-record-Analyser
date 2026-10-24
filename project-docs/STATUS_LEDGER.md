@@ -6,6 +6,29 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-10-24 - Noisy raw-waveform DSP and local DAT recovery
+
+Public-parser regressions reproduced silent acceptance of invalid DAT timing,
+sample numbering and timestamp multiplier. Bounded local recovery now preserves
+provenance and blocks invalid acquisition with TIME-DAT/TIME-SAMPLE; finite
+display-only placeholders cannot authorize location. Source clock fields and
+hashes remain, declared rates stay authoritative, no synchronization inferred.
+
+Independent noisy waveforms serialized/reparsed through actual ASCII COMTRADE
+and DSP:180 incidents360 main/stage outcomes,72 located288 refused0 numerical
+failures. All positive-noise outcomes refuse; saturation/stage quality responses
+expose a practical noisy-input coverage gap. No gate weakened. Balanced controls
+all90 refuse; all72 gap outcomes refuse; all72 workflow clock-skew comparisons
+equal their declared-rate counterparts with no clock correction/E4 promotion.
+Level remains advanced prototype/pre-pilot, zero accepted field cases.
+See [NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md).
+
+Fresh Stage-A10000 PASS53.1s with previous metrics. Architecture direct/self-tests
+and focused Ruff pass. Final suite/review/delivery evidence follows. Prior
+numerical artifacts/source hashes and both local Dash findings are unchanged.
+
+---
+
 ## 2026-10-23 - Weak-infeed, source-asymmetry and physical fault validation
 
 Added a separate independent phase nodal oracle and refusal-aware source/fault
