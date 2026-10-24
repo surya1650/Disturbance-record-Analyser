@@ -64,7 +64,7 @@ def _fmt(v: Any, spec: str = ".1f", dash: str = "-") -> str:
 def incident_id(line_id: str, when: Optional[_dt.datetime], salt: str = "") -> str:
     stamp = when.strftime("%Y%m%dT%H%M%S") if when else "unknown"
     h = hashlib.sha256((line_id + stamp + salt).encode()).hexdigest()[:6]
-    return line_id + "-" + stamp + "-" + h
+    return ("".join(c if c.isalnum() or c in "-_" else "_" for c in line_id)[:100] or "incident") + "-" + stamp + "-" + h
 
 
 # --------------------------------------------------------------------------

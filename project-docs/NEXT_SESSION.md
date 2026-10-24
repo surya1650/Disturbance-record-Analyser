@@ -30,6 +30,11 @@ bounded software refusal, not a COMTRADE nonconformance/physical-clock claim.
 Final corrected worktree1,082 passed/28 corpus skips, one upstream warning,
 214.02s. Final360 outcomes72 located288 refused0 failed, all17 source hashes
 match; historical manifests/artifacts and both Dash hashes remain unchanged.
+Primary corpus verification also identified Garividi D60/P444 outside the time-fit
+policy; they now refuse assignment/comparison/resolution. Maradam Main-1 remains
+usable. Updated corpus workflow checks pass. A latent report-name path failure
+from a station label containing slashes was reproduced by five RED tests; report
+ID prefixes are now filename-safe/bounded with original-label hashes retained.
 
 **2026-10-23 source/fault continuation:** read
 [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md)

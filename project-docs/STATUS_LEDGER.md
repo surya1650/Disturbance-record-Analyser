@@ -38,6 +38,12 @@ No source recordings changed and no standard nonconformance inferred.
 Final corrected worktree **1,082 passed/28 corpus skips**, one upstream warning,
 214.02s. All17 final source hashes and historical numerical/section/source
 manifests match. Final360-outcome experiment retains72 located288 refused0 failed.
+Primary initial full:1,108 passed/two corpus expectation failures. Garividi DAT-
+only captures also exceed accumulated-fit policy and now cannot be assigned or
+resolved. Both direct corpus workflow regressions pass with explicit blocks.
+The remaining Maradam report exposed a latent station-label slash filename bug;
+five observed RED regressions now pass with safe/bounded generated report IDs.
+Final manifest binds20 sources; original recordings/labels remain untouched.
 
 ---
 

@@ -57,6 +57,19 @@ def _svgs(html: str):
     return re.findall(r"<svg .*?</svg>", html, re.S)
 
 
+@pytest.mark.parametrize('label', ['Station / 220KV / Line', r'..\capture', '../capture', 'Station:Line', 'x'*500])
+def test_source_station_labels_cannot_become_report_paths(tmp_path, label):
+    import datetime as dt
+    identity = incident_id(label, dt.datetime(2026, 10, 24))
+    assert not any(c in identity for c in '<>:"/\\|?*')
+    assert len(identity) <= 125
+    path = tmp_path/(identity+'.html')
+    assert path.parent == tmp_path
+    path.write_text('report', encoding='utf-8')
+    assert path.read_text() == 'report'
+    assert incident_id('A/B', None) != incident_id('A_B', None)
+
+
 # --------------------------------------------------------------------------
 def test_report_renders_with_no_template_placeholders_left():
     html = _synth_report().html

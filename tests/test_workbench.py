@@ -331,8 +331,8 @@ def test_a_noisy_source_impedance_is_not_compared_at_all():
 
 
 @needs_sphoorthi
-def test_the_two_garividi_relays_disagree_on_event_15665(tmp_path):
-    """The real case P3 exists for: same bus, same fault, different Zs2."""
+def test_garividi_timestamp_policy_blocks_assignment_and_comparison(tmp_path):
+    """Unsupported DAT time fits cannot manufacture same-bus corroboration."""
     import shutil
 
     from dranalyser.workbench.incident import analyse_bundle
@@ -350,20 +350,23 @@ def test_the_two_garividi_relays_disagree_on_event_15665(tmp_path):
                     shutil.copy2(os.path.join(dp, fn), str(dest / rel))
 
     b = open_bundle(str(dest), bundle_id="e15665")
-    assert assign(b, {
+    refusals = assign(b, {
         "maradam/Main-1/15665_Main-1_dr.cfg": ("S", "primary"),
         "garividi/Main-1 D60/15665_Main-1 D60_dr.cfg": ("R", "primary"),
         "garividi/Main-2 P444/15665_Main-2 P444_dr.cfg": ("R", "corroborating"),
-    }) == []
+    })
+    assert len(refusals) == 2
+    assert all('blocked by the conformance gate' in reason for reason in refusals)
+    for record in b.records():
+        if record.name.startswith('garividi/'):
+            assert record.blocked and not record.terminal_end
+            assert any('TIME-DAT' in flag for flag in record.flags)
 
     res = analyse_bundle(b, out_dir=str(dest))
-    # both Garividi relays were measured, not just the primary
-    assert len(res.measures["R"]) == 2
-    # they agree on the current -- so the disagreement is in the voltage
-    ipre = [m.i_prefault_a for m in res.measures["R"]]
-    assert abs(ipre[0] - ipre[1]) / max(ipre) < 0.05
-    codes = [d.code for d in res.disagreements]
-    assert codes == ["XR-04"]
+    assert not res.measures.get('R')
+    assert 'R' not in res.used
+    assert res.disagreements == []
+    assert len(res.measures['S']) == 1
 
 
 # --------------------------------------------------------------------------
@@ -436,8 +439,8 @@ def test_with_no_line_definitions_nothing_is_suggested_and_it_says_why(tmp_path)
 
 
 @needs_sphoorthi
-def test_the_real_folder_tree_resolves_all_three_usable_records(tmp_path):
-    """Including the D60, whose CFG station name is the useless 'Relay-1'."""
+def test_real_folder_resolver_excludes_timestamp_policy_blocked_records(tmp_path):
+    """Only the supported Maradam Main-1 capture is eligible for resolution."""
     import shutil
 
     from dranalyser.registry.assets import load_registry
@@ -458,10 +461,13 @@ def test_the_real_folder_tree_resolves_all_three_usable_records(tmp_path):
                     shutil.copy2(os.path.join(dp, fn), str(dest / rel))
 
     b = open_bundle(str(dest), bundle_id="tree")
-    assert suggest(b, lines=registry) == 3
+    assert suggest(b, lines=registry) == 1
     got = {f.name.split("/")[0] + "/" + f.name.split("/")[1]:
            (f.suggested_line_id, f.suggested_end)
            for f in b.records() if f.suggested_end}
-    assert got["garividi-maradam-1/Main-1 D60"] == ("GRV-MRD-1", "R")
-    assert got["garividi-maradam-1/Main-2 P444"] == ("GRV-MRD-1", "R")
+    for record in b.records():
+        if record.name.startswith('garividi-maradam-1/'):
+            assert record.blocked and not record.suggested_end
+            assert any('TIME-DAT' in flag for flag in record.flags)
+            assert 'not usable' in record.suggested_reason
     assert got["maradam-garividi-1/Main-1"] == ("GRV-MRD-1", "S")

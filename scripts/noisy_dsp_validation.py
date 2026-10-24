@@ -141,7 +141,8 @@ def run(seed=854):
         result['by_'+field] = groups
     paths = ['scripts/noisy_dsp_validation.py', 'tests/noisy_dsp_records.py', 'tests/source_fault_records.py',
              'tests/source_fault_oracle.py', 'tests/test_noisy_dsp.py', 'tests/test_noisy_dsp_validation.py',
-             'tests/test_timestamp_recovery.py', 'tests/test_real_records.py', 'src/dranalyser/comtrade/parser.py',
+             'tests/test_timestamp_recovery.py', 'tests/test_real_records.py', 'tests/test_workbench.py',
+             'tests/test_report.py', 'src/dranalyser/report/render.py', 'src/dranalyser/comtrade/parser.py',
              'src/dranalyser/comtrade/timestamps.py', 'src/dranalyser/dsp/core.py',
              'src/dranalyser/dsp/pipeline.py', 'src/dranalyser/dsp/stage_windows.py',
              'src/dranalyser/faultloc/section_location.py', 'src/dranalyser/faultloc/stage_location.py',
