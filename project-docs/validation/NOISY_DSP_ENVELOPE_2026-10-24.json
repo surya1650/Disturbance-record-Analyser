@@ -10,12 +10,12 @@
     "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 56,
     "Matching reviewed group required at both selected terminal primaries.": 19,
     "No matched eligible reviewed stage.": 105,
-    "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
-    "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 22,
+    "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 23,
     "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Two same-fault terminal records with usable negative sequence are required; no scalar fallback.": 45,
     "Balanced faults are outside the negative-sequence section model.": 20,
     "fault type differs between terminals (S=AG, R=NONE); taking AG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
     "fault type differs between terminals (S=BC, R=NONE); taking BC from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
+    "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
     "fault type differs between terminals (S=ABG, R=NONE); taking ABG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5
   },
   "worst_located_case": {
@@ -1200,7 +1200,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -1232,8 +1233,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -1326,7 +1327,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -1358,8 +1360,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -2506,7 +2508,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -2538,8 +2541,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66641021820796,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91270717032786,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -2640,7 +2643,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -2672,8 +2676,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66641021820796,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91270717032786,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -3830,7 +3834,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -3862,8 +3867,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66447046214371,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.93130057636599,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -3965,7 +3970,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -3997,8 +4003,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66447046214371,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.93130057636599,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -5086,7 +5092,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -5118,8 +5125,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -5213,7 +5220,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -5245,8 +5253,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -6384,7 +6392,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -6416,8 +6425,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.671598338482916,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.912664054310724,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -6517,7 +6526,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -6549,8 +6559,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.671598338482916,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.912664054310724,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -7708,7 +7718,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -7740,8 +7751,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.71329265287617,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.93149674803638,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -7843,7 +7854,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -7875,8 +7887,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.71329265287617,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.93149674803638,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -8956,7 +8968,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -8988,8 +9001,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -9008,7 +9021,7 @@
       "workflow": "main",
       "status": "withheld",
       "method": "none",
-      "reason": "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.",
+      "reason": "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.",
       "clock_shift_applied": false
     },
     {
@@ -9082,7 +9095,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -9114,8 +9128,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -10244,7 +10258,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -10276,8 +10291,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66766993690787,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91058878573304,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -10376,7 +10391,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -10408,8 +10424,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66766993690787,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91058878573304,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -11566,7 +11582,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -11598,8 +11615,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.677038327631394,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.912336378996955,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -11701,7 +11718,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -11733,8 +11751,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.677038327631394,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.912336378996955,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -12798,7 +12816,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -12830,8 +12849,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -12924,7 +12943,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -12956,8 +12976,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -14018,7 +14038,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -14050,8 +14071,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66579529188271,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.906751784089494,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -14144,7 +14165,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -14176,8 +14198,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66579529188271,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.906751784089494,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -15324,7 +15346,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -15356,8 +15379,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.65703148191034,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.87314984939949,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -15458,7 +15481,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -15490,8 +15514,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.65703148191034,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.87314984939949,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -16570,7 +16594,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -16602,8 +16627,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -16696,7 +16721,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -16728,8 +16754,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -17883,7 +17909,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -17915,8 +17942,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66851219527581,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91107085625299,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -18018,7 +18045,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -18050,8 +18078,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66851219527581,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91107085625299,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -19186,7 +19214,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -19218,8 +19247,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.68366632965154,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.916727531558834,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -19318,7 +19347,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -19350,8 +19380,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.68366632965154,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.916727531558834,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -20428,7 +20458,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -20460,8 +20491,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -20554,7 +20585,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -20586,8 +20618,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -21740,7 +21772,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -21772,8 +21805,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66390369735963,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.90567738552736,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -21875,7 +21908,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -21907,8 +21941,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66390369735963,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.90567738552736,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -23044,7 +23078,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -23076,8 +23111,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.63771910490285,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.86306046733556,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -23176,7 +23211,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -23208,8 +23244,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.63771910490285,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.86306046733556,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -24286,7 +24322,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -24318,8 +24355,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -24412,7 +24449,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -24444,8 +24482,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -25599,7 +25637,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -25631,8 +25670,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.67124279806762,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91330213646116,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -25734,7 +25773,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -25766,8 +25806,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.67124279806762,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91330213646116,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -26902,7 +26942,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -26934,8 +26975,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.71131987850821,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.94254282576204,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -27034,7 +27075,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -27066,8 +27108,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.71131987850821,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.94254282576204,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -28128,7 +28170,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -28160,8 +28203,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -28254,7 +28297,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -28286,8 +28330,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -29396,7 +29440,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -29428,8 +29473,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.668366613644125,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91255626154903,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -29526,7 +29571,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -29558,8 +29604,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.668366613644125,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91255626154903,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -30694,7 +30740,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -30726,8 +30773,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.68122554099364,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.93381167393281,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -30826,7 +30873,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -30858,8 +30906,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.68122554099364,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.93381167393281,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -31936,7 +31984,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -31968,8 +32017,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -32062,7 +32111,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -32094,8 +32144,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -33242,7 +33292,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -33274,8 +33325,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66660125142245,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.907944163652346,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -33376,7 +33427,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -33408,8 +33460,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66660125142245,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.907944163652346,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -34566,7 +34618,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -34598,8 +34651,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.665007400465555,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.884538697804196,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -34701,7 +34754,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -34733,8 +34787,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.665007400465555,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.884538697804196,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -35822,7 +35876,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -35854,8 +35909,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -35949,7 +36004,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -35981,8 +36037,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -37129,7 +37185,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -37161,8 +37218,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66675007920829,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91102167825151,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -37263,7 +37320,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -37295,8 +37353,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66675007920829,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91102167825151,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -38462,7 +38520,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -38494,8 +38553,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66843856977065,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91523421516115,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -38598,7 +38657,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -38630,8 +38690,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66843856977065,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91523421516115,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -39712,7 +39772,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -39744,8 +39805,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -39838,7 +39899,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -39870,8 +39932,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -41018,7 +41080,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -41050,8 +41113,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.666609281921204,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91239865941128,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -41152,7 +41215,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -41184,8 +41248,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.666609281921204,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91239865941128,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -42334,7 +42398,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -42366,8 +42431,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66579954952269,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.92993601966594,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -42468,7 +42533,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -42500,8 +42566,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66579954952269,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.92993601966594,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -43564,7 +43630,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -43596,8 +43663,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -43690,7 +43757,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -43722,8 +43790,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66666666666666,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.91040987259678,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -44784,7 +44852,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -44816,8 +44885,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66346885042115,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.907917118945186,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -44910,7 +44979,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -44942,8 +45012,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.66346885042115,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.907917118945186,
           "dsp_quality": {
             "saturation_detected": false,
             "saturation_channels": [],
@@ -46090,7 +46160,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -46122,8 +46193,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.63523112388512,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.885702454498684,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -46224,7 +46295,8 @@
             "tolerance_period_fraction": 0.1,
             "timemult": 1.0,
             "alignment_eligible": false,
-            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy."
+            "reason": "DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.",
+            "display_rate_basis": "untrusted DAT fit; inspection only"
           },
           "block_codes": [
             "TIME-DAT"
@@ -46256,8 +46328,8 @@
             ],
             "reference": "IEEE PSRC WG H4 2013 COMTRADE summary, slides 9-12"
           },
-          "recovered_fs": 1000.0,
-          "frequency_hz": 41.63523112388512,
+          "recovered_fs": 1173.8498369423228,
+          "frequency_hz": 48.885702454498684,
           "dsp_quality": {
             "saturation_detected": true,
             "saturation_channels": [
@@ -46295,10 +46367,10 @@
       "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 56,
       "Matching reviewed group required at both selected terminal primaries.": 9,
       "No matched eligible reviewed stage.": 90,
-      "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
-      "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 22,
+      "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 23,
       "fault type differs between terminals (S=AG, R=NONE); taking AG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
       "fault type differs between terminals (S=BC, R=NONE); taking BC from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
+      "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
       "fault type differs between terminals (S=ABG, R=NONE); taking ABG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5
     },
     "worst_located_case": {
@@ -46453,11 +46525,11 @@
       "located_error_above_1km": 0,
       "refusal_reasons": {
         "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 56,
-        "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
-        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 22,
+        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 23,
         "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Two same-fault terminal records with usable negative sequence are required; no scalar fallback.": 45,
         "fault type differs between terminals (S=AG, R=NONE); taking AG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
         "fault type differs between terminals (S=BC, R=NONE); taking BC from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
+        "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
         "fault type differs between terminals (S=ABG, R=NONE); taking ABG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5
       },
       "worst_located_case": {
@@ -46594,10 +46666,10 @@
         "located_error_above_1km": 0,
         "refusal_reasons": {
           "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 56,
-          "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
-          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 22,
+          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 23,
           "fault type differs between terminals (S=AG, R=NONE); taking AG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
           "fault type differs between terminals (S=BC, R=NONE); taking BC from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
+          "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
           "fault type differs between terminals (S=ABG, R=NONE); taking ABG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5
         },
         "worst_located_case": {
@@ -47042,10 +47114,9 @@
       "refusal_reasons": {
         "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
         "Matching reviewed group required at both selected terminal primaries.": 12,
-        "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
+        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 3,
         "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Two same-fault terminal records with usable negative sequence are required; no scalar fallback.": 15,
-        "Balanced faults are outside the negative-sequence section model.": 12,
-        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 2
+        "Balanced faults are outside the negative-sequence section model.": 12
       },
       "worst_located_case": {
         "incident": 63,
@@ -47182,8 +47253,7 @@
         "refusal_reasons": {
           "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
           "Matching reviewed group required at both selected terminal primaries.": 9,
-          "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
-          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 2
+          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 3
         },
         "worst_located_case": {
           "incident": 63,
@@ -48342,11 +48412,11 @@
         "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 16,
         "Matching reviewed group required at both selected terminal primaries.": 15,
         "No matched eligible reviewed stage.": 21,
-        "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 2,
-        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
+        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 7,
         "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Two same-fault terminal records with usable negative sequence are required; no scalar fallback.": 9,
         "fault type differs between terminals (S=AG, R=NONE); taking AG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
         "fault type differs between terminals (S=BC, R=NONE); taking BC from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
+        "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
         "fault type differs between terminals (S=ABG, R=NONE); taking ABG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1
       },
       "worst_located_case": null,
@@ -48362,10 +48432,10 @@
           "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 16,
           "Matching reviewed group required at both selected terminal primaries.": 9,
           "No matched eligible reviewed stage.": 18,
-          "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 2,
-          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
+          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 7,
           "fault type differs between terminals (S=AG, R=NONE); taking AG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
           "fault type differs between terminals (S=BC, R=NONE); taking BC from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
+          "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
           "fault type differs between terminals (S=ABG, R=NONE); taking ABG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1
         },
         "worst_located_case": null
@@ -48703,8 +48773,7 @@
         "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 22,
         "Matching reviewed group required at both selected terminal primaries.": 5,
         "No matched eligible reviewed stage.": 35,
-        "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
-        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 10,
+        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 11,
         "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Two same-fault terminal records with usable negative sequence are required; no scalar fallback.": 15,
         "Balanced faults are outside the negative-sequence section model.": 8
       },
@@ -48842,8 +48911,7 @@
           "Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 22,
           "Matching reviewed group required at both selected terminal primaries.": 3,
           "No matched eligible reviewed stage.": 30,
-          "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 1,
-          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 10
+          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 11
         },
         "worst_located_case": {
           "incident": 31,
@@ -49639,10 +49707,10 @@
       "max_error_km": 2.5579538487363607e-13,
       "located_error_above_1km": 0,
       "refusal_reasons": {
-        "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
+        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 23,
         "Matching reviewed group required at both selected terminal primaries.": 3,
-        "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 22,
         "No matched eligible reviewed stage.": 30,
+        "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
         "fault type differs between terminals (S=ABG, R=NONE); taking ABG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5
       },
       "worst_located_case": {
@@ -49776,10 +49844,10 @@
         "max_error_km": 2.5579538487363607e-13,
         "located_error_above_1km": 0,
         "refusal_reasons": {
-          "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 6,
+          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 23,
           "Matching reviewed group required at both selected terminal primaries.": 3,
-          "fault type differs between terminals (S=ABG, R=CG); taking CG from end R; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 22,
           "No matched eligible reviewed stage.": 30,
+          "fault type differs between terminals (S=ABG, R=CG); taking ABG from end S; Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5,
           "fault type differs between terminals (S=ABG, R=NONE); taking ABG from end S which sees the larger negative sequence (weak infeed at the other end); Opt-in uncoupled series-section model, Z2=Z1; no charging or internal sources.; Sample spread is descriptive, not calibrated confidence; no automatic tower assignment.; Blocked acquisition, invalid polarity, saturation or clipping; section incident withheld.": 5
         },
         "worst_located_case": {
@@ -50497,15 +50565,16 @@
     }
   },
   "source_sha256_utf8_lf": {
-    "scripts/noisy_dsp_validation.py": "e760a55e4141d00f6777dff9886950e12b06eab427760dcdf1d478f22ff897a0",
+    "scripts/noisy_dsp_validation.py": "592e3fefebc61710a822be6b221583ed520c9d311c5a5f734d1455aac794f373",
     "tests/noisy_dsp_records.py": "d3f1b9a87fddf36841f4d7d05a1a5eb61e6d877b0c286319c2a30fc00bfdb709",
     "tests/source_fault_records.py": "7cffd1871800c876596aa2e8b1ad1f35962c136decdf7ec05fa6cb26de359a7f",
     "tests/source_fault_oracle.py": "d3d4f7d7ce84189799bdbb4bad68d2b8c80c6cdd524570cae1514082b24bb020",
-    "tests/test_noisy_dsp.py": "7538177f4b54ae7c852ad29684d94ea01b0019cceaee205230c07ef8835074a0",
-    "tests/test_noisy_dsp_validation.py": "38fbfc3f77bafbb23280c944c20e46b4840a1af41e1408e6053619ef3ae36f9e",
-    "tests/test_timestamp_recovery.py": "462c3d6066930da73bb22ff0a2f83a45816acec40b9606c3de72635294e28bad",
-    "src/dranalyser/comtrade/parser.py": "ac264494b5d783346c694aa7068eddfa5cc21bf6052fb7a118b60f4996035691",
-    "src/dranalyser/comtrade/timestamps.py": "f5a0cb862ba4b6711351a4ea01f49a2fef3780e716a9e5ebbf3591ce535f6285",
+    "tests/test_noisy_dsp.py": "74f1a28666849961479375558cf7f73597ca81f43168a61a88b8a9073a1c4b80",
+    "tests/test_noisy_dsp_validation.py": "57bc9a7e2affab7238a506002492c8ed51e6e054917adf618ec5315e6c264647",
+    "tests/test_timestamp_recovery.py": "f02f7b56477b95fd58a97d442a5dfc3ee9ff4af6bdaddeb342860b06dc17c5f1",
+    "tests/test_real_records.py": "a6a8898296ddd8723fd5a2f580427439039bf0ef616a2d665165025aabc2afb5",
+    "src/dranalyser/comtrade/parser.py": "9e5d453f94828de00d1737cc395f7dc7cc7dbe8672418f314959c22676144dc2",
+    "src/dranalyser/comtrade/timestamps.py": "d5bb557c6c4a7bd8949a6e509cafd5e568858d26681bd0c631fa05569a50af5f",
     "src/dranalyser/dsp/core.py": "7320b6ced23eb1f847463398b515614a76226e6f718865cfab00e9bd2770427d",
     "src/dranalyser/dsp/pipeline.py": "384b4f976fb35e93bc51b069baffeb9fc1c68becc1b83d58acb288f13214bf77",
     "src/dranalyser/dsp/stage_windows.py": "41649e5a041800dd80aff5692a7aecee7124f322a5f27cdfb5b7c3b1c104edce",

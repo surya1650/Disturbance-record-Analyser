@@ -43,6 +43,11 @@ def test_parser_survives_the_real_cfg_quirks():
     # nrates = 0: the rate lives only in the DAT timestamp column
     assert m1.nrates == 0
     assert m1.fs == pytest.approx(1200.5, abs=1.0)
+    # New recovery policy rejects accumulated DAT trend deviation; the fit is
+    # retained ONLY for diagnostics and never authorizes this acquisition.
+    assert m1.blocked() and 'TIME-DAT' in m1.flag_codes()
+    assert m1.notes['timestamp_recovery']['status'] == 'invalid'
+    assert m1.notes['timestamp_recovery']['display_rate_basis'] == 'untrusted DAT fit; inspection only'
     assert m1.samples_per_cycle == pytest.approx(24.0, abs=0.1)
     assert m2.fs == pytest.approx(1000.0, abs=0.1)
     assert m2.samples_per_cycle == pytest.approx(20.0, abs=0.1)
@@ -216,8 +221,8 @@ def test_main_1_vt_does_not_pass_zero_sequence_and_is_detected():
 
 
 @needs_corpus
-def test_a_terminal_without_zero_sequence_refuses_rather_than_guessing():
-    """Main-1 must decline the ground-loop calculation, not answer it wrongly."""
+def test_blocked_acquisition_is_withheld_and_usable_terminal_retains_single_ended_path():
+    """Main-1 timing now blocks acquisition; Main-2 remains independently usable."""
     line = load_line(LINE)
     # Isolate VT gating with the historical provisional circuit fixture. The
     # actual registry now refuses its unreviewed model before estimator work.
@@ -226,15 +231,15 @@ def test_a_terminal_without_zero_sequence_refuses_rather_than_guessing():
     for tag, path in (("M1", M1), ("M2", M2)):
         rec = read_comtrade(path, terminal_end="S")
         check(rec, nominal_kv=line.kv)
+        if tag == 'M1':
+            assert rec.blocked() and 'TIME-DAT' in rec.flag_codes()
+            continue  # Match the public CLI: blocked acquisition never reaches location.
         assert not rec.blocked(), [str(f) for f in rec.flags]
         an = analyse(rec, vt_type=line.terminals["S"].it.vt_type)
         out[tag] = locate(line, {"S": TerminalInput(analysed=an, end="S",
                                                     zs1=line.terminals["S"].zs1,
                                                     zs0=line.terminals["S"].zs0)})
-    # Main-1: every single-ended ground estimator gated off, no location
-    assert not out["M1"].ok
-    assert all(not e.ok for e in out["M1"].estimates)
-    assert any("zero sequence" in e.reason for e in out["M1"].estimates)
+    assert 'M1' not in out
     # Main-2: a usable single-ended answer, clearly marked as such
     assert out["M2"].ok
     assert out["M2"].mode == "single-ended"
@@ -242,12 +247,13 @@ def test_a_terminal_without_zero_sequence_refuses_rather_than_guessing():
 
 
 @needs_corpus
-def test_conformance_gate_flags_the_real_defects_and_blocks_none_of_them():
+def test_conformance_gate_blocks_existing_main1_timestamp_trend_deviation():
     line = load_line(LINE)
     rec = read_comtrade(M1)
     check(rec, nominal_kv=line.kv)
     codes = rec.flag_codes()
-    assert not rec.blocked()
+    assert rec.blocked() and 'TIME-DAT' in codes
+    assert rec.notes['timestamp_recovery']['maximum_residual_s'] > .1/rec.fs
     # pre-fault load sits in ~11 ADC counts on a range scaled for 10 kA
     assert "I-PRE-RES" in codes
     # no clock quality code anywhere in this fleet, so E4 stays gated off

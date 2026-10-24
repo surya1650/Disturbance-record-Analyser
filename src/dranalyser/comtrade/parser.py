@@ -300,11 +300,12 @@ def _read_ascii(text: str, na: int, nd: int) -> Tuple[np.ndarray, np.ndarray, np
     rows = [ln for ln in text.replace(DOS_EOF, "").splitlines() if ln.strip()]
     ncol = 2 + na + nd
     out = np.zeros((len(rows), ncol), dtype=np.float64)
+    out[:, :2] = np.nan  # Missing acquisition fields must not become genuine zeros.
     for i, ln in enumerate(rows):
         f = ln.split(",")
         for k in range(min(ncol, len(f))):
             v = f[k].strip()
-            out[i, k] = float(v) if v else 0.0
+            out[i, k] = float(v) if v else (np.nan if k < 2 else 0.0)
     return out[:, 0], out[:, 1], out[:, 2:]
 
 
@@ -391,6 +392,8 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
         smp, ts, cols = _read_binary(dat_bytes, na, nd, ftype)
     n = cols.shape[0]
     t, fs, twarn, timing = recover_time(cfg, ts, n)
+    if not np.all(np.isfinite(ts)):
+        timing.update(status='invalid', reason='Missing or nonfinite DAT timestamp fields; acquisition is blocked.')
 
     naming = detect_phase_naming([a.ch_id for a in cfg.analogs])
     targets, digital_keys, inventory, digital_overrides = channel_plan(cfg, naming, map_channel, review)

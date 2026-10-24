@@ -79,3 +79,20 @@ def test_noisy_refusals_retain_dsp_quality_evidence(tmp_path):
     assert result['quality']['S']['saturation_detected']
     assert result['quality']['S']['saturation_channels']
     assert result['quality']['S']['stage_quality_reasons']
+
+
+@pytest.mark.parametrize('column', [0, 1])
+def test_missing_ascii_timing_field_blocks_both_workflows(tmp_path, column):
+    from dranalyser.comtrade.parser import read_comtrade
+    pair = fixture_records(tmp_path, timing='rounded')
+    path = tmp_path/'R.dat'
+    rows = [row.split(',') for row in path.read_text().splitlines()]
+    if column == 0:
+        for number, row in enumerate(rows):
+            row[0] = str(number)
+    rows[0][column] = ''
+    path.write_text('\n'.join(','.join(row) for row in rows)+'\n')
+    pair['R'] = read_comtrade(str(tmp_path/'R.cfg'), terminal_end='R')
+    assert pair['R'].blocked()
+    result = evaluated(pair)
+    assert all(result[mode]['status'] == 'withheld' for mode in ('main', 'stage'))

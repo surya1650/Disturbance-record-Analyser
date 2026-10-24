@@ -109,3 +109,27 @@ def test_invalid_timestamp_multiplier_cannot_be_silently_normalized(tmp_path, ti
     assert rec.blocked()
     assert rec.notes['timestamp_recovery']['status'] == 'invalid'
     json.dumps(rec.notes['timestamp_recovery'], allow_nan=False)
+
+
+@pytest.mark.parametrize('column', ['timestamp', 'sample_number'])
+def test_missing_first_ascii_timing_field_is_not_a_genuine_zero(tmp_path, column):
+    stamps = list(np.arange(100)*1000.)
+    numbers = list(np.arange(100))
+    if column == 'timestamp':
+        stamps[0] = ''
+    else:
+        numbers[0] = ''
+    rec = write_timing(tmp_path, stamps, numbers=numbers)
+    assert rec.blocked()
+    assert ('TIME-DAT' if column == 'timestamp' else 'TIME-SAMPLE') in rec.flag_codes()
+
+
+def test_slow_timestamp_deviation_retains_untrusted_fit_for_inspection_only(tmp_path):
+    k = np.arange(3000)
+    stamps = k*833.+300*np.sin(2*np.pi*k/len(k))
+    rec = write_timing(tmp_path, stamps)
+    fitted_period = np.polyfit(k, stamps*1e-6, 1)[0]
+    assert rec.blocked() and rec.notes['timestamp_recovery']['status'] == 'invalid'
+    assert rec.fs == pytest.approx(1/fitted_period, rel=1e-10)
+    assert rec.notes['timestamp_recovery']['display_rate_basis'] == 'untrusted DAT fit; inspection only'
+    assert not rec.notes['timestamp_recovery']['alignment_eligible']

@@ -18,9 +18,16 @@ status, method, multiplier, fitted period and maximum trend/interval deviations.
 Invalid DAT timing adds blocking `TIME-DAT`; invalid sample numbering adds
 blocking `TIME-SAMPLE`. Source CFG/DAT hashes and clock fields remain intact.
 No samples, scaling ratios or polarities are repaired. A finite display-only
-placeholder accompanies invalid recovery so inspection can continue; its rate
+placeholder normally accompanies invalid recovery so inspection can continue; its rate
 must never be advertised as recovered acquisition or used to authorize location.
+One deferred malformed-metadata edge remains: nominal frequency1e308 can overflow
+that display fallback's rate to infinity. The record stays blocked, but its
+inspection path may fail. This is not accepted-location or field evidence.
 The main section adapter and reviewed stage window already refuse blocked input.
+When a finite positive DAT fit exists but continuity policy fails, its rate is
+retained as `display_rate_basis: untrusted DAT fit; inspection only`. That avoids
+distorting diagnostic waveform comparisons with an arbitrary display rate; the
+invalid status and acquisition block remain, with no location permission.
 
 Declared single-rate CFG remains authoritative, including zero DAT stamps. For
 `nrates=0`, at least three finite, strictly increasing stamps are required, with
@@ -32,6 +39,15 @@ malformed multipliers block. Sample numbers must be finite, nonnegative,
 integral and consecutive. This **10% tolerance is an executor-selected bounded
 software policy, not a COMTRADE standard tolerance, UTC error bound or drift
 correction method**. It can refuse otherwise usable data outside this policy.
+
+That cost occurs in the existing DHONE Main-1 corpus:3,624 samples have828-845us
+intervals (median833us), but the maximum accumulated linear-fit residual is
+.000343863s, above the10%-period policy. The reader now blocks Main-1 as outside
+this recovery envelope. The approximately1200.5Hz fit remains available solely
+for inspection. Main-2's declared1000Hz acquisition remains usable. This is not
+a claim that Main-1 violates COMTRADE or that its physical sampling clock is
+proven faulty. Corpus regressions now assert this explicit policy behavior;
+14 existing-corpus direct checks pass, without changing any source recording.
 
 Source clock-quality codes retain their previous interpretation. Local recovery
 never establishes continuous clock lock, UTC accuracy, E4 alignment eligibility
@@ -116,9 +132,13 @@ aggregate. No gate was relaxed or tuned to increase this grid's acceptance.
 The [tracked aggregate](validation/NOISY_DSP_ENVELOPE_2026-10-24.json) retains every
 case, recovery/clock metadata, hashes, frequencies, DSP quality, refusal reasons,
 conditional error and witnesses. Every workflow/noise/timing/source/fault margin
-includes separate unbalanced and balanced cohorts. Numerical exceptions retain
-both failed workflow outcomes and fail the run explicitly. Configuration errors
-remain exceptions. Strict JSON is computed before exclusive output creation;
+includes separate unbalanced and balanced cohorts. Genuine configuration is
+validated before case execution. Unexpected per-case exceptions, including
+numerical-library ValueError, retain both failed workflow outcomes and fail the
+run explicitly. Complete case output, including diagnostics, passes strict JSON
+validation before either outcome is appended; nonfinite output becomes explicit
+JSON-safe failed evidence without fabricated acquisition values. Configuration
+errors remain exceptions. Strict JSON is computed before exclusive output creation;
 existing evidence and concurrently published files cannot be overwritten.
 
 ## Verification, review and delivery
@@ -142,6 +162,39 @@ section/source manifests match; prior oracles/artifacts have no diff. All72
 workflow clock-skew comparisons match exactly and no alignment is promoted.
 Both local Dash findings retain their previous hashes. Independent review and
 publication evidence follow after completion.
+
+Fresh read-only whole-branch review (gpt-6-astra high) independently passed64
+focused checks and verified all360 cases,16 source hashes, clock-skew invariance
+and gap refusal. No Critical findings; two Important findings reproduced by seven
+RED regressions: empty ASCII timing fields were zero-filled before validation,
+and numerical-library ValueError/nonfinite diagnostics could lose denominators.
+The single fix pass preserves missingness in the first two ASCII columns and
+blocks acquisition; it validates configuration before execution and complete
+case output before atomically recording either workflow. All70 focused
+timestamp/clock/DSP/runner checks pass,14.55s. There is no second review.
+The subsequent existing-corpus compatibility check exposed the display-rate
+effect above; an independent synthetic regression observed RED, then retained
+the untrusted fit without relaxing the acquisition block.71 focused checks now
+pass,8.95s, plus14 existing-corpus direct checks. The final manifest additionally
+binds the updated corpus regression source.
+
+Final corrected worktree suite: **1,082 passed, 28 corpus-dependent skips**,
+one upstream warning,214.02s. Final regenerated experiment retains360 outcomes,
+72 located/288 refused/zero failed. Every nongap case exactly matches the
+pre-review experiment; gap cases all stay blocked/withheld, with untrusted
+display-rate provenance (one diagnostic classification/reason changes). All17
+final source hashes match. All historical numerical4/section10/source10 manifests
+also match current sources, and their artifacts remain unchanged. Architecture
+direct/self-tests and focused Ruff pass; both Dash hashes remain unchanged.
+
+One Minor is deferred: grossly malformed nominal frequency1e308 can overflow
+the invalid-record display fallback. Input remains blocked, but inspection can
+fail. Review scope rulings retain the current noisy-input coverage limitation,
+defer wider EMT/instrument/noise/physical-drift/field and binary/multirate studies,
+and do not validate broader malformed multirate/truncated binary handling or
+timestamp ticks beyond float64 resolution. Exclusive publication is not a
+crash/disk-full transaction; interruption during the final write can leave partial
+new evidence. These limits do not authorize location or confidence claims.
 
 ## Pending work and limits
 

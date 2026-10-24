@@ -66,11 +66,9 @@ def test_failed_run_publishes_valid_json_exit2(runner, tmp_path, monkeypatch):
 
 def test_configuration_failure_creates_no_empty_output(runner, tmp_path, monkeypatch):
     output = tmp_path/'invalid.json'
-    def fail(*args, **kwargs):
-        raise ValueError('invalid model configuration')
-    monkeypatch.setattr(runner, 'records', fail)
+    monkeypatch.setattr(runner, 'PROFILES', ('invalid-model-profile',))
     monkeypatch.setattr(sys, 'argv', ['runner', '--output', str(output)])
-    with pytest.raises(ValueError, match='invalid model'):
+    with pytest.raises(ValueError, match='configuration'):
         runner.main()
     assert not output.exists()
 
@@ -85,3 +83,29 @@ def test_exclusive_publication_keeps_concurrent_writers_evidence(runner, tmp_pat
     with pytest.raises(SystemExit) as error:
         runner.main()
     assert error.value.code == 2 and output.read_text() == 'concurrent evidence'
+
+
+def test_numerical_valueerror_retains_failed_outcomes_after_configuration_validation(runner, monkeypatch):
+    def fail(*args, **kwargs):
+        raise ValueError('array must not contain infs or NaNs')
+    monkeypatch.setattr(runner, 'evaluate', fail)
+    out = runner.run()
+    assert out['planned'] == out['failed'] == 16 and out['completion_status'] == 'failed'
+    assert all(r['error_type'] == 'ValueError' for r in out['cases'])
+    json.dumps(out, allow_nan=False)
+
+
+def test_nonfinite_diagnostic_publishes_complete_json_safe_failure_evidence(runner, tmp_path, monkeypatch):
+    original = runner.evaluate
+    def nonfinite(*args, **kwargs):
+        out = original(*args, **kwargs)
+        out['frequency_hz']['S'] = float('nan')
+        return out
+    monkeypatch.setattr(runner, 'evaluate', nonfinite)
+    path = tmp_path/'nonfinite.json'
+    monkeypatch.setattr(sys, 'argv', ['runner', '--output', str(path)])
+    assert runner.main() == 2
+    out = json.loads(path.read_text())
+    assert out['planned'] == out['failed'] == 16 and out['completion_status'] == 'failed'
+    assert all('acquisition' not in r for r in out['cases'])
+    json.dumps(out, allow_nan=False)

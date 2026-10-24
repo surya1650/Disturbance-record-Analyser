@@ -26,6 +26,18 @@ See [NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md).
 Fresh Stage-A10000 PASS53.1s with previous metrics. Architecture direct/self-tests
 and focused Ruff pass. Final suite/review/delivery evidence follows. Prior
 numerical artifacts/source hashes and both local Dash findings are unchanged.
+Independent review passed64 focused checks and found two Important gaps, now
+reproduced RED/fixed: empty ASCII timing fields must remain missing, and all
+unexpected numerical failures/nonfinite diagnostics must retain planned outcomes.
+Post-fix70 focused checks pass. One Minor deferred: grossly malformed nominal
+frequency1e308 can overflow the blocked display fallback and break inspection.
+Existing Main-1 lies outside the accumulated DAT fit policy (.344ms residual):
+it now blocks, while its approximately1200.5Hz untrusted fit supports inspection.
+Main-2 declared1000Hz remains usable;71 focused and14 direct corpus checks pass.
+No source recordings changed and no standard nonconformance inferred.
+Final corrected worktree **1,082 passed/28 corpus skips**, one upstream warning,
+214.02s. All17 final source hashes and historical numerical/section/source
+manifests match. Final360-outcome experiment retains72 located288 refused0 failed.
 
 ---
 

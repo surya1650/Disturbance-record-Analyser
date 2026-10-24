@@ -17,6 +17,19 @@ Historical artifacts/oracles, Dash, workbook, field/app inputs and previews stay
 unchanged. Next software study: independently validate noise-aware quality/CT
 screens, colored/ADC noise and varying-frequency/clock-drift cases. Field
 acceptance/calibration and wider electrical/instrument models remain pending.
+Independent review found two Important missing-ASCII-timing/failure-accounting
+gaps; both reproduced RED and fixed.70 focused tests pass. Genuine configuration
+fails before execution; unexpected numerical failures/nonfinite output retain
+JSON-safe planned outcomes. Deferred Minor: absurd CFG frequency1e308 may overflow
+the blocked display-only fallback and break inspection; no location authorized.
+Existing Main-1 is now blocked by the10%-period accumulated-fit-residual policy
+(.344ms residual), despite near-uniform local intervals. Its approximately1200.5Hz
+fit is retained only for diagnostic inspection, explicitly untrusted. Main-2
+declared1000Hz remains usable;14 existing-corpus direct checks pass. This is a
+bounded software refusal, not a COMTRADE nonconformance/physical-clock claim.
+Final corrected worktree1,082 passed/28 corpus skips, one upstream warning,
+214.02s. Final360 outcomes72 located288 refused0 failed, all17 source hashes
+match; historical manifests/artifacts and both Dash hashes remain unchanged.
 
 **2026-10-23 source/fault continuation:** read
 [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md)

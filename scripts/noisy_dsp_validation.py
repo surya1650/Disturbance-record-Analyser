@@ -81,7 +81,20 @@ def summary(rows):
                 worst_located_case=max(located, key=lambda r: r['error_km']) if located else None)
 
 
+def validate_configuration(seed):
+    """Reject genuine grid/configuration defects before planned case execution."""
+    from tests.source_fault_oracle import PROFILES as known_profiles, FAULTS as known_faults
+    from tests.noisy_dsp_records import TIMING as known_timing
+    if (not PROFILES or not FAULTS or not NOISE or not TIMING or
+            any(p not in known_profiles for p in PROFILES) or any(f not in known_faults for f in FAULTS) or
+            any(t not in known_timing for t in TIMING) or any(not np.isfinite(n) or n < 0 for n in NOISE)):
+        raise ValueError('Invalid experiment configuration: source/fault/noise/timing grid.')
+    np.random.default_rng(seed)  # Validate seed before any source computation or output.
+    model(SECTIONS)
+
+
 def run(seed=854):
+    validate_configuration(seed)
     rows = []
     from dranalyser.dsp.clock_quality import clock_quality
     grid = list(itertools.product(PROFILES, FAULTS, NOISE, TIMING))
@@ -99,11 +112,20 @@ def run(seed=854):
                     clock_quality=clock_quality(r), recovered_fs=r.fs, frequency_hz=result['frequency_hz'][end],
                     dsp_quality=result['quality'][end])
                     for end, r in pair.items()}
+            candidates = [dict(base, workflow=workflow, **result[workflow]) for workflow in ('main', 'stage')]
+            for row in candidates:
+                if row['status'] not in ('located', 'withheld'):
+                    raise ValueError('Invalid workflow status in numerical case output.')
+                if row['status'] == 'located' and not np.all(np.isfinite([row['reported_km'], row['error_km']])):
+                    raise ValueError('Nonfinite located output in numerical case.')
+            json.dumps(candidates, allow_nan=False)  # Validate ALL case diagnostics before committing either outcome.
+            rows.extend(candidates)
+        except Exception as error:
+            # Configuration was validated before the loop. Per-case failures,
+            # including numerical-library ValueError, must not erase denominators.
+            failed_base = {k: v for k, v in base.items() if k != 'acquisition'}
             for workflow in ('main', 'stage'):
-                rows.append(dict(base, workflow=workflow, **result[workflow]))
-        except (ArithmeticError, np.linalg.LinAlgError) as error:
-            for workflow in ('main', 'stage'):
-                rows.append(dict(base, workflow=workflow, status='failed', error_type=type(error).__name__, reason=str(error)))
+                rows.append(dict(failed_base, workflow=workflow, status='failed', error_type=type(error).__name__, reason=str(error)))
     result = summary(rows)
     result.update(incidents=len(grid), seed=seed, cases=rows,
                   completion_status='failed' if result['failed'] else 'complete',
@@ -119,7 +141,7 @@ def run(seed=854):
         result['by_'+field] = groups
     paths = ['scripts/noisy_dsp_validation.py', 'tests/noisy_dsp_records.py', 'tests/source_fault_records.py',
              'tests/source_fault_oracle.py', 'tests/test_noisy_dsp.py', 'tests/test_noisy_dsp_validation.py',
-             'tests/test_timestamp_recovery.py', 'src/dranalyser/comtrade/parser.py',
+             'tests/test_timestamp_recovery.py', 'tests/test_real_records.py', 'src/dranalyser/comtrade/parser.py',
              'src/dranalyser/comtrade/timestamps.py', 'src/dranalyser/dsp/core.py',
              'src/dranalyser/dsp/pipeline.py', 'src/dranalyser/dsp/stage_windows.py',
              'src/dranalyser/faultloc/section_location.py', 'src/dranalyser/faultloc/stage_location.py',

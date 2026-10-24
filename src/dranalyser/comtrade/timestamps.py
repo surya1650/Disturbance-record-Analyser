@@ -27,11 +27,14 @@ def recover_time(cfg, stamps, n):
         info['method'] = 'CFG multiple sample rates'
         return t, max(r for r, _ in cfg.rates if r > 0), ['multi-rate record; guarded location requires a supported sampling grid'], info
 
-    def invalid(reason):
+    def invalid(reason, display_period=None):
         # A finite placeholder supports inspection; its provenance and parser
         # block explicitly prohibit interpreting it as recovered acquisition.
         fs = cfg.line_freq*20 if np.isfinite(cfg.line_freq) and cfg.line_freq > 0 else 1000.
-        info.update(status='invalid', method='display-only placeholder', reason=reason)
+        if display_period is not None:
+            fs = 1/display_period
+        info.update(status='invalid', method='display-only placeholder', reason=reason,
+                    display_rate_basis='untrusted DAT fit; inspection only' if display_period is not None else 'nominal frequency placeholder')
         return np.arange(n)/fs, fs, [reason], info
 
     if cfg.nrates != 0:
@@ -54,7 +57,7 @@ def recover_time(cfg, stamps, n):
     interval = float(np.max(abs(np.diff(elapsed)-slope)))
     info.update(maximum_residual_s=residual, maximum_interval_deviation_s=interval)
     if max(residual, interval) > MAXIMUM_PERIOD_DEVIATION*slope:
-        return invalid('DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.')
+        return invalid('DAT gap/jitter/drift exceeds the bounded 10% sample-period recovery policy.', slope)
     fs = 1/slope
     info.update(status='recovered', method='DAT centered linear fit', fitted_period_s=slope)
     return k*slope, fs, [f'rate derived from the DAT timestamp column: {fs:.1f} Hz; bounded recovery policy applied'], info
