@@ -202,6 +202,19 @@ direct/self-tests and focused Ruff pass; both Dash hashes remain unchanged.
 The subsequent primary corpus checks and bounded report-name fix above are
 covered by the final delivery suite recorded below; the final manifest additionally
 binds their regression/report sources (20 files total).
+Final release worktree: **1,087 passed, 28 corpus-dependent skips**, one upstream
+warning,196.21s. The concurrent primary run reached1,114 passed but one HTTP
+upload test reset its connection; both suites use fixed local ports8241-8243.
+The upload test passed alone1.99s. Full suites must run serially on this host;
+the final serial primary result follows below. The regenerated20-source study
+has exactly unchanged numerical/workflow outcomes and metadata.
+
+Final serial primary checkout: **1,115 passed, no skips**, one upstream
+Starlette/httpx warning,190.99s. No software/test changes were needed for the
+parallel-server connection failure. Final architecture direct/self-tests,
+focused Ruff, all20 evidence hashes and the historical manifests pass. The
+implementation and final verification evidence are published through Git history;
+delivery/cleanup confirmation follows after remote verification.
 
 One Minor is deferred: grossly malformed nominal frequency 1e308 can overflow
 the invalid-record display fallback. Input remains blocked, but inspection can

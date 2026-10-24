@@ -35,6 +35,13 @@ policy; they now refuse assignment/comparison/resolution. Maradam Main-1 remains
 usable. Updated corpus workflow checks pass. A latent report-name path failure
 from a station label containing slashes was reproduced by five RED tests; report
 ID prefixes are now filename-safe/bounded with original-label hashes retained.
+Release worktree1,087 passed/28 skips196.21s. Run full suites serially on this
+host: the workbench HTTP tests bind fixed8241-8243 ports, and parallel worktree/
+primary runs can interfere. The isolated upload test passes; final serial
+primary verification follows in Git history and the validation report.
+Final serial primary verification: **1,115 passed, no skips**, one upstream
+warning,190.99s. No product/test change needed for the parallel HTTP interference.
+Final20-source evidence and all historical manifests match; no gate relaxed.
 
 **2026-10-23 source/fault continuation:** read
 [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md)

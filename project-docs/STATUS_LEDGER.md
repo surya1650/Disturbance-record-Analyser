@@ -44,6 +44,11 @@ resolved. Both direct corpus workflow regressions pass with explicit blocks.
 The remaining Maradam report exposed a latent station-label slash filename bug;
 five observed RED regressions now pass with safe/bounded generated report IDs.
 Final manifest binds20 sources; original recordings/labels remain untouched.
+Final release worktree1,087 passed/28 corpus skips196.21s; final **serial primary
+1,115 passed/no skips**, one upstream warning,190.99s. A concurrent run's local
+HTTP reset was fixed-port test interference; isolated test and serial suite pass
+without product/test changes. Architecture, focused Ruff, final20 source hashes
+and historical manifests pass. Publication/cleanup follows after verification.
 
 ---
 

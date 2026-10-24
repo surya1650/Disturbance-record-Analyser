@@ -50565,7 +50565,7 @@
     }
   },
   "source_sha256_utf8_lf": {
-    "scripts/noisy_dsp_validation.py": "592e3fefebc61710a822be6b221583ed520c9d311c5a5f734d1455aac794f373",
+    "scripts/noisy_dsp_validation.py": "6785bf05bd331d9c5578172ff2789cd086a726ce3a78980d991d84e953c9173a",
     "tests/noisy_dsp_records.py": "d3f1b9a87fddf36841f4d7d05a1a5eb61e6d877b0c286319c2a30fc00bfdb709",
     "tests/source_fault_records.py": "7cffd1871800c876596aa2e8b1ad1f35962c136decdf7ec05fa6cb26de359a7f",
     "tests/source_fault_oracle.py": "d3d4f7d7ce84189799bdbb4bad68d2b8c80c6cdd524570cae1514082b24bb020",
@@ -50573,6 +50573,9 @@
     "tests/test_noisy_dsp_validation.py": "57bc9a7e2affab7238a506002492c8ed51e6e054917adf618ec5315e6c264647",
     "tests/test_timestamp_recovery.py": "f02f7b56477b95fd58a97d442a5dfc3ee9ff4af6bdaddeb342860b06dc17c5f1",
     "tests/test_real_records.py": "a6a8898296ddd8723fd5a2f580427439039bf0ef616a2d665165025aabc2afb5",
+    "tests/test_workbench.py": "06187f257a91353fe3b469009f61a2e55a5cfb391fed2d2be62933bd06566860",
+    "tests/test_report.py": "c07b1759e2c6274df38bd72b49b790c1cbfe9c57544be29fe2e26840f851ad27",
+    "src/dranalyser/report/render.py": "824be21522ea747c9a4f21ffaab84f4fce33437284de00f8359825bfccd07b65",
     "src/dranalyser/comtrade/parser.py": "9e5d453f94828de00d1737cc395f7dc7cc7dbe8672418f314959c22676144dc2",
     "src/dranalyser/comtrade/timestamps.py": "d5bb557c6c4a7bd8949a6e509cafd5e568858d26681bd0c631fa05569a50af5f",
     "src/dranalyser/dsp/core.py": "7320b6ced23eb1f847463398b515614a76226e6f718865cfab00e9bd2770427d",
