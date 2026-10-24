@@ -27,6 +27,7 @@
     "src/dranalyser/comtrade/channel_review.py": 49,
     "src/dranalyser/comtrade/conformance.py": 247,
     "src/dranalyser/comtrade/parser.py": 505,
+    "src/dranalyser/comtrade/timestamps.py": 66,
     "src/dranalyser/dsp/__init__.py": 0,
     "src/dranalyser/dsp/clock_quality.py": 40,
     "src/dranalyser/dsp/core.py": 214,

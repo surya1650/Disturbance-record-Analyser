@@ -259,9 +259,7 @@ def parse_cfg(text: str) -> Cfg:
     start = _parse_time(lines[j]) if j < len(lines) else None
     trig = _parse_time(lines[j + 1]) if j + 1 < len(lines) else None
     ftype = lines[j + 2].strip().upper() if j + 2 < len(lines) else "ASCII"
-    timemult = _f(lines[j + 3], 1.0) if j + 3 < len(lines) else 1.0
-    if timemult <= 0:
-        timemult = 1.0
+    timemult = _f(lines[j + 3], float('nan')) if j + 3 < len(lines) else 1.0
 
     time_code = local_code = tmq = leap = ""
     if j + 4 < len(lines):
@@ -337,45 +335,9 @@ def _read_binary(buf: bytes, na: int, nd: int, kind: str):
 # top level
 # --------------------------------------------------------------------------
 def _derive_time(cfg: Cfg, ts_col: np.ndarray, n: int) -> Tuple[np.ndarray, float, List[str]]:
-    """Sample times in seconds, and the effective rate.
-
-    nrates >= 1 is authoritative. nrates == 0 means the rate lives only in
-    the timestamp column, and the column is in microseconds scaled by
-    timemult. A least-squares fit is used rather than a first difference,
-    because vendors round the increment (833 us for a nominal 1200 Hz gives
-    1200.5 Hz if you take the reciprocal of one interval).
-    """
-    warn: List[str] = []
-    if cfg.nrates >= 1 and cfg.rates and cfg.rates[0][0] > 0:
-        if cfg.nrates == 1:
-            fs = cfg.rates[0][0]
-            return np.arange(n) / fs, fs, warn
-        t = np.zeros(n)
-        idx, prev_end, prev_t = 0, 0, 0.0
-        for rate, endsamp in cfg.rates:
-            end = min(int(endsamp), n)
-            cnt = end - prev_end
-            if cnt <= 0 or rate <= 0:
-                continue
-            t[prev_end:end] = prev_t + np.arange(cnt) / rate
-            prev_t = t[end - 1] + 1.0 / rate
-            prev_end = end
-        warn.append("multi-rate record (" + str(cfg.nrates)
-                    + " rates); phasor estimation uses the rate of the fault segment")
-        eff = max(r for r, _ in cfg.rates if r > 0)
-        return t, eff, warn
-
-    t = ts_col.astype(float) * cfg.timemult * 1e-6
-    if n > 2 and np.ptp(t) > 0:
-        k = np.arange(n)
-        slope = float(np.polyfit(k, t, 1)[0])
-        fs = 1.0 / slope if slope > 0 else cfg.line_freq * 20.0
-        warn.append("rate derived from the DAT timestamp column: "
-                    + format(fs, ".1f") + " Hz")
-        return k * slope, fs, warn
-    fs = cfg.line_freq * 20.0
-    warn.append("no usable rate information; assuming " + format(fs, ".0f") + " Hz")
-    return np.arange(n) / fs, fs, warn
+    """Compatibility wrapper; public assembly also retains recovery provenance."""
+    from .timestamps import recover_time
+    return recover_time(cfg, ts_col, n)[:3]
 
 
 def read_comtrade(
@@ -420,6 +382,7 @@ def read_cff(path: str, terminal_end: str = "", *, channel_mapping=None) -> Reco
 def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
               terminal_end: str, channel_mapping=None) -> Record:
     from .channel_review import channel_plan
+    from .timestamps import recover_time, sample_numbers_valid
     review = channel_mapping or {}
     na, nd = cfg.n_analog, cfg.n_digital
     ftype = cfg.file_type.strip().upper()
@@ -428,7 +391,7 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
     else:
         smp, ts, cols = _read_binary(dat_bytes, na, nd, ftype)
     n = cols.shape[0]
-    t, fs, twarn = _derive_time(cfg, ts, n)
+    t, fs, twarn, timing = recover_time(cfg, ts, n)
 
     naming = detect_phase_naming([a.ch_id for a in cfg.analogs])
     targets, digital_keys, inventory, digital_overrides = channel_plan(cfg, naming, map_channel, review)
@@ -490,9 +453,13 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
                "unmapped_channels": unmapped, "n_analog": na, "n_digital": nd,
                "tmq_code": cfg.tmq_code, "time_code": cfg.time_code,
                "local_code": cfg.local_code, "leapsec": cfg.leapsec,
-               "declared_endsamp": cfg.total_samples, 'channel_inventory': inventory,
+               "timestamp_recovery": timing, "declared_endsamp": cfg.total_samples, 'channel_inventory': inventory,
                'channel_mapping': review, 'digital_overrides': digital_overrides},
     )
+    if timing['status'] == 'invalid':
+        rec.add_flag('TIME-DAT', 'block', timing['reason'])
+    if not sample_numbers_valid(smp):
+        rec.add_flag('TIME-SAMPLE', 'block', 'DAT sample numbers are not finite consecutive nonnegative integers; no samples repaired.')
     for w in list(cfg.warnings or []) + twarn:
         rec.add_flag("CT-INFO", "info", w)
     if review:
