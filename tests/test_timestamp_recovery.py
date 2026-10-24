@@ -20,7 +20,7 @@ def write_timing(directory, stamps, *, nrates=0, timemult=1, numbers=None):
     path = directory/'timing.cfg'
     path.write_text('\n'.join(cfg)+'\n', encoding='ascii')
     numbers = np.arange(1, n+1) if numbers is None else numbers
-    path.with_suffix('.dat').write_text(''.join(f'{i},{ts},1,2,3,4,5,6\n' for i, ts in zip(numbers, stamps)), encoding='ascii')
+    path.with_suffix('.dat').write_text(''.join(f'{i},{ts},1,2,3,4,5,6\n' for i, ts in zip(numbers, stamps, strict=True)), encoding='ascii')
     return read_comtrade(str(path))
 
 

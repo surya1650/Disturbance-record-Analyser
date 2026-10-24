@@ -17,7 +17,6 @@ four-file form and the single-file .CFF, nrates 0 / 1 / n, and P/S scaling.
 from __future__ import annotations
 
 import hashlib
-import math
 import os
 import re
 from dataclasses import dataclass
