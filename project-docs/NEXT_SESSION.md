@@ -1,6 +1,18 @@
 # Context for the next session
 
-**Conditional I2 error-budget milestone — started2026-10-26,verification2026-10-27.**
+**Invalid-acquisition inspection fallback —2026-10-27.**
+Read [INSPECTION_TIMEBASE_FIX_2026-10-27.md](INSPECTION_TIMEBASE_FIX_2026-10-27.md).
+The previously deferred malformed-frequency Minor is fixed: invalid DAT timing
+without a usable fit uses fixed1000Hz solely for display. Huge/tiny nominal Hz
+cannot overflow/flatten inspection time. Invalid/TIME-DAT block and ineligible
+clock status remain; valid grids and untrusted finite DAT-fit periods unchanged.
+Six new direct/public failures observed RED,46 focused GREEN (16new+30existing).
+Architecture/focused Ruff pass; full/review/delivery follows in the report.
+Historical source bindings are retained; do not rewrite them after this change.
+Continue the separate DSP research adoption hold and scalar saturation/weakI2
+observability work from its own report/ledger. Five-hour continuation is active.
+
+**Conditional I2 error-budget milestone â€” started2026-10-26,verification2026-10-27.**
 Read [SEQUENCE_ERROR_BUDGET_2026-10-26.md](SEQUENCE_ERROR_BUDGET_2026-10-26.md) and
 its JSON. New pure DSP functions dft_noise_radius/i2_budget take explicit additive
 caps/provenance and never authorize location; missing bounds refuse. Code/protocol
@@ -28,10 +40,10 @@ passed/28corpus skips,one upstream warning,95.83s.
 12 current evidence hashes verify; production consumers and earlier sources/
 evidence unchanged. Final delivery is recorded in the report. Prior
 malformed-frequency inspection fallback also pending. Five-hour chat continuation
-is active under the user’s autonomous instruction; do not ask for design approval
+is active under the userâ€™s autonomous instruction; do not ask for design approval
 or consume manual resets/credits. Preserve all work/QA on quota interruption.
 
-**Three-phase/full-record acquisition study — 2026-10-26.** Read
+**Three-phase/full-record acquisition study â€” 2026-10-26.** Read
 [THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md](THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md)
 and its CORRECTED tracked JSON before further gate work. Original protocol/code
 freeze `8521053`; reviewed gate correction `5bb9dd2`. The original full evidence
@@ -67,10 +79,10 @@ review fix:1181 passed/no skips,one upstream warning,347.15s. Original and corre
 review issue fixed,no new Minors. QA/review/ledger saved locally in ignored
 `out/qa/three-phase-acquisition-2026-10-26/`. Next work: conditional I2 error budget;
 the older malformed-frequency inspection fallback Minor is also still pending. Full suites run serially
-because workbench tests bind fixed ports8241–8243. Project remains advanced
+because workbench tests bind fixed ports8241â€“8243. Project remains advanced
 prototype/pre-pilot with zero accepted field cases.
 
-**Independent acquisition/CT-quality study — 2026-10-26.** Read
+**Independent acquisition/CT-quality study â€” 2026-10-26.** Read
 [ACQUISITION_CT_VALIDATION_2026-10-26.md](ACQUISITION_CT_VALIDATION_2026-10-26.md)
 and the tracked JSON. A new independent secondary-referred nonlinear CT oracle
 and frozen offline noise-aware candidate completed 306 waveform outcomes across
@@ -226,7 +238,7 @@ to GitHub. Git history and `origin/main` record the publication outcome; Dash
 findings, source snapshots and operational registry candidates stay local.
 
 The user supplied the Google settings sheet and `C:/Users/rscvr/Downloads/lines list.xlsx`,
-and explicitly confirmed **DHN-NNR = Dhone–Nansuralla**. Nandyal references below
+and explicitly confirmed **DHN-NNR = Dhoneâ€“Nansuralla**. Nandyal references below
 are historical. Imported 1,961 TL rows from 13 tabs with cell locators and hashes;
 1,940 parse electrically, 21 need value review, 1,166 lack bus IDs. A private
 source candidate uses the sheet values but retains `model_review_required: true`.
@@ -448,7 +460,7 @@ with clean p95 0.4403%; browser upload/review/report/rerun passes in Chrome.
 Written 2026-09-07 at commit `bc759d7`, on `main`, working tree clean,
 **4 commits ahead of `origin/main` and not pushed**.
 
-Read this, then [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) §2 (binding
+Read this, then [`PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) Â§2 (binding
 constraints) and the "What is different from the brief" section of
 [`README.md`](../README.md). Everything blocked on the protection wing is in
 [`OPEN_REQUIREMENTS.md`](OPEN_REQUIREMENTS.md), written so it can be sent to
@@ -476,7 +488,7 @@ Stage-A dies with `BrokenProcessPool` at the default worker count and two
 `tests/test_ml.py` cases fail with *"OpenBLAS error: Memory allocation still
 failed after 10 retries"*. One root cause, not two: every worker process
 spawns an OpenBLAS thread per core and memory runs out. Neither is a code
-defect — both reproduce on a clean `git stash` of `src/`. With it set,
+defect â€” both reproduce on a clean `git stash` of `src/`. With it set,
 everything runs multi-worker and 10,000 cases take 30 s instead of 111 s at
 `--workers 1`. The p95 is identical either way; the sweep is seeded, not
 worker-dependent.
@@ -494,7 +506,7 @@ oracle**, **verified on a real record**.
 
 ### Verified on real records
 
-- The COMTRADE parser reads all fifteen real records across **six vendors** —
+- The COMTRADE parser reads all fifteen real records across **six vendors** â€”
   Siemens 7SA522, GE D60 (binary), MiCOM P444, ABB REL670 (binary) and two
   1999-era bay recorders. `rev_year` values of 1997 and 2001 (neither valid),
   `nrates=0` with the rate only in the DAT timestamp column, a trailing DOS
@@ -503,13 +515,13 @@ oracle**, **verified on a real record**.
   decisions**: Main-2 computes into Zone 1 and tripped Zone 1; Main-1 computes
   into Zone 2 and tripped Zone 2.
 - **Cross-vendor agreement at one bus.** On event 15662 the P444 and the
-  REL670 at Garividi measure `Zs2` as `1.67 + j10.28 Ω` and `2.61 + j10.27 Ω`
-  — 0.5 Ω and 5° apart, two vendors, no line constants involved.
+  REL670 at Garividi measure `Zs2` as `1.67 + j10.28 Î©` and `2.61 + j10.27 Î©`
+  â€” 0.5 Î© and 5Â° apart, two vendors, no line constants involved.
 - Breaker timing agrees between two independent relays on one fault: phase A
   opens at 78.1 ms and 78.5 ms, measured at 1200.5 Hz and 1000 Hz.
-- Settings import: the real `DR-1.rio` gives k0 = 0.8061 ∠ −2.417°, matching
+- Settings import: the real `DR-1.rio` gives k0 = 0.8061 âˆ  âˆ’2.417Â°, matching
   what `dhn-nnr.yaml` records.
-- Asset resolution: the table in §4 lists what resolved and what refused.
+- Asset resolution: the table in Â§4 lists what resolved and what refused.
 
 ### Passes the synthetic oracle only
 
@@ -523,7 +535,7 @@ oracle**, **verified on a real record**.
 ### Not proven at all
 
 - **The two-ended path has still never run on real data.** The records exist
-  now — both ends of two faults — and everything around them is built. What is
+  now â€” both ends of two faults â€” and everything around them is built. What is
   missing is the line constants: `OPEN_REQUIREMENTS.md` item 1, which includes
   the algebra showing they cannot be derived from the measurements.
 - Every line YAML in `data/registry/` is **PROVISIONAL for distance**.
@@ -534,27 +546,27 @@ oracle**, **verified on a real record**.
 
 ### Not built
 
-Pairing (§5.2), transport, the edge collector, CT saturation compensation.
+Pairing (Â§5.2), transport, the edge collector, CT saturation compensation.
 
 ### Not handled
 
 Distributed-parameter model for long lines, three-terminal lines, and
 **zero-sequence mutual coupling between the two circuits of a double-circuit
-corridor** — which the Garividi–Maradam records need. Series-compensated lines
+corridor** â€” which the Garividiâ€“Maradam records need. Series-compensated lines
 are detected and refused, not approximated.
 
 ---
 
-## 3. The Sphoorthi records — the first real two-ended data
+## 3. The Sphoorthi records â€” the first real two-ended data
 
 `drs sphoorthi/` arrived 2026-09-07 (local only, gitignored). Eleven distinct
 records, no byte-duplicates, three events at two ends each:
 
 | Event | End A | End B |
 |---|---|---|
-| 15665, 20/08/2026 — Maradam LINE 205 | Garividi: GE **D60**, MiCOM **P444** | Maradam: Siemens **7SA522**, "MARADAM" recorder |
-| 15662, 20/08/2026 — Maradam LINE 206 | Garividi: **P444**, ABB **REL670** | Maradam: **7SA522**, "MARADAM" recorder |
-| 15251, 10/08/2026 — 400 kV Kalpaka–Gajuwaka | Gajuwaka Main-1 | Kalpaka Main-2 (two records, 20 s apart) |
+| 15665, 20/08/2026 â€” Maradam LINE 205 | Garividi: GE **D60**, MiCOM **P444** | Maradam: Siemens **7SA522**, "MARADAM" recorder |
+| 15662, 20/08/2026 â€” Maradam LINE 206 | Garividi: **P444**, ABB **REL670** | Maradam: **7SA522**, "MARADAM" recorder |
+| 15251, 10/08/2026 â€” 400 kV Kalpakaâ€“Gajuwaka | Gajuwaka Main-1 | Kalpaka Main-2 (two records, 20 s apart) |
 
 **The pairing was corroborated electrically, not by folder name.** On 15665
 three usable relays measure 725.9 / 732.1 / 719.5 A pre-fault and all call it
@@ -564,9 +576,9 @@ Maradam. On 15662 the two ends measure 331 A and 329 A pre-fault, with
 
 **Trigger times spread 13 min 24 s across event 15665's four relays.** Any
 pairing that filters on time before corroborating electrically throws this
-event away. Field confirmation of the clock warning in §7.5 of the old notes.
+event away. Field confirmation of the clock warning in Â§7.5 of the old notes.
 
-**Garividi–Maradam is a double-circuit corridor** (LINE 205 and LINE 206), and
+**Garividiâ€“Maradam is a double-circuit corridor** (LINE 205 and LINE 206), and
 both recorded events were ground faults nine minutes apart on the same
 morning. Zero-sequence mutual coupling is a first-order error source for
 single-ended ground-fault location and is not modelled.
@@ -581,7 +593,7 @@ disagree on fault type (ABC against CG).
 
 Four commits on `main`, all gates green after each.
 
-### `501f9d7` — the local workbench, and two defects the records exposed
+### `501f9d7` â€” the local workbench, and two defects the records exposed
 
 - `inspect` and `verdict` called `analyse()` on a record the conformance gate
   had blocked and died with `KeyError: 'I1'` on the REL670. Both now refuse.
@@ -590,17 +602,17 @@ Four commits on `main`, all gates green after each.
   of the channel id, so ABB's `LINE1_A_IL1` mapped to nothing and the record
   blocked as `CH-MISSING`. They now fall back to the **last**
   separator-delimited token, tried after the whole id and the `ph` field, so
-  no existing mapping can change — and the D60's RMS channel `SRC 1  Ia Mag`
+  no existing mapping can change â€” and the D60's RMS channel `SRC 1  Ia Mag`
   still stays unmapped rather than colliding with `F1-IA`.
 - `dranalyse workbench --port 8090` and `dranalyse bundle <folder-or-zip>`.
-  §2.4 forbids one report per file, so the unit of upload is a **bundle** — a
-  set of files the operator declares to be one incident — and there is
+  Â§2.4 forbids one report per file, so the unit of upload is a **bundle** â€” a
+  set of files the operator declares to be one incident â€” and there is
   deliberately no route that analyses a single file. Every uploaded file
   appears on the incident page: used, corroborating, blocked, duplicate or
   unreadable. Full plan and its divergences in
   [`LOCAL_WORKBENCH_PLAN_v1.md`](LOCAL_WORKBENCH_PLAN_v1.md).
 
-### `a60d6d9` — two relays on one bus cross-check each other
+### `a60d6d9` â€” two relays on one bus cross-check each other
 
 `workbench/corroborate.py`. Every record at a terminal is analysed; the
 primary drives the estimators, the rest corroborate. Four findings: XR-01
@@ -610,10 +622,10 @@ own scatter exceeds 10 % is not compared at all, so a noisy measurement cannot
 manufacture a finding.
 
 It immediately found a real one: at Garividi on 15665 the D60 and P444 agree
-on current to under 3 % but their `Zs2` differs by a factor of 7.2 and 75°.
+on current to under 3 % but their `Zs2` differs by a factor of 7.2 and 75Â°.
 Before this it depended entirely on which file was passed as `--R`.
 
-### `b0947ed` — vendor-neutral settings
+### `b0947ed` â€” vendor-neutral settings
 
 `registry/settings.py` is the model, `registry/settings_io/` holds the
 importers, `registry/rio.py` is gone. Nine call sites now name
@@ -626,17 +638,17 @@ cases pinned in `--self-test`.
 
 `Characteristic` is an interface with `contains(z)`: `PolygonChar`, `MhoChar`
 (standard circle-through-origin geometry), and `quad_char()` as a **builder
-returning a PolygonChar** — a quad is a polygon, and separate maths would only
+returning a PolygonChar** â€” a quad is a polygon, and separate maths would only
 add a way to be wrong. k0 dispatches on a recorded convention and returns
 `None` rather than guessing when the convention is incomplete.
 
-**The CSV, XML and TXT importers are deliberately NOT written.** See §6.
+**The CSV, XML and TXT importers are deliberately NOT written.** See Â§6.
 
-### `bc759d7` — asset resolution, and the form pre-fills from it
+### `bc759d7` â€” asset resolution, and the form pre-fills from it
 
 `registry/assets.py` and `workbench/resolve.py`. The resolver proposes, the
 operator confirms or overrides, and both values stay in the manifest so an
-override is visible later. A suggestion is never applied on its own —
+override is visible later. A suggestion is never applied on its own â€”
 `assign()` still has to be called.
 
 Weights, **project policy**: manifest 1.00, path rule 0.60, CFG header 0.50,
@@ -669,7 +681,7 @@ the path or header says which of the two parallel circuits they are.
 
 ## 5. Where to start next
 
-**Pairing (`PROJECT_CONTEXT.md` §5.2).** It needs nothing from anyone and is
+**Pairing (`PROJECT_CONTEXT.md` Â§5.2).** It needs nothing from anyone and is
 now genuinely possible: every record resolves to a line and a terminal, so two
 records at the two ends of one line are a candidate pair.
 
@@ -678,22 +690,22 @@ Carry one thing into it: **corroborate electrically before filtering on time.**
 
 After that, in order of value:
 
-1. **CT saturation compensation** — the largest remaining accuracy gap
+1. **CT saturation compensation** â€” the largest remaining accuracy gap
    (10.7 % against 0.12 % clean), and it needs no field answer.
-2. **The `SET-01` … `SET-05` rules**, now possible on vendor-neutral settings:
+2. **The `SET-01` â€¦ `SET-05` rules**, now possible on vendor-neutral settings:
    settings hash changed between two records from one relay; relay CT/VT
    disagrees with the registry; Zone 1 reach implies a line length that
    disagrees with the registry; Z2 and backup grading; the two ends carrying
    inconsistent line angle or k0.
 3. Concrete settings importers, **one per format, as real sample files
-   arrive** — see §6.
+   arrive** â€” see Â§6.
 
 ---
 
 ## 6. Do not write the CSV / XML / TXT importers speculatively
 
 There is still **no real `.csv`, `.xml` or `.txt` settings file** anywhere in
-the corpus — only Siemens `.rio`. An importer written against an imagined
+the corpus â€” only Siemens `.rio`. An importer written against an imagined
 format is a guess that will look finished, be wrong, and be believed because
 it has tests.
 
@@ -703,12 +715,12 @@ One genuine SEL `.txt` teaches more than a week of speculation.
 
 ---
 
-## 7. Deliberately left untouched — do not "fix" these
+## 7. Deliberately left untouched â€” do not "fix" these
 
 - **The `ps=S` block on five records.** The gate is right to refuse, and the
   data behind it is provably primary. The resolution is a per-relay registry
   override recorded as evidence, **not** a heuristic that infers primary from
-  a nominal-voltage match — that would be exactly the silent repair §2.5
+  a nominal-voltage match â€” that would be exactly the silent repair Â§2.5
   forbids. `OPEN_REQUIREMENTS.md` item 4.
 - **`incident_features` and `report/build` still key on one record per
   terminal.** The workbench plan proposed changing them to a list; that was
@@ -733,7 +745,7 @@ One genuine SEL `.txt` teaches more than a week of speculation.
   ratchet failing for exactly that reason.
 - **Do not patch source with a shell heredoc plus Python string replacement.**
   It has bitten three times: `\b` became literal backspace bytes, silently
-  breaking four signal-matching patterns, and a `\r` broke a parse — both
+  breaking four signal-matching patterns, and a `\r` broke a parse â€” both
   invisible in an editor and in `grep`. Use the editor tools. It bit again on
   2026-09-07 in `pages.py`, where a line-continuation backslash became spaces;
   harmless, but caught only by reading the file back.
@@ -767,14 +779,14 @@ Their `RioSettings` import in `standards/audit.py` was repointed at
 
 ## 10. Suggested first prompt for the next session
 
-> Read `project-docs/NEXT_SESSION.md`, then `PROJECT_CONTEXT.md` §2.
+> Read `project-docs/NEXT_SESSION.md`, then `PROJECT_CONTEXT.md` Â§2.
 >
-> Build pairing (§5.2). Every record now resolves to a line and a terminal
+> Build pairing (Â§5.2). Every record now resolves to a line and a terminal
 > through `registry/assets.py`, so two records at the two ends of one line are
-> a candidate pair. **Corroborate electrically before filtering on time** —
+> a candidate pair. **Corroborate electrically before filtering on time** â€”
 > the measured clock spread on one real event is 13 min 24 s.
 >
 > Do not touch the estimators, the DSP chain or the parser. Stage-A must still
 > report clean p95 = 0.4403 % afterwards; if it moves, that is a defect.
 >
-> Do not write the CSV, XML or TXT settings importers — §6 explains why.
+> Do not write the CSV, XML or TXT settings importers â€” Â§6 explains why.
