@@ -111,7 +111,8 @@
     "src/dranalyser/workbench/settings.py": 69,
     "src/dranalyser/workbench/stage_location.py": 33,
     "src/dranalyser/workbench/stage_review.py": 69,
-    "src/dranalyser/dsp/fundamental.py": 87
+    "src/dranalyser/dsp/fundamental.py": 87,
+    "scripts/fractional_dsp_validation.py": 104
   },
   "exceptions": {}
 }
