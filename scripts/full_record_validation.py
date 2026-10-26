@@ -89,7 +89,7 @@ def run():
     reasons = []
     for condition, reason in [(result['failed'], 'Numerical failures.'),
             (not validation['harmful_ct_incidents'], 'No harmful validation CT coverage.'),
-            (validation['harmful_quality_pass'], 'Harmful validation measurements passed joint shape/acquisition screens.'),
+            (result['harmful_quality_pass'], 'Harmful measurements passed joint shape/acquisition screens.'),
             (result['located_error_above_1km'], 'Actual located error above 1 km.'),
             (result['balanced_located'], 'Balanced controls located.')]:
         if condition:

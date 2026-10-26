@@ -142,3 +142,16 @@ def test_racing_output_preserved_and_failed_run_has_exit2(tmp_path, monkeypatch)
     with pytest.raises(SystemExit):
         module.main()
     assert race.read_text() == 'other evidence'
+
+
+def test_known_harmful_development_pass_blocks_adoption(monkeypatch):
+    module = runner()
+    monkeypatch.setattr(module, 'case_grid', lambda: [
+        dict(split='development', profile='baseline', fault='ABC', scenario='gain_i'),
+        dict(split='validation', profile='baseline', fault='AG', scenario='ct_multi')])
+    out = module.run()
+    assert out['failed'] == out['located'] == 0
+    assert out['harmful_quality_pass'] == 1
+    assert out['by_split']['validation']['harmful_quality_pass'] == 0
+    assert out['by_split']['validation']['harmful_ct_incidents'] == 1
+    assert out['adoption_gate'] == 'failed'
