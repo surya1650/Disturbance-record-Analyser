@@ -40,6 +40,7 @@
     "src/dranalyser/dsp/detect.py": 309,
     "src/dranalyser/dsp/measurements.py": 78,
     "src/dranalyser/dsp/pipeline.py": 214,
+    "src/dranalyser/dsp/sequence_budget.py": 102,
     "src/dranalyser/dsp/stage_windows.py": 56,
     "src/dranalyser/dsp/stages.py": 98,
     "src/dranalyser/dsp/window_quality.py": 45,
