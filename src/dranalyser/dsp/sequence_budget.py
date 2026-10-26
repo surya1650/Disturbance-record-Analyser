@@ -3,6 +3,8 @@ import cmath
 import math
 from numbers import Complex, Real
 
+from .fundamental import kernel_l1
+
 SCOPE = 'Caller-supplied deterministic additive bounds only; excludes any error component not covered by them.'
 
 
@@ -37,13 +39,8 @@ def dft_noise_radius(fs, freq, sample_bound, *, tau=None, half_cycle=False, unif
     if n < 2:
         return _unsupported('At least two samples per kernel required.')
     try:
-        factor = math.sqrt(2)
-        if tau is not None:
-            b = math.exp(-(1/fs)/max(float(tau), 1e-6))
-            gain = abs(1-b*cmath.exp(-2j*math.pi*(freq/fs)))
-            if gain == 0:
-                return _unsupported('Unrepresentable mimic response.')
-            factor *= (n-1)/n+(1+b)/(n*gain)
+        b = math.exp(-(1/fs)/max(float(tau), 1e-6)) if tau is not None else None
+        factor = kernel_l1(fs, freq, n, b)
         factor += 64*math.ulp(factor)
         radius = sample_bound*factor
         if not all(math.isfinite(v) for v in (factor, radius)):

@@ -17,19 +17,13 @@ def direct_kernel(fs, freq, tau, half, first):
     n = max(n//2, 2) if half else n
     start = 0 if first else n+2
     count = start+n
-    weights = np.zeros(count, complex)
     b = np.exp(-(1/fs)/max(tau, 1e-6)) if tau is not None else 0
-    gain = 1-b*np.exp(-2j*np.pi*freq/fs)
-    for j in range(start, count):
-        value = np.exp(-2j*np.pi*freq*j/fs)
-        if tau is None:
-            weights[j] += value
-        elif j == 0:
-            weights[j] += (1-b)*value
-        else:
-            weights[j] += value
-            weights[j-1] -= b*value
-    return weights*np.sqrt(2)/n/gain
+    transform = np.eye(count)-b*np.eye(count, k=-1)
+    transform[0, 0] = 1-b
+    t = np.arange(count)/fs
+    design = np.column_stack([np.cos(2*np.pi*freq*t), np.sin(2*np.pi*freq*t)])
+    inverse = np.linalg.pinv((transform@design)[start:])
+    return (inverse[0]-1j*inverse[1])@transform[start:]/np.sqrt(2)
 
 
 @pytest.mark.parametrize('fs,freq', [(1200, 50), (3500, 48), (2600, 52), (4800, 53)])

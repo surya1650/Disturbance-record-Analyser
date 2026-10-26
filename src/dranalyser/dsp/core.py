@@ -6,7 +6,10 @@ A phasor at sample n is the RMS phasor of the fundamental, referenced to the
 record's own absolute time origin t = 0, estimated from the full cycle of
 samples ENDING at n:
 
-    X(t_n) = (2/N) * sum_{k=n-N+1..n} x[k] * exp(-j*w*t[k])   / sqrt(2)
+    x[k] = c*cos(w*t[k]) + s*sin(w*t[k]); X(t_n) = (c-j*s)/sqrt(2)
+
+The two real bases are fitted jointly: rounded-cycle supports need not be
+orthogonal. Data and bases share the same mimic FIR when enabled.
 
 Referencing to absolute time rather than to the window start means a steady
 sinusoid gives a constant phasor, so superimposed quantities are a plain
@@ -20,6 +23,8 @@ from dataclasses import dataclass
 from typing import Dict, Optional, Tuple
 
 import numpy as np
+
+from .fundamental import filter_samples, sliding_fundamental
 
 A = np.exp(2j * np.pi / 3.0)
 
@@ -70,15 +75,13 @@ def mimic_filter(x: np.ndarray, fs: float, freq: float, tau: float) -> Tuple[np.
 
     The filter is (1 - a*z^-1) with a = exp(-dt/tau), which places a zero
     exactly on the DC pole. It also scales and rotates the fundamental, so
-    the exact complex response at the fundamental is returned and divided out
-    of the phasor afterwards. A plain full-cycle DFT does NOT remove decaying
+    the exact complex response at the fundamental is returned for callers.
+    The sliding fit applies this FIR to both real bases. A plain DFT does NOT remove decaying
     DC, which is the largest phasor error source in the first cycles.
     """
     dt = 1.0 / fs
     a = math.exp(-dt / max(tau, 1e-6))
-    y = np.empty_like(x, dtype=float)
-    y[0] = x[0] * (1.0 - a)
-    y[1:] = x[1:] - a * x[:-1]
+    y = filter_samples(x, a)
     w = 2.0 * np.pi * freq
     gain = 1.0 - a * np.exp(-1j * w * dt)
     return y, gain
@@ -122,23 +125,8 @@ def sliding_dft(
     n = int(round(fs / freq))
     if half_cycle:
         n = max(n // 2, 2)
-    x = np.asarray(x, dtype=float)
-    gain = 1.0 + 0j
-    if tau is not None:
-        x, gain = mimic_filter(x, fs, freq, tau)
-    w = 2.0 * np.pi * freq
-    y = x * np.exp(-1j * w * t)
-    c = np.concatenate(([0.0 + 0j], np.cumsum(y)))
-    out = np.full(x.size, np.nan + 0j, dtype=complex)
-    if x.size >= n:
-        s = c[n:] - c[:-n]
-        out[n - 1 :] = (2.0 / n) * s
-    if half_cycle:
-        # a half-cycle window leaves the conjugate term uncancelled; the
-        # standard correction is to double the odd-harmonic-only estimate
-        out = out
-    out = out / math.sqrt(2.0)
-    return out / gain
+    decay = math.exp(-(1/fs)/max(tau, 1e-6)) if tau is not None else None
+    return sliding_fundamental(x, t, fs, freq, n, decay)
 
 
 def phasors_for(
