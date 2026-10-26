@@ -198,3 +198,18 @@ all numerical aggregates. Only the corrected decision-reason wording and two
 source hashes differ. All29 corrected hashes verify against current code and all
 29 original hashes verify against the historical source. Numerical failures remain
 zero and the scientific adoption decision remains failed.
+
+## Final verification and delivery
+
+Final serial primary after the review correction: **1,181 passed, no skips**,
+one existing upstream Starlette/httpx warning,347.15 s. The complete corrected
+study has552 identical incident rows and1104 workflow outcomes;29 current and
+29 historical source hashes verify. Architecture/self-tests and all new-file
+Ruff checks pass;40 repository-wide findings are pre-existing in unchanged files.
+
+Reviewed changes are integrated into main. QA, RED/GREEN evidence, review and
+execution ledger are saved locally under ignored
+`out/qa/three-phase-acquisition-2026-10-26/`. Production source, prior historical
+artifacts and both local Dash findings remain unchanged. No new deferred Minors;
+the earlier malformed-frequency inspection fallback remains a pending software
+fix. The candidate remains offline because the scientific adoption criteria fail.

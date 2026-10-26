@@ -45,6 +45,6 @@
 ### Task 3: Evidence, independent review and delivery
 **Files:** Create project-docs/THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md; update project-docs/NEXT_SESSION.md.
 **Interfaces:** Task 2 scientific results determine the documented adoption decision and pending work.
-- [ ] Report actual split/scenario/weak/balanced outcomes, harmful passes, location errors and limits; do not reinterpret scientific failure as numerical failure.
-- [ ] Run the full worktree suite serially; expect no failures. Obtain one fresh whole-branch review, fix Important findings in one TDD pass, preserve frozen evidence if correction changes source binding.
-- [ ] Integrate under existing main/push authorization; run the serial primary full suite, verify remote push, preserve QA/review/ledger, archive the managed worktree and remove the merged branch.
+- [x] Report actual split/scenario/weak/balanced outcomes, harmful passes, location errors and limits; do not reinterpret scientific failure as numerical failure.
+- [x] Run the full worktree suite serially; expect no failures. Obtain one fresh whole-branch review, fix Important findings in one TDD pass, preserve frozen evidence if correction changes source binding.
+- [x] Integrate under existing main/push authorization; run the serial primary full suite, verify remote push, preserve QA/review/ledger, archive the managed worktree and remove the merged branch.

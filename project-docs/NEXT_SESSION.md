@@ -30,8 +30,12 @@ chirp, not physical clock/aperture drift. No new field data or operational lines
 
 Focused34 tests pass; full release1152 passed/28 corpus skips,one upstream warning,
 252.84s. All29 current evidence hashes and the prior corrected scalar7 hashes
-verify; historical files and Dash findings are unchanged. Final review/primary
-verification and delivery follow in the milestone report. Full suites run serially
+verify; historical files and Dash findings are unchanged. Final primary after the
+review fix:1181 passed/no skips,one upstream warning,347.15s. Original and corrected
+552 case rows are identical;29 current/29 historical hashes verify. One Important
+review issue fixed,no new Minors. QA/review/ledger saved locally in ignored
+`out/qa/three-phase-acquisition-2026-10-26/`. Next work: conditional I2 error budget;
+the older malformed-frequency inspection fallback Minor is also still pending. Full suites run serially
 because workbench tests bind fixed ports8241–8243. Project remains advanced
 prototype/pre-pilot with zero accepted field cases.
 
