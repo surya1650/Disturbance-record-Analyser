@@ -157,7 +157,7 @@ grid, and its validation cases must remain regression evidence for future work.
 
 ## Reproduction and verification
 
-[Tracked complete evidence](validation/THREE_PHASE_ACQUISITION_ENVELOPE_2026-10-26.json)
+[Current corrected complete evidence](validation/THREE_PHASE_ACQUISITION_ENVELOPE_2026-10-26_CORRECTED.json)
 contains every case, both workflows, strata and 29 normalized UTF-8/LF source
 hashes. Scientific failure is a complete numerical result; numerical exceptions
 retain both failed workflows and produce CLI exit 2. Publication rejects existing
@@ -178,3 +178,23 @@ release: **1,152 passed, 28 corpus-dependent skips**, one upstream warning,
 Project remains advanced prototype / pre-pilot with zero accepted field cases.
 No standards certification, calibrated confidence or operational line enablement.
 Dash, workbook, source captures, app database and preview processes are unchanged.
+
+## Independent review correction
+
+One Important finding, no Critical or Minor findings: the study decision checked
+harmful passes only in validation, so a known harmful development pass could be
+ignored. A real two-incident regression reproduced that erroneous pass before
+the fix and refuses afterward. The decision now checks harmful passes across
+both splits. All35 focused tests pass. Corrected code freeze: `5bb9dd2`.
+
+The [original frozen aggregate](validation/THREE_PHASE_ACQUISITION_ENVELOPE_2026-10-26.json)
+is preserved with its source binding at `57576b7`; the corrected full rerun is
+published separately. No scalar threshold, source model or validation grid was
+tuned. The natural usage reset allowed the original interrupted reviewer to
+finish; there was one completed independent review and no re-review.
+
+The full corrected rerun has identical552 case rows,1104 workflow outcomes and
+all numerical aggregates. Only the corrected decision-reason wording and two
+source hashes differ. All29 corrected hashes verify against current code and all
+29 original hashes verify against the historical source. Numerical failures remain
+zero and the scientific adoption decision remains failed.

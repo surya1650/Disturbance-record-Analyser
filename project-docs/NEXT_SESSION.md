@@ -2,7 +2,11 @@
 
 **Three-phase/full-record acquisition study — 2026-10-26.** Read
 [THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md](THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md)
-and its tracked JSON before further gate work. Protocol/code freeze `8521053`.
+and its CORRECTED tracked JSON before further gate work. Original protocol/code
+freeze `8521053`; reviewed gate correction `5bb9dd2`. The original full evidence
+remains historical at `57576b7`. Review found one Important decision bug: harmful
+development passes could be ignored. A real two-case RED/GREEN regression fixes
+it by checking both splits;35 focused tests now pass. No scalar/grid tuning.
 552 synthetic paired incidents /1104 main and reviewed-stage outcomes completed:
 168 located,936 refused,zero numerical failures. Joint quality passes162 incidents,
 including81 study-defined harmful measurement passes (80 coherent gain/polarity/
