@@ -8,47 +8,37 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ## 2026-10-24 - Noisy raw-waveform DSP and local DAT recovery
 
-Public-parser regressions reproduced silent acceptance of invalid DAT timing,
-sample numbering and timestamp multiplier. Bounded local recovery now preserves
-provenance and blocks invalid acquisition with TIME-DAT/TIME-SAMPLE; finite
-display-only placeholders cannot authorize location. Source clock fields and
-hashes remain, declared rates stay authoritative, no synchronization inferred.
+Closure verified 2026-10-26. Public-parser timing/multiplier/sample-number defects
+now produce explicit acquisition blocks and recovery provenance. Missing ASCII
+timing fields remain missing; numerical failures/nonfinite diagnostics retain
+planned outcomes. Generated report IDs use bounded safe filename prefixes.
 
-Independent noisy waveforms serialized/reparsed through actual ASCII COMTRADE
-and DSP:180 incidents360 main/stage outcomes,72 located288 refused0 numerical
-failures. All positive-noise outcomes refuse; saturation/stage quality responses
-expose a practical noisy-input coverage gap. No gate weakened. Balanced controls
-all90 refuse; all72 gap outcomes refuse; all72 workflow clock-skew comparisons
-equal their declared-rate counterparts with no clock correction/E4 promotion.
-Level remains advanced prototype/pre-pilot, zero accepted field cases.
-See [NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md).
+Independent waveform/ASCII parser/DSP study: 180 incidents, 360 main/stage outcomes,
+72 located / 288 refused / zero numerical failures. All positive-noise outcomes
+refuse under existing quality gates; no noisy-input accuracy claim or gate
+relaxation. All 90 balanced controls and 72 gap outcomes refuse; all 72 workflow
+clock-skew comparisons match declared-rate cases with no synchronization promotion.
+Existing DHONE Main-1 and Garividi D60/P444 captures fall outside the bounded
+trend policy and now refuse; diagnostic fits remain explicitly untrusted. This
+is not a standard-nonconformance or physical-clock verdict. Source files unchanged.
 
-Fresh Stage-A10000 PASS53.1s with previous metrics. Architecture direct/self-tests
-and focused Ruff pass. Final suite/review/delivery evidence follows. Prior
-numerical artifacts/source hashes and both local Dash findings are unchanged.
-Independent review passed64 focused checks and found two Important gaps, now
-reproduced RED/fixed: empty ASCII timing fields must remain missing, and all
-unexpected numerical failures/nonfinite diagnostics must retain planned outcomes.
-Post-fix70 focused checks pass. One Minor deferred: grossly malformed nominal
-frequency1e308 can overflow the blocked display fallback and break inspection.
-Existing Main-1 lies outside the accumulated DAT fit policy (.344ms residual):
-it now blocks, while its approximately1200.5Hz untrusted fit supports inspection.
-Main-2 declared1000Hz remains usable;71 focused and14 direct corpus checks pass.
-No source recordings changed and no standard nonconformance inferred.
-Final corrected worktree **1,082 passed/28 corpus skips**, one upstream warning,
-214.02s. All17 final source hashes and historical numerical/section/source
-manifests match. Final360-outcome experiment retains72 located288 refused0 failed.
-Primary initial full:1,108 passed/two corpus expectation failures. Garividi DAT-
-only captures also exceed accumulated-fit policy and now cannot be assigned or
-resolved. Both direct corpus workflow regressions pass with explicit blocks.
-The remaining Maradam report exposed a latent station-label slash filename bug;
-five observed RED regressions now pass with safe/bounded generated report IDs.
-Final manifest binds20 sources; original recordings/labels remain untouched.
-Final release worktree1,087 passed/28 corpus skips196.21s; final **serial primary
-1,115 passed/no skips**, one upstream warning,190.99s. A concurrent run's local
-HTTP reset was fixed-port test interference; isolated test and serial suite pass
-without product/test changes. Architecture, focused Ruff, final20 source hashes
-and historical manifests pass. Publication/cleanup follows after verification.
+One fresh review found two Important issues, reproduced RED and fixed. Subsequent
+corpus compatibility/report-name regressions also passed observed RED/GREEN checks.
+One Minor deferred: extreme malformed nominal frequency can overflow the blocked
+display fallback and break inspection. Full details, scope rulings and pending
+studies: [NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md).
+
+Final serial primary **1,115 passed / no skips**, one upstream warning, 190.99s;
+release worktree 1,087 passed / 28 corpus skips, 196.21s. Stage-A 10,000 PASS,
+unchanged metrics; architecture/Ruff, 20 evidence hashes and historical manifests
+pass. Parallel suites can interfere through fixed HTTP test ports; serial runs
+pass without product/test changes for that interference.
+
+Implementation/evidence `24c6e49` pushed and remote HEAD verified; closure record
+follows in Git history. Managed worktree archived; QA/review/ledger preserved
+locally under ignored `out/qa/noisy-dsp-validation-2026-10-24/`. Dash findings retain
+their hashes. No workbook, field input, app database or preview process changed.
+Level remains advanced prototype / pre-pilot, zero accepted field cases.
 
 ---
 

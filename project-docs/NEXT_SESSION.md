@@ -1,47 +1,46 @@
 # Context for the next session
 
-**2026-10-24 noisy DSP/local timestamp continuation:** read
-[NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md)
-and its tracked JSON. DAT-only recovery now validates finite/increasing timing,
-bounded trend/interval deviation and sample numbering; invalid acquisition adds
-TIME-DAT/TIME-SAMPLE blocks and explicit display-only provenance. Declared rates
-remain authoritative. Clock quality is never promoted to E4 eligibility.
-180 actual parsed noisy-waveform incidents/360 main+reviewed-stage outcomes:
-72 located288 refused0 numerical failures; all270 unbalanced/90 balanced retained.
-All .1%/1% waveform-noise outcomes refuse; third-difference saturation and stage
-quality gates respond strongly to this noise model. This is a demonstrated
-coverage gap, not positive-noise accuracy. Do not relax gates against this grid.
-All72 metadata-only remote clock-skew workflow comparisons equal their declared
-counterparts; all72 gap outcomes refuse. No physical drift/UTC recovery claim.
-Historical artifacts/oracles, Dash, workbook, field/app inputs and previews stay
-unchanged. Next software study: independently validate noise-aware quality/CT
-screens, colored/ADC noise and varying-frequency/clock-drift cases. Field
-acceptance/calibration and wider electrical/instrument models remain pending.
-Independent review found two Important missing-ASCII-timing/failure-accounting
-gaps; both reproduced RED and fixed.70 focused tests pass. Genuine configuration
-fails before execution; unexpected numerical failures/nonfinite output retain
-JSON-safe planned outcomes. Deferred Minor: absurd CFG frequency1e308 may overflow
-the blocked display-only fallback and break inspection; no location authorized.
-Existing Main-1 is now blocked by the10%-period accumulated-fit-residual policy
-(.344ms residual), despite near-uniform local intervals. Its approximately1200.5Hz
-fit is retained only for diagnostic inspection, explicitly untrusted. Main-2
-declared1000Hz remains usable;14 existing-corpus direct checks pass. This is a
-bounded software refusal, not a COMTRADE nonconformance/physical-clock claim.
-Final corrected worktree1,082 passed/28 corpus skips, one upstream warning,
-214.02s. Final360 outcomes72 located288 refused0 failed, all17 source hashes
-match; historical manifests/artifacts and both Dash hashes remain unchanged.
-Primary corpus verification also identified Garividi D60/P444 outside the time-fit
-policy; they now refuse assignment/comparison/resolution. Maradam Main-1 remains
-usable. Updated corpus workflow checks pass. A latent report-name path failure
-from a station label containing slashes was reproduced by five RED tests; report
-ID prefixes are now filename-safe/bounded with original-label hashes retained.
-Release worktree1,087 passed/28 skips196.21s. Run full suites serially on this
-host: the workbench HTTP tests bind fixed8241-8243 ports, and parallel worktree/
-primary runs can interfere. The isolated upload test passes; final serial
-primary verification follows in Git history and the validation report.
-Final serial primary verification: **1,115 passed, no skips**, one upstream
-warning,190.99s. No product/test change needed for the parallel HTTP interference.
-Final20-source evidence and all historical manifests match; no gate relaxed.
+**Noisy DSP/local timestamp milestone delivered; closure verified 2026-10-26.**
+Read [NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md)
+and its tracked JSON before further work. Implementation/evidence `24c6e49` was
+pushed and remote HEAD verified; final closure documentation follows in Git history.
+
+DAT-only recovery now validates finite/increasing timestamps, sample numbering,
+multiplier and bounded interval/trend deviation. Invalid acquisition keeps visible
+TIME-DAT/TIME-SAMPLE blocks and untrusted inspection provenance. Declared rates
+remain authoritative. Local recovery never promotes clock metadata to E4 alignment.
+Empty ASCII timing fields remain missing; unexpected numerical failures/nonfinite
+case output retain complete, JSON-safe failed outcomes. Report IDs have safe,
+bounded filename prefixes while retaining the original-label hash.
+
+180 parsed waveform incidents / 360 main and reviewed-stage outcomes:
+**72 located, 288 refused, zero numerical failures**. All 0.1%/1% waveform-noise
+outcomes refuse under existing saturation/stage-quality gates. This is a coverage
+limitation, with no positive-noise accuracy claim. All 90 balanced controls and
+all 72 gap outcomes refuse; all 72 metadata-skew workflow comparisons match their
+declared-rate counterparts without clock correction or E4 promotion.
+
+The bounded 10%-period trend policy now refuses existing DHONE Main-1 and Garividi
+D60/P444 captures. Their fitted rates support inspection only; these refusals do
+not establish COMTRADE violations or physical clock faults. DHONE Main-2 and
+Maradam Main-1 declared-rate captures remain usable. Source recordings are unchanged.
+
+Final serial primary: **1,115 passed, no skips**, one upstream warning, 190.99s.
+Release worktree: 1,087 passed / 28 corpus skips, 196.21s. Stage-A 10,000 PASS with
+unchanged metrics. Architecture/Ruff and all 20 evidence hashes pass; historical
+manifests and both local Dash findings remain unchanged. Run full suites serially:
+workbench tests bind fixed ports 8241-8243 and concurrent suites can interfere.
+QA/review/execution records are preserved under ignored
+`out/qa/noisy-dsp-validation-2026-10-24/`. Managed worktree archived.
+
+Independent review's two Important findings were reproduced and fixed; one Minor
+remains: grossly malformed CFG frequency 1e308 can overflow a blocked display
+fallback and break inspection. Next software studies: independently validate
+noise-aware acquisition/CT quality, colored/ADC noise and varying-frequency/clock-
+drift cases. Wider electrical/instrument models, field acceptance and calibration
+remain pending. Do not tune gates against this grid. Level remains advanced
+prototype / pre-pilot, zero accepted field cases. No operational line was enabled;
+Dash, workbook, source inputs, app database and preview processes were untouched.
 
 **2026-10-23 source/fault continuation:** read
 [SOURCE_FAULT_VALIDATION_2026-10-23.md](SOURCE_FAULT_VALIDATION_2026-10-23.md)

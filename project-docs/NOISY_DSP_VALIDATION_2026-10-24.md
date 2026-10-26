@@ -214,7 +214,17 @@ Starlette/httpx warning,190.99s. No software/test changes were needed for the
 parallel-server connection failure. Final architecture direct/self-tests,
 focused Ruff, all20 evidence hashes and the historical manifests pass. The
 implementation and final verification evidence are published through Git history;
-delivery/cleanup confirmation follows after remote verification.
+delivery/cleanup confirmation is recorded below.
+
+Delivery closure verified **2026-10-26**: implementation/evidence `24c6e49` was
+pushed to `origin/main` and the exact remote HEAD was verified. The managed
+worktree is archived; only the primary checkout remains. All QA logs, review
+package and execution ledger are preserved locally under ignored
+`out/qa/noisy-dsp-validation-2026-10-24/`. The current 20-source manifest and all
+historical numerical/section/source manifests still match; both local Dash
+findings retain their previous hashes. Final closure documentation follows
+the implementation in Git history; no new numerical experiment was run for
+this documentation-only closure.
 
 One Minor is deferred: grossly malformed nominal frequency 1e308 can overflow
 the invalid-record display fallback. Input remains blocked, but inspection can
