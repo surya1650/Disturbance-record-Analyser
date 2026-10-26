@@ -1,5 +1,34 @@
 # Context for the next session
 
+**Conditional I2 error-budget milestone — started2026-10-26,verification2026-10-27.**
+Read [SEQUENCE_ERROR_BUDGET_2026-10-26.md](SEQUENCE_ERROR_BUDGET_2026-10-26.md) and
+its JSON. New pure DSP functions dft_noise_radius/i2_budget take explicit additive
+caps/provenance and never authorize location; missing bounds refuse. Code/protocol
+freeze34a6cb3. 80 new parsed metrology records/73160 supports completed,zero failures.
+56 within-cap records/51212 supports have zero conditional-bound misses;7824 of
+those supports get conditional status.24 coherent controls deliberately violate
+ADC-only supplied caps and are excluded from successful coverage. They show why
+caller provenance does not establish true total measurement error.
+
+**Next production numerical issue: rounded-cycle conjugate leakage.** Development
+48Hz/fs3500 rounds72.9167 samples to73, leaking positive-sequence conjugate intoI2.
+Ideal matched-kernel versus physical I2 bias reaches1.1438625 A. Case21 (I2=10A,
+quantization) has508 supports with valid additive status but >5% physical error.
+Integer-grid52Hz/fs2600 bias is~1e-11A. The additive utility is mathematically
+conditional; it does not fix or bound that separate physical-kernel bias.
+Next step: independent exact-frequency/two-basis correction study (Y-g*conj(Y))/
+(1-|g|^2), including mimic gain, half-cycle/first-sample handling and updating the
+kernel noise bound/direct tests together. Run independent full-record/Stage-A/full
+regressions before any production adoption. Do not tune historical grids. Gain,
+polarity, alias, CT/model and clock provenance still cannot come from a sine fit.
+
+Focused77 pass; release1230 passed/28corpus skips,one upstream warning,95.83s.
+12 current evidence hashes verify; production consumers and earlier sources/
+evidence unchanged. Review/final primary delivery follow in the report. Prior
+malformed-frequency inspection fallback also pending. Five-hour chat continuation
+is active under the user’s autonomous instruction; do not ask for design approval
+or consume manual resets/credits. Preserve all work/QA on quota interruption.
+
 **Three-phase/full-record acquisition study — 2026-10-26.** Read
 [THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md](THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md)
 and its CORRECTED tracked JSON before further gate work. Original protocol/code

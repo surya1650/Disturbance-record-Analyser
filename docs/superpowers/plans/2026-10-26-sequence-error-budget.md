@@ -1,6 +1,6 @@
 # Conditional Sequence Error Budget Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Supply and independently validate conditional additive-error bounds for the DSP kernel and I2, with explicit provenance and no location authorization.
 
@@ -28,18 +28,18 @@
 ### Task 1: Pure conditional DSP bounds
 **Files:** Create src/dranalyser/dsp/sequence_budget.py and tests/test_sequence_budget.py; add only its line budget in scripts/architecture_budgets.json.
 **Interfaces:** dft_noise_radius(fs,freq,sample_bound,*,tau=None,half_cycle=False,uniform_grid=False) returns a structured conditional operator radius. i2_budget(currents,error_radii,*,provenance='') returns structured I2 magnitude interval/error bound and conditional/withheld/unsupported status. Inputs/outputs are primary A, explicit ordering ABC, JSON-safe numbers.
-- [ ] Write direct independent kernel-coefficient tests, exact adversarial triangle construction, weak/balanced/unknown tests, malformed/overflow cases and no-authority assertions.
-- [ ] Run pytest tests/test_sequence_budget.py -q; expect missing module failures.
-- [ ] Implement the two pure functions and finite guards exactly as the spec, preserving the existing operator/callers.
-- [ ] Run focused tests, architecture and new-file Ruff; expect pass, then commit/task-done.
+- [x] Write direct independent kernel-coefficient tests, exact adversarial triangle construction, weak/balanced/unknown tests, malformed/overflow cases and no-authority assertions.
+- [x] Run pytest tests/test_sequence_budget.py -q; expect missing module failures.
+- [x] Implement the two pure functions and finite guards exactly as the spec, preserving the existing operator/callers.
+- [x] Run focused tests, architecture and new-file Ruff; expect pass, then commit/task-done.
 
 ### Task 2: Independent parsed metrology matrix
 **Files:** Create tests/sequence_budget_records.py, scripts/sequence_budget_validation.py and tests/test_sequence_budget_validation.py; add the new script line budget.
 **Interfaces:** records(directory,*,split,i2,scenario) returns(parsed Record, ideal primary current arrays, declared per-phase sample caps, truth/provenance). run() returns80 cases with evaluated observation counts, bound misses, conditional/withheld counts, explicit assumption violations, hashes and no production adoption. main() exclusively publishes and exits2 on numerical failures/valid-assumption misses.
-- [ ] Test primary/secondary/ADC roundtrip, bounded/underclaimed sample caps, tiny actual-DSP matrix, complete failure accounting, missing/weak bounds, and CLI finite/existing/racing publication RED.
-- [ ] Implement independent source signals, integer public parsing and all actual DSP supports with matched ideal-kernel comparison; never infer a bound from truth residuals.
-- [ ] Run both focused suites and architecture/Ruff GREEN. Commit code/protocol before running the full matrix to a new tracked evidence path.
-- [ ] Verify all80 cases/observation denominators, finite values, masks and hashes; commit evidence and task-done.
+- [x] Test primary/secondary/ADC roundtrip, bounded/underclaimed sample caps, tiny actual-DSP matrix, complete failure accounting, missing/weak bounds, and CLI finite/existing/racing publication RED.
+- [x] Implement independent source signals, integer public parsing and all actual DSP supports with matched ideal-kernel comparison; never infer a bound from truth residuals.
+- [x] Run both focused suites and architecture/Ruff GREEN. Commit code/protocol before running the full matrix to a new tracked evidence path.
+- [x] Verify all80 cases/observation denominators, finite values, masks and hashes; commit evidence and task-done.
 
 ### Task 3: Scientific interpretation, review and integration
 **Files:** Create project-docs/SEQUENCE_ERROR_BUDGET_2026-10-26.md; update project-docs/NEXT_SESSION.md.
