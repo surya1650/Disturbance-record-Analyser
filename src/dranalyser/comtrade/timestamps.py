@@ -30,11 +30,11 @@ def recover_time(cfg, stamps, n):
     def invalid(reason, display_period=None):
         # A finite placeholder supports inspection; its provenance and parser
         # block explicitly prohibit interpreting it as recovered acquisition.
-        fs = cfg.line_freq*20 if np.isfinite(cfg.line_freq) and cfg.line_freq > 0 else 1000.
+        fs = 1000.
         if display_period is not None:
             fs = 1/display_period
         info.update(status='invalid', method='display-only placeholder', reason=reason,
-                    display_rate_basis='untrusted DAT fit; inspection only' if display_period is not None else 'nominal frequency placeholder')
+                    display_rate_basis='untrusted DAT fit; inspection only' if display_period is not None else 'fixed 1000 Hz inspection placeholder')
         return np.arange(n)/fs, fs, [reason], info
 
     if cfg.nrates != 0:
