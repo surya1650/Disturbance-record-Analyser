@@ -132,3 +132,16 @@ excluded. The old inspection-timebase fallback is fixed in its separately
 reviewed branch; final combined verification follows.
 
 Final review-fix full suite: **1,357 passed /28 corpus skips**, one existing upstream warning,83.88s. No Critical or unresolved Important findings. No re-review was dispatched after the single verified fix pass.
+
+Final combined primary regression: **1,401 passed, no skips**, one existing
+upstream Starlette/httpx warning,87.81s. This includes the separately reviewed
+inspection fallback. [Final new-grid evidence](validation/FRACTIONAL_DSP_DISJOINT_2026-10-27_FINAL.json)
+and [final historical-grid replay](validation/FRACTIONAL_DSP_HISTORICAL_REPLAY_2026-10-27_FINAL.json)
+bind16 current merged sources each at integratione7a8a48; all160 numerical rows
+are identical to the reviewed runs. Use these FINAL files for the delivered
+checkout; REVIEWED/HELD/original files retain their historical source bindings.
+Architecture direct/self-tests, changed-file Ruff and diff checks pass. All
+review findings are fixed except the stated research method-type Minor.
+Reviewed analyser changes are integrated; QA/review/ledgers are preserved locally
+before native worktree archival. The five-hour continuation remains active for
+separately validated scalar saturation/weakI2 observability work.

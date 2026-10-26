@@ -1,5 +1,21 @@
 # Context for the next session
 
+**Delivered software/validation —2026-10-27.**
+Combined primary1401passed/no skips/1existing upstream warning87.81s. Both
+inspection fallback and research DSP milestones are independently reviewed and
+integrated. All32 FINAL metrology source hashes verify; FINAL80+80 rows exactly
+match reviewed results. See the two reports immediately below. The earlier
+conditional-budget and three-phase milestones are completed; do not redo them.
+Malformed-frequency inspection fallback is DONE. Research DSP adoption remains
+HELD; legacy defaults and refusal remain. One deferred research-only API Minor:
+sliding_dft accepts a one-element NumPy array method, matching radius rejects it.
+Next autonomous work: separately frozen conservative scalar saturation/weakI2
+observability policy and disjoint independent fault validation before revisiting
+DSP adoption. The12 prior decision rulings and costs stay in preserved ledgers.
+Five-hour heartbeat is ACTIVE; respect natural quotas, no manual resets/credits,
+no new field-data invention, no operational/clock promotion, no holdout tuning.
+Dash findings remain local and unchanged; leave captures/workbook/DB untouched.
+
 **Invalid-acquisition inspection fallback —2026-10-27.**
 Read [INSPECTION_TIMEBASE_FIX_2026-10-27.md](INSPECTION_TIMEBASE_FIX_2026-10-27.md).
 The previously deferred malformed-frequency Minor is fixed: invalid DAT timing
