@@ -1,5 +1,22 @@
 # Context for the next session
 
+**Independent acquisition/CT-quality study — 2026-10-26.** Read
+[ACQUISITION_CT_VALIDATION_2026-10-26.md](ACQUISITION_CT_VALIDATION_2026-10-26.md)
+and the tracked JSON. A new independent secondary-referred nonlinear CT oracle
+and frozen offline noise-aware candidate completed 306 waveform outcomes across
+144 physical CT realizations (two noise conditions) and 18 controls. Zero
+numerical failures and zero harmful CT passes: 136 >5% current-error outcomes,
+104 in disjoint holdout. All eight harmful controls refuse; all ten bounded
+noise/quantization/clean controls pass. Candidate freeze is `4005c7d`.
+
+The bounded-study gate passes; **production refusals remain unchanged**. Candidate
+passes never authorize location. Integration needs new disjoint three-phase,
+voltage/ADC, weak-channel and full parsed-record main/stage validation, frequency
+uncertainty, aliasing and adversarial nuisance-fit cases. Do not tune on this
+holdout. Initial flux bias is not hysteretic remanence. Project remains advanced
+prototype/pre-pilot with zero accepted field cases. Dash and historical artifacts
+are unchanged. Final verification/delivery details follow in this milestone report.
+
 **Noisy DSP/local timestamp milestone delivered; closure verified 2026-10-26.**
 Read [NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md)
 and its tracked JSON before further work. Implementation/evidence `24c6e49` was
