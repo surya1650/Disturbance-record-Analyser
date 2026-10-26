@@ -6,6 +6,11 @@ import numpy as np
 RANK_TOLERANCE = 64*np.finfo(float).eps
 
 
+def _subnyquist(fs, freq):
+    # Reject aliased/singular domains before trig argument error creates rank.
+    return math.isfinite(fs) and math.isfinite(freq) and 0 < freq < fs/2
+
+
 def filter_samples(x, decay):
     """Existing mimic FIR, including its initialized first sample."""
     x = np.asarray(x, dtype=float)
@@ -35,7 +40,7 @@ def sliding_fundamental(x, t, fs, freq, n, decay):
     if x.ndim != 1 or t.shape != x.shape:
         raise ValueError('Matching one-dimensional samples and times required.')
     out = np.full(x.size, np.nan+0j, dtype=complex)
-    if n < 2 or x.size < n:
+    if not _subnyquist(fs, freq) or n < 2 or x.size < n:
         return out
     with np.errstate(over='ignore', invalid='ignore', divide='ignore'):
         phase = 2*np.pi*freq*t
@@ -58,8 +63,8 @@ def kernel_l1(fs, freq, n, decay):
     Basis rotation at a different absolute origin leaves complex coefficient
     magnitudes unchanged. The prior FIR input sample is included explicitly.
     """
-    if not 2 <= n <= 100000:
-        raise ValueError('Conditional kernel supports2..100000 samples.')
+    if not _subnyquist(fs, freq) or not 2 <= n <= 100000:
+        raise ValueError('Research kernel requires a sub-Nyquist frequency and2..100000 samples.')
     phase = (2*np.pi*(freq/fs))*np.arange(-1, n)
     raw_u, raw_v = np.cos(phase), np.sin(phase)
     factors = []

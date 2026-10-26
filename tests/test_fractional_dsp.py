@@ -97,3 +97,18 @@ def test_production_default_retains_known_saturated_abc_refusal():
         config=stagea._sample(rng,index)
     result=stagea.run_case(config)
     assert not result.ok, 'Unsafe candidate adoption would locate this saturated ABC case at6.21% error.'
+
+
+@pytest.mark.parametrize('tau', [None, .02])
+def test_research_nyquist_refusal_survives_large_absolute_phase_origin(tau):
+    t = 1e8+np.arange(20)/100
+    result = sliding_dft(np.ones(20), t, 100, 50, tau=tau, method='basis')
+    assert np.all(np.isnan(result))
+
+
+@pytest.mark.parametrize('fs,freq', [(100, 50), (1, 1e15)])
+@pytest.mark.parametrize('tau', [None, .02])
+def test_research_bound_rejects_aliased_singular_domain_before_phase_evaluation(fs, freq, tau):
+    result = dft_noise_radius(fs, freq, .1, tau=tau, half_cycle=True,
+                              uniform_grid=True, method='basis')
+    assert result['status'] == 'unsupported' and not result['authorizes_location']

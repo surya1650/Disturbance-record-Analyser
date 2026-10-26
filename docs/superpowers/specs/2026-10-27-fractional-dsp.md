@@ -52,7 +52,9 @@ additional harmful coherent-bias locations. Preserve that trial evidence and
 hold adoption. sliding_dft(...,method='basis') is explicit research opt-in;
 method='legacy' is the unchanged production default. dft_noise_radius has the
 same method selection and bounds the corresponding operator. Its2..100000
-resource/rank restriction applies to the research basis method. No production
+resource/rank restriction applies to the research basis method. No research
+basis frequency may reach or exceed Nyquist: reject that domain before phase
+evaluation so trigonometric error cannot manufacture apparent rank. No production
 pipeline or location consumer selects the research method. The metrology
 adapter recomputes research currents from actual parsed samples at tracked
 frequency/tau, never substitutes physical truth into measured phasors. A real

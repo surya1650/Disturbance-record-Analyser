@@ -1,4 +1,4 @@
-# Fractional-window DSP study â€” 2026-10-27
+# Fractional-window DSP study — 2026-10-27
 
 The physical fundamental correction is validated for the specified synthetic
 model, **but production adoption is held**. Rounded sample supports mix the
