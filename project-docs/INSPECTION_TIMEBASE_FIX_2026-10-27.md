@@ -25,3 +25,5 @@ not field acceptance or a standards certificate. Full regression, independent
 review and primary delivery are recorded below when complete.
 
 Isolated full regression: **1,246 passed /28 corpus-dependent skips**, one existing upstream Starlette/httpx warning,84.79s. Fresh independent review and primary delivery follow below.
+
+Fresh independent whole-branch review found no Critical, Important or Minor issues and no excluded judgments. Independent focused rerun:46 passed,0.75s. Combined primary integration/verification follows.
