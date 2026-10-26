@@ -1,5 +1,6 @@
 """Frozen disjoint physical-fundamental validation; no field/location authority."""
 import argparse
+from functools import partial
 import hashlib
 import importlib.util
 import itertools
@@ -12,12 +13,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT/'src'))
 
-from scripts.sequence_budget_validation import evaluate, summary  # noqa: E402
+from scripts.sequence_budget_validation import evaluate as metrology_evaluate, summary  # noqa: E402
 from tests.sequence_budget_records import I2_VALUES, SCENARIOS, SPLITS  # noqa: E402
 
 NEW_SPLITS = {'development': dict(freq=47, fs=3200, pre=.16, angle=.53, seed=4754),
               'validation': dict(freq=53, fs=4100, pre=.19, angle=1.17, seed=5954)}
 PHYSICAL_BIAS_LIMIT_A = .01
+evaluate = partial(metrology_evaluate, method='basis')
 
 
 def case_grid():
@@ -66,7 +68,7 @@ def run(*, historical=False):
         'tests/test_sequence_budget_validation.py', 'tests/test_fractional_dsp.py',
         'scripts/sequence_budget_validation.py', 'scripts/fractional_dsp_validation.py',
         'tests/test_fractional_dsp_validation.py', 'docs/superpowers/specs/2026-10-27-fractional-dsp.md'})
-    result.update(cases=rows, authorizes_location=False, production_consumers_changed=True,
+    result.update(cases=rows, authorizes_location=False, production_consumers_changed=False,
         complete_grid_gate=bool(complete and not failed), physical_bias_gate=physical_ok,
         validation_status='failed' if failed else 'passed_physical_study' if complete else 'passed_subset_study',
         protocol=dict(grid='historical_replay' if historical else 'new_disjoint_grid', splits=splits,

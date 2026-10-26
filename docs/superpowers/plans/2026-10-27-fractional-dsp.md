@@ -10,6 +10,12 @@
 
 **Spec:** docs/superpowers/specs/2026-10-27-fractional-dsp.md
 
+**Adoption amendment:** The corrected-default trial produced new harmful outputs
+on corrupted inputs. Retain it historically; final code must keep legacy default
+and expose method='basis' only explicitly for research. Matching radius uses the
+same method. Freeze and run fresh HELD metrology evidence, default full suite and
+default Stage-A. Ledger contains the adoption ruling and observed RED regressions.
+
 ## Global Constraints
 - Absolute-origin RMS, existing rounded full/half supports and mimic FIR contract.
 - Relative determinant guard64eps; singular supports NaN, no plausible estimate.

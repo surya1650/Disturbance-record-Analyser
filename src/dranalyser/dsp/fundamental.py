@@ -85,3 +85,25 @@ def kernel_l1(fs, freq, n, decay):
             weights = raw
         factors.append(math.fsum(abs(z) for z in weights))
     return max(factors)
+
+
+def legacy_fundamental(x, t, fs, freq, n, decay):
+    """Historical production operator; experimental fit requires explicit opt-in."""
+    x = filter_samples(x, decay)
+    gain = 1 if decay is None else 1-decay*np.exp(-2j*np.pi*freq/fs)
+    cumulative = np.concatenate(([0j], np.cumsum(x*np.exp(-2j*np.pi*freq*t))))
+    out = np.full(x.size, np.nan+0j, dtype=complex)
+    if x.size >= n:
+        out[n-1:] = ((2./n)*(cumulative[n:]-cumulative[:-n]))/math.sqrt(2.)/gain
+    return out
+
+
+def legacy_kernel_l1(fs, freq, n, decay):
+    """Historical scalar-kernel bound retained for default production phasors."""
+    factor = math.sqrt(2)
+    if decay is not None:
+        gain = abs(1-decay*np.exp(-2j*math.pi*(freq/fs)))
+        if gain == 0:
+            raise ValueError('Unrepresentable mimic response.')
+        factor *= (n-1)/n+(1+decay)/(n*gain)
+    return factor

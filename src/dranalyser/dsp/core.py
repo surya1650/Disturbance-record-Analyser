@@ -6,10 +6,10 @@ A phasor at sample n is the RMS phasor of the fundamental, referenced to the
 record's own absolute time origin t = 0, estimated from the full cycle of
 samples ENDING at n:
 
-    x[k] = c*cos(w*t[k]) + s*sin(w*t[k]); X(t_n) = (c-j*s)/sqrt(2)
+    X(t_n) = (2/N) * sum_{k=n-N+1..n} x[k] * exp(-j*w*t[k]) / sqrt(2)
 
-The two real bases are fitted jointly: rounded-cycle supports need not be
-orthogonal. Data and bases share the same mimic FIR when enabled.
+An explicit method='basis' research option fits two real bases jointly on
+rounded supports. It is held out of production defaults after workflow regressions.
 
 Referencing to absolute time rather than to the window start means a steady
 sinusoid gives a constant phasor, so superimposed quantities are a plain
@@ -24,7 +24,7 @@ from typing import Dict, Optional, Tuple
 
 import numpy as np
 
-from .fundamental import filter_samples, sliding_fundamental
+from .fundamental import filter_samples, legacy_fundamental, sliding_fundamental
 
 A = np.exp(2j * np.pi / 3.0)
 
@@ -120,13 +120,17 @@ def sliding_dft(
     freq: float,
     half_cycle: bool = False,
     tau: Optional[float] = None,
+    *, method: str = 'legacy',
 ) -> np.ndarray:
     """RMS fundamental phasor per sample, referenced to absolute time."""
     n = int(round(fs / freq))
     if half_cycle:
         n = max(n // 2, 2)
     decay = math.exp(-(1/fs)/max(tau, 1e-6)) if tau is not None else None
-    return sliding_fundamental(x, t, fs, freq, n, decay)
+    if method not in ('legacy', 'basis'):
+        raise ValueError('Unknown fundamental method.')
+    operator = sliding_fundamental if method == 'basis' else legacy_fundamental
+    return operator(x, t, fs, freq, n, decay)
 
 
 def phasors_for(

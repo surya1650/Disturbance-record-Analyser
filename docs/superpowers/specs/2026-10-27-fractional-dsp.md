@@ -44,6 +44,24 @@ and all existing parsed main/stage/noise/CT regression tests must pass. Review
 the whole branch independently before integrating. If adoption gates fail,
 retain research evidence without weakening gates or claiming a completed fix.
 
+## Adoption result and final interface
+
+The default-change trial passed the clean Stage-A criterion but newly located
+saturatedABC seed9984 at6.212321% error;552 full-record outcomes also include
+additional harmful coherent-bias locations. Preserve that trial evidence and
+hold adoption. sliding_dft(...,method='basis') is explicit research opt-in;
+method='legacy' is the unchanged production default. dft_noise_radius has the
+same method selection and bounds the corresponding operator. Its2..100000
+resource/rank restriction applies to the research basis method. No production
+pipeline or location consumer selects the research method. The metrology
+adapter recomputes research currents from actual parsed samples at tracked
+frequency/tau, never substitutes physical truth into measured phasors. A real
+Stage-A9984 refusal and independent legacy-formula test protect the default.
+Fresh explicit-opt-in80+80 metrology evidence must bind the held implementation;
+earlier default-trial manifests remain historical. Full regression and a fresh
+default Stage-A10000 must confirm restored behavior. Physical correction is
+validated research, not a completed production correction.
+
 No new field data, accepted field cases, standards certification, E4/clock
 promotion, operational enablement, or Dash/workbook/database changes. User
 authorized autonomous inline work and integration/push without approval gates.

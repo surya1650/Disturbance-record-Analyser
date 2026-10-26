@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT/'src'))
 
-from dranalyser.dsp.core import sliding_dft  # noqa: E402
+from dranalyser.dsp.core import add_sequence, sliding_dft  # noqa: E402
 from dranalyser.dsp.pipeline import analyse  # noqa: E402
 from dranalyser.dsp.sequence_budget import dft_noise_radius, i2_budget  # noqa: E402
 from tests.sequence_budget_records import I2_VALUES, SCENARIOS, SPLITS, records, validate  # noqa: E402
@@ -27,20 +27,26 @@ def case_grid():
             for split, i2, scenario in itertools.product(SPLITS, I2_VALUES, SCENARIOS)]
 
 
-def evaluate(rec, ideal, caps, truth):
+def evaluate(rec, ideal, caps, truth, *, method='legacy'):
     if rec.blocked():
         raise ValueError('Unexpected blocked metrology acquisition.')
     an = analyse(rec)
+    if method != 'legacy':
+        # Research metrology adapter: actual raw channels, tracked f/tau/support;
+        # no oracle phasors enter production and no location consumer opts in.
+        an.ps.phasors = {n: sliding_dft(rec.analog[n], rec.t, rec.fs, an.freq,
+            tau=an.tau, method=method) for n in ('IA', 'IB', 'IC')}
+        add_sequence(an.ps)
     ids = an.ps.window_indices(*truth['window_s'])
     if not len(ids):
         raise ArithmeticError('No complete metrology DSP supports.')
     names = ('IA', 'IB', 'IC')
     radii = [dft_noise_radius(rec.fs, an.freq, caps[n], tau=an.tau,
-        uniform_grid=bool(np.allclose(np.diff(rec.t), 1/rec.fs, rtol=0, atol=1e-12))) for n in names]
+        uniform_grid=bool(np.allclose(np.diff(rec.t), 1/rec.fs, rtol=0, atol=1e-12)), method=method) for n in names]
     if any(r['status'] != 'conditional_bound' or r['n_window'] != an.ps.n_window for r in radii):
         raise ArithmeticError('Unsupported or mismatched actual DSP kernel.')
     phase_radii = [r['radius_primary_a'] for r in radii]
-    reference = np.array([sliding_dft(ideal[n], rec.t, rec.fs, an.freq, tau=an.tau)[ids] for n in names])
+    reference = np.array([sliding_dft(ideal[n], rec.t, rec.fs, an.freq, tau=an.tau, method=method)[ids] for n in names])
     observed = np.array([an.ps.phasors[n][ids] for n in names])
     a = np.exp(2j*np.pi/3)
     expected_i2 = (reference[0]+a*a*reference[1]+a*reference[2])/3

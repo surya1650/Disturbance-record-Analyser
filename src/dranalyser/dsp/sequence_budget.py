@@ -3,7 +3,7 @@ import cmath
 import math
 from numbers import Complex, Real
 
-from .fundamental import kernel_l1
+from .fundamental import kernel_l1, legacy_kernel_l1
 
 SCOPE = 'Caller-supplied deterministic additive bounds only; excludes any error component not covered by them.'
 
@@ -19,13 +19,14 @@ def _real(value):
         return False
 
 
-def dft_noise_radius(fs, freq, sample_bound, *, tau=None, half_cycle=False, uniform_grid=False):
+def dft_noise_radius(fs, freq, sample_bound, *, tau=None, half_cycle=False, uniform_grid=False, method='legacy'):
     """Bound the matched linear RMS-DFT operator on a verified uniform local grid.
 
     Input/output bounds are in primary A. This does not bound frequency-model
     bias or all floating-point accumulation error, nor establish anti-aliasing.
     """
-    if (uniform_grid is not True or not isinstance(half_cycle, bool) or
+    if (not isinstance(method, str) or method not in ('legacy', 'basis') or
+            uniform_grid is not True or not isinstance(half_cycle, bool) or
             not all(_real(v) for v in (fs, freq, sample_bound)) or
             fs <= 0 or freq <= 0 or sample_bound < 0 or
             tau is not None and (not _real(tau) or tau < 0)):
@@ -40,7 +41,7 @@ def dft_noise_radius(fs, freq, sample_bound, *, tau=None, half_cycle=False, unif
         return _unsupported('At least two samples per kernel required.')
     try:
         b = math.exp(-(1/fs)/max(float(tau), 1e-6)) if tau is not None else None
-        factor = kernel_l1(fs, freq, n, b)
+        factor = (kernel_l1 if method == 'basis' else legacy_kernel_l1)(fs, freq, n, b)
         factor += 64*math.ulp(factor)
         radius = sample_bound*factor
         if not all(math.isfinite(v) for v in (factor, radius)):
