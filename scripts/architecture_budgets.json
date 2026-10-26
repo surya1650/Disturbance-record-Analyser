@@ -1,5 +1,7 @@
 {
   "files": {
+    "scripts/acquisition_ct_validation.py": 143,
+    "scripts/acquisition_quality_candidate.py": 46,
     "scripts/catalogue_source_audit.py": 58,
     "scripts/check_architecture.py": 326,
     "scripts/create_demo.py": 64,
