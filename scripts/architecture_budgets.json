@@ -6,6 +6,8 @@
     "scripts/check_architecture.py": 326,
     "scripts/create_demo.py": 64,
     "scripts/field_evidence_inventory.py": 104,
+    "scripts/full_record_quality.py": 94,
+    "scripts/full_record_validation.py": 143,
     "scripts/noisy_dsp_validation.py": 183,
     "scripts/numerical_envelope.py": 27,
     "scripts/section_numerical_validation.py": 138,
