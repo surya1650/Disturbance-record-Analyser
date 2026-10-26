@@ -1,5 +1,36 @@
 # Context for the next session
 
+**Three-phase/full-record acquisition study — 2026-10-26.** Read
+[THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md](THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md)
+and its tracked JSON before further gate work. Protocol/code freeze `8521053`.
+552 synthetic paired incidents /1104 main and reviewed-stage outcomes completed:
+168 located,936 refused,zero numerical failures. Joint quality passes162 incidents,
+including81 study-defined harmful measurement passes (80 coherent gain/polarity/
+fundamental-alias controls and one colored-noise balanced control with I2 error
+9.6103% over the reference floor). All66 harmful CT incidents refuse the joint
+screen and produce no production location. All276 balanced-control workflow
+outcomes refuse. There is no E4 promotion.
+
+**Safe-adoption gate fails; candidate stays offline, production unchanged.**
+57 actual located outcomes exceed1 km under coherent gain/polarity/alias defects;
+worst is24.31118 km (case294,validation/baseline/AG/polarity,reviewed stage).
+Clean-ADC maximum located error .01522 km; all192 white/colored/quantized workflow
+outcomes refuse. These are bounded synthetic results, not field accuracy or a
+calibrated standard. Current/voltage sine-shape checks cannot establish gain,
+polarity, anti-alias provenance or negative-sequence accuracy. Next software work:
+a separately frozen I2 noise/error budget and explicit observability tests;
+maintain unsupported acquisition/ADC/clock/model/weak-infeed gates. Do not tune
+against this published validation grid. CT remains a memoryless toy excitation
+model; initial bias is not hysteretic remanence. The drift scenario is a frequency
+chirp, not physical clock/aperture drift. No new field data or operational lines.
+
+Focused34 tests pass; full release1152 passed/28 corpus skips,one upstream warning,
+252.84s. All29 current evidence hashes and the prior corrected scalar7 hashes
+verify; historical files and Dash findings are unchanged. Final review/primary
+verification and delivery follow in the milestone report. Full suites run serially
+because workbench tests bind fixed ports8241–8243. Project remains advanced
+prototype/pre-pilot with zero accepted field cases.
+
 **Independent acquisition/CT-quality study — 2026-10-26.** Read
 [ACQUISITION_CT_VALIDATION_2026-10-26.md](ACQUISITION_CT_VALIDATION_2026-10-26.md)
 and the tracked JSON. A new independent secondary-referred nonlinear CT oracle

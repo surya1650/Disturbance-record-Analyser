@@ -1,6 +1,6 @@
 # Three-phase Full-record Acquisition Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Validate the frozen noise-aware screen through six-channel acquisition and actual main/reviewed-stage location, retaining unsafe passes and failures.
 
@@ -28,19 +28,19 @@
 ### Task 1: Independent full-record signal and acquisition chain
 **Files:** Create tests/full_record_signals.py, tests/full_record_acquisition.py, tests/test_full_record_acquisition.py.
 **Interfaces:** signals(split, profile, fault, scenario) returns end-keyed secondary waveform dictionaries plus ideal/CT-only arrays, true frequency/rate/window and ADC encoding facts. records(directory, *, split, profile, fault, scenario) returns (publicly parsed end-keyed Records, truth). Constants expose supported splits/profiles/scenarios.
-- [ ] Write tests for ideal secondary/primary ADC round trip, six channels, digital chronology, CT current balance provenance, noise determinism, gap/clock/rate cases, clipping rails, alias identity and configuration rejection.
-- [ ] Run pytest tests/test_full_record_acquisition.py -q; expect missing-module failure.
-- [ ] Implement source-phase signals, independent CT-before-noise/ADC, integer ASCII acquisition and normal public parsing; preserve truth separately.
-- [ ] Run the focused test command; expect all pass, then commit and task-done.
+- [x] Write tests for ideal secondary/primary ADC round trip, six channels, digital chronology, CT current balance provenance, noise determinism, gap/clock/rate cases, clipping rails, alias identity and configuration rejection.
+- [x] Run pytest tests/test_full_record_acquisition.py -q; expect missing-module failure.
+- [x] Implement source-phase signals, independent CT-before-noise/ADC, integer ASCII acquisition and normal public parsing; preserve truth separately.
+- [x] Run the focused test command; expect all pass, then commit and task-done.
 
 ### Task 2: Record-level diagnostics and complete numerical runner
 **Files:** Create scripts/full_record_quality.py, scripts/full_record_validation.py, tests/test_full_record_validation.py. Modify scripts/architecture_budgets.json for new scripts only.
 **Interfaces:** record_quality(rec, freq, bounds) returns JSON-safe six-channel research diagnostics with authorizes_location=false. run() returns complete incidents with truth errors, candidate quality, real main/stage results, strata, adoption decision and source hashes. main() exclusively publishes output and exits 2 for numerical failures.
-- [ ] Write tests for six-channel shape and acquisition gates, weak/short/nonfinite input, explicit voltage units, truthful gain/polarity counterexamples, independent error floors, tiny complete grid, injected exceptions/nonfinite output, CLI failure/race and existing output preservation.
-- [ ] Run pytest tests/test_full_record_validation.py -q; expect missing-module failure.
-- [ ] Implement the frozen wrapper, independent quadrature metrics and both unchanged actual workflows. Retain every planned outcome; no truth-based quality override.
-- [ ] Run both new focused suites; expect all pass. Architecture and new-file Ruff must pass. Commit protocol/code before the full validation grid, then run it to a new tracked evidence path.
-- [ ] Verify finite JSON, denominators, hashes and actual unsafe passes. Commit evidence; task-done with both focused suites.
+- [x] Write tests for six-channel shape and acquisition gates, weak/short/nonfinite input, explicit voltage units, truthful gain/polarity counterexamples, independent error floors, tiny complete grid, injected exceptions/nonfinite output, CLI failure/race and existing output preservation.
+- [x] Run pytest tests/test_full_record_validation.py -q; expect missing-module failure.
+- [x] Implement the frozen wrapper, independent quadrature metrics and both unchanged actual workflows. Retain every planned outcome; no truth-based quality override.
+- [x] Run both new focused suites; expect all pass. Architecture and new-file Ruff must pass. Commit protocol/code before the full validation grid, then run it to a new tracked evidence path.
+- [x] Verify finite JSON, denominators, hashes and actual unsafe passes. Commit evidence; task-done with both focused suites.
 
 ### Task 3: Evidence, independent review and delivery
 **Files:** Create project-docs/THREE_PHASE_ACQUISITION_VALIDATION_2026-10-26.md; update project-docs/NEXT_SESSION.md.
