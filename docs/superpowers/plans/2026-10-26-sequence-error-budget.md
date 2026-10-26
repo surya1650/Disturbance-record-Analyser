@@ -44,6 +44,6 @@
 ### Task 3: Scientific interpretation, review and integration
 **Files:** Create project-docs/SEQUENCE_ERROR_BUDGET_2026-10-26.md; update project-docs/NEXT_SESSION.md.
 **Interfaces:** Task2 evidence determines whether the supplied-cap theorem is numerically supported; field/operational adoption is never implied.
-- [ ] Publish coverage and counterexamples with explicit conditional scope, numeric tolerances and matched-kernel limitation.
-- [ ] Run serial full suite; obtain one fresh whole-branch review and fix Important issues with RED/GREEN evidence, preserving frozen evidence revisions.
-- [ ] Integrate, verify primary full suite and remote push, preserve QA/ledger and archive managed worktree. Continue further actionable work under the user's autonomy and five-hour heartbeat.
+- [x] Publish coverage and counterexamples with explicit conditional scope, numeric tolerances and matched-kernel limitation.
+- [x] Run serial full suite; obtain one fresh whole-branch review and fix Important issues with RED/GREEN evidence, preserving frozen evidence revisions.
+- [x] Integrate, verify primary full suite and remote push, preserve QA/ledger and archive managed worktree. Continue further actionable work under the user's autonomy and five-hour heartbeat.

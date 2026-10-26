@@ -22,9 +22,11 @@ kernel noise bound/direct tests together. Run independent full-record/Stage-A/fu
 regressions before any production adoption. Do not tune historical grids. Gain,
 polarity, alias, CT/model and clock provenance still cannot come from a sine fit.
 
-Focused77 pass; release1230 passed/28corpus skips,one upstream warning,95.83s.
+Final primary1258 passed/no skips,one upstream warning,93.32s; fresh independent
+review found no Critical/Important/Minor issues. Focused77 pass; release1230
+passed/28corpus skips,one upstream warning,95.83s.
 12 current evidence hashes verify; production consumers and earlier sources/
-evidence unchanged. Review/final primary delivery follow in the report. Prior
+evidence unchanged. Final delivery is recorded in the report. Prior
 malformed-frequency inspection fallback also pending. Five-hour chat continuation
 is active under the user’s autonomous instruction; do not ask for design approval
 or consume manual resets/credits. Preserve all work/QA on quota interruption.

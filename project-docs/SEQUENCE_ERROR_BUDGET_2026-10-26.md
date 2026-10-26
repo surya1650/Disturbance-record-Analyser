@@ -145,5 +145,13 @@ skips, one existing upstream warning, 355.94 s. Full release: **1,230 passed /
 28 corpus skips**, one upstream warning, 95.83 s. Architecture and new-file Ruff
 pass; existing consumers are unchanged, so the previous Stage-A 10,000 run remains
 historical, not a new validation of this unwired utility. Independent review and
-final primary verification follow below. Project remains advanced prototype /
+final primary verification are recorded below. Project remains advanced prototype /
 pre-pilot with zero accepted field cases. Dash and source inputs are unchanged.
+
+Fresh independent whole-branch review found no Critical, Important or Minor
+issues. It independently ran all 77 focused tests and verified the 12 source
+hashes. Review excluded physical-kernel correction, proof of caller caps, formal
+floating-point intervals and location readiness; none is claimed here.
+Final primary regression: **1,258 passed, no skips**, one existing upstream
+Starlette/httpx warning, 93.32 s. QA, review and execution ledger are retained in
+ignored `out/qa/sequence-error-budget-2026-10-26/` before worktree archival.
