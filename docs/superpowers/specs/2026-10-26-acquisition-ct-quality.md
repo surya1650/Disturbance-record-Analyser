@@ -45,3 +45,10 @@ Dash changes, source-file changes or historical hash rewriting. Frozen reports
 retain their original source revision. New evidence uses UTF-8/LF source hashes.
 Serial full tests avoid workbench fixed-port interference. Record test and review
 logs locally. One fresh whole-branch review; fix Important findings with TDD.
+
+## Review correction
+An absolute fitted fundamental RMS floor of 1e-9 secondary A supplements the
+relative 1e-5 prominence guard. This is a numerical floor, not an engineering
+minimum current or a calibrated SNR limit. It corrects DC-dominated weak-signal
+passes identified after the frozen study. Preserve original evidence and publish
+a corrected rerun; do not tune the harmonic/noise budgets or holdout grid.

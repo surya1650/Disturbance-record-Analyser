@@ -78,3 +78,10 @@ def test_publication_does_not_overwrite(tmp_path, monkeypatch):
     with pytest.raises(SystemExit):
         runner.main()
     assert path.read_text() == 'original'
+
+@pytest.mark.parametrize('dc', [0, 1e-5])
+def test_absolute_weak_fundamental_is_withheld_with_or_without_dc(dc):
+    t = np.arange(720)/2400
+    result = assess(dc+1.1e-9*np.sin(2*np.pi*50*t), 2400, 50)
+    assert result['status'] == 'unsupported'
+    assert result['authorizes_location'] is False

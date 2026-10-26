@@ -3,11 +3,12 @@ import numpy as np
 
 POLICY = dict(residual_rms=.02, harmonic_rms=.03, peak_residual=.08,
               minimum_cycles=4, minimum_samples_per_cycle=16,
+              minimum_fundamental_rms_secondary_a=1e-9,
               dc_time_constants_s=[.01, .03, .1])
 
 
 def assess(samples, fs, freq):
-    """Separate fitted coherent harmonics from unmodeled noise/transients.
+    """Assess secondary-referred ampere samples; separate fitted coherent harmonics from unmodeled noise/transients.
 
     Neither component establishes magnetic CT saturation. No frequency recovery,
     acquisition timing validation or uncertainty calibration is performed here.
@@ -32,7 +33,7 @@ def assess(samples, fs, freq):
     design = np.array(basis).T
     coefficients = np.linalg.lstsq(design, u/scale, rcond=None)[0]
     fundamental = float(np.hypot(*coefficients[1:3])/np.sqrt(2))
-    if fundamental < 1e-5:
+    if fundamental < 1e-5 or fundamental < POLICY['minimum_fundamental_rms_secondary_a']/scale:
         return out
     residual = u/scale-design@coefficients
     values = dict(residual_rms=float(np.sqrt(np.mean(residual**2))/fundamental),
