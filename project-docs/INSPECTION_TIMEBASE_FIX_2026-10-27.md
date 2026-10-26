@@ -23,3 +23,5 @@ Historical numerical manifests continue to bind their original source versions;
 they are not rewritten to claim this checkout. This bounded inspection fix is
 not field acceptance or a standards certificate. Full regression, independent
 review and primary delivery are recorded below when complete.
+
+Isolated full regression: **1,246 passed /28 corpus-dependent skips**, one existing upstream Starlette/httpx warning,84.79s. Fresh independent review and primary delivery follow below.
