@@ -18,7 +18,12 @@ voltage/ADC, weak-channel and full parsed-record main/stage validation, frequenc
 uncertainty, aliasing and adversarial nuisance-fit cases. Do not tune on this
 holdout. Initial flux bias is not hysteretic remanence. Project remains advanced
 prototype/pre-pilot with zero accepted field cases. Dash and historical artifacts
-are unchanged. Final verification/delivery details follow in this milestone report.
+are unchanged. Final primary **1,146 passed/no skips**, one upstream warning,270.07s. Worktree
+release before the review correction:1,116 passed/28 corpus skips;31 new focused
+tests after correction. Architecture and focused Ruff pass;40 existing repository
+Ruff findings are in unchanged files. QA/review/ledger are preserved locally in
+ignored `out/qa/acquisition-ct-quality-2026-10-26/`. No new deferred Minors; the
+previous malformed-frequency inspection fallback Minor remains pending.
 
 **Noisy DSP/local timestamp milestone delivered; closure verified 2026-10-26.**
 Read [NOISY_DSP_VALIDATION_2026-10-24.md](NOISY_DSP_VALIDATION_2026-10-24.md)

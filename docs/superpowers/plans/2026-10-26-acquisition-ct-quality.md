@@ -43,6 +43,6 @@
 ### Task 3: Review and delivery
 **Files:** Create project-docs/ACQUISITION_CT_VALIDATION_2026-10-26.md; update project-docs/NEXT_SESSION.md.
 **Interfaces:** Task 2 evidence determines adoption decision and remaining work.
-- [ ] Report actual strata, unsafe passes and production limitations; record adoption decision against fixed criterion.
-- [ ] Run full suite serially; expect no failures. Obtain one independent whole-branch review and fix Important issues with RED/GREEN evidence.
-- [ ] Integrate authorized changes into main, run primary full suite, verify remote push and preserve local QA before native worktree archival.
+- [x] Report actual strata, unsafe passes and production limitations; record adoption decision against fixed criterion.
+- [x] Run full suite serially; expect no failures. Obtain one independent whole-branch review and fix Important issues with RED/GREEN evidence.
+- [x] Integrate authorized changes into main, run primary full suite, verify remote push and preserve local QA before native worktree archival.

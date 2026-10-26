@@ -119,8 +119,9 @@ evidence, not a newly rerun CT-model acceptance result.
 New focused checks after review correction: **31 passed**. Clean isolated baseline: **1,087 passed,
 28 corpus-dependent skips**, one upstream Starlette/httpx deprecation warning.
 Release worktree: **1,116 passed, 28 corpus-dependent skips**, one upstream
-warning, 1797.27 s elapsed. Review and primary verification
-will be recorded after completion.
+warning, 1797.27 s elapsed. Final serial primary verification after the review fix:
+**1,146 passed, no skips**, one upstream warning,270.07 s. Primary includes the
+local corpus checks absent from the isolated worktree.
 
 Project level remains **advanced prototype / pre-pilot**, zero accepted field
 cases; no TB854 certification, calibrated confidence, or new operational line
@@ -138,3 +139,19 @@ absolute RMS floor fixes it. The frozen grid and noise/harmonic budgets were not
 tuned; the complete corrected run has zero failures and identical outcomes. The
 reviewer explicitly left operational suitability, three-phase location safety
 and field acceptance outside this offline study. Production gates stay unchanged.
+
+## Delivery verification
+
+Reviewed implementation and both evidence revisions are integrated into `main`.
+QA, the independent review, RED/GREEN logs and execution ledger are preserved
+locally under ignored `out/qa/acquisition-ct-quality-2026-10-26/`. Production
+source and prior noisy-DSP evidence are byte-for-byte unchanged in Git. Both
+Dash findings retain their original hashes. The repository-wide Ruff findings
+remain outside this change; all new Python files pass. There are no deferred
+Minor findings from this review. The prior malformed-CFG-frequency display
+fallback Minor remains pending from the earlier milestone.
+
+The integration decision deliberately retains noisy production refusals until
+new disjoint full-record validation supports a safe gate change. The numerical
+absolute floor is not an engineering weak-current acceptance criterion. All
+operational/field suitability conclusions remain outside this offline study.
