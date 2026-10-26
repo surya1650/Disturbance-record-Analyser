@@ -9,11 +9,12 @@ Corrected-default trial newly located saturatedABC seed9984 at6.212321% error
 and increased full552 replay located>1km from57to76. Clean Stage-A still passed,
 showing that clean criterion is insufficient for safe workflow adoption.
 Final code keeps legacy default; explicit sliding_dft/dft_noise_radius
-method='basis' is research only. No production pipeline opts in. Current HELD
-metrology binds16 sources at28d609b; earlier default-change files remain
+method='basis' is research only. No production pipeline opts in. Reviewed research
+metrology binds16 sources atae7c7d7; HELD files bind28d609b; earlier default-change files remain
 historical. Default Stage-A10000 categorical rows match prior baseline:9242
 located,758refused,clean p95.4361%; max numeric change1.3e-11 percentage points.
-Focused198 pass; held release1351passed/28corpus skips,one upstream warning,
+Focused204 pass after independent review domain refusal fix; historical held
+release1351passed/28corpus skips,one upstream warning,
 85.53s. Final primary/review/delivery follows in report.
 Next: separately frozen conservative scalar saturation/weakI2 observability
 policy with disjoint validation; do not tune published holdouts. Also fix prior

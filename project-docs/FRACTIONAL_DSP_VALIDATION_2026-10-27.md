@@ -78,9 +78,9 @@ study. Production fractional-window bias and noisy-input refusals persist.
 ## Evidence, reproduction and remaining work
 
 Use the current explicit-opt-in
-[new-grid HELD evidence](validation/FRACTIONAL_DSP_DISJOINT_2026-10-27_HELD.json)
-and [historical-grid HELD replay](validation/FRACTIONAL_DSP_HISTORICAL_REPLAY_2026-10-27_HELD.json),
-each binding16 UTF-8/LF sources at the adoption-hold implementation28d609b.
+[reviewed new-grid evidence](validation/FRACTIONAL_DSP_DISJOINT_2026-10-27_REVIEWED.json)
+and [reviewed historical-grid replay](validation/FRACTIONAL_DSP_HISTORICAL_REPLAY_2026-10-27_REVIEWED.json),
+each binding16 UTF-8/LF sources at the reviewed domain-fix implementationae7c7d7; HELD files retain28d609b.
 Earlier unqualified files bind the default-change trial27cdec2 and remain
 historical. The [552-incident trial](validation/FRACTIONAL_DSP_FULL_RECORD_REPLAY_2026-10-27.json)
 binds its29 historical sources; its corrected kernel is additionally bound by
@@ -114,3 +114,21 @@ rows; maximum numeric metric difference is1.3e-11 percentage points from floatin
 arithmetic ordering. Both newly released trial outputs are refused by default.
 Architecture direct/self-tests and changed-file Ruff pass. Fresh independent
 review and final primary delivery follow below.
+
+Fresh independent review found one Important research-domain issue: floating
+phase error could manufacture rank for Nyquist/aliased designs. Four RED
+counterexamples plus two already-refusing controls verify the fix: research
+nominal frequency must be strictly below Nyquist before any phase evaluation.
+All204 focused tests now pass; both reviewed80-record runs have identical
+numerical rows to the HELD files, with fresh16-source bindings each. Production
+legacy domain/default is unaffected. Historical UTF-8 body was restored exactly
+from the base revision after encoding corruption was observed.
+
+One research API Minor is deferred: a one-element NumPy array method can be
+accepted by sliding_dft while the matching radius requires a string. This does
+not enable production use or authorize location; use literal method='basis'.
+Formal interval/field/CT/gain/alias/clock guarantees and production adoption are
+excluded. The old inspection-timebase fallback is fixed in its separately
+reviewed branch; final combined verification follows.
+
+Final review-fix full suite: **1,357 passed /28 corpus skips**, one existing upstream warning,83.88s. No Critical or unresolved Important findings. No re-review was dispatched after the single verified fix pass.
