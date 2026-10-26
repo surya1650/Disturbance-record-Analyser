@@ -1,6 +1,6 @@
 # Acquisition and CT Quality Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Independently test a noise-aware quality candidate without weakening existing refusals on unproven evidence.
 
@@ -27,18 +27,18 @@
 ### Task 1: Independent CT oracle
 **Files:** Create tests/ct_quality_oracle.py and tests/test_ct_quality_oracle.py.
 **Interfaces:** simulate(primary, fs, *, burden, initial_flux=0, substeps=16) returns secondary current, flux and excitation arrays. Parameters use secondary-referred A, ohm, V s, H. No production DSP or generator imports.
-- [ ] Write analytic linear-response, balance, trapezoidal volt-second, symmetry, convergence, knee crossing and invalid-input tests.
-- [ ] Run pytest tests/test_ct_quality_oracle.py -q; expect missing-module failure.
-- [ ] Implement continuous excitation and exact piecewise implicit trapezoidal inversion.
-- [ ] Run the tests; expect all pass. Commit the independently testable oracle.
+- [x] Write analytic linear-response, balance, trapezoidal volt-second, symmetry, convergence, knee crossing and invalid-input tests.
+- [x] Run pytest tests/test_ct_quality_oracle.py -q; expect missing-module failure.
+- [x] Implement continuous excitation and exact piecewise implicit trapezoidal inversion.
+- [x] Run the tests; expect all pass. Commit the independently testable oracle.
 
 ### Task 2: Frozen candidate and complete experiment
 **Files:** Create scripts/acquisition_quality_candidate.py, scripts/acquisition_ct_validation.py, tests/test_acquisition_ct_validation.py. Modify scripts/architecture_budgets.json for new scripts only.
 **Interfaces:** assess(samples, fs, freq) returns JSON-safe candidate diagnostics; run() returns complete per-case experiment with disjoint strata, fixed policy, truth metrics and source hashes; main() returns exit 2 on numerical failure, exclusive output publication.
-- [ ] Write tests for clean/noisy controls, unsupported/weak/nonfinite data, harmonic/clip/dropout rejection, complete failure accounting and exclusive publication; run them RED.
-- [ ] Implement the frozen candidate and independent grid from the spec. Score current legacy detector alongside candidate; never clear its output.
-- [ ] Run focused tests GREEN and actual experiment. Freeze full evidence including misses and failure counts.
-- [ ] Run architecture and Ruff. Commit code and evidence.
+- [x] Write tests for clean/noisy controls, unsupported/weak/nonfinite data, harmonic/clip/dropout rejection, complete failure accounting and exclusive publication; run them RED.
+- [x] Implement the frozen candidate and independent grid from the spec. Score current legacy detector alongside candidate; never clear its output.
+- [x] Run focused tests GREEN and actual experiment. Freeze full evidence including misses and failure counts.
+- [x] Run architecture and Ruff. Commit code and evidence.
 
 ### Task 3: Review and delivery
 **Files:** Create project-docs/ACQUISITION_CT_VALIDATION_2026-10-26.md; update project-docs/NEXT_SESSION.md.

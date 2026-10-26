@@ -7,7 +7,10 @@ and frozen offline noise-aware candidate completed 306 waveform outcomes across
 144 physical CT realizations (two noise conditions) and 18 controls. Zero
 numerical failures and zero harmful CT passes: 136 >5% current-error outcomes,
 104 in disjoint holdout. All eight harmful controls refuse; all ten bounded
-noise/quantization/clean controls pass. Candidate freeze is `4005c7d`.
+noise/quantization/clean controls pass. Original candidate freeze is `4005c7d`. Independent review found and fixed an
+absolute-weak fundamental gap (two RED/GREEN cases,31 focused tests). Corrected
+candidate freeze `608cd33`; use the CORRECTED JSON for current source hashes.
+The original aggregate remains historical; all306 corrected outcomes are identical.
 
 The bounded-study gate passes; **production refusals remain unchanged**. Candidate
 passes never authorize location. Integration needs new disjoint three-phase,

@@ -32,6 +32,9 @@ exponential nuisance terms. It reports residual RMS, residual peak and fitted
 harmonic RMS against fundamental RMS. Frozen limits are respectively 2%, 8%
 and 3%; at least four cycles and 16 samples/cycle are required. Its result is
 explicitly `candidate_pass`, **never production eligibility or proof of CT health**.
+After independent review, a 1e-9 secondary-A RMS absolute fundamental floor
+supplements the relative 1e-5 prominence guard. This is a numerical cutoff,
+not a calibrated engineering current or signal-to-noise requirement.
 `authorizes_location` is always false. The legacy third-difference detector is
 scored alongside it, without changing its result.
 
@@ -92,7 +95,12 @@ authorization still require suitable independent evidence and accepted cases.
 
 ## Reproduction and evidence
 
-Tracked aggregate: [ACQUISITION_CT_ENVELOPE_2026-10-26.json](validation/ACQUISITION_CT_ENVELOPE_2026-10-26.json).
+Current corrected aggregate: [ACQUISITION_CT_ENVELOPE_2026-10-26_CORRECTED.json](validation/ACQUISITION_CT_ENVELOPE_2026-10-26_CORRECTED.json).
+The [original frozen aggregate](validation/ACQUISITION_CT_ENVELOPE_2026-10-26.json)
+remains unchanged and binds the source at `e204a25`. Corrected candidate freeze:
+`608cd33`. All 306 outcome rows and numerical scores match the original exactly;
+only policy metadata and source hashes differ. The original seven hashes verify
+against their historical source; the corrected seven verify against current code.
 Use existing environment, `PYTHONPATH=src;.` and `OPENBLAS_NUM_THREADS=1`:
 
 ```powershell
@@ -108,13 +116,25 @@ Historical aggregates and source manifests were not rewritten. No production
 source changed, so the prior Stage-A 10,000 result remains historical regression
 evidence, not a newly rerun CT-model acceptance result.
 
-New focused checks: **29 passed**. Clean isolated baseline: **1,087 passed,
+New focused checks after review correction: **31 passed**. Clean isolated baseline: **1,087 passed,
 28 corpus-dependent skips**, one upstream Starlette/httpx deprecation warning.
 Release worktree: **1,116 passed, 28 corpus-dependent skips**, one upstream
-warning, 1797.27 s under concurrent machine load. Review and primary verification
+warning, 1797.27 s elapsed. Review and primary verification
 will be recorded after completion.
 
 Project level remains **advanced prototype / pre-pilot**, zero accepted field
 cases; no TB854 certification, calibrated confidence, or new operational line
 enablement. Dash findings, workbook, source captures, app database and preview
 processes remain outside this change.
+
+Architecture and its guard self-tests pass. Ruff passes for every new Python
+file; the repository-wide check retains 40 pre-existing findings, all in
+unchanged files. Both local Dash findings retain their recorded SHA-256 hashes.
+
+Independent review found one Important issue and no Critical/Minor issues: a
+DC-dominated sub-nanoampere fundamental could pass the relative-only guard. Two
+regressions failed before the fix and pass after it, with and without DC. The
+absolute RMS floor fixes it. The frozen grid and noise/harmonic budgets were not
+tuned; the complete corrected run has zero failures and identical outcomes. The
+reviewer explicitly left operational suitability, three-phase location safety
+and field acceptance outside this offline study. Production gates stay unchanged.
