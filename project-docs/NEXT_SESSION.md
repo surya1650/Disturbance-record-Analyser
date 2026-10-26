@@ -12,6 +12,27 @@ Historical source bindings are retained; do not rewrite them after this change.
 Continue the separate DSP research adoption hold and scalar saturation/weakI2
 observability work from its own report/ledger. Five-hour continuation is active.
 
+**Fractional-window DSP research —2026-10-27; production adoption HELD.**
+Read [FRACTIONAL_DSP_VALIDATION_2026-10-27.md](FRACTIONAL_DSP_VALIDATION_2026-10-27.md).
+Filtered real two-basis fit and matched L1 noise bound validate physical
+fundamentals with disjoint80+historical80 parsed records; zero within-cap misses
+on61404+51212supports, ideal physicalI2 bias max.000424212/.000907113A.
+Corrected-default trial newly located saturatedABC seed9984 at6.212321% error
+and increased full552 replay located>1km from57to76. Clean Stage-A still passed,
+showing that clean criterion is insufficient for safe workflow adoption.
+Final code keeps legacy default; explicit sliding_dft/dft_noise_radius
+method='basis' is research only. No production pipeline opts in. Reviewed research
+metrology binds16 sources atae7c7d7; HELD files bind28d609b; earlier default-change files remain
+historical. Default Stage-A10000 categorical rows match prior baseline:9242
+located,758refused,clean p95.4361%; max numeric change1.3e-11 percentage points.
+Focused204 pass after independent review domain refusal fix; historical held
+release1351passed/28corpus skips,one upstream warning,
+85.53s. Final primary/review/delivery follows in report.
+Next: separately frozen conservative scalar saturation/weakI2 observability
+policy with disjoint validation; do not tune published holdouts. Also fix prior
+malformed-frequency display fallback. No field/clock/gain/alias/CT or location
+certification or operational enablement. Five-hour continuation stays active.
+
 **Conditional I2 error-budget milestone — started2026-10-26,verification2026-10-27.**
 Read [SEQUENCE_ERROR_BUDGET_2026-10-26.md](SEQUENCE_ERROR_BUDGET_2026-10-26.md) and
 its JSON. New pure DSP functions dft_noise_radius/i2_budget take explicit additive

@@ -1,0 +1,95 @@
+{
+  "default_unchanged_categorical_rows": 10000,
+  "maximum_absolute_metric_changes": {
+    "m_est": 1.404432126150823e-14,
+    "err_pct": 1.404654170755748e-12,
+    "e5_err_pct": 1.3002932064409833e-12,
+    "single_err_pct": 1.2732925824820995e-11
+  },
+  "trial_newly_located": [
+    {
+      "seed": [
+        "8410",
+        "8410"
+      ],
+      "fault": [
+        "ABC",
+        "ABC"
+      ],
+      "ok": [
+        "False",
+        "True"
+      ],
+      "m_est": [
+        "nan",
+        "0.4265466756552922"
+      ],
+      "err_pct": [
+        "nan",
+        "0.035683916883266775"
+      ],
+      "clean": [
+        "False",
+        "False"
+      ],
+      "saturated": [
+        "True",
+        "True"
+      ],
+      "short_window": [
+        "False",
+        "False"
+      ]
+    },
+    {
+      "seed": [
+        "9984",
+        "9984"
+      ],
+      "fault": [
+        "ABC",
+        "ABC"
+      ],
+      "ok": [
+        "False",
+        "True"
+      ],
+      "m_est": [
+        "nan",
+        "0.6087730875616487"
+      ],
+      "err_pct": [
+        "nan",
+        "6.21232142167969"
+      ],
+      "clean": [
+        "False",
+        "False"
+      ],
+      "saturated": [
+        "True",
+        "True"
+      ],
+      "short_window": [
+        "False",
+        "False"
+      ]
+    }
+  ],
+  "production_adoption": "held",
+  "trial_freeze": "27cdec2",
+  "held_freeze": "28d609b",
+  "trial_clean_p95_pct": 0.4411,
+  "held_clean_p95_pct": 0.4361,
+  "runs": {
+    "stage-a-10000.csv": {
+      "sha256": "07f2b14555bf339adde4bd0c80d01ec366974cb604ec01dabd5c1c28af3a21ed",
+      "rows": 10000
+    },
+    "stage-a-default-held.csv": {
+      "sha256": "12320b3952eb7f59a8dc863a743e43c8cf93fb113053e6ddc73a71b0e677fe68",
+      "rows": 10000
+    }
+  },
+  "limits": "Clean Stage-A criterion alone is insufficient. Full CSV files retained locally; tiny metric changes are floating arithmetic ordering, below1.3e-11 percentage points."
+}

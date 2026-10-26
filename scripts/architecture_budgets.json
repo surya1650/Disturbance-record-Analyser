@@ -11,7 +11,7 @@
     "scripts/noisy_dsp_validation.py": 183,
     "scripts/numerical_envelope.py": 27,
     "scripts/section_numerical_validation.py": 138,
-    "scripts/sequence_budget_validation.py": 162,
+    "scripts/sequence_budget_validation.py": 168,
     "scripts/source_fault_validation.py": 251,
     "src/dranalyser/__init__.py": 0,
     "src/dranalyser/application/__init__.py": 1,
@@ -36,12 +36,12 @@
     "src/dranalyser/comtrade/timestamps.py": 69,
     "src/dranalyser/dsp/__init__.py": 0,
     "src/dranalyser/dsp/clock_quality.py": 40,
-    "src/dranalyser/dsp/core.py": 214,
+    "src/dranalyser/dsp/core.py": 206,
     "src/dranalyser/dsp/correlation.py": 147,
     "src/dranalyser/dsp/detect.py": 309,
     "src/dranalyser/dsp/measurements.py": 78,
     "src/dranalyser/dsp/pipeline.py": 214,
-    "src/dranalyser/dsp/sequence_budget.py": 102,
+    "src/dranalyser/dsp/sequence_budget.py": 100,
     "src/dranalyser/dsp/stage_windows.py": 56,
     "src/dranalyser/dsp/stages.py": 98,
     "src/dranalyser/dsp/window_quality.py": 45,
@@ -110,7 +110,9 @@
     "src/dranalyser/workbench/server.py": 288,
     "src/dranalyser/workbench/settings.py": 69,
     "src/dranalyser/workbench/stage_location.py": 33,
-    "src/dranalyser/workbench/stage_review.py": 69
+    "src/dranalyser/workbench/stage_review.py": 69,
+    "src/dranalyser/dsp/fundamental.py": 114,
+    "scripts/fractional_dsp_validation.py": 106
   },
   "exceptions": {}
 }

@@ -12,41 +12,38 @@ def budget():
     return importlib.import_module('dranalyser.dsp.sequence_budget')
 
 
-def direct_kernel(fs, freq, tau, half, first):
+def direct_kernel(fs, freq, tau, half, first, method):
     n = round(fs/freq)
     n = max(n//2, 2) if half else n
     start = 0 if first else n+2
     count = start+n
-    weights = np.zeros(count, complex)
     b = np.exp(-(1/fs)/max(tau, 1e-6)) if tau is not None else 0
-    gain = 1-b*np.exp(-2j*np.pi*freq/fs)
-    for j in range(start, count):
-        value = np.exp(-2j*np.pi*freq*j/fs)
-        if tau is None:
-            weights[j] += value
-        elif j == 0:
-            weights[j] += (1-b)*value
-        else:
-            weights[j] += value
-            weights[j-1] -= b*value
-    return weights*np.sqrt(2)/n/gain
+    transform = np.eye(count)-b*np.eye(count, k=-1)
+    transform[0, 0] = 1-b
+    t = np.arange(count)/fs
+    design = np.column_stack([np.cos(2*np.pi*freq*t), np.sin(2*np.pi*freq*t)])
+    if method == 'legacy':
+        return (np.sqrt(2)/n*np.exp(-2j*np.pi*freq*t[start:]))@transform[start:]/(1-b*np.exp(-2j*np.pi*freq/fs))
+    inverse = np.linalg.pinv((transform@design)[start:])
+    return (inverse[0]-1j*inverse[1])@transform[start:]/np.sqrt(2)
 
 
 @pytest.mark.parametrize('fs,freq', [(1200, 50), (3500, 48), (2600, 52), (4800, 53)])
 @pytest.mark.parametrize('tau', [None, 0, .02, .08])
 @pytest.mark.parametrize('half', [False, True])
-def test_direct_kernel_includes_both_mimic_boundaries_and_initialization(fs, freq, tau, half):
-    result = budget().dft_noise_radius(fs, freq, .003, tau=tau, half_cycle=half, uniform_grid=True)
+@pytest.mark.parametrize('method', ['legacy', 'basis'])
+def test_direct_kernel_includes_both_mimic_boundaries_and_initialization(fs, freq, tau, half, method):
+    result = budget().dft_noise_radius(fs, freq, .003, tau=tau, half_cycle=half, uniform_grid=True, method=method)
     assert result['status'] == 'conditional_bound' and result['authorizes_location'] is False
     for first in (False, True):
-        weights = direct_kernel(fs, freq, tau, half, first)
+        weights = direct_kernel(fs, freq, tau, half, first, method)
         assert sum(abs(weights)) <= result['coefficient_l1_upper_bound']+1e-12
         rng = np.random.default_rng(854)
         signal = rng.normal(size=len(weights))*1000
         noise = rng.uniform(-.003, .003, len(weights))
         t = np.arange(len(weights))/fs
-        observed = sliding_dft(signal+noise, t, fs, freq, half_cycle=half, tau=tau)[-1]
-        reference = sliding_dft(signal, t, fs, freq, half_cycle=half, tau=tau)[-1]
+        observed = sliding_dft(signal+noise, t, fs, freq, half_cycle=half, tau=tau, method=method)[-1]
+        reference = sliding_dft(signal, t, fs, freq, half_cycle=half, tau=tau, method=method)[-1]
         assert observed == pytest.approx(weights@(signal+noise), abs=1e-8)
         assert abs(observed-reference) <= result['radius_primary_a']+1e-8
     json.dumps(result, allow_nan=False)
