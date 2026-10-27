@@ -92,7 +92,14 @@ in regression, not erased from the record. Numeric refusal deliberately costs
 extreme-scale/component-disparity availability. Full fix/primary verification
 is1501pass/28missing-corpus skips/1existing warning204.01s for the review-fix
 worktree. No unresolved Important findings; no deferred Minor. Primary
-integration results follow below. No repeat review.
+integration1529pass/no skips/1existing upstream warning182.29s. No repeat review.
+
+Combined primary log: out/qa/e5-combined-primary-full.txt. The read-only delivery
+helper verifies16 frozen bindings,8 current bindings, identical556-case rows,
+unchanged existing production sources/historical evidence and both protected
+Dash hashes. Research is integrated under the standing commit/push authorization;
+the final Git/remote head records delivery. Preserve out/qa and this plan's ignored
+execution ledger under out/qa/e5-error-sets-2026-10-27/ before native archival.
 
 ## Decisions and remaining evidence
 Triangle radius sums trade tightness for conservative geometry; extreme

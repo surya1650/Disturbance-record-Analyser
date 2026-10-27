@@ -1,21 +1,29 @@
 # Context for the next session
 
-**E5/section conditional error sets —2026-10-27, delivery in progress.**
-Read E5_ERROR_SETS_2026-10-27.md and its556-case JSON, code freeze514f55a.
+**E5/section conditional error sets —2026-10-27, verified delivery.**
+Read E5_ERROR_SETS_2026-10-27.md and its original/reviewed556-case JSON,
+freezes514f55a/ab09e03. Primary1529pass/no skips/1existing warning182.29s.
 540 within-cap cases retain every physical truth;16 deliberately false coherent
 caps exclude truth12times. Numerical failures0;340 single within-cap components,
 200 whole-line sets (all160wide+40both-weak bounded). No selected point/clock or
 location authority. New pure error_sets.py uses explicit caps/model provenance,
 conservative triangle radii and Lipschitz subdivision; unknown declarations
-withhold, budget exhaustion retains pending regions. Numerical outer sets are
+withhold, budget exhaustion retains pending regions. Three Important review
+issues fixed in one pass:14new RED,70focused GREEN,1501full/28corpus skips;
+subnormal input/products now refuse, huge int/complex magnitude exceptions
+withhold, failed overall study gates exit2. No unresolved Important or Minor.
+Numerical outer sets are
 not formal floating intervals or calibrated confidence. Legacy DSP, production
 gates/consumers and earlier manifests unchanged; eight hashes include the old
-full_record_signals.py RATIOS dependency.55 focused tests pass, fresh review/
-serial full verification/integration follow in report/ledger; finish before
-archival and do not redo556. Next supported research: optional joint distance/
+full_record_signals.py RATIOS dependency. One fresh review completed; do not
+repeat review or redo556. Preserve QA/ledger before native archival if still
+pending; location out/qa/e5-error-sets-2026-10-27/. Next supported research:
+optional joint distance/
 terminal-phase necessary boxes across explicitly paired supports, new frozen
 grid; unknown phase-stability/pairing assumptions refuse. Field/model/total-cap
-provenance is still external; scalar/DSP adoption HELD. Dash/data/DB untouched.
+provenance is still external; scalar/DSP adoption HELD. Design note:
+out/qa/next-joint-e5-phase-handoff.md. Five-hour heartbeat remains ACTIVE,
+natural resets only, no manual credits. Dash/data/DB untouched.
 
 **Delivered scalar study and selector maintenance —2026-10-27.**
 Combined primary1459pass/no skips/1existing warning94.21s. Scalar study reviewed,
