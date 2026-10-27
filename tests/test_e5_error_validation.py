@@ -98,3 +98,18 @@ def test_publication_is_finite_exclusive_and_failure_exits_two(tmp_path):
     with pytest.raises(ValueError):
         runner.publish({'failed': 0, 'bad': np.nan}, nonfinite)
     assert not nonfinite.exists()
+
+
+@pytest.mark.parametrize('reason', ['omission', 'dirty_sources', 'incomplete_protocol'])
+def test_failed_study_gate_is_nonzero_even_without_exception_rows(tmp_path, reason):
+    _, runner = modules()
+    result = dict(failed=0, study_gate='failed', within_cap_truth_omissions=int(reason == 'omission'),
+                  sources_clean=reason != 'dirty_sources', protocol_complete=reason != 'incomplete_protocol')
+    path = tmp_path/(reason+'.json')
+    assert runner.publish(result, path) == 2
+    assert json.loads(path.read_text()) == result
+
+
+def test_successful_numerical_gate_exits_zero(tmp_path):
+    _, runner = modules()
+    assert runner.publish(dict(failed=0, study_gate='passed_conditional_numerical'), tmp_path/'pass.json') == 0

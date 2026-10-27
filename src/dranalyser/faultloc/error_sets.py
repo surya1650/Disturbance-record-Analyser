@@ -31,13 +31,20 @@ class SeriesSection:
 
 
 def _real(value):
-    return isinstance(value, Real) and not isinstance(value, bool) and math.isfinite(value)
+    try:
+        # A relative-epsilon guard cannot certify arithmetic on subnormal data.
+        return (isinstance(value, Real) and not isinstance(value, bool) and math.isfinite(value)
+                and (value == 0 or abs(value) >= float.fromhex('0x1.0p-1022')))
+    except (OverflowError, TypeError, ValueError):
+        return False
 
 
 def _complex(value):
-    return (isinstance(value, Complex) and not isinstance(value, bool)
-            and math.isfinite(value.real) and math.isfinite(value.imag)
-            and math.isfinite(abs(value)))
+    try:
+        return (isinstance(value, Complex) and not isinstance(value, bool)
+                and _real(value.real) and _real(value.imag) and math.isfinite(abs(value)))
+    except (OverflowError, TypeError, ValueError):
+        return False
 
 
 def _provenance(value):
@@ -53,7 +60,7 @@ def _terminal(t):
 def _product(a, b):
     value = a*b
     if not _complex(value) or (a != 0 and b != 0 and value == 0):
-        raise ArithmeticError('Unrepresentable propagated error/voltage scale.')
+        raise ArithmeticError('Unrepresentable or subnormal propagated error/voltage scale.')
     return value
 
 

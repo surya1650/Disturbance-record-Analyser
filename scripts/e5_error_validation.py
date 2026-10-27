@@ -78,7 +78,7 @@ def publish(result, path):
     content = json.dumps(result, indent=2, allow_nan=False)+'\n'
     with path.open('x', encoding='utf-8', newline='\n') as output:
         output.write(content)
-    return 2 if result['failed'] else 0
+    return 0 if not result['failed'] and result.get('study_gate') == 'passed_conditional_numerical' else 2
 
 
 def main():

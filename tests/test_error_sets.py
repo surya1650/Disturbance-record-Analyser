@@ -132,3 +132,39 @@ def test_shape_and_capacity_errors_withhold():
 @pytest.mark.parametrize('value,z', [(1e308, 1e308j), (1e-300, 1e-300j)])
 def test_unrepresentable_propagated_scale_refuses(value, z):
     assert run([observation(is_=value)], [api().SeriesSection(1, z)])['status'] == 'withheld'
+
+
+def test_partial_subnormal_products_must_not_exclude_exact_truth():
+    t = float.fromhex('0x0.0000000000001p-1022')
+    # Exact real equation: at m=2/3, m*Is == (1-m)*Ir; Vs==Vr.
+    result = run([observation(t, t, t, 2*t)], [api().SeriesSection(1, .6+1j)])
+    assert result['status'] == 'withheld'
+
+
+def test_normal_inputs_with_subnormal_propagation_withhold():
+    result = run([observation(is_=1e-200)], [api().SeriesSection(1, .6e-109+1e-109j)])
+    assert result['status'] == 'withheld'
+
+
+@pytest.mark.parametrize('field', ['voltage', 'current', 'voltage_radius', 'current_radius'])
+def test_large_finite_python_integers_withhold_in_each_terminal_input(field):
+    o = observation()
+    assert run([replace(o, s=replace(o.s, **{field: 10**1000}))])['status'] == 'withheld'
+
+
+@pytest.mark.parametrize('field', ['voltage', 'current'])
+def test_finite_components_with_overflowing_complex_magnitude_withhold(field):
+    o = observation()
+    value = complex(1.7e308, 1.7e308)
+    assert run([replace(o, s=replace(o.s, **{field: value}))])['status'] == 'withheld'
+
+
+@pytest.mark.parametrize('category', ['resolution', 'section_end', 'section_impedance'])
+def test_large_finite_python_integers_withhold_in_controls_and_model(category):
+    huge = 10**1000
+    if category == 'resolution':
+        result = run(resolution=huge)
+    else:
+        result = run(sections=[api().SeriesSection(huge, 1j) if category == 'section_end'
+                               else api().SeriesSection(1, huge)])
+    assert result['status'] == 'withheld'
