@@ -255,3 +255,16 @@ def test_pending_choices_are_frozen_before_the_caller_changes_them(revision,monk
     finally:
         gate.set()
         jobs.close()
+
+
+@pytest.mark.parametrize('meaning',['TRIP','AR_BLOCK'])
+def test_polarity_review_reason_is_visible_in_trip_or_ar_summary(revision,meaning):
+    root,row,folder=revision
+    cfg=folder/'event.cfg'
+    cfg.write_text(cfg.read_text().replace('1,TRIP,,,0','1,TRIP,,,1'))
+    for entry in row['files']:
+        entry['sha256']=hashlib.sha256((folder/entry['name']).read_bytes()).hexdigest()
+    out=diagnose_source(root,row,'event.cfg',{'mappings':{'D1':meaning}})
+    conclusion=out['trip'] if meaning=='TRIP' else out['ar']
+    assert conclusion['status']=='Not available'
+    assert 'polarity' in conclusion['text'].lower() and 'D1' in conclusion['text']

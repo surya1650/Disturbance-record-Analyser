@@ -104,7 +104,7 @@ async function detail(id, revision = '') {
   if (row.error) body += `<div class="hint">${escapeHtml(row.error)}</div>`;
   if (['queued','running'].includes(row.state)) body += '<div class="panel busy"><span class="spinner"></span><h2>Processing this incident</h2><p>You can leave this page. The job and its results stay in the workspace.</p></div>';
   body += inspectionPanel(row);
-  if (row.state==='needs_review') body += assignmentForm(row);
+  if (row.state==='needs_review') body += `<details class="panel detail-section"><summary>Optional operational study · assignments and input review</summary><p>Independent source analysis and reports are available above. Use this section for an operational study with its additional method inputs.</p>${assignmentForm(row)}</details>`;
   if (row.state==='failed') body += '<div class="panel detail-section"><h2>Processing could not finish</h2><p>The files are retained. Review the error above, then retry the job.</p><button id="retry-job" class="button">Retry processing</button></div>';
   if (result) {
     body += navigationPanel(result);

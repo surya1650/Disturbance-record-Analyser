@@ -55,6 +55,10 @@ def trip_ar(evidence):
     trip=dict(status='Observed indication' if trips else 'Not available',evidence_ids=[c['id'] for c in trips],
         text='Trip indications recorded under stated polarity: '+', '.join(c['id']+' '+c['label']+' (state '+str(c.get('asserted_state',1))+'; '+c.get('assertion_source','assumed high state')+')' for c in trips) if trips else
              'No assigned trip assertion was observed. Check channel meanings and capture coverage; absence is not proof of no trip.')
+    polarity=[c for c in evidence if not c.get('interpretation_available',True)]
+    trip_polarity=[c['id'] for c in polarity if set(c['meanings']) & {'TRIP','TRIP_A','TRIP_B','TRIP_C','TRIP_3P','TRIP_Z2','TRIP_Z3','TRIP_Z4'}]
+    if not trips and trip_polarity:
+        trip['text']='Trip interpretation needs asserted-state polarity review for '+', '.join(trip_polarity)+'. The default state equals recorded normal-state metadata; raw observations remain available.'
     causes=[]
     ids=[]
     for meanings,text in [(['AR_BLOCK'],'AR blocking indication recorded; a close command may have been inhibited. Check scheme inputs and settings.'),
@@ -78,4 +82,7 @@ def trip_ar(evidence):
         ids.extend(c['id'] for c in close+after)
     ar=dict(status='Possible explanation' if causes else 'Not available',evidence_ids=list(dict.fromkeys(ids)),
         text=' '.join(causes) if causes else 'No observed assigned AR assertions identify a failure mechanism in this capture. Review AR/pole indications, capture coverage and scheme settings; add any missing channels.')
+    ar_polarity=[c['id'] for c in polarity if any(m.startswith('AR_') for m in c['meanings'])]
+    if not causes and ar_polarity:
+        ar['text']='AR interpretation needs asserted-state polarity review for '+', '.join(ar_polarity)+'. Raw states alone do not establish an AR failure.'
     return trip,ar

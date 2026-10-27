@@ -2,7 +2,7 @@
 const sourceAnalysisPreferences=new Map();
 function mountSourceAnalysis(host,data,row,recordController,workbench) {
   const esc=DRSourceReport.esc,key=`${row.incident_id}/${row.number}/${data.file}`;
-  const prefs=sourceAnalysisPreferences.get(key)||{voltage_kv:0,mappings:{}};
+  let prefs=sourceAnalysisPreferences.get(key)||{voltage_kv:0,mappings:{}};
   sourceAnalysisPreferences.set(key,prefs);if(sourceAnalysisPreferences.size>12)sourceAnalysisPreferences.delete(sourceAnalysisPreferences.keys().next().value);
   const section=document.createElement('section');section.className='source-analysis';host.append(section);
   const otherRecords=(row.bundle?.files||[]).filter(f=>f.kind==='comtrade'&&f.name!==data.file);
@@ -11,14 +11,47 @@ function mountSourceAnalysis(host,data,row,recordController,workbench) {
   section.querySelectorAll('[data-meaning]').forEach(el=>el.value=prefs.mappings[el.dataset.meaning]||'');
   let generation=0,controller,timer,result=null,windowPage=0,digitalPage=0,comparisonGeneration=0,comparisonController;
   const q=selector=>section.querySelector(selector);
+  q('.source-run').textContent='Apply choices & analyse';
+  const inputHost=document.createElement('div');inputHost.className='source-extra-inputs';inputHost.innerHTML=DRSourceInputs.markup(prefs);section.insertBefore(inputHost,q('.source-job-status'));
+  q('.source-line-mode').value=prefs.line_id||(prefs.line_model?'__custom__':'');q('.source-fault-loop').value=prefs.fault_loop||'';q('.source-projection-window').value=prefs.projection_window??'';
+  q('.source-custom-line').hidden=q('.source-line-mode').value!=='__custom__';
+  for(const c of data.channels.filter(c=>c.kind==='digital')){
+    const meaning=q(`[data-meaning="${c.id}"]`),state=document.createElement('select');state.dataset.assertion=c.id;state.setAttribute('aria-label',c.id+' asserted state');state.innerHTML='<option value="">Asserted state1 (assumed high)</option><option value="1">Asserted state1 · explicit choice</option><option value="0">Asserted state0 · explicit choice</option>';state.value=prefs.asserted_states?.[c.id]??'';meaning.parentElement.append(state);
+  }
+  const stable=DRSourceInputs.stable;
+  let lineModels=[];
+  fetch('/api/source-lines',{signal:recordController.signal}).then(async r=>DRSourceInputs.catalogue(await r.json(),r.ok)).then(items=>{
+    if(recordController.signal.aborted||!host.isConnected)return;
+    lineModels=items;const select=q('.source-line-mode'),chosen=select.value;
+    select.innerHTML='<option value="">Frozen incident model if supplied</option>'+lineModels.filter(m=>m.id).map(m=>`<option value="${esc(m.id)}">${esc(m.name)} · ${esc(m.parameter_status)}</option>`).join('')+'<option value="__custom__">Enter declared line values</option>';
+    if(chosen&&!['__custom__',...lineModels.map(m=>m.id)].includes(chosen)){select.add(new Option(chosen+' (not currently resolved)',chosen));}select.value=chosen;
+    lineNotes();
+  }).catch(error=>{if(error.name!=='AbortError')q('.source-line-notes').textContent='Line catalogue unavailable: '+error.message;});
+  function lineNotes(){const chosen=q('.source-line-mode').value,line=lineModels.find(m=>m.id===chosen);q('.source-custom-line').hidden=chosen!=='__custom__';q('.source-line-notes').textContent=line?`${line.parameter_status}. ${line.provenance} Hash: ${line.sha256}`:chosen==='__custom__'?'Explicit user-declared values; blank fields remain Not available.':'No independent line is inferred. Frozen incident facts appear only when supplied.';}
+  q('.source-line-mode').onchange=()=>{lineNotes();const line=lineModels.find(m=>m.id===q('.source-line-mode').value);if(q('.source-voltage').value==='0'&&[132,220].includes(line?.kv))q('.source-voltage').value=String(line.kv);invalidate();};
+  q('.source-fault-loop').onchange=()=>invalidate();q('.source-projection-window').onchange=()=>run();section.querySelectorAll('[data-line-field],[data-assertion]').forEach(el=>el.onchange=()=>invalidate());
+  q('.source-accept-meanings').onclick=()=>{
+    if(!result){q('.source-job-status').textContent='Run source analysis first to inspect its suggestions.';return;}
+    const suggestions=[...result.channels.map(c=>[c.id,c.meaning]),...result.digital_evidence.map(c=>[c.id,c.meanings.length===1?c.meanings[0]:''])];
+    const counts=new Map();for(const[id,meaning]of suggestions)if(meaning&&meaning!=='ignore')counts.set((id[0]+'/'+meaning),(counts.get(id[0]+'/'+meaning)||0)+1);
+    for(const[id,meaning]of suggestions)if(meaning&&meaning!=='ignore'&&counts.get(id[0]+'/'+meaning)===1){const select=q(`[data-meaning="${id}"]`);if(select)select.value=meaning;}
+    invalidate('Unique label suggestions selected as unverified meaning choices. Apply choices to update the report.');
+  };
+
   function invalidate(message='Choices changed. Apply meanings & analyse to update the report.') {
     generation++;controller?.abort();clearTimeout(timer);result=null;
     q('.source-summary').innerHTML=DRSourceReport.schematic({terminals:{S:'Not available',R:'Not available'},sections:[],length_km:null,location:{status:'Not available',text:'Preparing source snapshot; supplied line facts will appear with provenance.'}});q('.source-evidence').hidden=true;q('.source-report-tools').hidden=true;q('.source-job-status').textContent=message;
   }
-  function options() {return {voltage_kv:Number(q('.source-voltage').value),mappings:Object.fromEntries([...section.querySelectorAll('[data-meaning]')].filter(el=>el.value).map(el=>[el.dataset.meaning,el.value]).sort(([a],[b])=>a<b?-1:a>b?1:0))};}
+  function options() {return DRSourceInputs.options({voltageKv:q('.source-voltage').value,
+    mappings:Object.fromEntries([...section.querySelectorAll('[data-meaning]')].map(el=>[el.dataset.meaning,el.value])),
+    assertedStates:Object.fromEntries([...section.querySelectorAll('[data-assertion]')].map(el=>[el.dataset.assertion,el.value])),
+    lineMode:q('.source-line-mode').value,model:Object.fromEntries([...section.querySelectorAll('[data-line-field]')].map(el=>[el.dataset.lineField,el.value])),
+    faultLoop:q('.source-fault-loop').value,projectionWindow:q('.source-projection-window').value});}
   q('.source-voltage').onchange=()=>invalidate();section.querySelectorAll('[data-meaning]').forEach(el=>el.onchange=()=>invalidate());
   async function fetchResult(file,choices,signal) {
     const params=new URLSearchParams({revision:row.number,record:file,voltage_kv:choices.voltage_kv,mappings:JSON.stringify(choices.mappings)});
+    for(const field of ['line_id','fault_loop','projection_window'])if(choices[field]!==undefined)params.set(field,String(choices[field]));
+    for(const field of ['line_model','asserted_states'])if(choices[field])params.set(field,JSON.stringify(choices[field]));
     const response=await fetch(`/api/incidents/${row.incident_id}/inspection/analysis?${params}`,{signal});
     const body=await response.json();if(!response.ok)throw new Error(body.detail||'Source analysis request could not be read.');return body;
   }
@@ -32,15 +65,16 @@ function mountSourceAnalysis(host,data,row,recordController,workbench) {
     section.querySelectorAll('[data-focus-window]').forEach(el=>el.onclick=()=>{const w=result.windows.find(w=>w.index===Number(el.dataset.focusWindow));workbench?.focusWindow(w.start_index,w.stop_index);});
   }
   async function run() {
-    invalidate('Preparing source analysis…');const token=generation,choices=options();Object.assign(prefs,choices);
+    invalidate('Preparing source analysis…');const token=generation;let choices;try{choices=options();}catch(error){q('.source-job-status').textContent=error.message;return;}prefs=choices;sourceAnalysisPreferences.set(key,prefs);
     controller=new AbortController();const signal=controller.signal;recordController.signal.addEventListener('abort',()=>controller.abort(),{once:true,signal});
     async function poll() {
       try {const body=await fetchResult(data.file,choices,signal);
         if(signal.aborted||token!==generation||!host.isConnected)return;
-        if(body.file!==data.file||body.revision!==row.number||JSON.stringify(body.options)!==JSON.stringify(choices)||JSON.stringify(body.source_sha256)!==JSON.stringify(data.source_sha256))throw new Error('Source or choices changed; reopen this recording.');
+        if(body.file!==data.file||body.revision!==row.number||stable(body.options)!==stable(choices)||stable(body.source_sha256)!==stable(data.source_sha256))throw new Error('Source or choices changed; reopen this recording.');
         if(body.status==='pending'||body.status==='busy'){q('.source-job-status').textContent=body.detail;timer=setTimeout(poll,1000);return;}
         if(body.status!=='ready')throw new Error(body.detail||'Diagnostics could not finish; source inspection remains available.');
         result=body.result;windowPage=digitalPage=0;
+        const select=q('.source-projection-window'),chosen=choices.projection_window??'';select.innerHTML='<option value="">Choose a source window for projection</option>'+result.windows.map(w=>`<option value="${w.index}">Window ${w.index}: ${DRSourceReport.number(w.support_s[0])}–${DRSourceReport.number(w.support_s[1])} local s</option>`).join('');select.value=String(chosen);
         q('.source-job-status').textContent=`Analysis ready · ${result.fit_coverage.model_consistent} conditional fits / ${result.fit_coverage.total} evaluated channel-windows. Report and source evidence available.`;
         q('.source-summary').innerHTML=DRSourceReport.summary(result);q('.source-evidence').hidden=false;q('.source-report-tools').hidden=false;
         q('.source-channel-summary').innerHTML='<table><thead><tr><th>Source / assigned meaning</th><th>Units</th><th>Observed min / max</th><th>Finite / missing</th></tr></thead><tbody>'+result.channels.map(c=>`<tr><th>${esc(c.id+' '+c.label)}<small>${esc(c.meaning||'Meaning unassigned')}</small></th><td>${esc(c.units)}</td><td>${DRSourceReport.number(c.sample_min)} / ${DRSourceReport.number(c.sample_max)}</td><td>${c.finite_samples} / ${c.missing_samples}</td></tr>`).join('')+'</tbody></table>';
