@@ -113,7 +113,8 @@
     "src/dranalyser/workbench/stage_review.py": 69,
     "src/dranalyser/dsp/fundamental.py": 114,
     "scripts/fractional_dsp_validation.py": 106,
-    "src/dranalyser/faultloc/scalar_quality.py": 84
+    "src/dranalyser/faultloc/scalar_quality.py": 84,
+    "scripts/scalar_observability_validation.py": 139
   },
   "exceptions": {}
 }
