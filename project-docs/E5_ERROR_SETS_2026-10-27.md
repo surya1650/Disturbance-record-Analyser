@@ -32,6 +32,11 @@ Code/protocol freeze514f55a72c99bdbcc0c114912ce6e03dfadfe114 preceded outcomes.
 phasors/truth/caps, every failure denominator,8 UTF8/LF source hashes and runtime.
 The manifest includes full_record_signals.py (its RATIOS dependency omission in
 an older selected manifest is not repeated; historical manifests remain intact).
+The separately preserved [reviewed evidence](validation/E5_ERROR_SETS_2026-10-27_REVIEWED.json)
+binds the numerical-domain/exit-status fixes atab09e032be36f2c5736295b74c7909dc613f08af.
+All556 original/reviewed numerical rows are identical; all16 frozen bindings
+verify against their recorded Git revisions, and the8 reviewed hashes match
+current sources. The original evidence is not rebound to newer files.
 
 | Cohort | Cases | Result |
 |---|---:|---|
@@ -66,12 +71,32 @@ TDD48 core failures before implementation,7 runner/oracle failures before their
 implementation;55 focused pass. Analytic tests preserve both distinct roots.4/.6,
 intersect every support, cover local rotations/section junctions/endpoints, weak
 inputs, resource exhaustion, scales1e-120..1e120, and explicit refusal controls.
-Architecture and changed-file Ruff pass. Whole-branch independent review and
-serial release/primary results are recorded below when completed.
+Architecture and changed-file Ruff pass. Release1486pass/28missing-corpus skips/
+1existing warning1734.50s. One fresh whole-branch astra-high review independently
+reran55 focused tests and verified all8 source hashes. It found three Important
+issues, no Critical/Minor findings and no declined judgments:
+
+- Partial subnormal rounding could exclude exact physical truth. With minsubnormal
+  t, Vs=Vr=t, Is=t, Ir=2t, Z=.6+1j and zero caps, true m=2/3 was excluded by
+  an erroneous[.9658203125,1] set. The utility now withholds every nonzero
+  subnormal input/product component, including propagation from normal inputs.
+- Huge Python integers and finite-component complex values whose magnitude
+  overflows could escape as exceptions. Numeric predicates now withhold safely.
+- Failed truth-coverage/protocol/source gates could publish a zero exit code
+  without exception rows. Publication now exits2 for any failed overall gate,
+  preserving its evidence file.
+
+Single TDD fix pass:14 new failures observed RED, plus1 already-green success
+control;70 focused GREEN2.67s. The subnormal physical counterexample is preserved
+in regression, not erased from the record. Numeric refusal deliberately costs
+extreme-scale/component-disparity availability. Full fix/primary verification
+is1501pass/28missing-corpus skips/1existing warning204.01s for the review-fix
+worktree. No unresolved Important findings; no deferred Minor. Primary
+integration results follow below. No repeat review.
 
 ## Decisions and remaining evidence
 Triangle radius sums trade tightness for conservative geometry; extreme
-unrepresentable scales withhold rather than invent data; caps/model provenance
+unrepresentable and subnormal scales withhold rather than invent data; caps/model provenance
 remain caller assumptions. These decisions can reduce availability and false
 declarations can exclude truth. They confer no operational authority.
 
