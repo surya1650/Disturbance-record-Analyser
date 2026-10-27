@@ -232,9 +232,7 @@ def create_app(root="out/application", registry="data/registry", inbox=None, wor
 
     static = Path(__file__).with_name('static')
     app.mount('/static', StaticFiles(directory=static), name='static')
-
     @app.get('/')
     def index():
         return FileResponse(static / 'index.html')
-
     return app
