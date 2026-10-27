@@ -20,3 +20,12 @@ assert.deepEqual(m.segments([[0,0,1],[1,.001,null],[2,.05,3],[3,.051,4]],.01),[[
 console.log('Inspection model: cursor/sample/time, unknowns, viewport, slots and stale-response checks passed');
 // Decimated display spacing is not an acquisition gap; explicit null boundaries are.
 assert.deepEqual(m.segments([[0,0,1],[199,.199,2],[200,.2,3]],.008),[[[0,0,1],[199,.199,2],[200,.2,3]]]);
+// Phase colours are editable display metadata and do not remap analytical identities.
+assert.equal(m.phaseFor({label:'IA'},[]),'A');
+assert.equal(m.phaseFor({label:'VC'},[]),'C');
+assert.equal(m.phaseFor({phase:'B'},[{phase:'R'},{phase:'Y'},{phase:'B'}]),'C');
+assert.equal(m.phaseFor({label:'unmapped'},[]),'unknown');
+assert.equal(s.colors.A,'#c94145');s.setColour('A','#123456');assert.equal(s.colors.A,'#123456');
+assert.throws(()=>s.setColour('A','red" onload="x'));
+s.groups={A1:'1',A2:'1',A3:'1'};
+assert.deepEqual(m.groupChannels([{id:'A1',kind:'analog',units:'A'},{id:'A2',kind:'analog',units:'A'},{id:'A3',kind:'analog',units:'V'}],s).map(g=>g.map(c=>c.id)),[['A1','A2'],['A3']]);

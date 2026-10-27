@@ -17,8 +17,13 @@ function renderInspectionWorkbench(host,data,row,recordController) {
   const shown=()=>visible().slice(page*8,page*8+8);
   const esc=escapeHtml;
   mount.innerHTML=`<div class="inspection-toolbar"><button data-action="in">Zoom +</button><button data-action="out">Zoom −</button><button data-action="left">← Pan</button><button data-action="right">Pan →</button><button data-action="reset">Reset view</button><span id="inspection-range"></span></div><p class="field-help">Horizontal axis: zero-based sample index. Cursor labels show actual local source seconds where available. No interpolation. Hover to inspect; click to move the selected pin; arrow keys step one sample. Gaps stay blank.</p><div class="inspection-pins"></div><div class="inspection-layout"><details class="inspection-channels" open><summary>Channel slots (${data.channels.length})</summary><div class="inspection-channel-list"></div></details><div class="inspection-plots" tabindex="0" aria-label="Waveform cursors; left and right arrows step selected pin"><div class="inspection-pane analog"><h3>Analog observations</h3><div class="analog-slots"></div></div><div class="inspection-pane digital"><h3>Digital observations</h3><div class="digital-slots"></div></div><div class="inspection-toolbar"><button data-action="prev">Previous channels</button><span class="inspection-page"></span><button data-action="next">Next channels</button></div></div></div><p class="inspection-load" role="status"></p><p class="inspection-delta"></p><div class="table-wrap"><table class="inspection-values"><thead></thead><tbody></tbody></table></div>`;
+  const phase=id=>s.phases[id]||DRInspection.phaseFor(byId.get(id),data.channels);
+  const color=id=>s.colors[phase(id)];
   function controls() {
-    mount.querySelector('.inspection-channel-list').innerHTML=s.order.map(id=>{const c=byId.get(id);return `<div><label><input type="checkbox" data-channel="${id}" ${s.visible(id)?'checked':''}>${id} ${esc(c.label)} <small>${esc(c.units)}</small></label><button data-move="${id}" data-direction="-1" aria-label="Move ${id} up">↑</button><button data-move="${id}" data-direction="1" aria-label="Move ${id} down">↓</button></div>`;}).join('');
+    mount.querySelector('.inspection-channel-list').innerHTML='<p class="field-help">Phase colour and overlay group are display choices.</p><div class="inspection-palette">'+Object.entries(s.colors).map(([name,c])=>`<label>${name==='unknown'?'Other':name}<input type="color" aria-label="Phase ${name} colour" data-phase-color="${name}" value="${c}"></label>`).join('')+'</div>'+s.order.map(id=>{const c=byId.get(id);return `<div class="inspection-channel-choice"><label><input type="checkbox" data-channel="${id}" ${s.visible(id)?'checked':''}>${id} ${esc(c.label)} <small>${esc(c.units)}</small></label><button data-move="${id}" data-direction="-1" aria-label="Move ${id} up">↑</button><button data-move="${id}" data-direction="1" aria-label="Move ${id} down">↓</button><select aria-label="${id} display phase" data-phase="${id}">${Object.keys(s.colors).map(p=>`<option value="${p}" ${p===phase(id)?'selected':''}>${p==='unknown'?'Other':p}</option>`).join('')}</select>${c.kind==='analog'?`<select aria-label="${id} overlay group" data-group="${id}"><option value="">Separate slot</option>${['1','2','3','4'].map(g=>`<option value="${g}" ${s.groups[id]===g?'selected':''}>Overlay ${g}</option>`).join('')}</select>`:''}</div>`;}).join('');
+    mount.querySelectorAll('[data-phase-color]').forEach(el=>el.onchange=()=>{s.setColour(el.dataset.phaseColor,el.value);drawPaths();});
+    mount.querySelectorAll('[data-phase]').forEach(el=>el.onchange=()=>{s.phases[el.dataset.phase]=el.value;drawPaths();});
+    mount.querySelectorAll('[data-group]').forEach(el=>el.onchange=()=>{s.groups[el.dataset.group]=el.value;drawSlots();});
     mount.querySelectorAll('[data-channel]').forEach(el=>el.onchange=()=>{s.toggle(el.dataset.channel);page=0;drawSlots();loadView();});
     mount.querySelectorAll('[data-move]').forEach(el=>el.onclick=()=>{s.reorder(el.dataset.move,Number(el.dataset.direction));controls();drawSlots();loadView();});
     mount.querySelector('.inspection-pins').innerHTML=pins().map(([name,index])=>`<label><input type="radio" name="inspection-active" value="${name}" ${name===active?'checked':''}>Pin ${name} <input aria-label="Cursor ${name} sample index" data-pin="${name}" type="number" min="0" max="${s.n-1}" value="${index}"></label>${!['A','B'].includes(name)?`<button data-remove-pin="${name}" aria-label="Remove cursor ${name}">×</button>`:''}`).join('')+'<button data-action="add-pin">Add cursor at hover</button>';
@@ -29,8 +34,8 @@ function renderInspectionWorkbench(host,data,row,recordController) {
   }
   function drawSlots() {
     for (const kind of ['analog','digital']) {
-      const ids=shown().filter(id=>byId.get(id).kind===kind);
-      mount.querySelector(`.${kind}-slots`).innerHTML=ids.map(id=>{const c=byId.get(id);return `<div class="inspection-slot"><strong>${id} · ${esc(c.label)} <small>${esc(c.units)}</small></strong><svg data-trace="${id}" viewBox="0 0 900 100" preserveAspectRatio="none" role="img" aria-label="${esc(c.label)} waveform"></svg></div>`;}).join('') || '<p class="muted">No channels of this kind on this page. Choose channels or change page.</p>';
+      const groups=DRInspection.groupChannels(shown().map(id=>byId.get(id)).filter(c=>c.kind===kind),s);
+      mount.querySelector(`.${kind}-slots`).innerHTML=groups.map(group=>{const c=group[0],id=group.map(c=>c.id).join(',');return `<div class="inspection-slot"><strong>${group.map(c=>c.id+' · '+esc(c.label)).join(' / ')} <small>${esc(c.units)}</small></strong><svg data-trace="${id}" viewBox="0 0 900 100" preserveAspectRatio="none" role="img" aria-label="${esc(c.label)} waveform"></svg></div>`;}).join('') || '<p class="muted">No channels of this kind on this page. Choose channels or change page.</p>';
     }
     mount.querySelector('.inspection-page').textContent=`${visible().length?Math.min(page*8+1,visible().length):0}–${Math.min(page*8+8,visible().length)} of ${visible().length} visible channels (${data.channels.length} total)`;
     mount.querySelector('[data-action=prev]').disabled=page===0;
@@ -46,14 +51,16 @@ function renderInspectionWorkbench(host,data,row,recordController) {
   }
   function drawPaths() {
     for(const svg of mount.querySelectorAll('[data-trace]')) {
-      const c=byId.get(svg.dataset.trace),points=(native.get(c.id)||c.trace).filter(p=>p[0]>=s.view[0]&&p[0]<=s.view[1]);
-      const known=points.filter(p=>p[2]!==null).map(p=>p[2]);
-      let lo=c.kind==='digital'?-.2:Math.min(...known),hi=c.kind==='digital'?1.2:Math.max(...known);
-      if(lo===hi){lo-=1;hi+=1;}const scale=Math.max(Math.abs(lo),Math.abs(hi),1);
-      const x=i=>(i-s.view[0])/Math.max(1,s.view[1]-s.view[0])*900,y=v=>92-(v/scale-lo/scale)/((hi/scale-lo/scale)||1)*84;
+      const ids=svg.dataset.trace.split(','),channels=ids.map(id=>byId.get(id));
+      const series=channels.map(c=>({c,points:(native.get(c.id)||c.trace).filter(p=>p[0]>=s.view[0]&&p[0]<=s.view[1])}));
+      let lo=Infinity,hi=-Infinity;for(const {points} of series)for(const p of points)if(p[2]!==null){lo=Math.min(lo,p[2]);hi=Math.max(hi,p[2]);}
+      if(channels[0].kind==='digital'){lo=-.2;hi=1.2;}if(!Number.isFinite(lo)){lo=-1;hi=1;}if(lo===hi){lo-=1;hi+=1;}
+      const scale=Math.max(Math.abs(lo),Math.abs(hi),1),x=i=>(i-s.view[0])/Math.max(1,s.view[1]-s.view[0])*900,y=v=>92-(v/scale-lo/scale)/((hi/scale-lo/scale)||1)*84;
       const gap=data.time_basis.minimum_interval_s?data.time_basis.minimum_interval_s*8:Infinity;
-      const path=DRInspection.segments(points,gap).map(part=>part.map((p,i)=>`${i?(c.kind==='digital'?'H'+x(p[0])+'V':'L'):'M'+x(p[0])+','}${i? (c.kind==='digital'?y(p[2]):x(p[0])+','+y(p[2])):y(p[2])}`).join(' ')).join(' ');
-      svg.innerHTML=`<path d="${path}" fill="none" stroke="${c.kind==='digital'?'#986423':'#176d82'}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`+[['hover',s.hover],...pins()].filter(([,i])=>i>=s.view[0]&&i<=s.view[1]).map(([name,i])=>`<line x1="${x(i)}" x2="${x(i)}" y1="0" y2="100" stroke="${name==='hover'?'#8b919a':name==='A'?'#bb3b51':'#6a4cbb'}" stroke-dasharray="${name==='hover'?'3 4':'0'}"/><text x="${x(i)+4}" y="12">${name}</text>`).join('');
+      svg.innerHTML=series.map(({c,points})=>{
+        const parts=DRInspection.segments(points,gap),path=parts.map(part=>part.map((p,i)=>`${i?(c.kind==='digital'?'H'+x(p[0])+'V':'L'):'M'+x(p[0])+','}${i?(c.kind==='digital'?y(p[2]):x(p[0])+','+y(p[2])):y(p[2])}`).join(' ')).join(' ');
+        return `<path d="${path}" fill="none" stroke="${color(c.id)}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`+parts.filter(p=>p.length===1).map(part=>`<circle cx="${x(part[0][0])}" cy="${y(part[0][2])}" r="2" fill="${color(c.id)}"/>`).join('');
+      }).join('')+[['hover',s.hover],...pins()].filter(([,i])=>i>=s.view[0]&&i<=s.view[1]).map(([name,i])=>`<line x1="${x(i)}" x2="${x(i)}" y1="0" y2="100" stroke="${name==='hover'?'#8b919a':name==='A'?'#bb3b51':'#6a4cbb'}" stroke-dasharray="${name==='hover'?'3 4':'0'}"/><text x="${x(i)+4}" y="12">${name}</text>`).join('');
     }
   }
   function values() {
