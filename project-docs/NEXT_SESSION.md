@@ -22,8 +22,9 @@ Raw sample/digital inspection remains available; no flags or safety gates relaxe
 Primary1637pass/no skips/1existing upstream warning159.90s; reviewed code/report
 integrated. Report http://127.0.0.1:8092/ (Dhone#r1,DR2#r9), independent read-only
 server PID24720/session49245, directory out/qa/nonuniform-source-analysis-2026-10-27/public/.
-Restart instructions in that milestone QA README.md. Native worktree nonuniform-analysis
-needs QA/ledger preservation/native archival if newer history has not yet closed it.
+Restart instructions in that milestone QA README.md. All43ignored QA/ledger files
+hash-preserved before confirmed native archival; merged worktree branch removed.
+Preservation manifest: out/qa/nonuniform-source-analysis-2026-10-27/preserved-worktree-sha256.json.
 Temporary8093server was stopped by verified ownership before archival.
 Leave existing8091/8113 previews, incident4fb72844a355427c85d79ad4adb6b249 revision1
 Needs review, app DB, captures/Downloads/workbook/Dash untouched. Visual CUA failed

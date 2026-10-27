@@ -127,7 +127,7 @@ private directory is out/qa/nonuniform-source-analysis-2026-10-27/public/.
 HTTP/HTML/JSON checks verify14record sections/117sample envelopes, all26source
 hashes, identical incident revision1 and unchanged Dash findings. Existing preview
 PIDs8091/8113 are unchanged; only the task's temporary8093server was stopped.
-HTTP/HTML/JSON checks
-pass; a visual browser assessment was unavailable because CUA kernel assets failed
+All43ignored QA/ledger files were hash-preserved before confirmed native archival.
+A visual browser assessment was unavailable because CUA kernel assets failed
 to initialise. This is a diagnostic milestone, not completion of the operational
 nonuniform protection/location chain.
