@@ -76,3 +76,27 @@ def test_unknown_or_bad_digital_states_withhold(states):
 def test_explicit_multiplier_and_large_origin():
     out = call(stamps=[1e12,1e12+100,1e12+300], timemult=10)
     assert out['elapsed_s'] == pytest.approx([0,.001,.003])
+
+
+@pytest.mark.parametrize('category', ['numbers', 'stamps', 'states'])
+def test_masked_observations_cannot_become_observed_values(category):
+    a = importlib.import_module('dranalyser.comtrade.source_time')
+    data = dict(numbers=[1,2,3,4,5], stamps=[0,1000,2000,3000,4000], states=[0,1,1,0,0])
+    data[category] = np.ma.array(data[category], mask=[0,1,0,0,0])
+    assert a.digital_source_intervals(**data, nrates=0, timemult=1)['status'] == 'withheld'
+
+
+@pytest.mark.parametrize('category', ['numbers', 'stamps', 'states'])
+def test_explicitly_unmasked_observations_remain_inspectable(category):
+    a = importlib.import_module('dranalyser.comtrade.source_time')
+    data = dict(numbers=[1,2,3,4,5], stamps=[0,1000,2000,3000,4000], states=[0,1,1,0,0])
+    data[category] = np.ma.array(data[category], mask=False)
+    assert a.digital_source_intervals(**data, nrates=0, timemult=1)['status'] == 'source_time_inspection'
+
+
+@pytest.mark.parametrize('multiplier,stamps', [
+    (3e-318,[0,10**12,2*10**12]),
+    (1e-300,[0,1e-9,2e-9]),
+])
+def test_nonzero_subnormal_conversion_cannot_distort_source_coordinates(multiplier, stamps):
+    assert call(stamps=stamps, timemult=multiplier)['status'] == 'withheld'

@@ -14,6 +14,8 @@ def _empty():
 
 def _vector(values):
     try:
+        if np.ma.isMaskedArray(values) and np.any(np.ma.getmaskarray(values)):
+            return None
         a = np.asarray(values)
         if a.ndim != 1 or not 3 <= a.size <= 200000 or a.dtype.kind not in 'iuf':
             return None
@@ -34,7 +36,8 @@ def source_time_axis(numbers, stamps, *, nrates, timemult):
         scale = float(timemult)*1e-6 if multiplier_ok else 0
     except (OverflowError, ValueError):
         scale = 0
-    if type(nrates) is not int or nrates != 0 or not math.isfinite(scale) or scale <= 0:
+    tiny = np.finfo(float).tiny
+    if type(nrates) is not int or nrates != 0 or not math.isfinite(scale) or scale < tiny:
         out['reason'] = 'Require explicit nrates=0 and a finite representable positive multiplier.'
         return out
     nums, raw = _vector(numbers), _vector(stamps)
@@ -50,7 +53,8 @@ def source_time_axis(numbers, stamps, *, nrates, timemult):
         elapsed = (raw-raw[0])*scale
         periods = delta*scale
     if (np.any(delta <= 0) or not np.all(np.isfinite(elapsed))
-            or not np.all(np.isfinite(periods)) or np.any(np.diff(elapsed) <= 0) or np.any(periods <= 0)):
+            or not np.all(np.isfinite(periods)) or np.any(np.diff(elapsed) <= 0)
+            or np.any(periods < tiny) or np.any((elapsed != 0) & (elapsed < tiny))):
         out['reason'] = 'Source times must increase without overflow/underflow/collapsed coordinates.'
         return out
     starts = np.r_[0, np.flatnonzero(np.diff(delta) != 0)+1]
