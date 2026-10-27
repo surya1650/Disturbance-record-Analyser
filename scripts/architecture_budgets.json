@@ -116,7 +116,8 @@
     "src/dranalyser/faultloc/scalar_quality.py": 89,
     "scripts/scalar_observability_validation.py": 139,
     "src/dranalyser/faultloc/error_sets.py": 193,
-    "scripts/e5_error_validation.py": 100
+    "scripts/e5_error_validation.py": 100,
+    "src/dranalyser/comtrade/source_time.py": 105
   },
   "exceptions": {}
 }
