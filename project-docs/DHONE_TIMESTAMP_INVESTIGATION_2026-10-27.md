@@ -83,8 +83,10 @@ retained. This is an arithmetic inspection result, without production authority.
 Baseline1501pass/28missing-corpus skips/1existing warning282.88s; original release
 1540pass/28skips212.73s. After the single review-fix pass,77focused and1548full
 tests pass, with28missing-corpus skips/1existing upstream warning254.60s.
-Architecture and changed-file Ruff pass. Primary integration/regression results
-are recorded separately on delivery. This report does not claim field readiness.
+Architecture and changed-file Ruff pass. Integrated primary verification:
+1576passed/no skips/1existing upstream warning399.38s, including the local corpus
+unavailable in the managed worktree. One review and one Important-fix pass are
+complete; no unresolved Important/Minor findings. This does not claim field readiness.
 
 ## Remaining normal-analysis work
 Nonuniform DSP must handle actual sample coordinates throughout filtering,

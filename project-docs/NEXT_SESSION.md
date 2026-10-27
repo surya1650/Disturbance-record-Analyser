@@ -1,6 +1,6 @@
 # Context for the next session
 
-**Dhone source-time investigation —2026-10-27, delivery in progress.**
+**Dhone source-time investigation —2026-10-27, verified delivery.**
 Read DHONE_TIMESTAMP_INVESTIGATION_2026-10-27.md and original/reviewed108-case
 manifests (freezes55f8e3a/d0eb3aa). All108 rows remain identical/zero failures;
 all eight per-file bindings retain full_record_signals.py. Variable intervals
@@ -14,9 +14,10 @@ Needs review are unchanged; parser still blocked; preview8091/8113 untouched.
 One fresh whole-branch review completed; two Important fixed in one TDD pass:
 masked observations and subnormal scaling. RED5/GREEN77focused; release1548pass/
 28missing-corpus skips/1existing warning254.60s; no unresolved Important/Minor.
-Do not repeat review or studies. Finish primary integration/full serial corpus
-suite, commit/push and QA/ledger hash-preservation/native archive if newer Git
-history has not already done so. Active native worktree dhone-timestamp-investigation.
+Primary1576pass/no skips/1existing upstream warning399.38s; architecture passes.
+Do not repeat review or studies. Finish QA/ledger hash-preservation/native archive
+if newer Git history has not already done so. QA destination:
+out/qa/dhone-source-time-2026-10-27/, including the source-coordinate diagnostic.
 Then resume the optional joint-E5 handoff below. Normal nonuniform DSP/filtering/
 quality/location chain remains unsupported; source-time inspection is its own
 bounded milestone. No field/CT/VT/clock identity is supplied by numerical success.
