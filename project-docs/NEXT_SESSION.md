@@ -1,5 +1,22 @@
 # Context for the next session
 
+**E5/section conditional error sets —2026-10-27, delivery in progress.**
+Read E5_ERROR_SETS_2026-10-27.md and its556-case JSON, code freeze514f55a.
+540 within-cap cases retain every physical truth;16 deliberately false coherent
+caps exclude truth12times. Numerical failures0;340 single within-cap components,
+200 whole-line sets (all160wide+40both-weak bounded). No selected point/clock or
+location authority. New pure error_sets.py uses explicit caps/model provenance,
+conservative triangle radii and Lipschitz subdivision; unknown declarations
+withhold, budget exhaustion retains pending regions. Numerical outer sets are
+not formal floating intervals or calibrated confidence. Legacy DSP, production
+gates/consumers and earlier manifests unchanged; eight hashes include the old
+full_record_signals.py RATIOS dependency.55 focused tests pass, fresh review/
+serial full verification/integration follow in report/ledger; finish before
+archival and do not redo556. Next supported research: optional joint distance/
+terminal-phase necessary boxes across explicitly paired supports, new frozen
+grid; unknown phase-stability/pairing assumptions refuse. Field/model/total-cap
+provenance is still external; scalar/DSP adoption HELD. Dash/data/DB untouched.
+
 **Delivered scalar study and selector maintenance —2026-10-27.**
 Combined primary1459pass/no skips/1existing warning94.21s. Scalar study reviewed,
 two Important evidence guards fixed RED10/GREEN,56focused+1429release/28skip;
