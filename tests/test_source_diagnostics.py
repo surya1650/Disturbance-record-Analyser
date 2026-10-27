@@ -95,3 +95,10 @@ def test_digital_edge_evidence_has_a_global_response_bound():
     assert sum(len(c['rising_edges'])+len(c['falling_edges']) for c in rows)<=4096
     assert sum(c['omitted_edges'] for c in rows)>0
     assert all(c['active_samples']==50 and c['unknown_samples']==0 for c in rows)
+
+
+def test_snapshot_mentions_recorded_pickup_and_specific_short_capture_reason(revision):
+    root,row,_=revision
+    out=api('diagnose_source')(root,row,'event.cfg',{'mappings':{'D1':'START'}})
+    assert any('D1' in note and 'START' in note for note in out['conclusions']['observed'])
+    assert 'four-cycle' in out['methods']['source_models']['reason']

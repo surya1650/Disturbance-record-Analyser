@@ -66,5 +66,5 @@ def trip_ar(evidence):
         causes.append('A close indication is followed by a trip indication. A persistent or returning fault, or a breaker/close-path issue, is possible; inspect fault currents and pole states.')
         ids.extend(c['id'] for c in close+after)
     ar=dict(status='Possible explanation' if causes else 'Not available',evidence_ids=list(dict.fromkeys(ids)),
-        text=' '.join(causes) if causes else 'No sufficient assigned AR indications identify a failure mechanism. Add AR initiate/close/block/lockout, breaker pole states and scheme settings.')
+        text=' '.join(causes) if causes else 'No observed assigned AR assertions identify a failure mechanism in this capture. Review AR/pole indications, capture coverage and scheme settings; add any missing channels.')
     return trip,ar

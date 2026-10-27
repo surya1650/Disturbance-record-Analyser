@@ -109,4 +109,5 @@ function renderInspectionWorkbench(host,data,row,recordController) {
   mount.querySelectorAll('[data-action]').forEach(button=>{if(button.dataset.action==='add-pin')return;button.onclick=()=>{const action=button.dataset.action;if(action==='in')s.zoom(.5);if(action==='out')s.zoom(2);if(action==='left')s.pan(-.5);if(action==='right')s.pan(.5);if(action==='reset')s.reset();if(action==='prev')page--;if(action==='next')page++;drawSlots();loadView();};});
   recordController.signal.addEventListener('abort',()=>{clearTimeout(hoverTimer);hoverController?.abort();viewController?.abort();s.invalidate();},{once:true});
   controls();drawSlots();loadView();
+  return {focusWindow(lo,hi){s.view=[Math.max(0,lo),Math.min(s.n-1,Math.max(lo+1,hi-1))];drawSlots();loadView();mount.scrollIntoView({block:"start",behavior:"smooth"});}};
 }

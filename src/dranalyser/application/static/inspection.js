@@ -21,7 +21,10 @@ function mountInspection(row) {
       if (!response.ok) throw new Error(data.detail || 'Source inspection unavailable.');
       if (controller.signal.aborted || !host.isConnected) return;
       host.innerHTML=`<p><strong>${escapeHtml({observed:'Waveforms decoded',partial:'Partial observations',sample_only:'Samples available; timing needs review',cfg_only:'Header available; data missing',unsupported:'Sample decoding unavailable'}[data.status]||data.status)}</strong> · ${data.sample_count} observations · Operational state: ${escapeHtml(labels[data.operational_eligibility.state]||data.operational_eligibility.state)}</p><p>${escapeHtml(data.time_basis.basis || data.time_basis.reason)}</p><p>${escapeHtml(data.issues.join(' '))}</p><div class="inspection-traces"></div>`;
-      if (typeof renderInspectionWorkbench === 'function') renderInspectionWorkbench(host,data,row,controller);
+      if (typeof renderInspectionWorkbench === 'function') {
+        const workbench=renderInspectionWorkbench(host,data,row,controller);
+        mountSourceAnalysis(host,data,row,controller,workbench);
+      }
       else host.querySelector('.inspection-traces').textContent=data.channels.map(c=>`${c.id} ${c.label} (${c.units})`).join(' · ') || 'No recoverable samples. File inventory and decode reason are retained above.';
     } catch(error) {
       if (error.name!=='AbortError' && host.isConnected) host.textContent=error.message;

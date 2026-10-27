@@ -1,4 +1,5 @@
 """Independent supported source analysis with explicit, unverified assumptions."""
+from bisect import bisect_left, bisect_right
 import hashlib
 import json
 import math
@@ -9,6 +10,7 @@ from ..rules.signals import CANONICAL
 from .channel_mapping import ANALOG_TARGETS
 from .source_inspection import _source, _axis
 from .source_events import digital_evidence, trip_ar
+from .source_snapshot import line_facts, compose_snapshot
 
 
 def normalise_options(options, source):
@@ -36,7 +38,7 @@ def diagnostic_identity(root, revision, filename, options=None):
     source,_=_source(root,revision,filename)
     options=normalise_options(options,source)
     identity=dict(incident_id=revision['incident_id'],revision=revision['number'],file=filename,
-                  source_sha256=source['source_sha256'],options=options)
+                  source_sha256=source['source_sha256'],options=options,line_sha256=line_facts(root,revision)['sha256'])
     identity['job_id']=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()
     return identity
 
@@ -86,6 +88,10 @@ def diagnose_source(root,revision,filename,options=None):
     result=analyse_source(prepared,max_windows=512)
     # Keep compact diagnostics. Native arrays remain on the bounded inspection
     # endpoint; snapshots never carry an unbounded copy of digital/axis arrays.
+    times=source['axis'].get('elapsed_s',[])
+    for window in result['windows']:
+        window['start_index']=bisect_left(times,window['support_s'][0])
+        window['stop_index']=bisect_right(times,window['support_s'][1])
     result.pop('digital',None)
     result.pop('axis',None)
     for c,original in zip(result['channels'],prepared['channels'],strict=True):
@@ -98,15 +104,33 @@ def diagnose_source(root,revision,filename,options=None):
     fits=sum(c['status']=='model_consistent' for w in result['windows'] for c in w['channels'].values())
     total=sum(len(w['channels']) for w in result['windows'])
     result['fit_coverage']=dict(model_consistent=fits,withheld=total-fits,total=total)
+    model_reason='Actual source-time frequency and stationary fits; each refused window retains its reason.'
+    if not fits:
+        if not result['windows_planned']:
+            model_reason=('No complete four-cycle model support fits this capture.' if source['axis']['status']=='source_time_inspection'
+                          else 'Source timing is unavailable: '+source['axis'].get('reason','inspect sample indices.'))
+        else:
+            reasons=list(dict.fromkeys(c.get('reason','') for w in result['windows'] for c in w['channels'].values() if c.get('reason')))
+            model_reason='No supported signal fits: '+' '.join(reasons[:3])
+    active=[c for c in result['digital_evidence'] if c['active_samples']]
+    observed=[f"{c['id']} {c['label']} ({', '.join(c['meanings']) or 'meaning unassigned'}): {c['active_samples']} active source observations, {c['unknown_samples']} unknown; first observed active at sample {c['first_active_index']}." for c in active[:12]]
+    if len(active)>12:
+        observed.append(f'{len(active)-12} additional active channels are listed in detailed source evidence.')
+    ranges=[]
+    for channel in result['channels']:
+        rms=[w['channels'][channel['id']]['rms'] for w in result['windows'] if w['channels'][channel['id']]['status']=='model_consistent']
+        if rms:
+            ranges.append(f"{channel['id']} {channel['label']}: conditional RMS {min(rms):.6g} to {max(rms):.6g} {channel['units']} across {len(rms)} supported windows.")
     result['methods']={
         'source_models':dict(status='Conditional source models' if fits else 'Not available',
-            reason='Actual source-time frequency and stationary fits; every refused window retains its reason. Lower-density/short-support alternatives are not yet independently validated.'),
+            reason=model_reason+' Lower-density/short-support alternatives are not yet independently validated.'),
         'sequence':dict(status='Not available',reason='Requires corresponding phase supports, reviewed phase wiring/polarity and compatible verified scaling.'),
         'rx':dict(status='Not available',reason='Requires corresponding voltage/current supports and reviewed scaling/polarity; ground loops also require residual compensation.'),
         'location':dict(status='Not available',reason='Requires an eligible location method, supplied line length/constants and its terminal/clock/measurement prerequisites. CT assumptions alone cannot establish distance.')}
     result['conclusions']=dict(
-        observed=[f"{source['sample_count']} source samples; {len(source['channels'])} analog and {len(source['digital'])} digital channels.",result['trip']['text']],
-        supports=[f'{fits} of {total} evaluated channel-windows are model-consistent in export coordinates.',result['ar']['text']],
+        observed=[f"{source['sample_count']} source samples; {len(source['channels'])} analog and {len(source['digital'])} digital channels.",result['trip']['text']]+observed,
+        supports=[f'{fits} of {total} evaluated channel-windows are model-consistent in export coordinates.',result['ar']['text']]+ranges,
         cannot_conclude=['Physical fault identity, actual relay operating time, common event/clock/ends and physical location are not established by successful decoding or signal fitting.'],
         needed_next=['Review channel meanings and source scaling; supply breaker/AR settings and pole indications for a cause assessment; supply line facts and method prerequisites for location.'])
+    result['snapshot']=compose_snapshot(root,revision,filename,result)
     return result

@@ -55,7 +55,9 @@ def _source(root, revision, filename):
                 if source['status'] != 'unsupported':
                     raise ValueError('Source checksum changed during decode.')
             source['source_sha256'] = hashes
-            source['header_inventory'] = _header_inventory(cfg, cfg_hash) or item.get('channel_inventory', [])
+            header = _header_information(cfg, cfg_hash)
+            source['header_inventory'] = header.get('inventory') or item.get('channel_inventory', [])
+            source['recorded_times'] = header.get('recorded_times', {})
             _CACHE[key] = source
             while len(_CACHE) > 2:
                 _CACHE.popitem(last=False)
@@ -63,10 +65,10 @@ def _source(root, revision, filename):
         return _CACHE[key], item
 
 
-def _header_inventory(path, expected_hash):
+def _header_information(path, expected_hash):
     """Recover bounded declared identities independently of DAT decode or timing."""
     if path.suffix.lower() != '.cfg' or path.stat().st_size > 1048576:
-        return []
+        return {}
     raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() != expected_hash:
         raise ValueError('Source checksum changed during header inspection.')
@@ -80,7 +82,7 @@ def _header_inventory(path, expected_hash):
         na, nd = int(counts[1][:-1]), int(counts[2][:-1])
         if (counts[1][-1:] != 'A' or counts[2][-1:] != 'D' or not 0 <= na <= 64
                 or not 0 <= nd <= 256 or int(counts[0]) != na+nd or len(lines) < 2+na+nd):
-            return []
+            return {}
         inventory = []
         for i, line in enumerate(lines[2:2+na+nd]):
             fields = line.split(',')
@@ -91,9 +93,18 @@ def _header_inventory(path, expected_hash):
                 **({key: fields[pos] if len(fields)>pos else '' for key,pos in
                     [('a',5),('b',6),('primary',10),('secondary',11),('primary_secondary',12)]} if analog else {}),
                 declared_units=fields[4] if analog and len(fields) > 4 else 'state' if not analog else 'Not available'))
-        return inventory
+        times=dict(start=None,trigger=None,basis='CFG recorded strings; timezone and trigger semantics are unverified.')
+        try:
+            j=2+na+nd
+            rates=int(lines[j+1])
+            index=j+2+max(rates,1)
+            if 0<=rates<=8 and len(lines)>index+1:
+                times.update(start=lines[index],trigger=lines[index+1])
+        except (ValueError,IndexError):
+            pass
+        return dict(inventory=inventory,recorded_times=times)
     except (ValueError, IndexError):
-        return []
+        return {}
 
 
 def _axis(source):
@@ -149,6 +160,7 @@ def inspection_record(root, revision, filename):
                 content_hash_basis='SHA256(original CFG bytes + original DAT bytes); distinct from legacy parser hash',
                 time_range_s=[times[0], times[-1]] if times else None,
                 station=source.get('station', ''), device=source.get('device', ''),
+                recorded_times=source.get('recorded_times', {}),
                 inventory=source.get('header_inventory', []),
                 operational_eligibility=dict(state=revision['state'], blocked=item.get('blocked', False),
                     reason=item.get('error', '') or 'Inspection does not establish operational eligibility.'),
