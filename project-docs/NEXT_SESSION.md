@@ -1,5 +1,24 @@
 # Context for the next session
 
+**Delivered scalar study and selector maintenance —2026-10-27.**
+Combined primary1459pass/no skips/1existing warning94.21s. Scalar study reviewed,
+two Important evidence guards fixed RED10/GREEN,56focused+1429release/28skip;
+616CORRECTED rows identical. All44 frozen hashes verify at369d535; main additionally
+contains the separately reviewed one-line string-method guard (no math change).
+Prior method-array API Minor is DONE,179executor/206reviewer focused passes.
+One deferred per-file-provenance Minor: include full_record_signals.py RATIOS in
+future manifests; full recorded Git freezes already bind it. No unresolved
+Important findings. Both milestones integrated, analyser main delivery recorded
+in Git/remote; preserve ignored QA/ledgers before native archival if not done.
+Do not redo616: candidate116pass500refuse,87harmfulCT0pass but72coherent harmful
+passes/59bad locations, max45.02455km. Adoption FAILED/HELD; production unchanged.
+Next autonomous numerical work: supplied-error E5/section feasible distance sets.
+Design note E:/dr analyser/out/qa/next-e5-error-bounds-handoff.md; verify signs,
+unknown caps/provenance refuse, ambiguity stays wide/uninformative, no field or
+formal interval claims. Freeze disjoint tests, include full dependency bindings.
+Five-hour heartbeat ACTIVE, no manual resets/credits, no holdout tuning or
+operational/clock promotion. Dash/captures/workbook/DB remain untouched.
+
 **Scalar observability study —2026-10-27; adoption FAILED/HELD.**
 Read [SCALAR_OBSERVABILITY_VALIDATION_2026-10-27.md](SCALAR_OBSERVABILITY_VALIDATION_2026-10-27.md)
 and its CORRECTED616-case JSON, reviewed freeze369d535/44 source hashes; original
@@ -12,8 +31,8 @@ are withheld (noise here is Gaussian, not a deterministic hard cap). No policy
 or DSP default adopted; no production consumer imports the candidate.
 56 focused tests pass after two Important review fixes; review-fix full1429pass/
 28corpus skips/1existing warning113.58s. Original release1419pass/28skip237.80s.
-Independent review and primary integration pending; follow active ledger before
-redoing work. Next supported mathematical work: propagate explicit terminal
+Independent reviews/fix pass and combined primary1459pass delivery complete.
+Next supported mathematical work: propagate explicit terminal
 phasor-error bounds through E5/section observability, keeping unverified caller
 assumptions distinct from field calibration/provenance. No holdout tuning.
 Dash/captures/workbook/DB unchanged; five-hour autonomous continuation active.

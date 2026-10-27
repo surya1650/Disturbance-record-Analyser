@@ -1,6 +1,6 @@
 # Research Method Type Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Reject array/non-string method selectors consistently with the bound API.
 
@@ -26,6 +26,6 @@
 ### Task 1: Selector guard and verification
 **Files:** Modify src/dranalyser/dsp/core.py; create tests/test_method_selector.py; record result in project-docs/NEXT_SESSION.md after integration.
 **Interfaces:** sliding_dft public signature unchanged; method must be str containing legacy/basis.
-- [ ] Write minimal array-selector refusal test and valid NumPy scalar-string physical-phasor check. Run focused RED.
-- [ ] Add isinstance(method,str) guard, run new/fractional/budget suites GREEN; architecture/focused Ruff. Commit.
-- [ ] Obtain one fresh whole-branch review, fix Important issues once via RED/GREEN. Merge with independently reviewed scalar study and run one combined primary full suite before push; verify remote/clean tree, preserve QA/ledger and native archive.
+- [x] Write minimal array-selector refusal test and valid NumPy scalar-string physical-phasor check. Run focused RED.
+- [x] Add isinstance(method,str) guard, run new/fractional/budget suites GREEN; architecture/focused Ruff. Commit.
+- [x] Obtain one fresh whole-branch review, fix Important issues once via RED/GREEN. Merge with independently reviewed scalar study and run one combined primary full suite before push; verify remote/clean tree, preserve QA/ledger and native archive.

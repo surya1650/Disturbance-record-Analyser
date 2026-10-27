@@ -122,3 +122,17 @@ bindings. Completed-analysis to record provenance is assumed; raw ADC/cached
 phasor authenticity is not established here. No current clock path is eligible,
 so pair reporting grants no alignment authority. Field/manufacturer CT/coherent
 error guarantees remain excluded, with failed adoption visible.
+
+Final combined primary regression: **1459passed, no skips**, one existing upstream
+Starlette/httpx warning,94.21s. The separate research-method-selector maintenance
+is also independently reviewed: array selectors now refuse; NumPy scalar strings
+and legacy math remain. No new Minors there. All44 corrected source bindings
+verify against369d535. In the delivered checkout, only the separately reviewed
+string-selector guard differs among those44 files; normal legacy calls and
+mathematics are unchanged. The616 study remains bound to its full recorded Git
+freeze, not silently rehashed. Architecture direct/self-tests, changed-file Ruff
+and diff checks pass. No unresolved Important findings or operational promotion.
+QA, independent reviews and execution ledgers remain local in ignored
+out/qa/scalar-observability-2026-10-27/ and out/qa/research-method-type-2026-10-27/.
+The five-hour autonomous continuation remains active for explicit terminal-error
+feasible-distance research; the design note is locally saved under out/qa/.
