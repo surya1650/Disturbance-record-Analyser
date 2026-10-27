@@ -2,7 +2,7 @@
 from ..rules.signals import CANONICAL, map_signals
 
 
-def digital_evidence(source, mappings, limit=512):
+def digital_evidence(source, mappings, limit=512, *, mapping_sources=None):
     time=source['axis'].get('elapsed_s', [])
     result=[]
     remaining=4096
@@ -30,7 +30,7 @@ def digital_evidence(source, mappings, limit=512):
                 if len(falling)<limit and remaining>0:
                     falling.append(edge)
                     remaining-=1
-        result.append(dict(id=key,label=label,meanings=meanings,mapping_source='user' if selected else 'label suggestion',
+        result.append(dict(id=key,label=label,meanings=meanings,mapping_source=(mapping_sources or {}).get(key,'source-analysis choice' if selected else 'label suggestion'),
             first_active_index=first,first_active_source_s=time[first] if time and first is not None else None,
             unknown_samples=sum(v is None for v in bits),active_samples=sum(v==1 for v in bits),
             rising_edges=rising,falling_edges=falling,rising_count=rising_count,falling_count=falling_count,

@@ -1,4 +1,5 @@
 """Bounded read-only source diagnostic jobs; no revision/operational state writes."""
+import copy
 import threading
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
@@ -15,7 +16,8 @@ class SourceJobs:
 
     def request(self, revision, filename, options):
         # Verify immutable bytes/options on every poll, including completed jobs.
-        identity=diagnostic_identity(self.root,revision,filename,options)
+        frozen=copy.deepcopy(revision)
+        identity=diagnostic_identity(self.root,frozen,filename,options)
         key=identity['job_id']
         with self.lock:
             if key not in self.jobs:
@@ -24,7 +26,7 @@ class SourceJobs:
                     if completed is None:
                         return dict(status='busy',**identity,detail='Two source analyses are already pending. Waveform inspection remains available; retry shortly.')
                     del self.jobs[completed]
-                self.jobs[key]=self.executor.submit(diagnose_source,self.root,revision,filename,identity['options'])
+                self.jobs[key]=self.executor.submit(diagnose_source,self.root,frozen,filename,identity['options'])
             future=self.jobs[key]
             self.jobs.move_to_end(key)
         if not future.done():

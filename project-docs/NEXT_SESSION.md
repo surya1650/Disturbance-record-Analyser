@@ -1,3 +1,26 @@
+**Integrated application delivery — 2026-10-27 execution update.**
+Read INTEGRATED_DR_GOAL_BOARD.md for checked acceptance and exact remaining work.
+Inspection-first shipped main935d3c9 (primary1658pass/1OSskip). The next milestone
+adds selectable phase colours/same-unit overlays, clear Input notes instead of an
+overall Blocked wall, independent background diagnostics/meanings, explicit missing
+CTdefaults132kV600/1 and220kV800/1, possible trip/AR explanations, source snapshots,
+window/digital evidence, line placeholders and same-model exports/comparison.
+One fresh review and one Important-fix TDD pass completed (RED8/GREEN33focused,
+isolated1662pass/29skip/one existing warning). Inherited Ignore and mapping provenance
+are preserved; cache/job/snapshot identities include inherited review/context inputs,
+and pending jobs freeze their revision. No re-review or152study rerun.
+Current managed worktree is C:/Users/rscvr/.codex/worktrees/inspection-first/dr analyser,
+branch codex/inspection-first, active because G3conditional composition/G4independent
+line inputs and G6recovery/qualification remain. Preserve ignored QA and both scoped
+ledgers before eventual native archival. Isolated preview8094 uses disposable
+out/qa/inspection-first/app; verify process ownership before changing it. Protected
+8091 was offline when inspected; no protected preview restarted. Original26source
+hashes and real pending revision were checked unchanged. A new browser-generated
+source-analysis-r1.json export was added to Downloads; original captures unchanged.
+The existing5hour heartbeat already belongs to this chat; no duplicate. Natural
+quota reset occurred; user said continue. Proceed autonomously, commit/push after
+primary verification. No invented current/clock/line/location authority.
+
 # Context for the next session
 
 **USER PRIORITY CHANGE —2026-10-27: integrated application delivery.**

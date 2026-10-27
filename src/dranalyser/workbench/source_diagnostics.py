@@ -35,27 +35,54 @@ def normalise_options(options, source):
 
 
 def diagnostic_identity(root, revision, filename, options=None):
-    source,_=_source(root,revision,filename)
+    source,item=_source(root,revision,filename)
     options=normalise_options(options,source)
+    stored=revision.get('result') or {}
+    metadata=revision.get('metadata') or {}
+    context=dict(inventory=item.get('channel_inventory',[]),reviewed_mapping=item.get('channel_mapping',{}),
+        record_hash=item.get('content_hash'),terminal_end=item.get('terminal_end'),role=item.get('role'),
+        state=revision.get('state'),assignment=(metadata.get('assignments') or {}).get(filename),
+        line_id=(revision.get('bundle') or {}).get('line_id'),
+        operational={key:stored.get(key) for key in ('line_snapshot','parameter_status','location_text','used')})
+    context_hash=hashlib.sha256(json.dumps(context,sort_keys=True).encode()).hexdigest()
     identity=dict(incident_id=revision['incident_id'],revision=revision['number'],file=filename,
-                  source_sha256=source['source_sha256'],options=options,line_sha256=line_facts(root,revision)['sha256'])
+                  source_sha256=source['source_sha256'],options=options,revision_context_sha256=context_hash,line_sha256=line_facts(root,revision)['sha256'])
     identity['job_id']=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()
     return identity
+
+
+def _effective_meanings(item,options):
+    meanings={}
+    provenance={}
+    for channel in item.get('channel_inventory',[]):
+        key=channel['id']
+        reviewed=channel.get('reviewed') is True
+        target=(channel.get('selected') or 'ignore') if reviewed else (channel.get('selected') or channel.get('automatic') or '')
+        if target:
+            meanings[key]=target
+            provenance[key]='reviewed revision choice' if reviewed else 'label suggestion'
+    for kind in ('analog','digital'):
+        for key,target in (item.get('channel_mapping') or {}).get(kind,{}).items():
+            meanings[key]=target
+            provenance[key]='reviewed revision choice'
+    for key,target in options['mappings'].items():
+        meanings[key]=target
+        provenance[key]='source-analysis choice'
+    return meanings,provenance
 
 
 def _prepared(source,item,options):
     out=dict(source)
     out['channels']=[dict(c) for c in source['channels']]
     headers={c['id']:c for c in source.get('header_inventory',[])}
-    mapped={c['id']:c.get('selected') or c.get('automatic') or '' for c in item.get('channel_inventory',[])}
-    mapped.update(options['mappings'])
+    mapped,mapping_sources=_effective_meanings(item,options)
     assumptions=[]
     notes=[]
     for c in out['channels']:
         key=c['key']
         h=headers.get(key,{})
         c['meaning']=mapped.get(key) or (c['label'] if c['label'] in ANALOG_TARGETS else '')
-        if key in options['mappings']:
+        if key in mapped:
             c['frequency_reference']=c['meaning'] in ('VA','VB','VC')
             c['current_reference']=c['meaning'] in ('IA','IB','IC')
         unit=h.get('declared_units','').upper()
@@ -78,13 +105,13 @@ def _prepared(source,item,options):
                 source='user voltage-level default',basis='Missing ratio; known secondary current and CFG a*x+b. No CT/VT/wiring verification.'))
         elif c['units']=='raw counts':
             notes.append(key+': physical scale not available; source gain/offset, units, secondary/primary side and ratio are required. Counts remain analysable.')
-    return out,assumptions,notes,mapped
+    return out,assumptions,notes,mapped,mapping_sources
 
 
 def diagnose_source(root,revision,filename,options=None):
     source,item=_source(root,revision,filename)
     options=normalise_options(options,source)
-    prepared,assumptions,notes,mapped=_prepared(source,item,options)
+    prepared,assumptions,notes,mapped,mapping_sources=_prepared(source,item,options)
     result=analyse_source(prepared,max_windows=512)
     # Keep compact diagnostics. Native arrays remain on the bounded inspection
     # endpoint; snapshots never carry an unbounded copy of digital/axis arrays.
@@ -99,7 +126,8 @@ def diagnose_source(root,revision,filename,options=None):
         c.update(id=c['key'],meaning=original.get('meaning',''))
     identity=diagnostic_identity(root,revision,filename,options)
     result.update(identity,time_basis=_axis(source),assumptions=assumptions,scaling_notes=notes,
-        digital_evidence=digital_evidence(source,options['mappings']|{k:v for k,v in mapped.items() if k.startswith('D') and k not in options['mappings'] and v in CANONICAL}))
+        digital_evidence=digital_evidence(source,{k:v for k,v in mapped.items() if k.startswith('D') and v in (*CANONICAL,'ignore')},
+            mapping_sources=mapping_sources))
     result['trip'],result['ar']=trip_ar(result['digital_evidence'])
     fits=sum(c['status']=='model_consistent' for w in result['windows'] for c in w['channels'].values())
     total=sum(len(w['channels']) for w in result['windows'])
