@@ -1,8 +1,39 @@
 """Read-only source observation routes, separate from operational results."""
+from contextlib import asynccontextmanager
+import json
+
 from fastapi import HTTPException, Query
+
+from .source_jobs import SourceJobs
 
 
 def install_inspection(app, store):
+    jobs=SourceJobs(store.root)
+    app.state.source_jobs=jobs
+    original=app.router.lifespan_context
+
+    @asynccontextmanager
+    async def lifespan(application):
+        async with original(application):
+            try:
+                yield
+            finally:
+                jobs.close()
+
+    app.router.lifespan_context=lifespan
+
+    @app.get('/api/incidents/{incident_id}/inspection/analysis')
+    def analysis(incident_id: str, record: str, revision: int = Query(...,ge=1), voltage_kv: int = 0,
+                 mappings: str = Query('{}',max_length=12000)):
+        row=store.get(incident_id,revision)
+        if row is None:
+            raise HTTPException(404,'Revision not found.')
+        try:
+            choices=json.loads(mappings)
+        except ValueError as exc:
+            raise ValueError('Channel meanings must be valid JSON source-ID choices.') from exc
+        return jobs.request(row,record,dict(voltage_kv=voltage_kv,mappings=choices))
+
     @app.get('/api/incidents/{incident_id}/inspection')
     def inspection(incident_id: str, record: str, revision: int = Query(..., ge=1)):
         from ..workbench.source_inspection import inspection_record

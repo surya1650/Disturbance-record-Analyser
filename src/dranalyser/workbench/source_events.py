@@ -1,0 +1,70 @@
+"""Bounded digital observations and possible trip/reclose explanations."""
+from ..rules.signals import CANONICAL, map_signals
+
+
+def digital_evidence(source, mappings, limit=512):
+    time=source['axis'].get('elapsed_s', [])
+    result=[]
+    remaining=4096
+    for c in source['digital']:
+        key,label,bits=c['key'],c['label'],c['states']
+        selected=mappings.get(key)
+        automatic=map_signals([label])
+        meanings=([selected] if selected!='ignore' else []) if selected else [m for m in CANONICAL if label in automatic.channels(m)]
+        rising=[]
+        falling=[]
+        rising_count=falling_count=0
+        first=next((i for i,v in enumerate(bits) if v==1),None)
+        for i in range(1,len(bits)):
+            if bits[i-1] is None or bits[i] is None or bits[i-1]==bits[i]:
+                continue
+            edge=dict(index=i,sample_bracket=[i-1,i],source_s=time[i] if time else None,
+                      source_bracket_s=[time[i-1],time[i]] if time else None)
+            if bits[i]==1:
+                rising_count+=1
+                if len(rising)<limit and remaining>0:
+                    rising.append(edge)
+                    remaining-=1
+            else:
+                falling_count+=1
+                if len(falling)<limit and remaining>0:
+                    falling.append(edge)
+                    remaining-=1
+        result.append(dict(id=key,label=label,meanings=meanings,mapping_source='user' if selected else 'label suggestion',
+            first_active_index=first,first_active_source_s=time[first] if time and first is not None else None,
+            unknown_samples=sum(v is None for v in bits),active_samples=sum(v==1 for v in bits),
+            rising_edges=rising,falling_edges=falling,rising_count=rising_count,falling_count=falling_count,
+            omitted_edges=rising_count+falling_count-len(rising)-len(falling),
+            note='Recorded indication only. Source sample brackets are not physical relay operating times.'))
+    return result
+
+
+def trip_ar(evidence):
+    def active(meanings):
+        return [c for c in evidence if c['first_active_index'] is not None and set(c['meanings']) & set(meanings)]
+    trips=active(['TRIP','TRIP_A','TRIP_B','TRIP_C','TRIP_3P','TRIP_Z2','TRIP_Z3','TRIP_Z4'])
+    trip=dict(status='Observed indication' if trips else 'Not available',evidence_ids=[c['id'] for c in trips],
+        text='Trip indications recorded: '+', '.join(c['id']+' '+c['label'] for c in trips) if trips else
+             'No assigned trip assertion was observed. Check channel meanings and capture coverage; absence is not proof of no trip.')
+    causes=[]
+    ids=[]
+    for meanings,text in [(['AR_BLOCK'],'AR blocking indication recorded; a close command may have been inhibited. Check scheme inputs and settings.'),
+                         (['AR_LOCKOUT'],'AR lockout indication recorded. Shot/reclaim limits or scheme state may explain why no further close occurred.'),
+                         (['AR_FAIL'],'AR failure indication recorded. The indication alone does not identify its physical cause.')]:
+        matches=active(meanings)
+        if matches:
+            causes.append(text)
+            ids.extend(c['id'] for c in matches)
+    close=active(['AR_CLOSE'])
+    init=active(['AR_INITIATE'])
+    if init and not close:
+        causes.append('AR initiation recorded; no assigned close assertion observed within this capture. Check inhibit/wait logic and capture duration.')
+        ids.extend(c['id'] for c in init)
+    close_edges=[e['index'] for c in close for e in c['rising_edges']]
+    after=[c for c in trips if any(e['index']>lo for e in c['rising_edges'] for lo in close_edges)]
+    if after:
+        causes.append('A close indication is followed by a trip indication. A persistent or returning fault, or a breaker/close-path issue, is possible; inspect fault currents and pole states.')
+        ids.extend(c['id'] for c in close+after)
+    ar=dict(status='Possible explanation' if causes else 'Not available',evidence_ids=list(dict.fromkeys(ids)),
+        text=' '.join(causes) if causes else 'No sufficient assigned AR indications identify a failure mechanism. Add AR initiate/close/block/lockout, breaker pole states and scheme settings.')
+    return trip,ar

@@ -87,6 +87,9 @@ def _header_inventory(path, expected_hash):
             analog = i < na
             inventory.append(dict(id=f'A{i+1}' if analog else f'D{i-na+1}',
                 source_id=fields[0], kind='analog' if analog else 'digital', label=fields[1],
+                phase=fields[2] if analog and len(fields)>2 else '',
+                **({key: fields[pos] if len(fields)>pos else '' for key,pos in
+                    [('a',5),('b',6),('primary',10),('secondary',11),('primary_secondary',12)]} if analog else {}),
                 declared_units=fields[4] if analog and len(fields) > 4 else 'state' if not analog else 'Not available'))
         return inventory
     except (ValueError, IndexError):
@@ -128,6 +131,9 @@ def _trace(values, times, budget):
 def inspection_record(root, revision, filename):
     source, item = _source(root, revision, filename)
     channels = _channels(source)
+    headers = {c['id']: c for c in source.get('header_inventory', [])}
+    for c in channels:
+        c['phase'] = headers.get(c['id'], {}).get('phase', '')
     times = source['axis'].get('elapsed_s', [])
     budget = max(1, 16000//max(1, len(channels)*4))
     for meta, data in zip(channels, source['channels']+source['digital'], strict=True):
