@@ -26,21 +26,21 @@
 ### Task 1: Pure necessary-set research utility
 **Files:** Create src/dranalyser/faultloc/error_sets.py, tests/test_error_sets.py; exact new architecture budget.
 **Interfaces:** Dataclasses and e5_error_feasible() as spec; finite JSON, no location.
-- [ ] Write analytic/refusal/resource/extreme/scale/section-angle tests; run focused RED (missing module).
-- [ ] Implement normalized conservative drops and Lipschitz subdivision; run focused GREEN, architecture and changed-file Ruff. Expected all pass.
-- [ ] Commit; task-done reruns pytest tests/test_error_sets.py -q. Expected all pass.
+- [x] Write analytic/refusal/resource/extreme/scale/section-angle tests; run focused RED (missing module).
+- [x] Implement normalized conservative drops and Lipschitz subdivision; run focused GREEN, architecture and changed-file Ruff. Expected all pass.
+- [x] Commit; task-done reruns pytest tests/test_error_sets.py -q. Expected all pass.
 
 ### Task 2: Frozen disjoint independent experiment
 **Files:** Create tests/error_set_oracle.py, scripts/e5_error_validation.py, tests/test_e5_error_validation.py, tracked validation JSON.
 **Interfaces:** oracle case_grid()/make_case() contain all556 rows; runner run() retains exceptions as failed rows, source hashes and frozen Git revision. main() exclusive finite JSON publication, exit2 on failure.
-- [ ] Write oracle/sign/bounded perturbation, real tiny runner, failed-row denominator and publication tests; focused RED missing module/runner.
-- [ ] Implement independent oracle and runner, GREEN tests, architecture/Ruff; commit protocol before full experiment. No full_record_signals dependency is used; if reused include it in manifest.
-- [ ] Run all556 once, preserve every row; assert zero within-cap omissions, record wide/ambiguous/resource/violated-cap outcomes honestly. Expected numerical coverage, not field adoption.
-- [ ] Commit evidence; task-done reruns focused suites. Expected all pass.
+- [x] Write oracle/sign/bounded perturbation, real tiny runner, failed-row denominator and publication tests; focused RED missing module/runner.
+- [x] Implement independent oracle and runner, GREEN tests, architecture/Ruff; commit protocol before full experiment. No full_record_signals dependency is used; if reused include it in manifest.
+- [x] Run all556 once, preserve every row; assert zero within-cap omissions, record wide/ambiguous/resource/violated-cap outcomes honestly. Expected numerical coverage, not field adoption.
+- [x] Commit evidence; task-done reruns focused suites. Expected all pass.
 
 ### Task 3: Review and deliver
 **Files:** project-docs/E5_ERROR_SETS_2026-10-27.md and project-docs/NEXT_SESSION.md.
 **Interfaces:** Published conditional results/limitations and next supported work, no location authority.
-- [ ] Run full serial suite and production/Dash/historical-manifest checks; expected unchanged production and full pass (28 missing-corpus skips in worktree).
-- [ ] Fresh whole-branch review; single Important TDD pass if needed; retain historical evidence and new corrected binding separately. Expected no unresolved Important issues.
-- [ ] Integrate, primary serial suite, commit/push and verify remote HEAD; preserve QA/ledger hash-verified before native archive. Expected clean primary and recoverable archived worktree.
+- [x] Run full serial suite and production/Dash/historical-manifest checks; expected unchanged production and full pass (28 missing-corpus skips in worktree).
+- [x] Fresh whole-branch review; single Important TDD pass if needed; retain historical evidence and new corrected binding separately. Expected no unresolved Important issues.
+- [x] Integrate, primary serial suite, commit/push and verify remote HEAD; preserve QA/ledger hash-verified before native archive. Expected clean primary and recoverable archived worktree.

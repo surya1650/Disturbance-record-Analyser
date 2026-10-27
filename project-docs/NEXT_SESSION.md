@@ -16,8 +16,9 @@ Numerical outer sets are
 not formal floating intervals or calibrated confidence. Legacy DSP, production
 gates/consumers and earlier manifests unchanged; eight hashes include the old
 full_record_signals.py RATIOS dependency. One fresh review completed; do not
-repeat review or redo556. Preserve QA/ledger before native archival if still
-pending; location out/qa/e5-error-sets-2026-10-27/. Next supported research:
+repeat review or redo556. QA/ledger22 files hash-preserved, native worktree
+archived and merged branch removed; location out/qa/e5-error-sets-2026-10-27/.
+Next supported research:
 optional joint distance/
 terminal-phase necessary boxes across explicitly paired supports, new frozen
 grid; unknown phase-stability/pairing assumptions refuse. Field/model/total-cap

@@ -17,8 +17,8 @@ inequality; their intersection does NOT establish a shared phase across supports
 Normalized section subdivision discards only boxes ruled out by a Lipschitz bound
 plus the explicit guard256*epsilon*(sections+1). Endpoint/junction boxes survive;
 pending boxes survive resource exhaustion. Unknown caps/provenance, invalid model
-geometry and unrepresentable numerical scales withhold. No negative-sequence
-signal with overlapping error circles provides no distance information.
+geometry and unrepresentable numerical scales withhold. Weak negative-sequence
+signals with overlapping error circles provide no distance information.
 
 These are numerical outer sets, not formally rounded interval certificates or
 calibrated confidence. Passive uncoupled exact Z2=Z1 sections, no charging/taps/
@@ -98,8 +98,9 @@ Combined primary log: out/qa/e5-combined-primary-full.txt. The read-only deliver
 helper verifies16 frozen bindings,8 current bindings, identical556-case rows,
 unchanged existing production sources/historical evidence and both protected
 Dash hashes. Research is integrated under the standing commit/push authorization;
-the final Git/remote head records delivery. Preserve out/qa and this plan's ignored
-execution ledger under out/qa/e5-error-sets-2026-10-27/ before native archival.
+the final Git/remote head records delivery. All22 ignored QA/ledger files were
+copied and hash-verified under out/qa/e5-error-sets-2026-10-27/ before the native
+worktree archive was verified. Its merged branch was removed after archival.
 
 ## Decisions and remaining evidence
 Triangle radius sums trade tightness for conservative geometry; extreme
