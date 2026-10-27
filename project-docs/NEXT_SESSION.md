@@ -1,5 +1,26 @@
 # Context for the next session
 
+**Dhone source-time investigation —2026-10-27, delivery in progress.**
+Read DHONE_TIMESTAMP_INVESTIGATION_2026-10-27.md and original/reviewed108-case
+manifests (freezes55f8e3a/d0eb3aa). All108 rows remain identical/zero failures;
+all eight per-file bindings retain full_record_signals.py. Variable intervals
+are legitimate for some recorders per primary manufacturer documentation;
+Dhone's24/48-interval changes are consistent with tracking, not authenticated
+device/clock provenance. New isolated pure source_time.py provides declared
+DAT coordinates/digital brackets only, no production callers or gate changes.
+Any Start33.280ms source span/[32.448,34.112]ms sample bracket is not operating
+time or calibrated confidence. Original CFG/DAT hashes and incident revision1
+Needs review are unchanged; parser still blocked; preview8091/8113 untouched.
+One fresh whole-branch review completed; two Important fixed in one TDD pass:
+masked observations and subnormal scaling. RED5/GREEN77focused; release1548pass/
+28missing-corpus skips/1existing warning254.60s; no unresolved Important/Minor.
+Do not repeat review or studies. Finish primary integration/full serial corpus
+suite, commit/push and QA/ledger hash-preservation/native archive if newer Git
+history has not already done so. Active native worktree dhone-timestamp-investigation.
+Then resume the optional joint-E5 handoff below. Normal nonuniform DSP/filtering/
+quality/location chain remains unsupported; source-time inspection is its own
+bounded milestone. No field/CT/VT/clock identity is supplied by numerical success.
+
 **E5/section conditional error sets —2026-10-27, verified delivery.**
 Read E5_ERROR_SETS_2026-10-27.md and its original/reviewed556-case JSON,
 freezes514f55a/ab09e03. Primary1529pass/no skips/1existing warning182.29s.
