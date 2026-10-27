@@ -115,3 +115,24 @@ def test_symlink_outside_revision_refuses(revision,tmp_path):
         pytest.skip('OS does not permit symlink creation')
     with pytest.raises(ValueError,match='path'):
         adapter('inspection_record')(root,row,'event.cfg')
+
+def test_cfg_only_retains_independent_header_channel_identities(revision):
+    root,row,folder=revision
+    (folder/'event.dat').unlink()
+    row['files']=[e for e in row['files'] if e['name'].endswith('.cfg')]
+    row['bundle']['files'][0]['data_file']=''
+    out=adapter('inspection_record')(root,row,'event.cfg')
+    assert out['station']=='STATION' and out['device']=='DEVICE'
+    assert [(c['id'],c['kind'],c['label'],c['declared_units']) for c in out['inventory']] == [
+        ('A1','analog','DUP','A'),('A2','analog','DUP','V'),('D1','digital','TRIP','state')]
+
+
+def test_display_envelope_retains_real_gap_without_breaking_decimation():
+    module=importlib.import_module('dranalyser.workbench.source_inspection')
+    values=list(range(20001))
+    continuous=[i*.001 for i in range(20001)]
+    trace=module._trace(values,continuous,100)
+    assert all(p[2] is not None for p in trace)
+    time=[t+(1 if i>=10000 else 0) for i,t in enumerate(continuous)]
+    trace=module._trace(values,time,100)
+    assert any(p[2] is None for p in trace)

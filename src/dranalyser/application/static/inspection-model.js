@@ -21,7 +21,7 @@ const DRInspection = (() => {
   function delta(a,b){return {samples:b[0]-a[0],seconds:Number.isFinite(a[1])&&Number.isFinite(b[1])?b[1]-a[1]:null};}
   function value(sample){return !sample||sample[2]===null?'Unknown':String(sample[2]);}
   function nearest(points,index){return points.reduce((best,p)=>!best||Math.abs(p[0]-index)<Math.abs(best[0]-index)?p:best,null);}
-  function segments(points,gap=Infinity){const out=[];let part=[];for(const p of points){const last=part.at(-1);if(p[2]===null||(last&&p[1]!==null&&last[1]!==null&&p[1]-last[1]>gap)){if(part.length)out.push(part);part=[];}if(p[2]!==null)part.push(p);}if(part.length)out.push(part);return out;}
+  function segments(points,gap=Infinity){const out=[];let part=[];for(const p of points){const last=part.at(-1);if(p[2]===null||(last&&p[0]-last[0]===1&&p[1]!==null&&last[1]!==null&&p[1]-last[1]>gap)){if(part.length)out.push(part);part=[];}if(p[2]!==null)part.push(p);}if(part.length)out.push(part);return out;}
   return {create,delta,value,nearest,segments};
 })();
 if(typeof module!=='undefined')module.exports=DRInspection;

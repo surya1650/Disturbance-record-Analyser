@@ -2,7 +2,10 @@
 const inspectionViews=new Map();
 function renderInspectionWorkbench(host,data,row,recordController) {
   const mount=host.querySelector('.inspection-traces');
-  if (!data.sample_count) {mount.textContent='No recoverable samples. File inventory and decode reason are retained above.';return;}
+  if (!data.sample_count) {
+    mount.innerHTML='<h3>Recovered header inventory</h3><p>No recoverable samples. The decode reason and original files remain available.</p>'+
+      (data.inventory.length?'<table><thead><tr><th>ID</th><th>Kind</th><th>Source label</th><th>Declared units (unverified)</th></tr></thead><tbody>'+data.inventory.map(c=>`<tr><td>${escapeHtml(c.id)}</td><td>${escapeHtml(c.kind)}</td><td>${escapeHtml(c.label)}</td><td>${escapeHtml(c.declared_units||c.units||'Not available')}</td></tr>`).join('')+'</tbody></table>':'<p>No independently readable channel header.</p>');return;
+  }
   const key=`${row.incident_id}/${row.number}/${data.file}`;
   const s=inspectionViews.get(key)||DRInspection.create(data);inspectionViews.set(key,s);s.invalidate();
   if(inspectionViews.size>12)inspectionViews.delete(inspectionViews.keys().next().value);

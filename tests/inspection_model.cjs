@@ -18,3 +18,5 @@ s.invalidate();assert.equal(s.accept(second),false);
 assert.equal(s.accept({...s.request('D1'),record:'other.cfg'}),false);
 assert.deepEqual(m.segments([[0,0,1],[1,.001,null],[2,.05,3],[3,.051,4]],.01),[[[0,0,1]],[[2,.05,3],[3,.051,4]]]);
 console.log('Inspection model: cursor/sample/time, unknowns, viewport, slots and stale-response checks passed');
+// Decimated display spacing is not an acquisition gap; explicit null boundaries are.
+assert.deepEqual(m.segments([[0,0,1],[199,.199,2],[200,.2,3]],.008),[[[0,0,1],[199,.199,2],[200,.2,3]]]);

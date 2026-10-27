@@ -55,11 +55,42 @@ def _source(root, revision, filename):
                 if source['status'] != 'unsupported':
                     raise ValueError('Source checksum changed during decode.')
             source['source_sha256'] = hashes
+            source['header_inventory'] = _header_inventory(cfg, cfg_hash) or item.get('channel_inventory', [])
             _CACHE[key] = source
             while len(_CACHE) > 2:
                 _CACHE.popitem(last=False)
         _CACHE.move_to_end(key)
         return _CACHE[key], item
+
+
+def _header_inventory(path, expected_hash):
+    """Recover bounded declared identities independently of DAT decode or timing."""
+    if path.suffix.lower() != '.cfg' or path.stat().st_size > 1048576:
+        return []
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != expected_hash:
+        raise ValueError('Source checksum changed during header inspection.')
+    try:
+        text = raw.decode('utf-8-sig')
+    except UnicodeDecodeError:
+        text = raw.decode('latin1')
+    lines = [line.strip() for line in text.replace('\x1a', '').splitlines() if line.strip()]
+    try:
+        counts = lines[1].split(',')
+        na, nd = int(counts[1][:-1]), int(counts[2][:-1])
+        if (counts[1][-1:] != 'A' or counts[2][-1:] != 'D' or not 0 <= na <= 64
+                or not 0 <= nd <= 256 or int(counts[0]) != na+nd or len(lines) < 2+na+nd):
+            return []
+        inventory = []
+        for i, line in enumerate(lines[2:2+na+nd]):
+            fields = line.split(',')
+            analog = i < na
+            inventory.append(dict(id=f'A{i+1}' if analog else f'D{i-na+1}',
+                source_id=fields[0], kind='analog' if analog else 'digital', label=fields[1],
+                declared_units=fields[4] if analog and len(fields) > 4 else 'state' if not analog else 'Not available'))
+        return inventory
+    except (ValueError, IndexError):
+        return []
 
 
 def _axis(source):
@@ -76,10 +107,15 @@ def _trace(values, times, budget):
     """Bucket extrema for display only; any missing observation breaks the path."""
     result = []
     width = max(1, (len(values)+budget-1)//budget)
+    periods = [b-a for a, b in zip(times, times[1:], strict=False)] if times else []
+    gap_limit = min(periods)*8 if periods else float('inf')
+    breaks = {i+1 for i, period in enumerate(periods) if period > gap_limit}
     for lo in range(0, len(values), width):
         hi = min(len(values), lo+width)
+        if lo in breaks:
+            result.append([lo, times[lo], None])
         good = [i for i in range(lo, hi) if values[i] is not None]
-        if len(good) != hi-lo:
+        if len(good) != hi-lo or any(i in breaks for i in range(lo+1, hi)):
             # A mixed bucket is intentionally blank; zoom/native fetch recovers
             # every observation without drawing a false bridge over missing data.
             result.append([lo, times[lo] if times else None, None])
@@ -107,7 +143,7 @@ def inspection_record(root, revision, filename):
                 content_hash_basis='SHA256(original CFG bytes + original DAT bytes); distinct from legacy parser hash',
                 time_range_s=[times[0], times[-1]] if times else None,
                 station=source.get('station', ''), device=source.get('device', ''),
-                inventory=item.get('channel_inventory', []),
+                inventory=source.get('header_inventory', []),
                 operational_eligibility=dict(state=revision['state'], blocked=item.get('blocked', False),
                     reason=item.get('error', '') or 'Inspection does not establish operational eligibility.'),
                 authorizes_location=False, alignment_eligible=False,

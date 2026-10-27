@@ -2,8 +2,11 @@
 import copy
 
 from dranalyser.application.worker import Worker
-from tests.test_application import environment  # noqa: F401
-from tests.test_source_inspection import revision  # noqa: F401
+from tests import test_application as app_fixtures
+from tests import test_source_inspection as source_fixtures
+
+environment = app_fixtures.environment
+revision = source_fixtures.revision
 
 
 def test_inspection_api_without_result_does_not_change_revision_or_history(environment, revision):
