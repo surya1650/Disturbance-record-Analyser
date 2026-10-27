@@ -15,9 +15,10 @@ One fresh whole-branch review completed; two Important fixed in one TDD pass:
 masked observations and subnormal scaling. RED5/GREEN77focused; release1548pass/
 28missing-corpus skips/1existing warning254.60s; no unresolved Important/Minor.
 Primary1576pass/no skips/1existing upstream warning399.38s; architecture passes.
-Do not repeat review or studies. Finish QA/ledger hash-preservation/native archive
-if newer Git history has not already done so. QA destination:
-out/qa/dhone-source-time-2026-10-27/, including the source-coordinate diagnostic.
+Do not repeat review or studies. Code/report/evidence pushed at948600a;24ignored
+QA/ledger files hash-preserved before confirmed native archival. QA destination:
+out/qa/dhone-source-time-2026-10-27/, including the source-coordinate diagnostic,
+primary verification log and preserved-worktree-sha256.json. No active worktree.
 Then resume the optional joint-E5 handoff below. Normal nonuniform DSP/filtering/
 quality/location chain remains unsupported; source-time inspection is its own
 bounded milestone. No field/CT/VT/clock identity is supplied by numerical success.
