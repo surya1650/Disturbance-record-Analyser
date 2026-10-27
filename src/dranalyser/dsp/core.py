@@ -127,7 +127,7 @@ def sliding_dft(
     if half_cycle:
         n = max(n // 2, 2)
     decay = math.exp(-(1/fs)/max(tau, 1e-6)) if tau is not None else None
-    if method not in ('legacy', 'basis'):
+    if not isinstance(method, str) or method not in ('legacy', 'basis'):
         raise ValueError('Unknown fundamental method.')
     operator = sliding_fundamental if method == 'basis' else legacy_fundamental
     return operator(x, t, fs, freq, n, decay)
