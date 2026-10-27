@@ -1,0 +1,2234 @@
+{
+  "planned": 152,
+  "evaluated": 152,
+  "failed": 0,
+  "cases": [
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.391310426399286e-09,
+      "rms_relative_error": 5.832667682170722e-12,
+      "local_phase_error_deg": 8.634574977778303e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 2.5050539420590212e-09,
+      "rms_relative_error": 1.078248601515952e-11,
+      "local_phase_error_deg": 3.994857947505506e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0035280551020946405,
+      "rms_relative_error": 0.0009558556432222032,
+      "local_phase_error_deg": 0.01852994492359649
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.4944767201541254e-08,
+      "rms_relative_error": 1.1124912102644657e-10,
+      "local_phase_error_deg": 5.034093629415386e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.3262173581551906e-08,
+      "rms_relative_error": 1.558853046645936e-10,
+      "local_phase_error_deg": 4.623641823097382e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0075679709339482315,
+      "rms_relative_error": 0.0004867754230835075,
+      "local_phase_error_deg": 0.027419221697868888
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.039197172758577e-09,
+      "rms_relative_error": 4.051425861462121e-12,
+      "local_phase_error_deg": 1.3278377339424085e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.981892232081009e-09,
+      "rms_relative_error": 3.26201288203265e-11,
+      "local_phase_error_deg": 1.576778149624585e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.005103825262835926,
+      "rms_relative_error": 0.0003100946958394246,
+      "local_phase_error_deg": 0.019566942174552925
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.39704450627687e-09,
+      "rms_relative_error": 5.858202811737101e-12,
+      "local_phase_error_deg": 8.63555851365835e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 2.5104256451413676e-09,
+      "rms_relative_error": 1.0821121776416476e-11,
+      "local_phase_error_deg": 3.99716547399366e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0032280678381582106,
+      "rms_relative_error": 0.0009457182442241807,
+      "local_phase_error_deg": 0.025251169551959246
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.492772128131037e-08,
+      "rms_relative_error": 1.1112621933762057e-10,
+      "local_phase_error_deg": 5.02553952284305e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.3231399975666136e-08,
+      "rms_relative_error": 1.5552714671684953e-10,
+      "local_phase_error_deg": 4.60937860561074e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.007237981856867748,
+      "rms_relative_error": 0.0005678470990553297,
+      "local_phase_error_deg": 0.022302444278175848
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.0468568234500708e-09,
+      "rms_relative_error": 4.089839578114152e-12,
+      "local_phase_error_deg": 1.3364868567262198e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.990049262687535e-09,
+      "rms_relative_error": 3.271027892992606e-11,
+      "local_phase_error_deg": 1.5777004834648535e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.005206294459263461,
+      "rms_relative_error": 0.00021172213746334378,
+      "local_phase_error_deg": 0.020716301823964917
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.391168317852134e-09,
+      "rms_relative_error": 5.830891325331322e-12,
+      "local_phase_error_deg": 8.635445028749326e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 2.505039731204306e-09,
+      "rms_relative_error": 1.0785372595023546e-11,
+      "local_phase_error_deg": 3.99656022114441e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0037434324952201337,
+      "rms_relative_error": 0.000941996947685042,
+      "local_phase_error_deg": 0.013155794799690975
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.494969836812743e-08,
+      "rms_relative_error": 1.1130130150860396e-10,
+      "local_phase_error_deg": 5.0352675725169094e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.3270827992073464e-08,
+      "rms_relative_error": 1.5600565284046297e-10,
+      "local_phase_error_deg": 4.626322390244585e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.007825610273847872,
+      "rms_relative_error": 0.0004123294864142313,
+      "local_phase_error_deg": 0.031076611024866165
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.039126118485001e-09,
+      "rms_relative_error": 4.051203816857196e-12,
+      "local_phase_error_deg": 1.3281966187052252e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.982524615115835e-09,
+      "rms_relative_error": 3.262590198005455e-11,
+      "local_phase_error_deg": 1.5770796128253326e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.005038100699707115,
+      "rms_relative_error": 0.00039123621597947356,
+      "local_phase_error_deg": 0.018566208594103177
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 4.391310426399286e-09,
+      "rms_relative_error": 8.654743588465408e-12,
+      "local_phase_error_deg": 8.634574977778303e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 8.057398304117669e-09,
+      "rms_relative_error": 2.6970536914916465e-11,
+      "local_phase_error_deg": 8.216692874195199e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.0035280551020946405,
+      "rms_relative_error": 0.0009558556432222032,
+      "local_phase_error_deg": 0.01852994492359649
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.4944767201541254e-08,
+      "rms_relative_error": 1.1124912102644657e-10,
+      "local_phase_error_deg": 5.034093629415386e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.3262173581551906e-08,
+      "rms_relative_error": 1.558853046645936e-10,
+      "local_phase_error_deg": 4.623641823097382e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.0075679709339482315,
+      "rms_relative_error": 0.0004867754230835075,
+      "local_phase_error_deg": 0.03475061270786012
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.0621797602871084e-09,
+      "rms_relative_error": 9.616529794698181e-12,
+      "local_phase_error_deg": 1.7216650851205138e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.581305196258654e-07,
+      "rms_relative_error": 5.892595300593939e-10,
+      "local_phase_error_deg": 1.576778149624585e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.005404942843327376,
+      "rms_relative_error": 0.0003100946958394246,
+      "local_phase_error_deg": 0.025348132888660235
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.6118448797897145e-09,
+      "rms_relative_error": 7.490008613331156e-12,
+      "local_phase_error_deg": 3.8020346861887513e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 7.78010900148729e-09,
+      "rms_relative_error": 2.392430697994996e-11,
+      "local_phase_error_deg": 7.312040646115511e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.0025926806411646908,
+      "rms_relative_error": 0.0009121007472502329,
+      "local_phase_error_deg": 0.03128808361507711
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.2933086540888326e-08,
+      "rms_relative_error": 1.9950585627981354e-10,
+      "local_phase_error_deg": 5.84748959018572e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.3915461611068167e-08,
+      "rms_relative_error": 3.115111502083323e-10,
+      "local_phase_error_deg": 6.436674404151433e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.006981904277658657,
+      "rms_relative_error": 0.0006942272644850922,
+      "local_phase_error_deg": 0.026949425482332867
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.753385999199054e-07,
+      "rms_relative_error": 7.266902635194583e-10,
+      "local_phase_error_deg": 7.547675609050023e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 5.409077630247339e-10,
+      "rms_relative_error": 2.958744360626042e-12,
+      "local_phase_error_deg": 1.284887446668907e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.005890198348829756,
+      "rms_relative_error": 0.0001466530645715114,
+      "local_phase_error_deg": 0.025771338052342566
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 3.1200002581499575e-09,
+      "rms_relative_error": 3.624878175401136e-12,
+      "local_phase_error_deg": 5.714038813468825e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 6.593744217298081e-09,
+      "rms_relative_error": 1.2670864357744449e-11,
+      "local_phase_error_deg": 2.9003247218396353e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.004998114641402651,
+      "rms_relative_error": 0.000891747900366946,
+      "local_phase_error_deg": 0.0062640471759556095
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.7968559973269294e-08,
+      "rms_relative_error": 1.4251311242219344e-10,
+      "local_phase_error_deg": 5.661104970809696e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.756688305931675e-08,
+      "rms_relative_error": 2.157569678473692e-10,
+      "local_phase_error_deg": 5.78080681419985e-09
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.007650087295701269,
+      "rms_relative_error": 0.00028367463178824437,
+      "local_phase_error_deg": 0.0392672960162653
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 5.668212565979047e-10,
+      "rms_relative_error": 1.928901482983747e-12,
+      "local_phase_error_deg": 5.597821934946341e-11
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 3.1622562346456107e-09,
+      "rms_relative_error": 1.946554029075287e-11,
+      "local_phase_error_deg": 9.486432412641337e-10
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.005187960463445052,
+      "rms_relative_error": 0.0003993108492672537,
+      "local_phase_error_deg": 0.02034051947071005
+    },
+    {
+      "config": {
+        "seed": 190081,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.391310426399286e-09,
+      "rms_relative_error": 5.832667682170722e-12,
+      "local_phase_error_deg": 8.634574977778303e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 2.5050539420590212e-09,
+      "rms_relative_error": 1.078248601515952e-11,
+      "local_phase_error_deg": 3.994857947505506e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0008473362795058392,
+      "rms_relative_error": 3.7747469876725503e-05,
+      "local_phase_error_deg": 0.06325888893727362
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.4944767201541254e-08,
+      "rms_relative_error": 1.1124912102644657e-10,
+      "local_phase_error_deg": 5.034093629415386e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.3262173581551906e-08,
+      "rms_relative_error": 1.558853046645936e-10,
+      "local_phase_error_deg": 4.623641823097382e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0019306559225924502,
+      "rms_relative_error": 0.0009881193591582127,
+      "local_phase_error_deg": 0.08250003374336952
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.039197172758577e-09,
+      "rms_relative_error": 4.051425861462121e-12,
+      "local_phase_error_deg": 1.3278377339424085e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.981892232081009e-09,
+      "rms_relative_error": 3.26201288203265e-11,
+      "local_phase_error_deg": 1.576778149624585e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0006528861135066677,
+      "rms_relative_error": 0.0019323877867052364,
+      "local_phase_error_deg": 0.03518128300460342
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.39704450627687e-09,
+      "rms_relative_error": 5.858202811737101e-12,
+      "local_phase_error_deg": 8.63555851365835e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 2.5104256451413676e-09,
+      "rms_relative_error": 1.0821121776416476e-11,
+      "local_phase_error_deg": 3.99716547399366e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0017532246779836669,
+      "rms_relative_error": 0.0001568472657540454,
+      "local_phase_error_deg": 0.058714041606539355
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.492772128131037e-08,
+      "rms_relative_error": 1.1112621933762057e-10,
+      "local_phase_error_deg": 5.02553952284305e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.3231399975666136e-08,
+      "rms_relative_error": 1.5552714671684953e-10,
+      "local_phase_error_deg": 4.60937860561074e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0011183105534868787,
+      "rms_relative_error": 0.000760804396829684,
+      "local_phase_error_deg": 0.0861750501148609
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.0468568234500708e-09,
+      "rms_relative_error": 4.089839578114152e-12,
+      "local_phase_error_deg": 1.3364868567262198e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.990049262687535e-09,
+      "rms_relative_error": 3.271027892992606e-11,
+      "local_phase_error_deg": 1.5777004834648535e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0003258340645260205,
+      "rms_relative_error": 0.0017969851387303892,
+      "local_phase_error_deg": 0.05068391488505449
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.391168317852134e-09,
+      "rms_relative_error": 5.830891325331322e-12,
+      "local_phase_error_deg": 8.635445028749326e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 2.505039731204306e-09,
+      "rms_relative_error": 1.0785372595023546e-11,
+      "local_phase_error_deg": 3.99656022114441e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.00014940868118173967,
+      "rms_relative_error": 6.755079201559155e-05,
+      "local_phase_error_deg": 0.06685677568356355
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.494969836812743e-08,
+      "rms_relative_error": 1.1130130150860396e-10,
+      "local_phase_error_deg": 5.0352675725169094e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.3270827992073464e-08,
+      "rms_relative_error": 1.5600565284046297e-10,
+      "local_phase_error_deg": 4.626322390244585e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.002466430666451913,
+      "rms_relative_error": 0.0011609878636956728,
+      "local_phase_error_deg": 0.07871960888236208
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 1.039126118485001e-09,
+      "rms_relative_error": 4.051203816857196e-12,
+      "local_phase_error_deg": 1.3281966187052252e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 4.982524615115835e-09,
+      "rms_relative_error": 3.262590198005455e-11,
+      "local_phase_error_deg": 1.5770796128253326e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "frequency_error_hz": 0.0006930086666727675,
+      "rms_relative_error": 0.0020082163655280594,
+      "local_phase_error_deg": 0.022553304691720615
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 4,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 4.391310426399286e-09,
+      "rms_relative_error": 8.654743588465408e-12,
+      "local_phase_error_deg": 8.634574977778303e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 8.057398304117669e-09,
+      "rms_relative_error": 2.6970536914916465e-11,
+      "local_phase_error_deg": 8.216692874195199e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.005402897292682951,
+      "rms_relative_error": 0.0010103610690745946,
+      "local_phase_error_deg": 0.06325888893727362
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.4944767201541254e-08,
+      "rms_relative_error": 1.1124912102644657e-10,
+      "local_phase_error_deg": 5.034093629415386e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.3262173581551906e-08,
+      "rms_relative_error": 1.558853046645936e-10,
+      "local_phase_error_deg": 4.623641823097382e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.014245074227218879,
+      "rms_relative_error": 0.0009881193591582127,
+      "local_phase_error_deg": 0.08250003374336952
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.0621797602871084e-09,
+      "rms_relative_error": 9.616529794698181e-12,
+      "local_phase_error_deg": 1.7216650851205138e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.581305196258654e-07,
+      "rms_relative_error": 5.892595300593939e-10,
+      "local_phase_error_deg": 1.576778149624585e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.008281427966970512,
+      "rms_relative_error": 0.0019323877867052364,
+      "local_phase_error_deg": 0.05529976149921249
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.6118448797897145e-09,
+      "rms_relative_error": 7.490008613331156e-12,
+      "local_phase_error_deg": 3.8020346861887513e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 7.78010900148729e-09,
+      "rms_relative_error": 2.392430697994996e-11,
+      "local_phase_error_deg": 7.312040646115511e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.002588346311902967,
+      "rms_relative_error": 0.0009827698405369123,
+      "local_phase_error_deg": 0.05023608146383614
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.2933086540888326e-08,
+      "rms_relative_error": 1.9950585627981354e-10,
+      "local_phase_error_deg": 5.84748959018572e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.3915461611068167e-08,
+      "rms_relative_error": 3.115111502083323e-10,
+      "local_phase_error_deg": 6.436674404151433e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.012334006450821278,
+      "rms_relative_error": 0.0006389011793923594,
+      "local_phase_error_deg": 0.08105459652317633
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 2.753385999199054e-07,
+      "rms_relative_error": 7.266902635194583e-10,
+      "local_phase_error_deg": 7.547675609050023e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 5.409077630247339e-10,
+      "rms_relative_error": 2.958744360626042e-12,
+      "local_phase_error_deg": 1.284887446668907e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.00906768745142017,
+      "rms_relative_error": 0.001673916681927623,
+      "local_phase_error_deg": 0.06011414021618558
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "piecewise",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 3.1200002581499575e-09,
+      "rms_relative_error": 3.624878175401136e-12,
+      "local_phase_error_deg": 5.714038813468825e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 6.593744217298081e-09,
+      "rms_relative_error": 1.2670864357744449e-11,
+      "local_phase_error_deg": 2.9003247218396353e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.007825952265037017,
+      "rms_relative_error": 0.0008831099585397961,
+      "local_phase_error_deg": 0.0743618795572276
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 47.3,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.7968559973269294e-08,
+      "rms_relative_error": 1.4251311242219344e-10,
+      "local_phase_error_deg": 5.661104970809696e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 1.756688305931675e-08,
+      "rms_relative_error": 2.157569678473692e-10,
+      "local_phase_error_deg": 5.78080681419985e-09
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.014722203213771934,
+      "rms_relative_error": 0.001285365977073294,
+      "local_phase_error_deg": 0.07829906579435576
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 50.2,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "clean"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 5.668212565979047e-10,
+      "rms_relative_error": 1.928901482983747e-12,
+      "local_phase_error_deg": 5.597821934946341e-11
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "harmonic_dc"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 3.1622562346456107e-09,
+      "rms_relative_error": 1.946554029075287e-11,
+      "local_phase_error_deg": 9.486432412641337e-10
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "noise"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "frequency_error_hz": 0.006743424738800741,
+      "rms_relative_error": 0.0020601885152693455,
+      "local_phase_error_deg": 0.044801345728672275
+    },
+    {
+      "config": {
+        "seed": 190111,
+        "cycles": 6,
+        "schedule": "smooth",
+        "frequency": 53.1,
+        "cohort": "step"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 0
+    },
+    {
+      "config": {
+        "seed": 190133,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "gain"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "harmful_unobservable_control": "gain",
+      "location_authorized": false,
+      "apparent_rms": [
+        120.00000000069993
+      ],
+      "physical_low_frequency_rms": 100
+    },
+    {
+      "config": {
+        "seed": 190133,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "alias"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "harmful_unobservable_control": "alias",
+      "location_authorized": false,
+      "apparent_rms": [
+        99.99999999966865
+      ],
+      "physical_low_frequency_rms": 0
+    },
+    {
+      "config": {
+        "seed": 190133,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "gain"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "harmful_unobservable_control": "gain",
+      "location_authorized": false,
+      "apparent_rms": [
+        120.00000000048622
+      ],
+      "physical_low_frequency_rms": 100
+    },
+    {
+      "config": {
+        "seed": 190133,
+        "cycles": 4,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "alias"
+      },
+      "status": "evaluated",
+      "windows": 1,
+      "consistent": 1,
+      "harmful_unobservable_control": "alias",
+      "location_authorized": false,
+      "apparent_rms": [
+        100.00000000006393
+      ],
+      "physical_low_frequency_rms": 0
+    },
+    {
+      "config": {
+        "seed": 190133,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "gain"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "harmful_unobservable_control": "gain",
+      "location_authorized": false,
+      "apparent_rms": [
+        120.00000000069993,
+        119.9999999989614
+      ],
+      "physical_low_frequency_rms": 100
+    },
+    {
+      "config": {
+        "seed": 190133,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 47.3,
+        "cohort": "alias"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "harmful_unobservable_control": "alias",
+      "location_authorized": false,
+      "apparent_rms": [
+        99.99999999966865,
+        99.9999999938134
+      ],
+      "physical_low_frequency_rms": 0
+    },
+    {
+      "config": {
+        "seed": 190133,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "gain"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "harmful_unobservable_control": "gain",
+      "location_authorized": false,
+      "apparent_rms": [
+        120.00000000048622,
+        120.00000000115406
+      ],
+      "physical_low_frequency_rms": 100
+    },
+    {
+      "config": {
+        "seed": 190133,
+        "cycles": 6,
+        "schedule": "uniform",
+        "frequency": 53.1,
+        "cohort": "alias"
+      },
+      "status": "evaluated",
+      "windows": 2,
+      "consistent": 2,
+      "harmful_unobservable_control": "alias",
+      "location_authorized": false,
+      "apparent_rms": [
+        100.00000000006393,
+        100.00000000089345
+      ],
+      "physical_low_frequency_rms": 0
+    }
+  ],
+  "study_gate": "passed_conditional_diagnostics",
+  "authorizes_location": false,
+  "authorizes_production_dsp": false,
+  "alignment_eligible": false,
+  "source_git_revision": "a02945e5048fa8814e4a3503f8a01d44b526b671",
+  "source_sha256_utf8_lf": {
+    "src/dranalyser/comtrade/source_observations.py": "9d313ba4ba6f7d1bb22ed345825b9d8debb18afe12cc7ecb1a58ca5647a0b369",
+    "src/dranalyser/comtrade/source_time.py": "08c9b88b72dc57c3aa486a584503ed687b850ad637fbf91df436533c3394a679",
+    "src/dranalyser/comtrade/parser.py": "9e5d453f94828de00d1737cc395f7dc7cc7dbe8672418f314959c22676144dc2",
+    "src/dranalyser/signals.py": "bcd9a8dc82a15223da5bf810628dba3f032574be590743ea83dcd0eb79d9e27d",
+    "src/dranalyser/dsp/nonuniform.py": "96813fb437ac12f86e225db58ce76d2c40583b397e0702eaa931ff1cb841bff4",
+    "src/dranalyser/dsp/source_analysis.py": "1793f7f4f0ad4f92d554d1c1af4397e9440259d95add2a488c89c11f9b70a61d",
+    "src/dranalyser/dsp/source_compare.py": "cd6c7e6831f7a2e122399085111f2c7c38240cc5d2f1ff31eafee36ab5fdf79b",
+    "src/dranalyser/report/source_analysis.py": "03fb830012c08438f8012fcdcad200480a1e126855b333904a872174d888c760",
+    "src/dranalyser/report/source_analysis.html": "bc5b238a374425742cf25c950204b6dd84eda2104b2f368d85ea02531c7c1960",
+    "scripts/analyse_source_record.py": "3735c6bc5f4ab25f8898d34562c0ba075423f3b8e3b4a676887e42a4b9a8303c",
+    "scripts/nonuniform_validation.py": "4e96f35b1aa740b9aa865f85e07ff9b08fcc3fa11cf3cb27578af4d9133433c5",
+    "tests/test_nonuniform_source.py": "5b1d0a890a844433cd5aa0760c23018b396f986d6e3da482aeb959680f16487f",
+    "tests/test_source_analysis_delivery.py": "2357f9b8c589b8263fc983f689fdc2ba0a41948cf60e7f24d959f7aae773d7b2",
+    "tests/full_record_signals.py": "57ee536c150e85399bb1cc2505b6ba7d05cd50dbe31fd8e477bb2487ea9096b3",
+    "docs/superpowers/specs/2026-10-27-nonuniform-analysis.md": "75242664666f0681e99c7a404278a387092bd36580a00d2ed4c82b15379fece3"
+  },
+  "versions": {
+    "python": "3.11.0",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1"
+  }
+}
