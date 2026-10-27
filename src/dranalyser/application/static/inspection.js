@@ -1,0 +1,31 @@
+'use strict';
+function inspectionPanel(row) {
+  const records = row.bundle?.files.filter(f => f.kind === 'comtrade') || [];
+  if (!records.length) return '';
+  return `<section id="source-inspection" class="panel detail-section"><h2>Source waveform inspection</h2><p>Open recorded observations before assignment. Source scaling and timing do not establish physical, clock or fault-location authority.</p><label>Recording <select id="inspection-record">${records.map(f=>`<option value="${escapeHtml(f.name)}">${escapeHtml(f.name)}</option>`).join('')}</select></label><div id="inspection-workspace" aria-live="polite"></div></section>`;
+}
+let inspectionController;
+function mountInspection(row) {
+  inspectionController?.abort();
+  const select = document.getElementById('inspection-record');
+  if (!select) return;
+  async function load() {
+    inspectionController?.abort();
+    const controller = new AbortController(); inspectionController=controller;
+    const host = document.getElementById('inspection-workspace');
+    host.textContent='Loading source observations…';
+    try {
+      const query=new URLSearchParams({revision:row.number,record:select.value});
+      const response=await fetch(`/api/incidents/${row.incident_id}/inspection?${query}`,{signal:controller.signal});
+      const data=await response.json();
+      if (!response.ok) throw new Error(data.detail || 'Source inspection unavailable.');
+      if (controller.signal.aborted || !host.isConnected) return;
+      host.innerHTML=`<p><strong>${escapeHtml(data.status)}</strong> · ${data.sample_count} observations · Operational state: ${escapeHtml(data.operational_eligibility.state)}</p><p>${escapeHtml(data.time_basis.basis || data.time_basis.reason)}</p><p>${escapeHtml(data.issues.join(' '))}</p><div class="inspection-traces"></div>`;
+      if (typeof renderInspectionWorkbench === 'function') renderInspectionWorkbench(host,data,row,controller);
+      else host.querySelector('.inspection-traces').textContent=data.channels.map(c=>`${c.id} ${c.label} (${c.units})`).join(' · ') || 'No recoverable samples. File inventory and decode reason are retained above.';
+    } catch(error) {
+      if (error.name!=='AbortError' && host.isConnected) host.textContent=error.message;
+    }
+  }
+  select.onchange=load; load();
+}

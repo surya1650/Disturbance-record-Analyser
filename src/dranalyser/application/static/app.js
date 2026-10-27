@@ -103,6 +103,7 @@ async function detail(id, revision = '') {
   let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${escapeHtml(row.source)} intake · ${date(row.created)} · ${row.files.length} files</p></div><div class="detail-actions"><a class="button" href="#upload/${id}">＋ Attach late records</a>${result?.report_path?`<a class="button primary" href="/api/incidents/${id}/report?revision=${row.number}&download=true">Download report</a>`:''}</div></div>`;
   if (row.error) body += `<div class="hint">${escapeHtml(row.error)}</div>`;
   if (['queued','running'].includes(row.state)) body += '<div class="panel busy"><span class="spinner"></span><h2>Processing this incident</h2><p>You can leave this page. The job and its results stay in the workspace.</p></div>';
+  body += inspectionPanel(row);
   if (row.state==='needs_review') body += assignmentForm(row);
   if (row.state==='failed') body += '<div class="panel detail-section"><h2>Processing could not finish</h2><p>The files are retained. Review the error above, then retry the job.</p><button id="retry-job" class="button">Retry processing</button></div>';
   if (result) {
@@ -119,6 +120,7 @@ async function detail(id, revision = '') {
   body += `<details class="panel detail-section"><summary>Original file inventory (${row.files.length})</summary><table class="inventory"><tbody>${row.files.map(f=>`<tr><td>${escapeHtml(f.name)}</td><td>${size(f.size)}</td><td><code>${f.sha256.slice(0,16)}…</code></td></tr>`).join('')}</tbody></table></details>`;
   body += `<div class="bottom-grid"><div class="panel detail-section"><h2>Report revisions</h2><ul class="activity">${row.revisions.map(r=>`<li><a href="#incident/${id}/${r.number}">Revision ${r.number}</a> ${badge(r.state)}<small>${date(r.created)}</small></li>`).join('')}</ul></div><div class="panel detail-section"><h2>Activity</h2><ul class="activity">${row.activity.map(a=>`<li>${escapeHtml(a.message)}<small>${date(a.at)} · Revision ${a.revision}</small></li>`).join('')}</ul></div></div>`;
   $('detail-content').innerHTML=body;
+  mountInspection(row);
   if (result) bindNavigation(row);
   if (['completed','attention','failed'].includes(row.state)) {
     const button=document.createElement('button');

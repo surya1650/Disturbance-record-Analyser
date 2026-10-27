@@ -84,6 +84,8 @@ def create_app(root="out/application", registry="data/registry", inbox=None, wor
     app.add_middleware(LimitedBody)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost', '[::1]', 'testserver'])
     install_catalogue(app, store.root)
+    from .inspection import install_inspection
+    install_inspection(app, store)
 
     @app.middleware('http')
     async def local_access(request, call_next):
