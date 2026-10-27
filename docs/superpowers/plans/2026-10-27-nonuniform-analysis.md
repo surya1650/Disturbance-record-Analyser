@@ -24,14 +24,14 @@
 ### Task 1: Strict observations and direct-time numerical kernels
 **Files:** create comtrade/source_observations.py, dsp/nonuniform.py, dsp/source_analysis.py; tests/test_nonuniform_source.py; architecture budget entries.
 **Interfaces:** load_source(cfg_path,dat_path=None)->dict containing metadata, channels, source axis and digital observations; fit_source_window(t,y,frequency)->finite dict; source_frequency(t,values,nominal)->finite dict; analyse_source(observations)->dict.
-- [ ] Write failing tests: irregular analytic harmonic/DC RMS/phase, off-nominal search, gap/mask/nonfinite/extreme/rank refusal, missing ASCII values and truncation, explicit/raw scaling, unknown timing sample-only fallback, digital boundaries and budget denominators. Expected missing-module RED.
-- [ ] Implement strict loader and actual-time kernels/pipeline per spec. All outputs deny authority; compare half supports without assuming transient decay. Expected focused GREEN, architecture and changed-file Ruff pass.
-- [ ] Full serial suite and commit. task-done tests/test_nonuniform_source.py tests/test_source_time.py tests/test_timestamp_recovery.py -q; expected GREEN.
+- [x] Write failing tests: irregular analytic harmonic/DC RMS/phase, off-nominal search, gap/mask/nonfinite/extreme/rank refusal, missing ASCII values and truncation, explicit/raw scaling, unknown timing sample-only fallback, digital boundaries and budget denominators. Expected missing-module RED.
+- [x] Implement strict loader and actual-time kernels/pipeline per spec. All outputs deny authority; compare half supports without assuming transient decay. Expected focused GREEN, architecture and changed-file Ruff pass.
+- [x] Full serial suite and commit. task-done tests/test_nonuniform_source.py tests/test_source_time.py tests/test_timestamp_recovery.py -q; expected GREEN.
 
 ### Task 2: Independent comparison, CLI and frozen validation
 **Files:** dsp/source_compare.py; report/source_analysis.py and source_analysis.html; scripts/analyse_source_record.py; scripts/nonuniform_validation.py; tests/test_source_analysis_delivery.py; tracked synthetic evidence/report.
 **Interfaces:** compare_sources(analyses,reference=None)->incident dict with independent records, digital local anchors and duplicate status; render_source_report(result)->escaped HTML; CLI --cfg one-or-more --output new-directory [--reference DIGITAL_LABEL].
-- [ ] Write failing tests for one end, unsynchronised independent references, duplicates, initial-high missing anchor, degraded samples, escaped labels, exclusive CLI outputs and retained failed numerical rows. Expected RED.
-- [ ] Implement bounded comparison/report/CLI and independent144-case protocol runner. Commit code freeze BEFORE outcomes. Expected focused GREEN.
-- [ ] Run frozen144 plus alias/gain controls and unchanged Dhone replay privately; preserve every result and source binding. Expected analytic tolerances/refusals per frozen spec, originals/old parser block unchanged.
-- [ ] Full serial suite, one fresh whole-branch review and single TDD Important pass; primary integration/full corpus verification/push. Preserve ignored QA/ledger; native archive; update handover/automation priority. Expected no unresolved Important, no field/clock claims.
+- [x] Write failing tests for one end, unsynchronised independent references, duplicates, initial-high missing anchor, degraded samples, escaped labels, exclusive CLI outputs and retained failed numerical rows. Expected RED.
+- [x] Implement bounded comparison/report/CLI and independent144-case protocol runner. Commit code freeze BEFORE outcomes. Expected focused GREEN.
+- [x] Run frozen144 plus alias/gain controls and unchanged Dhone replay privately; preserve every result and source binding. Expected analytic tolerances/refusals per frozen spec, originals/old parser block unchanged.
+- [x] Full serial suite, one fresh whole-branch review and single TDD Important pass; primary integration/full corpus verification/push. Preserve ignored QA/ledger; native archive; update handover/automation priority. Expected no unresolved Important, no field/clock claims.

@@ -120,7 +120,14 @@ Baseline1548pass/28missing-corpus skips/1existing warning194.44s. Task1full1575p
 28skips109.67s; release1590pass/28skips87.02s. After fixes,135focused and1609full
 tests pass, with28missing-corpus skips/1existing upstream warning121.07s.
 Architecture and changed-file Ruff pass. No unresolved Important/deferred Minor
-or repeat review. Primary delivery is recorded separately. HTTP/HTML/JSON checks
+or repeat review. Integrated primary1637pass/no skips/1existing upstream warning
+159.90s includes the local recording corpus. The reviewed read-only report is
+available at http://127.0.0.1:8092/ (Dhone#r1,downloaded DR2#r9); its permanent
+private directory is out/qa/nonuniform-source-analysis-2026-10-27/public/.
+HTTP/HTML/JSON checks verify14record sections/117sample envelopes, all26source
+hashes, identical incident revision1 and unchanged Dash findings. Existing preview
+PIDs8091/8113 are unchanged; only the task's temporary8093server was stopped.
+HTTP/HTML/JSON checks
 pass; a visual browser assessment was unavailable because CUA kernel assets failed
 to initialise. This is a diagnostic milestone, not completion of the operational
 nonuniform protection/location chain.

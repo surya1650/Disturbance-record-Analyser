@@ -1,6 +1,6 @@
 # Context for the next session
 
-**Nonuniform independent source analysis —2026-10-27, delivery in progress.**
+**Nonuniform independent source analysis —2026-10-27, verified delivery.**
 User priority supersedes joint-E5 work: independently analyse single ends without
 sync/line constants, then explicit local references for unsynchronised records;
 show parsing/partial data despite blocked operational methods. New strict source
@@ -14,16 +14,17 @@ wrong. No holdout tuning or physical/field validation claim. One fresh review,
 single TDD Important pass complete:19regression/control cases (16RED),135focused,
 1609full/28corpus skips/1existing warning121.07s; architecture/Ruff pass. No re-review.
 Private replay14CFG=12pairs/2CFG-only missing DAT,718windows/6362channel-windows,
-2007consistent/4355withheld,26source byte hashes unchanged. Dhone212/592supports,
+2007consistent/4355withheld,26source byte hashes unchanged. Dhone212/592channel-windows,
 74windows,source AnyStart33.280ms/[32.448,34.112]ms not operating time. DR2105/288,
 36windows; no recorded AnyStart reference, which stays unavailable. Other600Hz
 records parse but profiling conservatively refuses the full upper frequency domain.
 Raw sample/digital inspection remains available; no flags or safety gates relaxed.
-Native worktree nonuniform-analysis/branch codex/nonuniform-analysis. Finish primary
-integration/full serial corpus verification, push, final standalone browser report
-on separate loopback8092, QA/ledger preservation/native archive if not yet closed.
-Private QA out/qa/; reviewed report real-source-reports-reviewed/. Temporary8093
-server serves old pre-review report and must be stopped before native archival.
+Primary1637pass/no skips/1existing upstream warning159.90s; reviewed code/report
+integrated. Report http://127.0.0.1:8092/ (Dhone#r1,DR2#r9), independent read-only
+server PID24720/session49245, directory out/qa/nonuniform-source-analysis-2026-10-27/public/.
+Restart instructions in that milestone QA README.md. Native worktree nonuniform-analysis
+needs QA/ledger preservation/native archival if newer history has not yet closed it.
+Temporary8093server was stopped by verified ownership before archival.
 Leave existing8091/8113 previews, incident4fb72844a355427c85d79ad4adb6b249 revision1
 Needs review, app DB, captures/Downloads/workbook/Dash untouched. Visual CUA failed
 asset init; do not claim a visual browser check. Next supported user-facing work:
