@@ -102,3 +102,17 @@ def test_snapshot_mentions_recorded_pickup_and_specific_short_capture_reason(rev
     out=api('diagnose_source')(root,row,'event.cfg',{'mappings':{'D1':'START'}})
     assert any('D1' in note and 'START' in note for note in out['conclusions']['observed'])
     assert 'four-cycle' in out['methods']['source_models']['reason']
+
+
+@pytest.mark.parametrize('sample',['1e-310','1e-300'])
+def test_assumed_ct_gain_underflow_keeps_raw_observations(revision,sample):
+    root,row,folder=revision
+    dat=folder/'event.dat'
+    dat.write_text(dat.read_text().replace('1,0,10,20,0',f'1,0,{sample},20,0'))
+    def alter(s):
+        return s.replace('A,2,1,0','A,1e-20,1,0',1).replace('32767,1,1,P','32767,,,S',1)
+    root,row=update(revision,alter)
+    out=api('diagnose_source')(root,row,'event.cfg',{'voltage_kv':132})
+    assert out['assumptions']==[]
+    assert out['channels'][0]['units']=='raw counts'
+    assert out['channels'][0]['sample_min']==float(sample)

@@ -11,6 +11,7 @@ from .channel_mapping import ANALOG_TARGETS
 from .source_inspection import _source, _axis
 from .source_events import digital_evidence, trip_ar
 from .source_snapshot import line_facts, compose_snapshot
+from .source_quantities import compose_source_quantities
 
 
 def normalise_options(options, source):
@@ -96,7 +97,12 @@ def _prepared(source,item,options):
             if not math.isfinite(factor) or abs(factor)<2.2250738585072014e-308:
                 notes.append(key+': CT default could not establish a representable scale; raw counts retained.')
                 continue
-            values=[None if v is None else (v*a+b)*ratio*gain for v in c['values']]
+            products=[None if v is None else v*a for v in c['values']]
+            if any(v is not None and v!=0 and (p==0 or abs(p)<2.2250738585072014e-308)
+                   for v,p in zip(c['values'],products,strict=True)):
+                notes.append(key+': assumed gain multiplication underflows; raw observations retained.')
+                continue
+            values=[None if p is None else (p+b)*ratio*gain for p in products]
             if any(v is not None and (not math.isfinite(v) or (v!=0 and abs(v)<2.2250738585072014e-308)) for v in values):
                 notes.append(key+': assumed scaling exceeds numeric range; raw counts retained.')
                 continue
@@ -160,5 +166,13 @@ def diagnose_source(root,revision,filename,options=None):
         supports=[f'{fits} of {total} evaluated channel-windows are model-consistent in export coordinates.',result['ar']['text']]+ranges,
         cannot_conclude=['Physical fault identity, actual relay operating time, common event/clock/ends and physical location are not established by successful decoding or signal fitting.'],
         needed_next=['Review channel meanings and source scaling; supply breaker/AR settings and pole indications for a cause assessment; supply line facts and method prerequisites for location.'])
+    result['derived_quantities']=compose_source_quantities(result['channels'],result['windows'])
+    derived=result['derived_quantities']['windows']
+    sequences=sum(row['sequence'][kind]['status']=='Conditional source quantity' for row in derived for kind in ('voltage','current'))
+    loops=sum(loop['status']=='Conditional source quantity' for row in derived for loop in row['loops'].values())
+    result['methods']['sequence']=dict(status='Conditional source quantities' if sequences else 'Not available',
+        reason=f'{sequences} corresponding window/quantity sets. Requires unique phase meanings, V/A source scaling and corresponding supported fits; phase wiring and physical scaling remain unverified.')
+    result['methods']['rx']=dict(status='Conditional source quantities' if loops else 'Not available',
+        reason=f'{loops} phase-phase loop windows. Corresponding supported voltage/current fits and non-cancelled loops only; no ground compensation, physical fault or location is inferred.')
     result['snapshot']=compose_snapshot(root,revision,filename,result)
     return result
