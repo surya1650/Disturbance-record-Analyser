@@ -118,7 +118,10 @@
     "src/dranalyser/faultloc/error_sets.py": 193,
     "scripts/e5_error_validation.py": 100,
     "src/dranalyser/comtrade/source_time.py": 109,
-    "scripts/source_time_validation.py": 93
+    "scripts/source_time_validation.py": 93,
+    "src/dranalyser/dsp/nonuniform.py": 121,
+    "src/dranalyser/dsp/source_analysis.py": 87,
+    "src/dranalyser/comtrade/source_observations.py": 122
   },
   "exceptions": {}
 }
