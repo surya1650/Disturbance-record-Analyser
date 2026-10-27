@@ -41,6 +41,7 @@ def _stable_fit(t,y,f):
 def analyse_source(observations,*,max_windows=512):
     """Preserve sample visibility even when timing or signal models are unavailable."""
     out=dict(status='sample_only',content_hash=observations.get('content_hash',''),
+        parse_status=observations['status'],source_sha256=observations.get('source_sha256',{}),
         station=observations.get('station',''),device=observations.get('device',''),
         channels=[_summary(c) for c in observations['channels']],
         sample_count=observations['sample_count'],issues=list(observations['issues']),
@@ -58,6 +59,9 @@ def analyse_source(observations,*,max_windows=512):
         out['issues'].append('Unsupported analysis-window budget.')
         return out
     t=np.asarray(axis['elapsed_s'])
+    if len(t)<3 or not np.all(np.isfinite(t)) or not 0<t[-1]-t[0]<=3600:
+        out['issues'].append('Unsupported declared duration; sample inspection retained.')
+        return out
     duration,hop=4/nominal,2/nominal
     planned=max(0,int(np.floor((t[-1]-t[0]-duration)/hop+1e-10))+1)
     out['windows_planned']=planned
@@ -68,10 +72,24 @@ def analyse_source(observations,*,max_windows=512):
         hi=lo+duration
         ids=np.flatnonzero((t>=lo)&(t<=hi))
         window=dict(index=index,support_s=[float(lo),float(hi)],sample_count=len(ids),channels={})
-        refs=[arrays[c['key']][ids] for c in channels if c['frequency_reference'] and c['skew_us']==0
-              and np.all(np.isfinite(arrays[c['key']][ids]))]
+        def references(flag,ids=ids):
+            selected=[]
+            for c in channels:
+                values=arrays[c['key']][ids]
+                if c.get(flag,False) and c['skew_us']==0 and len(ids) and np.all(np.isfinite(values)):
+                    scale=max(float(np.max(abs(values))),1e-100)
+                    if np.ptp(values/scale)>1e-6:
+                        selected.append(values)
+            return selected
+        refs=references('frequency_reference')
         freq=source_frequency(t[ids],np.column_stack(refs),nominal) if refs else withheld('No complete explicit voltage reference.')
+        basis='phase voltage'
+        if freq['status']!='estimated':
+            refs=references('current_reference')
+            freq=source_frequency(t[ids],np.column_stack(refs),nominal) if refs else freq
+            basis='phase current; voltage reference unavailable'
         window['frequency']=freq
+        window['frequency_basis']=basis
         for channel in channels:
             key=channel['key']
             if freq['status']!='estimated' or len(ids)<48 or channel['skew_us']!=0:

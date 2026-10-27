@@ -120,8 +120,12 @@
     "src/dranalyser/comtrade/source_time.py": 109,
     "scripts/source_time_validation.py": 93,
     "src/dranalyser/dsp/nonuniform.py": 121,
-    "src/dranalyser/dsp/source_analysis.py": 87,
-    "src/dranalyser/comtrade/source_observations.py": 122
+    "src/dranalyser/dsp/source_analysis.py": 105,
+    "src/dranalyser/comtrade/source_observations.py": 134,
+    "src/dranalyser/dsp/source_compare.py": 65,
+    "src/dranalyser/report/source_analysis.py": 21,
+    "scripts/analyse_source_record.py": 42,
+    "scripts/nonuniform_validation.py": 119
   },
   "exceptions": {}
 }

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .parser import ComtradeError, DOS_EOF, _read_binary, parse_cfg
+from .parser import ComtradeError, DOS_EOF, _read_binary, detect_phase_naming, map_channel, parse_cfg
 from .source_time import source_time_axis
 
 
@@ -29,16 +29,15 @@ def load_source(cfg_path,dat_path=None):
         path=Path(cfg_path)
         data=Path(dat_path) if dat_path else next((p for p in (path.with_suffix('.DAT'),path.with_suffix('.dat'),
              path.with_suffix('.Dat')) if p.is_file()),path.with_suffix('.dat'))
-        if path.suffix.lower()!='.cfg' or path.stat().st_size>1048576 or data.stat().st_size>64*1024*1024:
+        if path.suffix.lower()!='.cfg' or path.stat().st_size>1048576:
             raise ValueError('Unsupported source container or byte budget.')
-        cfg_bytes,dat_bytes=path.read_bytes(),data.read_bytes()
-        out['content_hash']=hashlib.sha256(cfg_bytes+dat_bytes).hexdigest()
-        out['source_sha256']={path.name:hashlib.sha256(cfg_bytes).hexdigest(),data.name:hashlib.sha256(dat_bytes).hexdigest()}
+        cfg_bytes=path.read_bytes()
+        out['source_sha256']={path.name:hashlib.sha256(cfg_bytes).hexdigest()}
         text=cfg_bytes.decode('latin1').replace(DOS_EOF,'')
         lines=[line.strip() for line in text.splitlines() if line.strip()]
         counts=lines[1].split(',')
         na,nd=int(counts[1][:-1]),int(counts[2][:-1])
-        if counts[1][-1:]!='A' or counts[2][-1:]!='D' or not 1<=na<=64 or not 0<=nd<=64 or int(counts[0])!=na+nd:
+        if counts[1][-1:]!='A' or counts[2][-1:]!='D' or not 1<=na<=64 or not 0<=nd<=256 or int(counts[0])!=na+nd:
             raise ValueError('Unsupported channel counts.')
         j=2+na+nd
         nrates=int(lines[j+1])
@@ -48,9 +47,19 @@ def load_source(cfg_path,dat_path=None):
         if end+2>=len(lines) or lines[end+2].upper() not in ('ASCII','BINARY','BINARY32','FLOAT32'):
             raise ValueError('Explicit supported DAT format required.')
         cfg=parse_cfg(text)
+        out.update(station=cfg.station,device=cfg.device_id)
+        if not data.is_file():
+            out.update(status='cfg_only',issues=['CFG decoded; matching DAT file is missing.'],
+                       axis=dict(status='withheld',elapsed_s=[],reason='No paired DAT observations.'))
+            return out
+        if data.stat().st_size>64*1024*1024:
+            raise ValueError('Unsupported DAT byte budget.')
+        dat_bytes=data.read_bytes()
+        out['content_hash']=hashlib.sha256(cfg_bytes+dat_bytes).hexdigest()
+        out['source_sha256'][data.name]=hashlib.sha256(dat_bytes).hexdigest()
         if cfg.file_type=='ASCII':
             rows=[row.split(',') for row in dat_bytes.decode('latin1').replace(DOS_EOF,'').splitlines() if row.strip()]
-            if not 3<=len(rows)<=200000:
+            if not 3<=len(rows)<=200000 or len(rows)*(2+na+nd)>4000000:
                 raise ValueError('Unsupported sample budget.')
             cols=np.full((len(rows),2+na+nd),np.nan)
             bad_width=sum(len(row)!=cols.shape[1] for row in rows)
@@ -65,7 +74,8 @@ def load_source(cfg_path,dat_path=None):
         else:
             width={'BINARY':2,'BINARY32':4,'FLOAT32':4}[cfg.file_type]
             rowbytes=8+na*width+2*((nd+15)//16)
-            if len(dat_bytes)%rowbytes or not 3<=len(dat_bytes)//rowbytes<=200000:
+            if (len(dat_bytes)%rowbytes or not 3<=len(dat_bytes)//rowbytes<=200000
+                    or len(dat_bytes)//rowbytes*(2+na+nd)>4000000):
                 raise ValueError('Truncated/unsupported binary payload; no partial decode.')
             numbers,stamps,values=_read_binary(dat_bytes,na,nd,cfg.file_type)
         n=len(numbers)
@@ -85,6 +95,7 @@ def load_source(cfg_path,dat_path=None):
         out.update(status='observed' if axis['status']=='source_time_inspection' else 'sample_only',
             station=cfg.station,device=cfg.device_id,nominal_frequency_hz=nominal,
             sample_count=n,sample_numbers=_list(numbers),axis=axis)
+        naming=detect_phase_naming([a.ch_id for a in cfg.analogs])
         for i in range(na):
             fields=[v.strip() for v in lines[2+i].split(',')]
             fields+=['']*max(0,13-len(fields))
@@ -108,7 +119,8 @@ def load_source(cfg_path,dat_path=None):
                     vals=converted
             out['channels'].append(dict(key=f'A{i+1}',label=fields[1],
                 units=(('V' if unit.endswith('V') else 'A')+' (CFG-declared, unverified)') if valid else 'raw counts',
-                values=_list(vals),frequency_reference=unit in ('V','KV'),skew_us=skew,
+                values=_list(vals),frequency_reference=map_channel(fields[1],unit,fields[2],naming) in ('VA','VB','VC'),skew_us=skew,
+                current_reference=map_channel(fields[1],unit,fields[2],naming) in ('IA','IB','IC'),
                 scaling_verified=False))
         for i,label in enumerate(cfg.digitals):
             bits=values[:,na+i]

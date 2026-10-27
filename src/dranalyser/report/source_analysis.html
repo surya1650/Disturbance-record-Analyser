@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'">
+<title>Independent DR source analysis</title>
+<style>
+body{font:16px/1.5 system-ui,sans-serif;color:#203347;background:#f3f6f9;margin:0}main{max-width:1200px;margin:auto;padding:32px}
+h1,h2,h3{line-height:1.2}h1{font-size:30px}h2{margin-top:0}a{color:#16619b}section,.intro{background:white;padding:24px;margin:20px 0;border:1px solid #d5dfe8;border-radius:10px}
+.muted,small{color:#546777}.notice{border-left:4px solid #b38026;padding:12px;background:#fff8e7}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;padding:9px;border-bottom:1px solid #e0e5eb}th{background:#f4f7fa}details{margin-top:16px;overflow:auto}summary{cursor:pointer;font-weight:600}.scroll{overflow:auto}.tag{display:inline-block;padding:4px 10px;border-radius:20px;background:#e7f1fa;font-size:13px}.mono{font:12px monospace;overflow-wrap:anywhere}svg{width:100%;height:100px;background:#f5f8fb}p{max-width:100ch}.channel{border:1px solid #e0e5eb;padding:12px;border-radius:8px}
+</style><main>
+<h1>Independent disturbance-record review</h1>
+<p>Parsing, recorded signal content and supported numerical analysis are shown separately. Each record is analysed in its own coordinates; a shared clock and line constants are not required for these diagnostics.</p>
+<div class="intro"><strong>{{ review.records|length }} supplied records · {{ review.distinct_payloads }} distinct available payloads</strong>
+<p>{{ review.basis }}</p><p class="notice">Physical timing, CT/VT calibration, incident pairing and operational location are unverified. These are exported-signal models, not a protection-performance verdict.</p>
+<p class="muted">Parsing: observed = decoded with supported declared timing; sample_only = samples decoded but timed models unavailable; cfg_only = header decoded, paired DAT missing; unsupported = source decoding unavailable within this adapter's limits. Model consistency means agreement with the numerical signal model, not verified measurement accuracy.</p>
+{% for text in review.limitations %}<p class="muted">{{ text }}</p>{% endfor %}
+<a href="analysis.json">Download numerical evidence (JSON)</a>
+<ol>{% for r in review.records %}<li><a href="#r{{ loop.index }}">{{ r.display_name|default(r.station) }} — {{ r.parse_status }}, {{ r.sample_count }} samples</a></li>{% endfor %}</ol></div>
+{% for r in review.records %}<section id="r{{ loop.index }}">
+<h2>{{ r.display_name|default(r.station) }}</h2><p>{{ r.station }} · device {{ r.device }} · <span class="tag">Parsing: {{ r.parse_status }}</span> <span class="tag">{{ r.status }}</span></p>
+{% if r.duplicate_of is not none %}<p class="notice">Duplicate of supplied record {{ r.duplicate_of+1 }}. This is not an independent observation.</p>{% endif %}
+<p>{{ r.sample_count }} source samples. Timing: {{ r.axis.status }}. {{ r.axis.reason|default(r.axis.basis) }}</p>
+<p>{{ r.windows_evaluated }} / {{ r.windows_planned }} planned windows evaluated; {{ r.remaining_windows }} remaining. Complete planned-window coverage: {{ r.coverage_complete }}. Windows use four nominal cycles with a two-cycle hop; this does not claim every possible support was analysed.</p>
+<p>Local display reference: {{ r.local_reference.label }} ({{ r.local_reference.status }}{% if r.local_reference.source_s is not none %}, {{ '%.6f'|format(r.local_reference.source_s) }} source s{% endif %}). No cross-record clock correction is applied.</p>
+{% for issue in r.issues %}<p class="notice">{{ issue }}</p>{% endfor %}
+<h3>What the parsed samples contain</h3><div class="grid">
+{% for c in r.channels %}<div class="channel"><strong>{{ c.label }}</strong><small> · {{ c.units }}</small>
+<p>{{ c.finite_samples }} observed / {{ c.missing_samples }} missing. Range {{ c.sample_min }} to {{ c.sample_max }}.</p>
+{% if c.trace and c.sample_max>c.sample_min %}<svg viewBox="0 0 500 100" role="img" aria-label="Sample-index amplitude envelope"><polyline fill="none" stroke="#1f689e" stroke-width="1.2" points="{{ c.plot_points }}"/></svg>{% endif %}
+<small>Sample-index min/max envelope; display is reduced, analysis uses native observations.</small></div>{% endfor %}</div>
+<details><summary>Window-by-window signal models and reasons for withholding</summary><div class="scroll"><table><tr><th>Source support (s)</th><th>Fitted Hz</th><th>Channel</th><th>Result</th><th>Fundamental RMS</th><th>Relative residual</th><th>Reason</th></tr>
+{% for w in r.windows %}{% for key,fit in w.channels.items() %}<tr><td>{{ '%.4f'|format(w.support_s[0]) }}–{{ '%.4f'|format(w.support_s[1]) }}</td><td>{{ '%.4f'|format(w.frequency.frequency_hz) if w.frequency.status=='estimated' else 'unavailable' }}</td><td>{{ key }}</td><td>{{ fit.status }}</td><td>{{ '%.5g'|format(fit.rms) if fit.status=='model_consistent' else 'withheld' }}</td><td>{{ '%.4g'|format(fit.relative_residual) if fit.status=='model_consistent' else '—' }}</td><td>{{ fit.reason }}</td></tr>{% endfor %}{% endfor %}</table></div></details>
+<details><summary>Recorded digital assertions ({{ r.digital_intervals|length }})</summary><table><tr><th>Point</th><th>Start sample</th><th>End sample</th><th>Source span (ms)</th><th>Sample-coordinate bracket (ms)</th></tr>
+{% for d in r.digital_intervals %}<tr><td>{{ d.label }}</td><td>{{ d.start_index+1 if d.start_index is not none else 'unknown' }}</td><td>{{ d.end_index+1 if d.end_index is not none else 'unknown' }}</td><td>{{ '%.3f'|format(1000*d.source_span_s) if d.source_span_s is not none else 'unknown' }}</td><td>{% if d.duration_sample_bracket_s %}{{ '%.3f'|format(1000*d.duration_sample_bracket_s[0]) }}–{{ '%.3f'|format(1000*d.duration_sample_bracket_s[1]) }}{% else %}unknown{% endif %}</td></tr>{% endfor %}</table><p>Exported sample coordinates only; channel latency, filtering and unrecorded transitions are not established. These are not relay operating times.</p></details>
+<details><summary>Original source hashes</summary>{% for name,digest in r.source_sha256.items() %}<p class="mono">{{ name }}<br>{{ digest }}</p>{% endfor %}</details>
+</section>{% endfor %}
+</main></html>

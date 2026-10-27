@@ -17,12 +17,15 @@ Do not call this the completed production protection-analysis chain.
 ## Source observations
 Add strict, read-only source_observations.py: load CFG/DAT bytes, bind SHA256, keep
 original channel IDs and explicit engineering scaling only where all required fields
-are valid. Never route new ASCII input through the legacy missing-value-to-zero path.
+are valid. Orphan CFGs retain decoded station/header hash with a missing-DAT status.
+Never route new ASCII input through the legacy missing-value-to-zero path.
 Missing/malformed values remain missing and affected analysis refuses; structural
-row/count/truncation defects retain sample inspection but withhold timed fitting.
+row/count defects retain sample inspection but withhold timed fitting; truncated
+binary payloads refuse partial decoding visibly.
 Support ASCII and declared BINARY/BINARY32/FLOAT32 integral payloads; CFF and
 unsupported structures return a visible unsupported result, never claimed universal
-recovery. Limits64MB payload,200000samples,64analog/64digital channels.
+recovery. Limits64MB payload,200000samples,64analog/256digital channels and4000000
+decoded numeric cells; the cell budget bounds the enlarged digital count.
 For nrates=0 use reviewed source_time_axis with explicit timemult. A valid single
 declared CFG rate may define a uniform source axis; unsupported multi-rate metadata
 gets sample-only inspection in this milestone. Preserve original decoder/gates.
@@ -46,7 +49,10 @@ than1e-6 of raw RMS. It is not an alias/CT/calibration certificate.
 
 New dsp/source_analysis.py uses4nominal-cycle physical-time windows with2cycle hop,
 maximum512windows and4096samples/window; retain planned/evaluated/remaining counts.
-Frequency is estimated on each support from explicit voltage channels, no fixed
+Frequency is estimated on each support from explicit phase-voltage channels,
+excluding neutral channels. Without a usable phase-voltage estimate, an explicitly
+labelled phase-current-only model may be assessed; no voltage is manufactured.
+Record durations beyond3600declared seconds retain sample inspection only. No fixed
 fs, mimic decay/XR, assumed VT type, filtering or interpolation. Half-support
 fundamental disagreement>.10 withholds that channel's model result. Missing timing
 or frequency leaves whole-record sample statistics/digital sample states available.
@@ -74,7 +80,9 @@ Freeze144 analytic cases BEFORE outcomes: seeds190081/190111,4/6nominal cycles,
 uniform/piecewise/smooth source schedules,47.3/50.2/53.1Hz, clean/harmonic+linearDC/
 noise/amplitude-step cohorts. Clean/harmonic tolerance1e-3Hz,1e-3relative RMS,
 .02degrees local phase; noise .1Hz/.02relative RMS/1degree with fixed.005RMS noise;
-step must refuse stationary model. Independent analytic signals, not production
+step must refuse stationary model. Eight additional controls freeze4/6cycles,
+47.3/53.1Hz and gain/alias defects: they may pass the model but must never gain
+physical authority. Independent analytic signals, not production
 builders, provide truth. Add uniform alias/coherent gain controls demonstrating
 that passing model diagnostics cannot grant physical authority. Retain all failures.
 Include all source dependencies and Git freezes; no historical manifest edits or
