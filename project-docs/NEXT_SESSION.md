@@ -1,5 +1,21 @@
 # Context for the next session
 
+**Scalar observability study —2026-10-27; adoption FAILED/HELD.**
+Read [SCALAR_OBSERVABILITY_VALIDATION_2026-10-27.md](SCALAR_OBSERVABILITY_VALIDATION_2026-10-27.md)
+and its616-case JSON, frozen907092b with44 source hashes.616evaluated/0failed;
+necessary screen116pass/500refuse. All87 harmfulCT cases refuse;72 coherent
+measurement passes remain and59 overlay locations err>1km, worst45.02455km.
+18 clean unbalanced passes, maxerror.207856km; balanced overlay0, clockeligible0.
+Both weak-source cohorts and all bounded-amplitude-study white/colored inputs
+are withheld (noise here is Gaussian, not a deterministic hard cap). No policy
+or DSP default adopted; no production consumer imports the candidate.
+46 focused tests pass; release1419pass/28corpus skips/1existing warning237.80s.
+Independent review and primary integration pending; follow active ledger before
+redoing work. Next supported mathematical work: propagate explicit terminal
+phasor-error bounds through E5/section observability, keeping unverified caller
+assumptions distinct from field calibration/provenance. No holdout tuning.
+Dash/captures/workbook/DB unchanged; five-hour autonomous continuation active.
+
 **Delivered software/validation —2026-10-27.**
 Combined primary1401passed/no skips/1existing upstream warning87.81s. Both
 inspection fallback and research DSP milestones are independently reviewed and
