@@ -1,5 +1,37 @@
 # Context for the next session
 
+**Nonuniform independent source analysis —2026-10-27, delivery in progress.**
+User priority supersedes joint-E5 work: independently analyse single ends without
+sync/line constants, then explicit local references for unsynchronised records;
+show parsing/partial data despite blocked operational methods. New strict source
+loader avoids missing-to-zero legacy ASCII ingestion; new actual-time harmonic/
+DC/trend models and standalone HTML/JSON review keep all physical clock/CT/VT/
+location/production-DSP authority false. No original parser/gates/Record changes.
+Read NONUNIFORM_SOURCE_ANALYSIS_2026-10-27.md.152original/reviewed rows identical,
+freezesa02945e/7bdb578,15/16source bindings incl full_record_signals.py.
+All36steps refuse;8coherent gain/alias controls show model passes can be physically
+wrong. No holdout tuning or physical/field validation claim. One fresh review,
+single TDD Important pass complete:19regression/control cases (16RED),135focused,
+1609full/28corpus skips/1existing warning121.07s; architecture/Ruff pass. No re-review.
+Private replay14CFG=12pairs/2CFG-only missing DAT,718windows/6362channel-windows,
+2007consistent/4355withheld,26source byte hashes unchanged. Dhone212/592supports,
+74windows,source AnyStart33.280ms/[32.448,34.112]ms not operating time. DR2105/288,
+36windows; no recorded AnyStart reference, which stays unavailable. Other600Hz
+records parse but profiling conservatively refuses the full upper frequency domain.
+Raw sample/digital inspection remains available; no flags or safety gates relaxed.
+Native worktree nonuniform-analysis/branch codex/nonuniform-analysis. Finish primary
+integration/full serial corpus verification, push, final standalone browser report
+on separate loopback8092, QA/ledger preservation/native archive if not yet closed.
+Private QA out/qa/; reviewed report real-source-reports-reviewed/. Temporary8093
+server serves old pre-review report and must be stopped before native archival.
+Leave existing8091/8113 previews, incident4fb72844a355427c85d79ad4adb6b249 revision1
+Needs review, app DB, captures/Downloads/workbook/Dash untouched. Visual CUA failed
+asset init; do not claim a visual browser check. Next supported user-facing work:
+independent lower-density/short-support validation and conditional R-X/per-record
+model composition with explicit local event provenance; no automatic E5/E4 adoption.
+Then revisit joint-E5 phase handoff below. Five-hour heartbeat remains ACTIVE,
+natural resets only, never buy credits or consume manual reset tokens.
+
 **Dhone source-time investigation —2026-10-27, verified delivery.**
 Read DHONE_TIMESTAMP_INVESTIGATION_2026-10-27.md and original/reviewed108-case
 manifests (freezes55f8e3a/d0eb3aa). All108 rows remain identical/zero failures;

@@ -60,7 +60,7 @@ including full_record_signals.py and the unchanged legacy parser/source-time API
 Privately reviewed Dhone plus13downloaded CFGs:12CFG/DAT pairs decode; two CFGs
 at VINUKONDA SS lack matching DATs and show header-only results. All26original
 CFG/DAT byte hashes remain unchanged. The12paired records cover718planned windows;
-2007channel-window signal models are consistent, with every other channel-window
+2007/6362channel-window signal models are consistent, with all4355other channel-windows
 retained as a visible refusal. This does not establish independent physical events
 or correctly paired line ends. Content-hash duplicates are explicitly identified;
 distinct payloads alone do not prove independent observations.
@@ -92,9 +92,35 @@ a new directory for a new run. Serve only that output directory on loopback to
 view parsing, sample envelopes, digital intervals and every model/refusal in a
 browser. No upload, primary assignment or application DB mutation is needed.
 
+One fresh whole-branch review found five Important issues. The single TDD pass
+also regraded numeric underflow and missing browser frequency attribution as
+Important by their user-visible effect. Nineteen regression/control cases include
+16observed failures before fixes;135focused now pass. Format/edition-aware missing
+markers are handled before scaling: [IEEE PSRC1999 report,p5](https://www.pes-psrc.org/kb/report/068.pdf)
+and [2013 conformity test plan,p13](https://www.pes-psrc.org/kb/report/071.pdf).
+The2013numeric99999 control is retained as a legitimate value; its missing ASCII
+fields are empty. Binary reserved negative limits and missing timestamp markers
+remain unknown, not measured amplitudes or increasing source time.
+
+Requested versus observed support is explicit; edge gaps cannot disappear when
+selecting a window. A harmonic-only reference cannot establish a fundamental.
+Each selected local anchor now shifts separate display supports/digital times
+and plot-axis labels while retaining native coordinates. UTF-8 labels (optional
+BOM) and a labelled legacy fallback survive decoding, reference selection and
+HTML escaping. No clock/incident authority follows from display alignment.
+
+Reviewed freeze7bdb578 has separate evidence
+validation/NONUNIFORM_SOURCE_2026-10-27_REVIEWED.json:152/152rows exactly match
+the original, with16reviewed source bindings. The original15bindings remain tied
+to a02945e, never rewritten. The regenerated real report keeps the same718windows,
+2007/6362model counts and26unchanged source hashes. Header-only71029CFGs have no
+matching DAT in the searched project/Downloads paths; no substitute was guessed.
+
 Baseline1548pass/28missing-corpus skips/1existing warning194.44s. Task1full1575pass/
-28skips109.67s;116combined focused tests pass. Release1590pass/28skips/1existing
-upstream warning87.02s; architecture and changed-file Ruff pass. One fresh branch
-review, any single TDD Important-fix pass and primary delivery are recorded in
-the execution ledger before final adoption claims. This is a diagnostic milestone,
-not completion of the operational nonuniform protection/location chain.
+28skips109.67s; release1590pass/28skips87.02s. After fixes,135focused and1609full
+tests pass, with28missing-corpus skips/1existing upstream warning121.07s.
+Architecture and changed-file Ruff pass. No unresolved Important/deferred Minor
+or repeat review. Primary delivery is recorded separately. HTTP/HTML/JSON checks
+pass; a visual browser assessment was unavailable because CUA kernel assets failed
+to initialise. This is a diagnostic milestone, not completion of the operational
+nonuniform protection/location chain.
