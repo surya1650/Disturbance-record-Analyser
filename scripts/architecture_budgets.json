@@ -115,7 +115,8 @@
     "scripts/fractional_dsp_validation.py": 106,
     "src/dranalyser/faultloc/scalar_quality.py": 89,
     "scripts/scalar_observability_validation.py": 139,
-    "src/dranalyser/faultloc/error_sets.py": 186
+    "src/dranalyser/faultloc/error_sets.py": 186,
+    "scripts/e5_error_validation.py": 100
   },
   "exceptions": {}
 }
