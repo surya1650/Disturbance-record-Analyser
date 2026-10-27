@@ -113,6 +113,9 @@ def source_frequency(t,values,nominal):
         result=minimize_scalar(loss,bounds=(grid[best-1],grid[best+1]),method='bounded',options={'xatol':1e-8})
         if not result.success or not math.isfinite(result.x):
             raise ValueError('Frequency search did not converge.')
+        fundamental=_solve(t,y,weights,float(result.x))[1]
+        if not np.any(abs(fundamental)>1e-6):
+            raise ValueError('Fundamental is unobservable in the frequency references.')
         out=withheld('Fitted export-coordinate frequency; not a calibrated clock measurement.')
         out.update(status='estimated',frequency_hz=float(result.x),loss=float(result.fun),
                    search_hz=[float(grid[0]),float(grid[-1])])

@@ -90,7 +90,7 @@ def run(*,grid=None):
         'src/dranalyser/dsp/source_analysis.py','src/dranalyser/dsp/source_compare.py',
         'src/dranalyser/report/source_analysis.py','src/dranalyser/report/source_analysis.html',
         'scripts/analyse_source_record.py','scripts/nonuniform_validation.py','tests/test_nonuniform_source.py',
-        'tests/test_source_analysis_delivery.py','tests/full_record_signals.py',
+        'tests/test_source_analysis_delivery.py','tests/test_source_analysis_review.py','tests/full_record_signals.py',
         'docs/superpowers/specs/2026-10-27-nonuniform-analysis.md']
     dirty=subprocess.check_output(['git','status','--porcelain','--',*sources],cwd=ROOT,text=True).strip()
     failures=sum(r['status']=='failed' for r in rows)

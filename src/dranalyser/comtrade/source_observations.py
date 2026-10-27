@@ -1,6 +1,7 @@
 """Strict read-only source observations; missing samples never become zero."""
 import hashlib
 import math
+from decimal import Decimal,InvalidOperation
 from pathlib import Path
 
 import numpy as np
@@ -12,8 +13,10 @@ from .source_time import source_time_axis
 def _number(value):
     try:
         v=float(value)
+        if v==0 and Decimal(str(value))!=0:
+            return None
         return v if math.isfinite(v) else None
-    except (ValueError,TypeError,OverflowError):
+    except (ValueError,TypeError,OverflowError,InvalidOperation):
         return None
 
 
@@ -33,7 +36,13 @@ def load_source(cfg_path,dat_path=None):
             raise ValueError('Unsupported source container or byte budget.')
         cfg_bytes=path.read_bytes()
         out['source_sha256']={path.name:hashlib.sha256(cfg_bytes).hexdigest()}
-        text=cfg_bytes.decode('latin1').replace(DOS_EOF,'')
+        try:
+            text=cfg_bytes.decode('utf-8-sig')
+            out['text_encoding']='UTF-8 (optional BOM)'
+        except UnicodeDecodeError:
+            text=cfg_bytes.decode('latin1')
+            out['text_encoding']='Legacy Latin-1 fallback; original bytes preserved'
+        text=text.replace(DOS_EOF,'')
         lines=[line.strip() for line in text.splitlines() if line.strip()]
         counts=lines[1].split(',')
         na,nd=int(counts[1][:-1]),int(counts[2][:-1])
@@ -78,6 +87,13 @@ def load_source(cfg_path,dat_path=None):
                     or len(dat_bytes)//rowbytes*(2+na+nd)>4000000):
                 raise ValueError('Truncated/unsupported binary payload; no partial decode.')
             numbers,stamps,values=_read_binary(dat_bytes,na,nd,cfg.file_type)
+            stamps[stamps==0xFFFFFFFF]=np.nan
+        edition=int(cfg.rev_year_raw) if cfg.rev_year_raw in ('1991','1999','2013') else cfg.edition
+        marker=(99999 if edition==1999 else None) if cfg.file_type=='ASCII' else {
+            'BINARY':-32768,'BINARY32':-2147483648,'FLOAT32':float(np.finfo(np.float32).min)}[cfg.file_type]
+        if marker is not None:
+            analog=values[:,:na]
+            analog[analog==marker]=np.nan
         n=len(numbers)
         declared=int(lines[j+2+max(nrates,1)-1].split(',')[1])
         if n!=declared:
@@ -113,8 +129,12 @@ def load_source(cfg_path,dat_path=None):
             vals=values[:,i]
             if valid:
                 with np.errstate(over='ignore',invalid='ignore'):
+                    product=vals*a
                     converted=(vals*a+b)*ratio*gain
-                valid=bool(np.all(np.isfinite(converted[np.isfinite(vals)])))
+                finite=np.isfinite(vals)
+                underflow=finite & (vals!=0) & ((product==0) | (abs(product)<np.finfo(float).tiny))
+                subnormal=(converted!=0) & (abs(converted)<np.finfo(float).tiny)
+                valid=bool(np.all(np.isfinite(converted[finite])) and not np.any(underflow | subnormal))
                 if valid:
                     vals=converted
             out['channels'].append(dict(key=f'A{i+1}',label=fields[1],

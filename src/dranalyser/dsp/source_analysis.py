@@ -72,6 +72,10 @@ def analyse_source(observations,*,max_windows=512):
         hi=lo+duration
         ids=np.flatnonzero((t>=lo)&(t<=hi))
         window=dict(index=index,support_s=[float(lo),float(hi)],sample_count=len(ids),channels={})
+        observed=[float(t[ids[0]]),float(t[ids[-1]])] if len(ids) else []
+        gap_limit=1/(12*1.1*nominal)
+        covered=bool(len(ids)>1 and observed[0]-lo<=gap_limit and hi-observed[1]<=gap_limit)
+        window.update(observed_support_s=observed,coverage_status='covered' if covered else 'withheld')
         def references(flag,ids=ids):
             selected=[]
             for c in channels:
@@ -82,9 +86,10 @@ def analyse_source(observations,*,max_windows=512):
                         selected.append(values)
             return selected
         refs=references('frequency_reference')
-        freq=source_frequency(t[ids],np.column_stack(refs),nominal) if refs else withheld('No complete explicit voltage reference.')
+        freq=source_frequency(t[ids],np.column_stack(refs),nominal) if refs and covered else withheld(
+            'Requested support boundaries are not covered.' if not covered else 'No complete explicit voltage reference.')
         basis='phase voltage'
-        if freq['status']!='estimated':
+        if covered and freq['status']!='estimated':
             refs=references('current_reference')
             freq=source_frequency(t[ids],np.column_stack(refs),nominal) if refs else freq
             basis='phase current; voltage reference unavailable'
@@ -92,7 +97,7 @@ def analyse_source(observations,*,max_windows=512):
         window['frequency_basis']=basis
         for channel in channels:
             key=channel['key']
-            if freq['status']!='estimated' or len(ids)<48 or channel['skew_us']!=0:
+            if not covered or freq['status']!='estimated' or len(ids)<48 or channel['skew_us']!=0:
                 fit=withheld('Frequency, complete half-support or declared zero skew unavailable.')
             else:
                 fit=_stable_fit(t[ids],arrays[key][ids],freq['frequency_hz'])

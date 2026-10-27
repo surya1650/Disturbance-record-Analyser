@@ -56,6 +56,15 @@ def compare_sources(analyses,reference=None):
                     anchor.update(status='declared_local_edge',sample_index=k,source_s=float(time[k]),
                         sample_bracket_s=[float(time[k-1]),float(time[k])])
         row['local_reference']=anchor
+        offset=anchor['source_s'] if row['axis'].get('elapsed_s') else None
+        row['trace_reference_s']=offset
+        row['windows']=[dict(w,display_support_s=[v-offset for v in w['support_s']] if offset is not None else None)
+                        for w in row['windows']]
+        time=row['axis'].get('elapsed_s',[])
+        for interval in row['digital_intervals']:
+            start,end=interval['start_index'],interval['end_index']
+            interval['display_start_s']=float(time[start]-offset) if offset is not None and start is not None else None
+            interval['display_end_s']=float(time[end]-offset) if offset is not None and end is not None else None
         rows.append(row)
     return dict(records=rows,distinct_payloads=len(hashes),pairing_verified=False,
         alignment_eligible=False,authorizes_location=False,physical_timing_verified=False,
