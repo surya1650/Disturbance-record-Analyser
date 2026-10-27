@@ -1,5 +1,6 @@
 """Offline necessary conditions for scalar negative-sequence observability."""
 from collections.abc import Mapping
+from numbers import Integral
 
 import numpy as np
 
@@ -24,15 +25,19 @@ def _terminal(ti, end):
         return refuse('Terminal identity or polarity is unsupported.')
     if rec.blocked() or rec.nrates not in (0, 1):
         return refuse('Blocked or multi-rate acquisition.')
-    if an.saturation.detected is not False or an.clipping:
+    if (an.saturation.detected is not False or
+            not isinstance(an.clipping, (list, tuple)) or an.clipping):
         return refuse('Detected/unknown saturation or clipping; downweighting cannot establish observability.')
     if (not np.all(np.isfinite([rec.fs, an.freq])) or not 0 < an.freq < rec.fs/2 or
-            rec.t.ndim != 1 or rec.n < 2 or not np.all(np.isfinite(rec.t)) or
+            rec.t.ndim != 1 or not np.isrealobj(rec.t) or rec.n < 2 or not np.all(np.isfinite(rec.t)) or
             not np.all(np.diff(rec.t) > 0) or
             not np.allclose(np.diff(rec.t), 1/rec.fs, rtol=.01, atol=1e-7)):
         return refuse('Unsupported local sample grid or frequency.')
-    if (an.ps.fs != rec.fs or an.ps.freq != an.freq or an.ps.n_window < 2 or
-            an.ps.valid_from < an.ps.n_window-1 or
+    if (any(isinstance(v, (bool, np.bool_)) or not isinstance(v, Integral)
+            for v in (an.ps.n_window, an.ps.valid_from)) or
+            not 2 <= an.ps.n_window <= rec.n or not an.ps.n_window-1 <= an.ps.valid_from < rec.n or
+            np.shape(an.ps.t) != (rec.n,) or not np.isrealobj(an.ps.t) or
+            not np.array_equal(an.ps.t, rec.t) or an.ps.fs != rec.fs or an.ps.freq != an.freq or
             an.window.mode not in ('full', 'half') or
             not np.all(np.isfinite([an.window.t_start, an.window.t_end])) or
             an.window.t_end <= an.window.t_start):

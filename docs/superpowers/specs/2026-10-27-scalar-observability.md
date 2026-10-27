@@ -27,6 +27,13 @@ selected I2 must meet it. Record minI2, referenceI1, floor and supports. A missi
 or nonfinite value cannot disappear through median/downsampling. No gain,
 polarity, alias, clock, frequency-error or total-noise guarantee follows.
 
+Review clarification: clipping assessment must be an explicit list/tuple, not
+None/False/0 or another false-like object. Phasor time must be real, one-dimensional,
+finite and exactly match record time before support selection; n_window and
+valid_from must be finite integers in their valid ranges. Completed-analysis
+provenance is assumed: this utility does not independently recompute phasors from
+raw ADC samples or authenticate a caller's cached analysis.
+
 Freeze disjoint uniform physical-network120km geometry (.055+.33j and.22+.91j
 ohm/km), development37km/Rf3 and validation83km/Rf7. Eleven fault connections,
 two profiles per split and fourteen scenarios yield616 paired incidents.

@@ -96,3 +96,30 @@ def test_section_floor_is_applied_to_every_support_at_both_terminals(terms):
 @pytest.mark.parametrize('mapping', [None, {}, {'S': None}, []])
 def test_missing_pair_withholds_without_nonfinite_json(mapping):
     assert assess(mapping)['status'] == 'withheld'
+
+
+@pytest.mark.parametrize('problem', ['hidden_nonfinite', 'hidden_weak', 'short_phasor_time',
+                                    'nan_valid_from', 'fractional_window'])
+def test_malformed_phasor_timeline_cannot_hide_selected_evidence(terms, problem):
+    an = terms['S'].analysed
+    k = an.indices()[5]
+    an.ps.t = an.ps.t.copy()
+    if problem == 'hidden_nonfinite':
+        an.ps.t[k] = np.nan
+        an.ps.phasors['I2'][k] = np.nan
+    elif problem == 'hidden_weak':
+        an.ps.t[k] = an.window.t_end+1
+        an.ps.phasors['I2'][k] = 0
+    elif problem == 'short_phasor_time':
+        an.ps.t = an.ps.t[:-1]
+    elif problem == 'nan_valid_from':
+        an.ps.valid_from = np.nan
+    else:
+        an.ps.n_window = float(an.ps.n_window)
+    assert assess(terms)['status'] == 'withheld'
+
+
+@pytest.mark.parametrize('clipping', [None, False, 0, {}, ''])
+def test_unknown_clipping_assessment_is_not_clean_evidence(terms, clipping):
+    terms['S'].analysed.clipping = clipping
+    assert assess(terms)['status'] == 'withheld'
