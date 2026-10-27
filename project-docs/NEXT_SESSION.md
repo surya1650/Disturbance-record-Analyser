@@ -1,5 +1,19 @@
 # Context for the next session
 
+**USER PRIORITY CHANGE —2026-10-27: integrated application delivery.**
+Read INTEGRATED_DR_APPLICATION_HANDOFF_2026-10-27.md and
+docs/superpowers/plans/2026-10-27-integrated-inspection-first.md before the
+historical research notes below. The user wants one main application with
+recoverable waveforms/digitals visible before assignment or successful analysis,
+live sample values, multiple cursors/channel slots, single-line diagram with
+unavailable placeholders, supported diagnostics and clear snapshot/conclusions.
+The standalone8092report does not fulfill this goal. G1/G2 main-app inspection
+is FIRST; lower-density research and joint-E5 must not delay that vertical slice.
+User requested a fresh chat to execute autonomously without further approval
+loops. This is a handoff/plan, not implemented product functionality. Transfer
+the existing five-hour heartbeat to the new execution chat; avoid competing
+writers. Preserve source files, Dash, workbook, appDB/revisions and8091/8113/8092.
+
 **Nonuniform independent source analysis —2026-10-27, verified delivery.**
 User priority supersedes joint-E5 work: independently analyse single ends without
 sync/line constants, then explicit local references for unsynchronised records;
