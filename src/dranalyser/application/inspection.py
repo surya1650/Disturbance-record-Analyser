@@ -7,8 +7,8 @@ from fastapi import HTTPException, Query
 from .source_jobs import SourceJobs
 
 
-def install_inspection(app, store):
-    jobs=SourceJobs(store.root)
+def install_inspection(app, store, registry=None):
+    jobs=SourceJobs(store.root,registry)
     app.state.source_jobs=jobs
     original=app.router.lifespan_context
 
@@ -22,17 +22,29 @@ def install_inspection(app, store):
 
     app.router.lifespan_context=lifespan
 
+    @app.get('/api/source-lines')
+    def source_lines():
+        from ..workbench.source_lines import registry_line_models
+        return {'items':registry_line_models(registry)}
+
     @app.get('/api/incidents/{incident_id}/inspection/analysis')
     def analysis(incident_id: str, record: str, revision: int = Query(...,ge=1), voltage_kv: int = 0,
-                 mappings: str = Query('{}',max_length=12000)):
+                 mappings: str = Query('{}',max_length=12000), line_id: str = Query('',max_length=200),
+                 line_model: str = Query('{}',max_length=32768), fault_loop: str = '',
+                 projection_window: int | None = None, asserted_states: str = Query('{}',max_length=4096)):
         row=store.get(incident_id,revision)
         if row is None:
             raise HTTPException(404,'Revision not found.')
-        try:
-            choices=json.loads(mappings)
-        except ValueError as exc:
-            raise ValueError('Channel meanings must be valid JSON source-ID choices.') from exc
-        return jobs.request(row,record,dict(voltage_kv=voltage_kv,mappings=choices))
+        def decode(raw,label):
+            try:
+                return json.loads(raw)
+            except ValueError as exc:
+                raise ValueError(label+' must be valid JSON choices.') from exc
+        choices=decode(mappings,'Channel meanings')
+        model=decode(line_model,'Line model')
+        states=decode(asserted_states,'Asserted states')
+        return jobs.request(row,record,dict(voltage_kv=voltage_kv,mappings=choices,line_id=line_id,line_model=model,
+            fault_loop=fault_loop,projection_window=projection_window,asserted_states=states))
 
     @app.get('/api/incidents/{incident_id}/inspection')
     def inspection(incident_id: str, record: str, revision: int = Query(..., ge=1)):

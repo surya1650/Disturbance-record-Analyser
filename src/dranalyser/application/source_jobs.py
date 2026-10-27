@@ -5,11 +5,14 @@ from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 
 from ..workbench.source_diagnostics import diagnose_source, diagnostic_identity
+from ..workbench.source_models import SourceModelCache
 
 
 class SourceJobs:
-    def __init__(self, root):
+    def __init__(self, root, registry=None):
         self.root=root
+        self.registry=registry
+        self.model_cache=SourceModelCache()
         self.executor=ThreadPoolExecutor(max_workers=1,thread_name_prefix='source-diagnostics')
         self.jobs=OrderedDict()
         self.lock=threading.Lock()
@@ -17,7 +20,7 @@ class SourceJobs:
     def request(self, revision, filename, options):
         # Verify immutable bytes/options on every poll, including completed jobs.
         frozen=copy.deepcopy(revision)
-        identity=diagnostic_identity(self.root,frozen,filename,options)
+        identity=diagnostic_identity(self.root,frozen,filename,options,registry=self.registry)
         key=identity['job_id']
         with self.lock:
             if key not in self.jobs:
@@ -26,7 +29,7 @@ class SourceJobs:
                     if completed is None:
                         return dict(status='busy',**identity,detail='Two source analyses are already pending. Waveform inspection remains available; retry shortly.')
                     del self.jobs[completed]
-                self.jobs[key]=self.executor.submit(diagnose_source,self.root,frozen,filename,identity['options'])
+                self.jobs[key]=self.executor.submit(diagnose_source,self.root,frozen,filename,identity['options'],registry=self.registry,model_cache=self.model_cache)
             future=self.jobs[key]
             self.jobs.move_to_end(key)
         if not future.done():

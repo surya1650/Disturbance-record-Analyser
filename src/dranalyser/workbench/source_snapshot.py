@@ -1,4 +1,5 @@
 """Source snapshot and declared line facts; missing fields never get defaults."""
+import copy
 import hashlib
 import math
 import re
@@ -65,9 +66,11 @@ def line_facts(root,revision):
         return out
 
 
-def compose_snapshot(root,revision,filename,result):
+def compose_snapshot(root,revision,filename,result, *, registry=None, resolved_line=None):
     from .source_diagnostics import diagnostic_identity
-    identity=diagnostic_identity(root,revision,filename,result['options'])
+    from .source_lines import resolve_line
+    line=copy.deepcopy(resolved_line if resolved_line is not None else resolve_line(root,revision,result['options'],registry))
+    identity=diagnostic_identity(root,revision,filename,result['options'],registry=registry,resolved_line=line)
     if any(result.get(k)!=v for k,v in identity.items()):
         raise ValueError('Snapshot source/options binding differs from the current revision.')
     meta=inspection_record(root,revision,filename)
@@ -76,6 +79,7 @@ def compose_snapshot(root,revision,filename,result):
         recorded_times=meta.get('recorded_times',{}),inferred_inception='Not available',
         time_basis=meta['time_basis'],inventory=meta['inventory'],sections=result['conclusions'],
         assumptions=result['assumptions'],scaling_notes=result['scaling_notes'],methods=result['methods'],
-        line=line_facts(root,revision),fit_coverage=result['fit_coverage'],
+        line=line,fit_coverage=result['fit_coverage'],
+        selected_projection=result.get('selected_projection'),
         authorizes_location=False,alignment_eligible=False,ct_vt_verified=False,
         note='Every claim is limited to its stated source, option and method evidence. Recorded trigger is not inferred fault inception or operation time.')

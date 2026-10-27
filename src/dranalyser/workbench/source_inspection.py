@@ -90,6 +90,7 @@ def _header_information(path, expected_hash):
             inventory.append(dict(id=f'A{i+1}' if analog else f'D{i-na+1}',
                 source_id=fields[0], kind='analog' if analog else 'digital', label=fields[1],
                 phase=fields[2] if analog and len(fields)>2 else '',
+                normal_state=fields[4] if not analog and len(fields)>4 else None,
                 **({key: fields[pos] if len(fields)>pos else '' for key,pos in
                     [('a',5),('b',6),('primary',10),('secondary',11),('primary_secondary',12)]} if analog else {}),
                 declared_units=fields[4] if analog and len(fields) > 4 else 'state' if not analog else 'Not available'))

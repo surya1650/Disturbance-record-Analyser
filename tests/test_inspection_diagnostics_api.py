@@ -64,3 +64,16 @@ def test_background_queue_has_a_real_bound(environment,revision,monkeypatch):
     finally:
         gate.set()
         app.state.source_jobs.close()
+
+
+def test_analysis_json_errors_name_the_actual_bad_input(environment,revision):
+    client,app,_,registry=environment
+    _,_,folder=revision
+    r=client.post('/api/intake',files=[('files',(p.name,p.read_bytes())) for p in folder.iterdir()])
+    identity=r.json()['incident_id']
+    Worker(app.state.store,registry).once()
+    url=f'/api/incidents/{identity}/inspection/analysis'
+    for field,label in [('mappings','channel meanings'),('line_model','line model'),('asserted_states','asserted states')]:
+        response=client.get(url,params={'revision':1,'record':'event.cfg',field:'{'})
+        assert response.status_code==400
+        assert label in response.json()['detail'].lower()
