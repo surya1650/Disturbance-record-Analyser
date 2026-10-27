@@ -80,8 +80,8 @@ does not justify operational lines or clearing current refusals.
 
 ## Reproduction and verification
 
-[Full616-case evidence](validation/SCALAR_OBSERVABILITY_2026-10-27.json) binds44
-UTF-8/LF sources from protocol/code freeze907092b. Every failure, refused case,
+[Reviewed616-case evidence](validation/SCALAR_OBSERVABILITY_2026-10-27_CORRECTED.json) binds44
+UTF-8/LF sources from reviewed code369d535. Original evidence retains907092b. Every failure, refused case,
 support diagnostic, baseline and overlay remains visible. CLI publishes finite
 JSON exclusively and returns2 on numerical failure; scientific adoption failure
 is recorded separately. Never rewrite old manifests to imply later-source
@@ -102,3 +102,23 @@ Architecture/focused Ruff pass. Existing production sources are unchanged, so
 the previous Stage-A10000 remains historical; no new Stage-A result is claimed.
 Fresh whole-branch review and combined primary delivery follow below. Project
 remains advanced prototype/pre-pilot with zero accepted field cases.
+
+Fresh independent review verified the46 focused tests, all44 source hashes,
+all44 metadata-skew comparisons and overlay equality. Two Important evidence
+validation gaps were fixed in one pass: phasor time/kernel metadata could hide
+an observation, and unavailable clipping results were treated as clean. Ten
+new regressions failed first and now pass. Research now requires an exactly
+matching real phasor timeline, integer support metadata and explicit clipping
+assessment container before selection. **56 focused tests pass**; review-fix
+full suite **1429passed/28corpus skips**, one existing upstream warning,113.58s.
+All616 corrected numerical rows are identical to the original frozen study.
+No second review was dispatched after the verified fix pass.
+
+One per-file provenance Minor is deferred: the selected hashes omit the reused
+writer/truth helper's tests/full_record_signals.py RATIOS dependency. The complete
+recorded Git freezes bind that file; reproduction must use the recorded checkout,
+not treat the44 hashes as a closed dependency graph. Include it in future evidence
+bindings. Completed-analysis to record provenance is assumed; raw ADC/cached
+phasor authenticity is not established here. No current clock path is eligible,
+so pair reporting grants no alignment authority. Field/manufacturer CT/coherent
+error guarantees remain excluded, with failed adoption visible.
