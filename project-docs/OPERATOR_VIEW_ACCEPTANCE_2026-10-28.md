@@ -61,3 +61,7 @@ Physical meanings, CT/VT, wiring, clocks, event/ends, line facts and protection 
 Deferred minor: zero-safe-row binary failures omit structured opaque/declared/decoded counts, while original hashes, explicit failure and zero samples remain correct.
 
 Ignored QA and all scoped ledgers are preserved with SHA256 verification before native archival. The final preservation manifest and archival result are recorded in NEXT_SESSION and the goalboard.
+
+Final result:208files/11,293,398bytes preserved; all source/destination hashes verified.
+Native archival was attempted but refused as the task's primary checkout. The worktree
+is retained, not archived; the stable E: preview and pushed main do not depend on it.

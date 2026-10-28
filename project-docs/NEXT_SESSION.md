@@ -60,3 +60,23 @@ All ignored milestone QA and scoped ledgers must be hash-preserved before native
 worktree archival. Target: E:/dr analyser/out/qa/integrated-delivery-preserved-2026-10-28,
 manifest.json. Final verified file count and confirmed native archival are appended
 below after execution. Primary verification logs remain underout/qa/inspection-first.
+
+### Final preservation and cleanup result
+
+208 QA/ledger files,11,293,398bytes were copied to the stated preservation directory.
+Every source/preserved SHA256 pair was checked before the native archive request.
+The manifest is `out/qa/integrated-delivery-preserved-2026-10-28/manifest.json`.
+
+Native archival was attempted and **refused**: `The task's primary checkout cannot
+be removed.` The checkout remains intact at
+`C:/Users/rscvr/.codex/worktrees/inspection-first/dr analyser`, branch
+`codex/inspection-first`, delivered head `efc2319`. The native attachment is still
+active. No manual removal was attempted. This is an app attachment/cleanup limit,
+not an application runtime dependency: the preview already runs from E: and the
+next owner should work in the primary repository or a new isolated worktree.
+Use native Codex lifecycle controls after its primary-checkout protection is released
+if cleanup is wanted. QA copies remain available regardless.
+
+The heartbeat remains PAUSED. Software delivery/verification and handover are complete
+within the published supported contracts; the retained protected checkout and stated
+future numerical/qualification work are explicit, not silently marked archived.

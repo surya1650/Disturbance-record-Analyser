@@ -26,6 +26,11 @@ Downloads, workbook, Dash, realDB and protected8091/8113/8092 were preserved.
 Heartbeat continue-analyser-validation is PAUSED to prevent a competing next-owner writer.
 Final push and ignoredQA/ledger preservation/native-archive evidence follow in NEXT_SESSION.
 
+Final handover:208 QA/ledger files were SHA256-preserved and verified. Native archive
+was requested but refused because this is the task's primary checkout; the checkout
+remains intact and attached. Stable preview/primary repo are independent of it.
+The exact retained path, manifest and next-owner cleanup limitation are in NEXT_SESSION.
+
 ## Exact limits and next tasks
 
 - A/B fault regions are operator choices. Automatic authenticated boundary assistance is future work.

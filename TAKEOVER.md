@@ -1,5 +1,11 @@
 # DR Analyser: operator and next-owner handover
 
+Delivery verified: **1815 primary tests passed**, one Windows-only skip and one
+existing warning. The continuation heartbeat is paused. All208 QA/ledger files
+have verified preserved copies. Codex refused native cleanup of this chat's primary
+checkout, so that worktree remains intact; use the primary repository for takeover.
+See `project-docs/NEXT_SESSION.md` for the exact manifest and retained path.
+
 Start here. The product is the integrated FastAPI/vanillaJS application in this repository. The old standalone 8092 report is historical evidence.
 
 ## Use the demonstration
