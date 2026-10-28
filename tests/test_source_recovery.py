@@ -104,3 +104,30 @@ def test_short_ascii_missing_observations_stay_unknown(tmp_path):
 def test_zero_channel_layout_is_explicitly_unsupported(tmp_path):
     out=load_source(record(tmp_path,analog=0,digital=0))
     assert out['status']=='unsupported' and out['sample_count']==0 and out['issues']
+
+
+@pytest.mark.parametrize('case',['digital-only','one-sample','truncated-binary','cff'])
+def test_recovered_observations_keep_a_report_when_signal_models_are_unavailable(tmp_path,case):
+    import hashlib
+    from dranalyser.workbench.source_diagnostics import diagnose_source
+    from tests.test_source_containers import container
+    folder=tmp_path/'runs'/'recoverable'/'1'/'records'
+    folder.mkdir(parents=True)
+    if case=='cff':
+        path=container(folder,'BINARY',analog=0,n=2)
+        sources=[path]
+    else:
+        path=record(folder,analog=0 if case=='digital-only' else 1,n=1 if case=='one-sample' else 3,
+            kind='BINARY' if case=='truncated-binary' else 'ASCII')
+        if case=='truncated-binary':
+            dat=path.with_suffix('.dat')
+            dat.write_bytes(dat.read_bytes()[:-1])
+        sources=[path,path.with_suffix('.dat')]
+    files=[dict(name=p.name,sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in sources]
+    row=dict(incident_id='recoverable',number=1,state='needs_review',result=None,files=files,
+        bundle=dict(root=str(folder),files=[dict(name=path.name,kind='comtrade',data_file=sources[1].name if len(sources)>1 else '',blocked=True,ok=False)]))
+    result=diagnose_source(tmp_path,row,path.name)
+    assert result['snapshot'] and result['conclusions']['observed']
+    assert result['methods']['source_models']['status']=='Not available'
+    assert result['selected_projection']['authorizes_location'] is False
+    json.dumps(result,allow_nan=False)

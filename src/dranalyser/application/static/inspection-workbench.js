@@ -7,7 +7,8 @@ function renderInspectionWorkbench(host,data,row,recordController) {
       (data.inventory.length?'<table><thead><tr><th>ID</th><th>Kind</th><th>Source label</th><th>Declared units (unverified)</th></tr></thead><tbody>'+data.inventory.map(c=>`<tr><td>${escapeHtml(c.id)}</td><td>${escapeHtml(c.kind)}</td><td>${escapeHtml(c.label)}</td><td>${escapeHtml(c.declared_units||c.units||'Not available')}</td></tr>`).join('')+'</tbody></table>':'<p>No independently readable channel header.</p>');return;
   }
   const key=`${row.incident_id}/${row.number}/${data.file}`;
-  const s=inspectionViews.get(key)||DRInspection.create(data);inspectionViews.set(key,s);s.invalidate();
+  const saved=inspectionViews.get(key);
+  const s=saved?.sourceIdentity===DRInspection.identity(data.source_sha256)?saved:DRInspection.create(data);inspectionViews.set(key,s);s.invalidate();
   if(inspectionViews.size>12)inspectionViews.delete(inspectionViews.keys().next().value);
   const byId=new Map(data.channels.map(c=>[c.id,c]));
   const native=new Map(),cursorValues=new Map();
@@ -30,7 +31,7 @@ function renderInspectionWorkbench(host,data,row,recordController) {
     mount.querySelectorAll('[name=inspection-active]').forEach(el=>el.onchange=()=>active=el.value);
     mount.querySelectorAll('[data-pin]').forEach(el=>el.onchange=()=>movePin(el.dataset.pin,Number(el.value)));
     mount.querySelectorAll('[data-remove-pin]').forEach(el=>el.onclick=()=>{s.removePin(el.dataset.removePin);if(!s.pins[active]&&s.pins[active]!==0)active='A';controls();drawSlots();loadCursors();});
-    mount.querySelector('[data-action=add-pin]').onclick=()=>{s.addPin();controls();drawSlots();loadCursors();};
+    mount.querySelector('[data-action=add-pin]').onclick=()=>{try{s.addPin();controls();drawSlots();loadCursors();}catch(error){mount.querySelector('.inspection-load').textContent=error.message;}};
   }
   function drawSlots() {
     for (const kind of ['analog','digital']) {
@@ -74,34 +75,40 @@ function renderInspectionWorkbench(host,data,row,recordController) {
     const query=new URLSearchParams({revision:row.number,record:data.file,channel_id:id,start_index:lo,stop_index:hi});
     const response=await fetch(`/api/incidents/${row.incident_id}/inspection/samples?${query}`,{signal:controller.signal});
     const body=await response.json();if(!response.ok)throw new Error(body.detail||'Native observations unavailable.');
-    if(body.file!==data.file||body.revision!==row.number||body.channel_id!==id||JSON.stringify(body.source_sha256)!==JSON.stringify(data.source_sha256))throw new Error('Source identity changed; reopen recording.');
+    if(body.file!==data.file||body.revision!==row.number||body.channel_id!==id||DRInspection.identity(body.source_sha256)!==DRInspection.identity(data.source_sha256))throw new Error('Source identity changed; reopen recording.');
     return body.samples;
   }
-  async function loadHover() {
-    hoverController?.abort();const controller=new AbortController();hoverController=controller;
-    recordController.signal.addEventListener('abort',()=>controller.abort(),{once:true,signal:controller.signal});
-    const index=s.hover,token=s.request('hover');cursorValues.delete('hover');values();
-    try {const entries=await Promise.all(shown().map(async id=>[id,(await getSamples(id,index,index+1,controller))[0]]));
-      if(s.accept(token)&&s.hover===index&&!controller.signal.aborted&&host.isConnected){cursorValues.set('hover',new Map(entries));values();}
-    }catch(error){if(error.name!=='AbortError'&&s.accept(token))mount.querySelector('.inspection-load').textContent=error.message;}
-  }
+  function loadHover(){return loadCursors();}
   async function loadCursors() {
-    cursorValues.clear();values();
-    const token=s.request('pins');
-    try {const entries=await Promise.all(pins().map(async([name,index])=>[name,new Map(await Promise.all(shown().map(async id=>[id,(await getSamples(id,index,index+1,recordController))[0]])))]));
-      if(s.accept(token)&&!recordController.signal.aborted&&host.isConnected){for(const [name,entry]of entries)cursorValues.set(name,entry);values();}
-    }catch(error){if(error.name!=='AbortError'&&s.accept(token))mount.querySelector('.inspection-load').textContent=error.message;}
-    loadHover();
+    hoverController?.abort();if(recordController.signal.aborted)return;
+    const controller=new AbortController();hoverController=controller;
+    recordController.signal.addEventListener('abort',()=>controller.abort(),{once:true,signal:controller.signal});
+    const names=[...pins(),['hover',s.hover]],ids=shown(),indices=[...new Set(names.map(([,i])=>i))],token=s.request('points');
+    cursorValues.clear();values();if(!ids.length)return;
+    const current=()=>s.accept(token)&&!controller.signal.aborted&&host.isConnected&&
+      names.every(([name,index])=>(name==='hover'?s.hover:s.pins[name])===index)&&ids.join(',')===shown().join(',');
+    try {
+      let channels=DRInspection.exactPoints(native,ids,indices);
+      if(!channels){
+        const query=new URLSearchParams({revision:row.number,record:data.file,channel_ids:JSON.stringify(ids),indices:JSON.stringify(indices)});
+        const response=await fetch(`/api/incidents/${row.incident_id}/inspection/points?${query}`,{signal:controller.signal});
+        const body=await response.json();if(!response.ok)throw new Error(body.detail||'Cursor observations unavailable.');
+        if(body.file!==data.file||body.revision!==row.number||DRInspection.identity(body.source_sha256)!==DRInspection.identity(data.source_sha256))throw new Error('Source identity changed; reopen recording.');
+        channels=body.channels;
+      }
+      if(current()){for(const[name,index]of names)cursorValues.set(name,new Map(channels.map(c=>[c.id,c.samples[indices.indexOf(index)]])));values();}
+    }catch(error){if(error.name!=='AbortError'&&current())mount.querySelector('.inspection-load').textContent=error.message;}
   }
   async function loadView() {
-    viewController?.abort();hoverController?.abort();s.invalidate();native.clear();cursorValues.clear();drawPaths();values();
+    if(recordController.signal.aborted)return;
+    clearTimeout(hoverTimer);viewController?.abort();hoverController?.abort();s.invalidate();native.clear();cursorValues.clear();drawPaths();values();
     const controller=new AbortController();viewController=controller;
     recordController.signal.addEventListener('abort',()=>controller.abort(),{once:true,signal:controller.signal});
     const lo=Math.ceil(s.view[0]),hi=Math.floor(s.view[1])+1,token=s.request('view');
     const status=mount.querySelector('.inspection-load');status.textContent=hi-lo<=20000?'Loading exact native observations…':'Display envelopes; zoom to ≤20000 samples for native paths. Cursors always use exact observations.';
     if(hi-lo<=20000){try{const entries=await Promise.all(shown().map(async id=>[id,await getSamples(id,lo,hi,controller)]));
       if(s.accept(token)&&!controller.signal.aborted&&host.isConnected){for(const[id,points]of entries)native.set(id,points);status.textContent='Native observations loaded. Unknown states and missing amplitudes stay blank.';drawPaths();}
-    }catch(error){if(error.name!=='AbortError'&&s.accept(token)){status.textContent=error.message;native.clear();drawPaths();}}}
+    }catch(error){if(error.name!=='AbortError'&&s.accept(token)&&!controller.signal.aborted&&host.isConnected){status.textContent=error.message;native.clear();drawPaths();}}}
     if(s.accept(token)&&!controller.signal.aborted)loadCursors();
   }
   function movePin(name,index){s.move(name,index);controls();drawPaths();loadCursors();}

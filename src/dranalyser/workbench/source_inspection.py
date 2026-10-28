@@ -158,3 +158,30 @@ def inspection_samples(root, revision, filename, channel_id, start_index, stop_i
                 source_sha256=source['source_sha256'], time_basis=_axis(source), units=data.get('units', 'state'),
                 samples=[[i, times[i] if times else None, values[i]] for i in range(start_index, stop_index)],
                 note='Zero-based source indices; nearest actual sample, no interpolation. Unknown is null.')
+
+
+def inspection_points(root, revision, filename, channel_ids, indices):
+    """One validated decode for up to eight channels and sixteen pins plus hover."""
+    if (not isinstance(channel_ids,list) or not 1<=len(channel_ids)<=8
+            or any(not isinstance(c,str) or not c for c in channel_ids)
+            or len(set(channel_ids))!=len(channel_ids)):
+        raise ValueError('Channel IDs must be a list of 1..8 unique source identities.')
+    if (not isinstance(indices,list) or not 1<=len(indices)<=17
+            or any(type(i) is not int or i<0 for i in indices) or len(set(indices))!=len(indices)):
+        raise ValueError('Sample indices must be a list of 1..17 unique nonnegative integers.')
+    source,_=_source(root,revision,filename)
+    if any(i>=source['sample_count'] for i in indices):
+        raise ValueError('Sample index is outside this recording.')
+    available={c['key']:c for c in source['channels']+source['digital']}
+    if any(c not in available for c in channel_ids):
+        raise ValueError('Channel identity is unavailable in this source.')
+    times=source['axis'].get('elapsed_s',[])
+    channels=[]
+    for identity in channel_ids:
+        c=available[identity]
+        values=c.get('values',c.get('states',[]))
+        channels.append(dict(id=identity,units=c.get('units','state'),
+            samples=[[i,times[i] if times else None,values[i]] for i in indices]))
+    return dict(file=filename,revision=revision['number'],indices=indices,channels=channels,
+        source_sha256=source['source_sha256'],time_basis=_axis(source),
+        note='Exact zero-based source observations; no interpolation. Unknown is null.')

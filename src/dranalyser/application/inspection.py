@@ -63,3 +63,18 @@ def install_inspection(app, store, registry=None):
             raise HTTPException(404, 'Revision not found.')
         return inspection_samples(store.root, row, record, channel_id, start_index, stop_index)
 
+
+    @app.get('/api/incidents/{incident_id}/inspection/points')
+    def inspection_cursor_points(incident_id: str, record: str, revision: int = Query(...,ge=1),
+                                 channel_ids: str = Query(...,max_length=1024),
+                                 indices: str = Query(...,max_length=512)):
+        from ..workbench.source_inspection import inspection_points
+        row=store.get(incident_id,revision)
+        if row is None:
+            raise HTTPException(404,'Revision not found.')
+        try:
+            channels=json.loads(channel_ids)
+            positions=json.loads(indices)
+        except ValueError as exc:
+            raise ValueError('Channel IDs and sample indices must be valid JSON lists.') from exc
+        return inspection_points(store.root,row,record,channels,positions)

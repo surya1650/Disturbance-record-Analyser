@@ -29,3 +29,19 @@ assert.equal(s.colors.A,'#c94145');s.setColour('A','#123456');assert.equal(s.col
 assert.throws(()=>s.setColour('A','red" onload="x'));
 s.groups={A1:'1',A2:'1',A3:'1'};
 assert.deepEqual(m.groupChannels([{id:'A1',kind:'analog',units:'A'},{id:'A2',kind:'analog',units:'A'},{id:'A3',kind:'analog',units:'V'}],s).map(g=>g.map(c=>c.id)),[['A1','A2'],['A3']]);
+// Local cursor observations are exact native interval samples, never nearest extrema.
+const native=new Map([['A1',[[10,.01,7],[11,.011,null],[12,.012,9]]],['D1',[[10,.01,0],[11,.011,1],[12,.012,null]]]]);
+assert.deepEqual(m.exactPoints(native,['D1','A1'],[12,10]).map(c=>c.samples),[[[12,.012,null],[10,.01,0]],[[12,.012,9],[10,.01,7]]]);
+assert.equal(m.exactPoints(native,['A1'],[9]),null);
+assert.equal(m.exactPoints(native,['A2'],[10]),null);
+assert.equal(m.exactPoints(new Map([['A1',[[10,.01,7],[12,.012,9]]]]),['A1'],[11]),null);
+assert.equal(m.exactPoints(native,['A1'],[11])[0].samples[0][2],null);
+const bounded=m.create({file:'x.cfg',revision:1,source_sha256:{'x.cfg':'aaa'},sample_count:100,channels:[]});
+for(let i=2;i<16;i++)bounded.addPin();
+assert.equal(Object.keys(bounded.pins).length,16);
+assert.throws(()=>bounded.addPin(),/16/);
+assert.equal(Object.keys(bounded.pins).length,16);
+const hashToken=bounded.request('points');
+bounded.sourceIdentity='changed';
+assert.equal(bounded.accept(hashToken),false);
+console.log('Batched cursor semantics: exact local nulls, absent points, source identity and16pin limit passed');

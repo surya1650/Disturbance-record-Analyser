@@ -8,3 +8,9 @@ def test_inspection_model():
     node = shutil.which('node')
     assert node, 'Node is required for UI model verification.'
     subprocess.run([node, str(Path(__file__).with_name('inspection_model.cjs'))], check=True)
+
+
+def test_inspection_cursor_transport():
+    node = shutil.which('node')
+    assert node, 'Node is required for UI transport verification.'
+    subprocess.run([node, str(Path(__file__).with_name('inspection_transport.cjs'))], check=True)

@@ -204,4 +204,9 @@ def test_declared_binary_payloads_decode_without_inventing_truncated_samples(tmp
     assert out['sample_count']==96 and out['channels'][0]['values'][0]==1
     p.with_suffix('.dat').write_bytes(raw[:-1])
     bad=api('comtrade.source_observations','load_source')(p)
-    assert bad['status']=='unsupported' and bad['issues']
+    assert bad['status']=='sample_only' and bad['issues']
+    assert bad['sample_count']==95 and bad['channels'][0]['values']==[1]*95
+    assert bad['recovery']['decoded_samples']==95
+    assert bad['recovery']['opaque_bytes']==({'BINARY':20,'BINARY32':32,'FLOAT32':32}[kind]-1)
+    assert bad['axis']['status']=='withheld' and bad['axis']['elapsed_s']==[]
+    assert not bad['authorizes_location']

@@ -1,18 +1,17 @@
 # Integrated DR application goal board
 
-Updated2026-10-28. Inspection first shipped to main935d3c9. Supported analysis/report milestone shipped mainaae3e2f (primary1690passed/1OSskip).
-Conditional source quantities/line inputs candidate8b939ac plus one review-fix pass
-passed isolated1721tests/29skips (28missing private corpus +1Windows symlink permission),
-one existing upstream warning156.73s. Primary integration verification follows.
+Updated2026-10-28. Inspection milestone main935d3c9, supported reports mainaae3e2f,
+conditional source quantities/line inputs main9d1853a (primary1749passed/1OSskip/one existing warning).
+Bounded recovery/cursor milestone is in final verification; review and primary acceptance follow.
 
 | Goal | State | Delivered acceptance / exact remainder |
 | --- | --- | --- |
-| G1 | Acceptance delivered for supported strict source formats | Needs_review/unassigned/no-result main-app source inspection, exact analog/digital samples, unknowns, header-only inventory and explicit decode errors. Dhone/DR2 copies tested without real revision mutations. New CFF/digital-only/multirate/truncated recovery contracts remain outside currently supported decoding. |
+| G1 | Acceptance delivered for supported strict source formats | Needs_review/unassigned/no-result main-app source inspection, exact analog/digital samples, unknowns, header-only inventory and explicit decode errors. Dhone/DR2 copies tested without real revision mutations. Candidate recovery adds explicitly framed CFF, digital-only and1/2sample observations and safe complete binary prefixes. Multirate observations retain indices when timing is unsupported; no guessed timestamps. |
 | G2 | Core workbench delivered | Resizable separate panes, IDs/units, selection/order/visibility, same-unit overlays, editable phase colours,8channel paging, hover/A/B/add/remove pins, source-time deltas, numeric/keyboard stepping, zoom/pan/reset, explicit sample-index axis and real-gap handling. Actual browser exercised. Further UI polish is optional; no physical clock alignment is inferred. |
-| G3 | Supported diagnostics integrated; conditional composition remains | Automatic background actual-time models, coverage/refusal reasons, explicit channel meanings, bounded digital edge evidence, possible trip/AR explanations. CTdefaults132kV600/1 and220kV800/1 only for otherwise-known secondary currents; valid supplied ratios retained. Conditional corresponding-window sequence and AB/BC/CA R-X composition delivered with unique meanings, declared/assumedV/A units, support/centre/cancellation/numeric-range prerequisites and explicit physical limits. Lower-density/short-support alternatives remain Not available under unchanged reviewed policy. |
+| G3 | Supported diagnostics and conditional quantities delivered | Automatic background actual-time models, coverage/refusal reasons, explicit channel meanings, bounded digital edge evidence, possible trip/AR explanations. CTdefaults132kV600/1 and220kV800/1 only for otherwise-known secondary currents; valid supplied ratios retained. Conditional corresponding-window sequence and AB/BC/CA R-X composition delivered with unique meanings, declared/assumedV/A units, support/centre/cancellation/numeric-range prerequisites and explicit physical limits. Lower-density/short-support alternatives remain Not available under unchanged reviewed policy. |
 | G4 | Schematic and honest placeholders integrated | Frozen supplied line length/section constants/terminal names with hash/provenance; stored eligible conditional location annotation only. Missing facts say Not available. Independent configured/custom line selection, selected loop/window and sectioned reactance model projection delivered; outside-line values remain unclipped and no marker is drawn. Physical location/line/terminal authority remains unknown. |
 | G5 | Source snapshot/detail/export integrated | Four-part conclusions, recorded start/trigger vs inferred event separation, sample-linked model windows, digital edge brackets, units/assumptions, same-model JSON/printable HTML exports. Actual browser/export checked. Reports remain available independently of operational eligibility. |
-| G6 | Delivery guards implemented; qualification continues | Bounded native intervals, two-source decode cache, per-poll source checksums, background1worker/2jobs, global4096digitaledge detail cap with omitted counts, source/options/revision-context identities, frozen pending job inputs, UI abort/generation guards. Serial release/primary verification and pushed milestone evidence tracked below. Wider large-source/format recovery qualification remains. |
+| G6 | Bounded recovery/cursor qualification delivered; final review pending | Bounded native intervals, two-source decode cache, per-poll source checksums, background1worker/2jobs, global4096digitaledge detail cap with omitted counts, source/options/revision-context identities, frozen pending job inputs, UI abort/generation guards. Serial release/primary verification and pushed milestone evidence tracked below. Candidate adds one8channel×17index cursor batch, hash/generation-bound exact local reuse and16pin limit. Public64channel×50000sample overview338606bytes;40point batch2255bytes/~14.5ms locally. Final review/primary acceptance pending. |
 
 ## Current review disposition
 
@@ -62,3 +61,14 @@ Execute docs/superpowers/plans/2026-10-28-source-recovery-batched-inspection.md:
 deliberate digital-only/short/complete-prefix/CFF recovery contracts and bounded point batches,
 local native cursor reuse, large-source qualification and final browser checks. Existing studies
 remain frozen. G6 is still pending; the entire product vision is not declared complete.
+
+## Bounded recovery and cursor qualification candidate
+
+Task1 RED18 ->20GREEN; digital-only/short/prefix recovery split from file acquisition.
+Task2 RED19 plus malformed-separator RED1 ->21GREEN; strict CFF decoding retains original
+container identity and declared header facts. Source reports survive unavailable models.
+Task3 RED19 ->19GREEN; a Node transport regression additionally exercises local cursor reuse,
+one overview batch and obsolete-error isolation. Full release verification1785PASS/29skip/one existing warning275.49s.
+Real Dhone/DR2 copies retain40channels and1800/3624samples; all26originalsourcehashes and
+the protected real pending revision remain unchanged. Qualification details are in
+SOURCE_RECOVERY_CURSOR_ACCEPTANCE_2026-10-28.md. Existing152study is not repeated.
