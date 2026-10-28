@@ -14,7 +14,7 @@ const printResult={options:{fault_loop:'AB',projection_window:0},snapshot:{secti
 const printHtml=r.summary(printResult);assert.ok(printHtml.includes('Conditional phase quantities'));assert.ok(printHtml.includes('4.0000000'));assert.ok(printHtml.includes('A1'));assert.ok(printHtml.includes('0–95'));
 // Operator-region selections travel into printable output; technical detail can omit duplicates.
 global.DRConditions=require('../src/dranalyser/application/static/inspection-conditions.js');
-const op={selection:{source:'operator A/B selection'},regions:[{name:'Pre-fault',channels:[]},{name:'Fault',channels:[]},{name:'Post-fault',channels:[]}],overview:[],interpretations:[],note:'operator selected regions'};
+const op={selection:{source:'operator A/B selection',start:0,end:10,start_s:0,end_s:.01},regions:[{name:'Pre-fault',channels:[]},{name:'Fault',channels:[]},{name:'Post-fault',channels:[]}],overview:[],interpretations:[],note:'operator selected regions'};
 const withOperator={...printResult,operator_conditions:op};
 assert.ok(r.summary(withOperator).includes('Pre-fault, fault and post-fault conditions'));
 assert.ok(!r.summary(withOperator,false).includes('Pre-fault, fault and post-fault conditions'));

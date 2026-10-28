@@ -31,7 +31,7 @@ function renderInspectionWorkbench(host,data,row,recordController) {
     mount.querySelector('.inspection-pins').innerHTML=pins().map(([name,index])=>`<label><input type="radio" name="inspection-active" value="${name}" ${name===active?'checked':''}>Pin ${name} <input aria-label="Cursor ${name} sample index" data-pin="${name}" type="number" min="0" max="${s.n-1}" value="${index}"></label>${!['A','B'].includes(name)?`<button data-remove-pin="${name}" aria-label="Remove cursor ${name}">×</button>`:''}`).join('')+'<button data-action="add-pin">Add cursor at hover</button>';
     mount.querySelectorAll('[name=inspection-active]').forEach(el=>el.onchange=()=>active=el.value);
     mount.querySelectorAll('[data-pin]').forEach(el=>el.onchange=()=>movePin(el.dataset.pin,Number(el.value)));
-    mount.querySelectorAll('[data-remove-pin]').forEach(el=>el.onclick=()=>{s.removePin(el.dataset.removePin);if(!s.pins[active]&&s.pins[active]!==0)active='A';controls();drawSlots();loadCursors();});
+    mount.querySelectorAll('[data-remove-pin]').forEach(el=>el.onclick=()=>{s.removePin(el.dataset.removePin);if(!s.pins[active]&&s.pins[active]!==0)active='A';if(follow===el.dataset.removePin)follow=active;controls();drawSlots();loadCursors();});
     mount.querySelector('[data-action=add-pin]').onclick=()=>{try{s.addPin();controls();drawSlots();loadCursors();}catch(error){mount.querySelector('.inspection-load').textContent=error.message;}};
   }
   function drawSlots() {
@@ -123,5 +123,5 @@ function renderInspectionWorkbench(host,data,row,recordController) {
   mount.querySelectorAll('[data-action]').forEach(button=>{if(button.dataset.action==='add-pin')return;button.onclick=()=>{const action=button.dataset.action;if(action==='in')s.zoom(.5);if(action==='out')s.zoom(2);if(action==='left')s.pan(-.5);if(action==='right')s.pan(.5);if(action==='reset')s.reset();if(action==='prev')page--;if(action==='next')page++;drawSlots();loadView();};});
   recordController.signal.addEventListener('abort',()=>{clearTimeout(hoverTimer);hoverController?.abort();viewController?.abort();s.invalidate();},{once:true});
   controls();drawSlots();loadView();
-  return {setAnalysis(result){analysis=result;values();},getPins(){return {...s.pins};},focusWindow(lo,hi){s.view=[Math.max(0,lo),Math.min(s.n-1,Math.max(lo+1,hi-1))];drawSlots();loadView();mount.scrollIntoView({block:"start",behavior:"smooth"});}};
+  return {setAnalysis(result){analysis=result;values();},getPins(){return {...s.pins};},getPoint(name){const point=cursorValues.get(name)?.get(shown()[0]);return point?.[0]===s.pins[name]?point:null;},focusWindow(lo,hi){s.view=[Math.max(0,lo),Math.min(s.n-1,Math.max(lo+1,hi-1))];drawSlots();loadView();mount.scrollIntoView({block:"start",behavior:"smooth"});}};
 }

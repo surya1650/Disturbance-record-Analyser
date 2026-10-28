@@ -21,3 +21,7 @@ assert.ok(!escaped.includes('<img src=x>'));assert.ok(escaped.includes('&lt;img'
 assert.ok(c.markup(report).includes('Pre-fault'));assert.ok(c.markup(report).includes('Post-fault'));assert.ok(c.markup(report).includes('operator'));
 console.log('Operator conditions: explicit regions, whole-window boundaries, literal RMS/ratios, unknowns and export-safe provenance passed');
 assert.ok(c.markup(c.build({...result,trip:{text:'Recorded trip indication'},ar:{text:'AR blocking indication'}},null)).includes('AR blocking indication'));
+
+const applied=c.build({...result,sample_count:2000},{start:898,end:1799,start_s:.898,end_s:1.799});
+assert.ok(c.markup(applied).includes('[898, 1799)'), 'live/print report must identify the applied half-open source interval');
+assert.ok(c.markup(applied).includes('local s'), 'exact supplied source times should accompany applied indices');

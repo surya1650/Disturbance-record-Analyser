@@ -1,3 +1,29 @@
+**Latest operator-view handover checkpoint — 2026-10-28.**
+User asks completion and next-owner takeover, with useful pre/fault/post conditions,
+cursor-adjacent instant/RMS/angle readings and a following vector view.
+Plan: docs/superpowers/plans/2026-10-28-operator-conditions-handover.md; spec and scoped
+ledger carry explicit rulings. Task1/2 implemented at6a974c4/9ed98d6, full isolated1787PASS/
+29skip/oneexistingwarning100.21s, focused26PASS. Single fresh operator_review completed
+onbc6d83a..9ed98d6; two Important fixes RED2→GREEN26/full1787PASS/29skip/onewarning98.16s.
+No second review or repeated152study/prior reviews. Primary integration/push/handover follows.
+Fresh actual CUA worked and initial screenshot is saved underout/qa/operator-conditions.
+Wait for same review, one Important TDD fix pass only if needed, then primary full proof,
+push, ignoredQA/ledger hash preservation, final preview routing and native archival.
+TAKEOVER.md is the new operator/fresh-user/developer guide. Current737...example has4samples,
+so cannot honestly supply four-cycle RMS/angles; real-copy bacb... is the useful demonstration.
+No short-support estimator/gate relaxation: short/nonstationary fault RMS remains a next-owner
+validation task, explicitly documented. A/B fault intervals are operator selections, not detections.
+Base recoverybc6d83a already pushed with primary1813PASS/1OSskip/onewarning.
+Final disposable data rootE:/dr analyser/out/qa/integrated-final-preview contains independent
+copies and SAME old8094incidentIDs after preserve_preview_urls.py. All8old URLs/9records and
+source hashes verified; added public onboarding9b16cdf4400a43429f9016feca78dfa5 (S370/R492,
+14channels each). Do not rerun preparation/migration scripts. Root is not served yet.
+Current owned8094 PID17820/session30334 still uses WT out/qa/inspection-first/app and
+PYTHONPATH=src;.; do not stop before reviewer finishes. RealDB/original26hashes unchanged.
+On final handover stop the existing heartbeat so it cannot compete with the next owner.
+No duplicate automation, no credits/reset, no extra numerical adoption. Preserve ALL scoped
+QA/ledgers before confirmed native archival; source-recovery/preserve_evidence.py covers all.
+
 **2026-10-28 bounded recovery/cursor execution checkpoint.**
 Conditional quantities/review fixes pushed main9d1853a, primary1749PASS/1OSskip/onewarning.
 Current isolated branchcodex/inspection-first candidate3194343 adds deliberate digital-only,

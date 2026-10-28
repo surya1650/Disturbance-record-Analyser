@@ -4,7 +4,11 @@ const model=require('../src/dranalyser/application/static/inspection-model.js');
 function fixture(n){
   const nodes=new Map();
   function node(key){if(!nodes.has(key))nodes.set(key,{innerHTML:'',textContent:'',dataset:{},focus(){}});return nodes.get(key);}
-  const mount={querySelector:node,querySelectorAll(){return []},scrollIntoView(){}};
+  const mount={querySelector:node,querySelectorAll(selector){
+    if(selector==='[data-pin]')return [...node('.inspection-pins').innerHTML.matchAll(/data-pin="([^\"]+)"/g)].map(m=>{const el=node('pin:'+m[1]);el.dataset.pin=m[1];return el;});
+    if(selector==='[data-remove-pin]')return [...node('.inspection-pins').innerHTML.matchAll(/data-remove-pin="([^\"]+)"/g)].map(m=>{const el=node('remove:'+m[1]);el.dataset.removePin=m[1];return el;});
+    return [];
+  },scrollIntoView(){}};
   const host={isConnected:true,querySelector(){return mount}};
   const record={file:'x.cfg',revision:1,sample_count:n,source_sha256:{'x.cfg':'aaa'},inventory:[],time_basis:{},
     channels:[{id:'A1',label:'A',kind:'analog',units:'raw counts',trace:[]},{id:'D1',label:'D',kind:'digital',units:'state',trace:[]}]};
@@ -32,6 +36,12 @@ const settle=async()=>{for(let i=0;i<8;i++)await new Promise(resolve=>setImmedia
  local.node('.inspection-plots').onkeydown({key:'ArrowRight',preventDefault(){}});await settle();
  assert.equal(local.calls.length,2,'keyboard cursors must reuse exact native intervals');
  assert.match(local.node('.inspection-values tbody').innerHTML,/>1<small>/);
+ local.node('[data-action=add-pin]').onclick();await settle();
+ local.node('pin:C').value='7';local.node('pin:C').onchange();await settle();
+ assert.match(local.node('.inspection-live-cursor').textContent,/Cursor C/);
+ local.node('remove:C').onclick();await settle();
+ assert.match(local.node('.inspection-live-cursor').textContent,/Cursor A/);
+ assert.ok(!local.node('.inspection-live-cursor').textContent.includes('undefined'));
  local.controller.abort();
  const overview=fixture(25001);await settle();
  assert.equal(overview.calls.length,1);assert.ok(overview.calls[0].includes('/points?'));
