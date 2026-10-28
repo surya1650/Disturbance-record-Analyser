@@ -150,22 +150,35 @@ def _projection(loops,line,name):
     target=z.imag
     chosen=next((i for i,p in enumerate(parts) if target<=p['x_after']),len(parts)-1)
     part=parts[chosen]
-    distance=part['lo']+(target-part['x_before'])/part['x']
+    delta=target-part['x_before']
+    step=delta/part['x']
+    if delta!=0 and (step==0 or abs(step)<TINY):
+        return _unavailable('Projection conversion underflows; no zero kilometre coordinate is substituted.',**empty)
+    distance=part['lo']+step
     length=parts[-1]['hi']
     fraction=distance/length
+    if (distance!=0 and (abs(distance)<TINY or fraction==0 or abs(fraction)<TINY)) or (step!=0 and distance==part['lo']):
+        return _unavailable('Projection coordinate/fraction underflows or collapses; no terminal marker is substituted.',**empty)
     if not math.isfinite(distance) or not math.isfinite(fraction):
         return _unavailable('Model projection exceeds representable numeric range.',**empty)
     inside=0<=target<=parts[-1]['x_after']
     residual=None
+    residual_reason='Supplied R1 is required for a complex model mismatch; no confidence is inferred.'
     if inside and all(p['r'] is not None for p in parts[:chosen+1]):
         predicted_r=sum((p['hi']-p['lo'])*p['r'] for p in parts[:chosen])+(distance-part['lo'])*part['r']
-        predicted=complex(predicted_r,target)
-        magnitude=max(abs(z),abs(predicted),TINY)
-        value=abs(z-predicted)/magnitude
-        if math.isfinite(value):
-            residual=value
+        if math.isfinite(predicted_r):
+            scale=max(abs(z.real),abs(z.imag),abs(predicted_r),abs(target),TINY)
+            actual=complex(z.real/scale,z.imag/scale)
+            predicted=complex(predicted_r/scale,target/scale)
+            magnitude=max(math.hypot(actual.real,actual.imag),math.hypot(predicted.real,predicted.imag),TINY)
+            value=math.hypot(actual.real-predicted.real,actual.imag-predicted.imag)/magnitude
+            if math.isfinite(value):
+                residual=value
+                residual_reason='Scaled complex line-impedance mismatch; not uncertainty or confidence.'
+        else:
+            residual_reason='Supplied resistance prediction exceeds numeric range; residual remains unavailable.'
     return dict(status='Conditional model projection' if inside else 'Outside supplied line',
-        distance_km=distance,fraction=fraction,residual=residual,section_index=chosen if inside else None,
+        distance_km=distance,fraction=fraction,residual=residual,residual_reason=residual_reason,section_index=chosen if inside else None,
         eligible_overlay=inside,authorizes_location=False,method='Selected phase-loop reactance projection on supplied positive-X1 sections',
         reason='' if inside else 'Projection lies outside the supplied line; it is not clipped to a plausible location.',
         assumptions=['Selected phase-phase fault loop; corresponding stationary source fits and assigned V/A phases.',
@@ -176,12 +189,19 @@ def _projection(loops,line,name):
         line_provenance=line.get('provenance','Explicit supplied model'))
 
 
+def _numeric_quantity(operation,**empty):
+    try:
+        return operation()
+    except ArithmeticError:
+        return _unavailable('Numerical range exceeded for this quantity; no fabricated value is substituted.',**empty)
+
+
 def compose_source_quantities(channels,windows,line_model=None,fault_loop=''):
     rows=[]
     for window in windows:
-        loops={name:_loop(channels,window,name) for name in ('AB','BC','CA')}
+        loops={name:_numeric_quantity(lambda name=name,window=window:_loop(channels,window,name),impedance_ohm=None) for name in ('AB','BC','CA')}
         rows.append(dict(index=window['index'],support_s=window.get('support_s'),
-            sequence=dict(voltage=_sequence(channels,window,'V'),current=_sequence(channels,window,'I')),
-            loops=loops,projection=_projection(loops,line_model,fault_loop)))
+            sequence={kind:_numeric_quantity(lambda prefix=prefix,window=window:_sequence(channels,window,prefix),zero=None,positive=None,negative=None) for kind,prefix in [('voltage','V'),('current','I')]},
+            loops=loops,projection=_numeric_quantity(lambda loops=loops:_projection(loops,line_model,fault_loop),distance_km=None,fraction=None,residual=None,eligible_overlay=False)))
     return dict(windows=rows,authorizes_location=False,alignment_eligible=False,
         basis='Conditional export-coordinate quantities only; no physical event, clock, wiring, line or location authority.')

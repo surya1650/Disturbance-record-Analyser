@@ -60,6 +60,7 @@ def trip_ar(evidence):
     if not trips and trip_polarity:
         trip['text']='Trip interpretation needs asserted-state polarity review for '+', '.join(trip_polarity)+'. The default state equals recorded normal-state metadata; raw observations remain available.'
     causes=[]
+    observations=[]
     ids=[]
     for meanings,text in [(['AR_BLOCK'],'AR blocking indication recorded; a close command may have been inhibited. Check scheme inputs and settings.'),
                          (['AR_LOCKOUT'],'AR lockout indication recorded. Shot/reclaim limits or scheme state may explain why no further close occurred.'),
@@ -71,8 +72,16 @@ def trip_ar(evidence):
     close=active(['AR_CLOSE'])
     init=active(['AR_INITIATE'])
     if init and not close:
-        causes.append('AR initiation recorded; no assigned close assertion observed within this capture. Check inhibit/wait logic and capture duration.')
-        ids.extend(c['id'] for c in init)
+        close_points=[c for c in evidence if 'AR_CLOSE' in c['meanings']]
+        if not close_points:
+            observations.append('AR initiation recorded; the close outcome is unknown because no assigned close channel is available.')
+        elif any(not c.get('interpretation_available',True) for c in close_points):
+            observations.append('AR initiation recorded; close interpretation is unavailable until asserted-state polarity is reviewed.')
+        elif any(c['unknown_samples'] for c in close_points):
+            observations.append('AR initiation recorded; the close outcome is unknown because close-channel states are missing within the capture.')
+        else:
+            causes.append('AR initiation recorded; no assigned close assertion observed within this capture. Check inhibit/wait logic and capture duration.')
+        ids.extend(c['id'] for c in init+close_points)
     def assertion_edges(channel):
         return channel['rising_edges'] if channel.get('asserted_state',1)==1 else channel['falling_edges']
     close_edges=[e['index'] for c in close for e in assertion_edges(c)]
@@ -81,8 +90,10 @@ def trip_ar(evidence):
         causes.append('A close indication is followed by a trip indication. A persistent or returning fault, or a breaker/close-path issue, is possible; inspect fault currents and pole states.')
         ids.extend(c['id'] for c in close+after)
     ar=dict(status='Possible explanation' if causes else 'Not available',evidence_ids=list(dict.fromkeys(ids)),
-        text=' '.join(causes) if causes else 'No observed assigned AR assertions identify a failure mechanism in this capture. Review AR/pole indications, capture coverage and scheme settings; add any missing channels.')
+        text=' '.join(causes+observations) if causes or observations else 'No observed assigned AR assertions identify a failure mechanism in this capture. Review AR/pole indications, capture coverage and scheme settings; add any missing channels.')
     ar_polarity=[c['id'] for c in polarity if any(m.startswith('AR_') for m in c['meanings'])]
-    if not causes and ar_polarity:
-        ar['text']='AR interpretation needs asserted-state polarity review for '+', '.join(ar_polarity)+'. Raw states alone do not establish an AR failure.'
+    if ar_polarity:
+        warning='AR interpretation needs asserted-state polarity review for '+', '.join(ar_polarity)+'. Raw states alone do not establish an AR failure.'
+        ar['text']=(ar['text']+' '+warning) if causes or observations else warning
+        ar['evidence_ids']=list(dict.fromkeys(ar['evidence_ids']+ar_polarity))
     return trip,ar

@@ -1,3 +1,20 @@
+**2026-10-28 conditional source quantities execution update.**
+Supported-analysis/report milestone is pushed ataae3e2f, primary1690PASS/1OSskip.
+Current candidate8b939ac plus one Important-fix pass adds corresponding source sequence/R-X,
+explicit configured/custom line/phase-loop/window inputs and conditional piecewise-X model
+projection; user defaultCT and editable phase colours remain explicit assumptions/display.
+One fresh review completed; threeImportant reproduced RED8,65focusedGREEN, full1721PASS/
+29skip/one existingwarning156.73s. Fixes: unknown ARclose is not absence; underflow/complex
+residual overflow stays local; selected derived quantities/source support included in print.
+Actual pre-fix fresh-context browser50km/X1.4/R1.1/AB/window0=>10km confirmed. No saved
+screenshot claimed; newpolaritywidget/post-fix print remains for finalUIqualification.
+Primaryintegration/verification follows. Read goalboard and scoped conditional-quantity ledger;
+do not re-review this milestone or repeat152study. Next bounded plan is
+2026-10-28-source-recovery-batched-inspection.md (G6), still autonomous/no approval loop.
+Current managed worktree remains active. Preserve every ignoredQA/scopedledger before native
+archival. Oldpreviews/captures/Downloads source content/Dash/workbook/realDB remain protected;
+8094is disposable, verify current process command ownership before changing it.
+
 **Integrated application delivery — 2026-10-27 execution update.**
 Read INTEGRATED_DR_GOAL_BOARD.md for checked acceptance and exact remaining work.
 Inspection-first shipped main935d3c9 (primary1658pass/1OSskip). The next milestone
