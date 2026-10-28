@@ -19,6 +19,9 @@ def load_source(cfg_path, dat_path=None):
         axis=dict(status='withheld',elapsed_s=[],reason='Source decode unavailable.'),
         content_hash='',source_sha256={},authorizes_location=False,alignment_eligible=False)
     try:
+        if path.suffix.lower()=='.cff':
+            from .source_container import decode_cff
+            return decode_cff(_read(path,65*1024*1024),path.name)
         if path.suffix.lower()!='.cfg':
             raise ValueError('Unsupported source container; explicit CFG/DAT required.')
         cfg=_read(path,1048576)

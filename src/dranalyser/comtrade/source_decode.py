@@ -7,6 +7,7 @@ import numpy as np
 
 from .parser import ComtradeError, DOS_EOF, _read_binary, detect_phase_naming, map_channel, parse_cfg
 from .source_time import source_time_axis
+from .source_header import header_information
 
 
 def _number(value):
@@ -29,6 +30,10 @@ def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None):
              content_hash='',authorizes_location=False,alignment_eligible=False)
     try:
         out['source_sha256']={cfg_name:hashlib.sha256(cfg_bytes).hexdigest()}
+        header=header_information(cfg_bytes)
+        out.update(header_inventory=header.get('inventory',[]),recorded_times=header.get('recorded_times',{}))
+        if len(cfg_bytes)>1048576 or (dat_bytes is not None and len(dat_bytes)>64*1024*1024):
+            raise ValueError('Source byte budget exceeded.')
         try:
             text=cfg_bytes.decode('utf-8-sig')
             out['text_encoding']='UTF-8 (optional BOM)'

@@ -5,6 +5,7 @@ from collections import OrderedDict
 from pathlib import Path
 
 from ..comtrade.source_observations import load_source
+from ..comtrade.source_header import header_information
 
 MAX_SAMPLES = 20000
 _CACHE = OrderedDict()
@@ -49,15 +50,18 @@ def _source(root, revision, filename):
         if key not in _CACHE:
             # Explicit nonexistent DAT prevents implicit discovery outside inventory.
             source = load_source(cfg, dat if dat else folder/'__unpaired_dat_not_in_inventory__')
-            if source.get('source_sha256', {}) != hashes:
+            decoded_hashes=source.get('source_sha256', {})
+            if any(hashes.get(name)!=value for name,value in decoded_hashes.items()):
+                raise ValueError('Source checksum changed during decode.')
+            if decoded_hashes != hashes:
                 # Unsupported containers may not decode a header, but still have
                 # verified original bytes and an explicit local failure status.
                 if source['status'] != 'unsupported':
                     raise ValueError('Source checksum changed during decode.')
             source['source_sha256'] = hashes
             header = _header_information(cfg, cfg_hash)
-            source['header_inventory'] = header.get('inventory') or item.get('channel_inventory', [])
-            source['recorded_times'] = header.get('recorded_times', {})
+            source['header_inventory'] = source.get('header_inventory') or header.get('inventory') or item.get('channel_inventory', [])
+            source['recorded_times'] = source.get('recorded_times') or header.get('recorded_times', {})
             _CACHE[key] = source
             while len(_CACHE) > 2:
                 _CACHE.popitem(last=False)
@@ -72,40 +76,7 @@ def _header_information(path, expected_hash):
     raw = path.read_bytes()
     if hashlib.sha256(raw).hexdigest() != expected_hash:
         raise ValueError('Source checksum changed during header inspection.')
-    try:
-        text = raw.decode('utf-8-sig')
-    except UnicodeDecodeError:
-        text = raw.decode('latin1')
-    lines = [line.strip() for line in text.replace('\x1a', '').splitlines() if line.strip()]
-    try:
-        counts = lines[1].split(',')
-        na, nd = int(counts[1][:-1]), int(counts[2][:-1])
-        if (counts[1][-1:] != 'A' or counts[2][-1:] != 'D' or not 0 <= na <= 64
-                or not 0 <= nd <= 256 or int(counts[0]) != na+nd or len(lines) < 2+na+nd):
-            return {}
-        inventory = []
-        for i, line in enumerate(lines[2:2+na+nd]):
-            fields = line.split(',')
-            analog = i < na
-            inventory.append(dict(id=f'A{i+1}' if analog else f'D{i-na+1}',
-                source_id=fields[0], kind='analog' if analog else 'digital', label=fields[1],
-                phase=fields[2] if analog and len(fields)>2 else '',
-                normal_state=fields[4] if not analog and len(fields)>4 else None,
-                **({key: fields[pos] if len(fields)>pos else '' for key,pos in
-                    [('a',5),('b',6),('primary',10),('secondary',11),('primary_secondary',12)]} if analog else {}),
-                declared_units=fields[4] if analog and len(fields) > 4 else 'state' if not analog else 'Not available'))
-        times=dict(start=None,trigger=None,basis='CFG recorded strings; timezone and trigger semantics are unverified.')
-        try:
-            j=2+na+nd
-            rates=int(lines[j+1])
-            index=j+2+max(rates,1)
-            if 0<=rates<=8 and len(lines)>index+1:
-                times.update(start=lines[index],trigger=lines[index+1])
-        except (ValueError,IndexError):
-            pass
-        return dict(inventory=inventory,recorded_times=times)
-    except (ValueError, IndexError):
-        return {}
+    return header_information(raw)
 
 
 def _axis(source):
@@ -158,7 +129,9 @@ def inspection_record(root, revision, filename):
     return dict(file=filename, revision=revision['number'], status=status, issues=issues,
                 sample_count=source['sample_count'], channels=channels, time_basis=_axis(source),
                 source_sha256=source['source_sha256'], content_hash=source['content_hash'],
-                content_hash_basis='SHA256(original CFG bytes + original DAT bytes); distinct from legacy parser hash',
+                content_hash_basis=source.get('content_hash_basis',
+                    'SHA256(original CFG bytes + original DAT bytes); distinct from legacy parser hash'),
+                recovery=source.get('recovery'),
                 time_range_s=[times[0], times[-1]] if times else None,
                 station=source.get('station', ''), device=source.get('device', ''),
                 recorded_times=source.get('recorded_times', {}),
