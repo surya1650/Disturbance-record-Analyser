@@ -27,7 +27,7 @@ in this repo demanded them:
 from __future__ import annotations
 
 import math
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import numpy as np
 
@@ -177,9 +177,9 @@ def check(
         cf = peak / vrms[c]
         if not (1.2 < cf < 1.8):
             add("SCALE-CF", "block",
-                c + " crest factor is " + format(cf, ".3f")
-                + ", not the 1.414 of a sinusoid; the channel is probably "
-                "stored as RMS or scaled by sqrt(2)", channel=c, crest=cf)
+                c + " crest factor is " + format(cf, ".3f") + " over " + str(pre.stop-pre.start) + " selected samples;"
+                + " waveform/support review required. This does not establish "
+                "RMS storage or a gain correction", channel=c, crest=cf, support_samples=pre.stop-pre.start)
 
     # --- ADC clipping ------------------------------------------------------
     for c, raw in (rec.raw_analog or {}).items():

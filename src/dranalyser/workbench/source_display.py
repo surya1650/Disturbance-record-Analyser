@@ -31,25 +31,33 @@ def timeline(source):
                 basis='Recorded relay-local time; timezone and clock accuracy unverified. Zero is the recorded trigger, not inferred fault inception.')
 
 
-def digital_activity(states, times, *, limit=32):
+def digital_activity(states, times, *, limit=32, break_indices=()):
     intervals, changes, omitted = [], 0, 0
+    boundaries = set(break_indices)
     start = None
+
+    def finish(first, last, end_open):
+        nonlocal omitted
+        if len(intervals) < limit:
+            intervals.append(dict(start_index=first, last_index=last,
+                start_s=times[first] if times else None, last_s=times[last] if times else None,
+                observed_span_s=times[last]-times[first] if times else None,
+                start_open=first == 0 or first in boundaries or states[first-1] is None,
+                end_open=end_open))
+        else:
+            omitted += 1
+
     for i, state in enumerate([*states, None]):
-        if i and i < len(states) and state in (0, 1) and states[i-1] in (0, 1) and state != states[i-1]:
+        if i in boundaries and start is not None:
+            finish(start, i-1, True)
+            start = None
+        if i and i < len(states) and i not in boundaries and state in (0, 1) and states[i-1] in (0, 1) and state != states[i-1]:
             changes += 1
         if state == 1 and start is None:
             start = i
         if state != 1 and start is not None:
-            last = i-1
-            if len(intervals) < limit:
-                intervals.append(dict(start_index=start, last_index=last,
-                    start_s=times[start] if times else None, last_s=times[last] if times else None,
-                    observed_span_s=times[last]-times[start] if times else None,
-                    start_open=start == 0 or states[start-1] is None,
-                    end_open=i == len(states) or state is None))
-            else:
-                omitted += 1
+            finish(start, i-1, i == len(states) or state is None or i in boundaries)
             start = None
     return dict(transition_count=changes, high_intervals=intervals, omitted_intervals=omitted,
                 high_samples=sum(v == 1 for v in states), unknown_samples=sum(v is None for v in states),
-                basis='Recorded state 1 spans, not verified assertion polarity or physical relay operating time. Edges lie between adjacent samples.')
+                basis='Recorded state 1 spans, not verified assertion polarity or physical relay operating time. Edges lie between adjacent samples; source boundaries remain open.')

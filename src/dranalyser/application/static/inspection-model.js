@@ -31,7 +31,7 @@ const DRInspection = (() => {
   function delta(a,b){return {samples:b[0]-a[0],seconds:Number.isFinite(a[1])&&Number.isFinite(b[1])?b[1]-a[1]:null};}
   function value(sample){return !sample||sample[2]===null?'Unknown':String(sample[2]);}
   function nearest(points,index){return points.reduce((best,p)=>!best||Math.abs(p[0]-index)<Math.abs(best[0]-index)?p:best,null);}
-  function segments(points,gap=Infinity){const out=[];let part=[];for(const p of points){const last=part.at(-1);if(p[2]===null||(last&&p[0]-last[0]===1&&p[1]!==null&&last[1]!==null&&p[1]-last[1]>gap)){if(part.length)out.push(part);part=[];}if(p[2]!==null)part.push(p);}if(part.length)out.push(part);return out;}
+  function segments(points,gap=Infinity,boundaries=[]){const out=[];let part=[],boundary=0;for(const p of points){const last=part.at(-1);if(last)while(boundary<boundaries.length&&boundaries[boundary]<=last[0])boundary++;if(p[2]===null||(last&&((boundary<boundaries.length&&boundaries[boundary]<=p[0])||(p[0]-last[0]===1&&p[1]!==null&&last[1]!==null&&p[1]-last[1]>gap)))){if(part.length)out.push(part);part=[];}if(p[2]!==null)part.push(p);}if(part.length)out.push(part);return out;}
   function phaseFor(channel,channels) {
     const raw=String(channel.phase||'').trim().toUpperCase();
     const ryb=channels.some(c=>['R','Y'].includes(String(c.phase||'').toUpperCase()));
@@ -67,12 +67,33 @@ const DRInspection = (() => {
     return (result?.windows||[]).map(w=>{const fit=w.channels[id],valid=fit?.status==='model_consistent'&&Number.isFinite(fit.rms)&&fit.rms>=0;
       return [(w.start_index+w.stop_index-1)/2,valid?fit.centre_s:null,valid?fit.rms:null];});
   }
+  function amplitudeLabel(value){
+    const a=Math.abs(value);if(a===0)return '0';
+    const suffix=a>=1e6?'M':a>=1e3?'k':'',divisor=suffix==='M'?1e6:suffix==='k'?1e3:1;
+    return (a<.001||a>=1e9?value.toExponential(2):Number((value/divisor).toPrecision(4)).toString()+suffix);
+  }
+  function amplitudeScale(points,kind='analog',mode='waveform'){
+    let peak=0;for(const p of points)if(Number.isFinite(p[2]))peak=Math.max(peak,Math.abs(p[2]));
+    const target=peak*1.05||1,power=10**Math.floor(Math.log10(target)),fraction=target/power;
+    let top=([1,2,5,10].find(n=>n>=fraction)||10)*power;if(!Number.isFinite(top))top=peak||1;
+    const positive=mode!=='waveform',ticks=kind==='digital'?[0,1]:positive?[0,top/2,top]:[-top,0,top];
+    const y=v=>kind==='digital'?82-v*60:positive?92-v/top*80:52-v/top*40;
+    return {ticks,y,top};
+  }
   function qualityMessage(file){
     if(file.duplicate_of)return `Identical copy of ${file.duplicate_of}.`;
     if(!file.ok)return 'Operational decoding needs review. Open source inspection for recoverable observations; the exact reason is in Input details.';
     const notes=(file.flags||[]).filter(f=>f.startsWith('[BLOCK')).map(f=>/gap|jitter|drift|timestamp/i.test(f)?'Sample intervals vary. Actual-time source diagnostics remain available; uniform-sample calculations need suitable timing.':/crest factor|RMS|sqrt/i.test(f)?'The exported amplitude convention needs review for physical measurements; no scaling convention is inferred.':/CH-MISSING/.test(f)?'Assign the missing phase/channel meanings for calculations that use them.':f.replace(/^\[[^\]]+\]\s*/,''));
     return notes.length?notes.join(' '):'Recorded inputs are available for assignment.';
   }
-  return {create,identity,exactPoints,delta,value,nearest,segments,phaseFor,groupChannels,qualityMessage,milliseconds,relayTime,axisTicks,rmsSeries};
+  function operationalGuidance(file){
+    const flags=(file.flags||[]).join(' '),notes=[];
+    if(flags.includes('TIME-DAT'))notes.push('TIME-DAT: the uniform-grid fault-location pipeline withheld this capture. Monotonic DAT source timestamps can still support waveform inspection and sample RMS. No timestamp repair is applied.');
+    if(flags.includes('SCALE-CF'))notes.push('SCALE-CF: the crest-factor check needs review. Short pre-trigger support can make it inconclusive. Crest factor alone does not establish RMS storage or a gain correction; do not multiply the record by √2 on this basis.');
+    if(flags.includes('WIN-PREFAULT'))notes.push('Short pre-trigger capture: some pre-fault and superimposed methods lack support. Inspect each capture or join compatible successive captures from the same relay; joining does not automatically clear operational blocks.');
+    if(file.blocked&&!notes.length)notes.push('Operational calculations are withheld pending the input checks below. Independent source inspection remains available where samples can be recovered.');
+    return notes;
+  }
+  return {create,identity,exactPoints,delta,value,nearest,segments,phaseFor,groupChannels,qualityMessage,operationalGuidance,milliseconds,relayTime,axisTicks,rmsSeries,amplitudeScale,amplitudeLabel};
 })();
 if(typeof module!=='undefined')module.exports=DRInspection;

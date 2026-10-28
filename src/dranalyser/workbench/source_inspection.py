@@ -7,6 +7,7 @@ from pathlib import Path
 from ..comtrade.source_observations import load_source
 from ..comtrade.source_header import header_information
 from .source_display import digital_activity, timeline
+from .source_rms import sample_rms
 
 MAX_SAMPLES = 20000
 _CACHE = OrderedDict()
@@ -30,6 +31,9 @@ def _file(folder, name, inventory):
 
 
 def _source(root, revision, filename):
+    if isinstance(filename, str) and filename.startswith('@join:'):
+        from .source_join import load_join
+        return load_join(root, revision, filename, _source)
     allowed = (Path(root)/'runs'/revision['incident_id']/str(revision['number'])).resolve()
     bundle = revision.get('bundle') or {}
     folder = Path(bundle.get('root', '')).resolve()
@@ -90,6 +94,15 @@ def _channels(source):
             for kind, channels in (('analog', source['channels']), ('digital', source['digital'])) for c in channels]
 
 
+def _rms(source, channel):
+    # Retained only with the existing two-source, four-million-cell decode cache.
+    with _LOCK:
+        cache = source.setdefault('_viewer_rms', {})
+        if channel['key'] not in cache:
+            cache[channel['key']] = sample_rms(source, channel)
+        return cache[channel['key']]
+
+
 def _trace(values, times, budget):
     """Bucket extrema for display only; any missing observation breaks the path."""
     result = []
@@ -123,8 +136,12 @@ def inspection_record(root, revision, filename):
     remaining_intervals = 512
     for meta, data in zip(channels, source['channels']+source['digital'], strict=True):
         meta['trace'] = _trace(data.get('values', data.get('states', [])), times, budget)
+        if meta['kind'] == 'analog':
+            rms = _rms(source, data)
+            meta.update(rms_trace=_trace(rms['values'], times, budget),
+                        rms_window_s=rms['window_s'], rms_reason=rms['reason'], rms_basis=rms['basis'])
         if meta['kind'] == 'digital':
-            meta['activity'] = digital_activity(data['states'], times, limit=min(32, remaining_intervals))
+            meta['activity'] = digital_activity(data['states'], times, limit=min(32, remaining_intervals), break_indices=source.get('break_indices', []))
             remaining_intervals -= len(meta['activity']['high_intervals'])
     missing = sum(v is None for c in source['channels']+source['digital'] for v in c.get('values', c.get('states', [])))
     issues = list(source['issues'])
@@ -141,6 +158,7 @@ def inspection_record(root, revision, filename):
                 station=source.get('station', ''), device=source.get('device', ''),
                 recorded_times=source.get('recorded_times', {}),
                 timeline=timeline(source),
+                join=source.get('join'), break_indices=source.get('break_indices', []),
                 inventory=source.get('header_inventory', []),
                 operational_eligibility=dict(state=revision['state'], blocked=item.get('blocked', False),
                     reason=item.get('error', '') or 'Inspection does not establish operational eligibility.'),
@@ -160,9 +178,12 @@ def inspection_samples(root, revision, filename, channel_id, start_index, stop_i
         raise ValueError('Channel identity is unavailable in this source.')
     times = source['axis'].get('elapsed_s', [])
     values = data.get('values', data.get('states', []))
+    rms = _rms(source, data) if 'values' in data else None
     return dict(file=filename, revision=revision['number'], channel_id=channel_id,
                 source_sha256=source['source_sha256'], time_basis=_axis(source), units=data.get('units', 'state'),
                 samples=[[i, times[i] if times else None, values[i]] for i in range(start_index, stop_index)],
+                rms_samples=[[i, times[i] if times else None, rms['values'][i]] for i in range(start_index, stop_index)] if rms else [],
+                source_samples=source.get('_origins', [])[start_index:stop_index],
                 note='Zero-based source indices; nearest actual sample, no interpolation. Unknown is null.')
 
 
@@ -186,8 +207,11 @@ def inspection_points(root, revision, filename, channel_ids, indices):
     for identity in channel_ids:
         c=available[identity]
         values=c.get('values',c.get('states',[]))
+        rms = _rms(source, c) if 'values' in c else None
         channels.append(dict(id=identity,units=c.get('units','state'),
-            samples=[[i,times[i] if times else None,values[i]] for i in indices]))
+            samples=[[i,times[i] if times else None,values[i]] for i in indices],
+            rms_samples=[[i,times[i] if times else None,rms['values'][i]] for i in indices] if rms else []))
     return dict(file=filename,revision=revision['number'],indices=indices,channels=channels,
+        source_samples=[source['_origins'][i] for i in indices] if source.get('_origins') else [],
         source_sha256=source['source_sha256'],time_basis=_axis(source),
         note='Exact zero-based source observations; no interpolation. Unknown is null.')

@@ -32,6 +32,8 @@ def install_inspection(app, store, registry=None):
                  mappings: str = Query('{}',max_length=12000), line_id: str = Query('',max_length=200),
                  line_model: str = Query('{}',max_length=32768), fault_loop: str = '',
                  projection_window: int | None = None, asserted_states: str = Query('{}',max_length=4096)):
+        if record.startswith('@join:'):
+            raise HTTPException(400, 'Joined timelines support waveform/sample RMS inspection and COMTRADE export. Select an original capture for fundamental models and source analysis.')
         row=store.get(incident_id,revision)
         if row is None:
             raise HTTPException(404,'Revision not found.')
@@ -53,6 +55,18 @@ def install_inspection(app, store, registry=None):
         if row is None:
             raise HTTPException(404, 'Revision not found.')
         return inspection_record(store.root, row, record)
+
+    @app.get('/api/incidents/{incident_id}/inspection/combined-export')
+    def combined_export(incident_id: str, record: str, revision: int = Query(..., ge=1)):
+        from fastapi.responses import Response
+        from ..workbench.source_inspection import _source
+        from ..workbench.source_export import export_join
+        row = store.get(incident_id, revision)
+        if row is None:
+            raise HTTPException(404, 'Revision not found.')
+        source, _ = _source(store.root, row, record)
+        return Response(export_join(source), media_type='application/zip',
+                        headers={'Content-Disposition': 'attachment; filename="joined-comtrade.zip"'})
 
     @app.get('/api/incidents/{incident_id}/inspection/samples')
     def inspection_native(incident_id: str, record: str, channel_id: str, start_index: int, stop_index: int,

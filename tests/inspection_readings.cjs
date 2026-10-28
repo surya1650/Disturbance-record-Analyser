@@ -42,3 +42,13 @@ const rms=structuredClone(result);rms.windows.push({...rms.windows[0],start_inde
 assert.deepEqual(model.rmsSeries(rms,'A1').map(p=>p[2]),[10,null]);
 const record={file:'view.cfg',revision:1,sample_count:3,channels:[{id:'D1',kind:'digital',activity:{transition_count:0}},{id:'A1',kind:'analog'},{id:'D2',kind:'digital',activity:{transition_count:2}}]};
 const state=model.create(record);assert.deepEqual(state.order,['A1','D2','D1']);assert.ok(state.visible('A1'));assert.ok(state.visible('D2'));assert.ok(!state.visible('D1'));
+const scale=model.amplitudeScale([[0,0,100],[1,.001,101]],'analog','rms');
+assert.equal(scale.ticks[0],0,'RMS scale must include zero rather than exaggerating small fluctuations');
+assert.ok(scale.top>=101);
+assert.equal(scale.y(0),92);
+const bipolar=model.amplitudeScale([[0,0,-100],[1,.001,200]],'analog','waveform');
+assert.ok(bipolar.ticks[0]<0&&bipolar.ticks.at(-1)>0);
+assert.equal(model.amplitudeLabel(200000),'200k');
+const graph=r.graphMarkup({id:'A1',kind:'analog',units:'V (CFG-declared, unverified)'},[20,.02,12],[20,.02,9],null,'rms','+8.000 ms');
+assert.match(graph,/Instantaneous/);assert.match(graph,/12.0000 V/);assert.match(graph,/Sample RMS/);assert.match(graph,/9.00000 V/);assert.match(graph,/\+8.000 ms/);
+assert.ok(!graph.includes('Fundamental RMS'));

@@ -33,18 +33,24 @@ const DRReadings=(()=>{
     }
     return {window,reference,channels,groups,reasons};
   }
-  function readingMarkup(meta,point,reading,cursor){
+  function readingMarkup(meta,point,reading,cursor,rmsPoint,rmsReason){
     if(meta.kind==='digital')return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><p>State: ${point?.[2]===null||!point?'Unknown':esc(point[2])}</p></div>`;
-    return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))}<small>${esc(meta.units)}</small></dd><dt>Fitted RMS</dt><dd>${num(reading?.rms)}<small>${esc(reading?.units||'Analysis pending')}</small></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl>${reading?.reason?`<details><summary>Why unavailable?</summary>${esc(reading.reason)}</details>`:''}${reading?.rms!==null&&reading?.angle_deg===null?`<small>${esc(reading?.angle_reason||'')}</small>`:''}</div>`;
+    return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))}<small>${esc(meta.units)}</small></dd><dt>Sample RMS · 1 cycle</dt><dd>${num(rmsPoint?.[2])}<small>${esc(meta.units)}</small></dd><dt>Fundamental RMS</dt><dd>${num(reading?.rms)}<small>${esc(reading?.units||'Analysis pending')}</small></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl>${rmsPoint?.[2]===null||!rmsPoint?`<small>${esc(rmsReason||'A complete trailing sample window is required.')}</small>`:''}${reading?.reason?`<details><summary>Why unavailable?</summary>${esc(reading.reason)}</details>`:''}${reading?.rms!==null&&reading?.angle_deg===null?`<small>${esc(reading?.angle_reason||'')}</small>`:''}</div>`;
+  }
+  function graphMarkup(meta,point,rmsPoint,reading,mode,timeLabel=''){
+    const units=meta.units?.startsWith('raw')?'counts':meta.units?.split(' ')[0]||'';
+    const instant=point&&Number.isFinite(point[2])?num(point[2]):'Unknown';
+    if(meta.kind==='digital')return `<strong>${esc(meta.id)} · State ${esc(instant)}</strong><span>${esc(timeLabel)}</span>`;
+    return `<strong>${esc(meta.id)} <span>${esc(timeLabel)}</span></strong><span>Instantaneous <b>${esc(instant)} ${esc(units)}</b></span><span>Sample RMS <b>${num(rmsPoint?.[2])} ${esc(units)}</b></span>${mode==='fundamental'?`<span>Fundamental RMS <b>${num(reading?.rms)} ${esc(reading?.units?.split(' ')[0]||units)}</b></span>`:''}`;
   }
   function vectorMarkup(v,colors={}){
     return ['voltage','current'].map(kind=>{
       const channels=v.groups[kind],scale=Math.max(...channels.map(c=>c.rms),0);
       const arrows=channels.map(c=>{const a=c.angle_deg*Math.PI/180,x=100+75*(c.rms/scale)*Math.cos(a),y=100-75*(c.rms/scale)*Math.sin(a),color=/^#[0-9a-f]{6}$/i.test(colors[c.id])?colors[c.id]:'#176d82';
         return `<line x1="100" y1="100" x2="${x}" y2="${y}" stroke="${color}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3" fill="${color}"/><text x="${x+3}" y="${y-3}">${esc(c.id)}</text>`;}).join('');
-      return `<section><h4>${kind==='voltage'?'Voltage':'Current'} vectors</h4><svg viewBox="0 0 200 200" role="img" aria-label="${kind} relative source vectors"><circle cx="100" cy="100" r="75" fill="none" stroke="#dae3e9"/><path d="M15 100H185M100 15V185" stroke="#dae3e9"/>${arrows}</svg>${channels.length?`<small>Independent ${kind} scale · RMS magnitude</small>`:'<p>No supported nonzero '+kind+' vectors at this cursor.</p>'}${v.reasons?.[kind]?.length?`<details><summary>${channels.length?'Some channels unavailable':'Why unavailable?'}</summary>${v.reasons[kind].map(reason=>`<p>${esc(reason)}</p>`).join('')}</details>`:''}</section>`;
+      return `<section><h4>${kind==='voltage'?'Voltage':'Current'} vectors</h4><svg viewBox="0 0 200 200" role="img" aria-label="${kind} relative source vectors"><circle cx="100" cy="100" r="75" fill="none" stroke="#dae3e9"/><path d="M15 100H185M100 15V185" stroke="#dae3e9"/>${arrows}</svg>${channels.length?`<small>Independent ${kind} scale · RMS magnitude</small>`:'<p>No supported nonzero '+kind+' vectors at this cursor.</p><small>'+esc(v.reasons?.[kind]?.[0]||'A supported nonzero fundamental and reference are required.')+'</small>'}${v.reasons?.[kind]?.length?`<details><summary>${channels.length?'Some channels unavailable':'Why unavailable?'}</summary>${v.reasons[kind].map(reason=>`<p>${esc(reason)}</p>`).join('')}</details>`:''}</section>`;
     }).join('')+`<p class="field-help">Angles relative to ${esc(v.reference||'unselected reference')} at a common fitted model centre. Source/assumed scaling and physical wiring remain unverified.</p>`;
   }
-  return {esc,num,windowAt,view,readingMarkup,vectorMarkup};
+  return {esc,num,windowAt,view,readingMarkup,graphMarkup,vectorMarkup};
 })();
 if(typeof module!=='undefined')module.exports=DRReadings;
