@@ -10,7 +10,8 @@ const DRReadings=(()=>{
   function phasor(c){return c?.status==='model_consistent'&&Number.isFinite(c.rms)&&c.rms>=0&&c.phasor?.length===2&&c.phasor.every(Number.isFinite)&&Number.isFinite(c.centre_s);}
   function view(result,index,reference=''){
     const window=windowAt(result,index),channels=new Map(),groups={voltage:[],current:[]},meta=result?.channels||[];
-    reference=reference||meta.find(c=>c.meaning==='VA')?.id||meta[0]?.id||'';
+    const ready=c=>{const f=window?.channels[c.id];return phasor(f)&&f.rms>0&&f.phasor.some(v=>v!==0);};
+    reference=reference||meta.find(c=>c.meaning==='VA'&&ready(c))?.id||meta.find(ready)?.id||meta[0]?.id||'';
     const ref=window?.channels[reference],refOk=phasor(ref)&&ref.rms>0&&ref.phasor.some(v=>v!==0);
     for(const c of meta){
       const fit=window?.channels[c.id];let reading={id:c.id,label:c.label,units:c.units,rms:null,angle_deg:null,reason:fit?.reason||'No supported model window covers this cursor.'};
@@ -28,6 +29,7 @@ const DRReadings=(()=>{
     return {window,reference,channels,groups};
   }
   function readingMarkup(meta,point,reading,cursor){
+    if(meta.kind==='digital')return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><p>State: ${point?.[2]===null||!point?'Unknown':esc(point[2])}</p></div>`;
     return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))}<small>${esc(meta.units)}</small></dd><dt>Fitted RMS</dt><dd>${num(reading?.rms)}<small>${esc(reading?.units||'Analysis pending')}</small></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl>${reading?.reason?`<small>${esc(reading.reason)}</small>`:''}${reading?.rms!==null&&reading?.angle_deg===null?`<small>${esc(reading?.angle_reason||'')}</small>`:''}</div>`;
   }
   function vectorMarkup(v,colors={}){

@@ -22,3 +22,8 @@ const s=model.create({file:'x',revision:1,sample_count:1000,channels:[]});s.view
 assert.equal(s.follow(200),true);assert.deepEqual(s.view,[101,200]);assert.equal(s.follow(150),false);
 s.follow(0);assert.deepEqual(s.view,[0,99]);s.follow(999);assert.deepEqual(s.view,[900,999]);
 console.log('Electrical readings: exact-window support, relative angles, zero/missing values, unit separation and cursor-follow passed');
+const digital=r.readingMarkup({id:'D1',label:'Trip',kind:'digital',units:'state'},[3,.003,0],null,'A');
+assert.ok(digital.includes('State'));assert.ok(!digital.includes('RMS'));assert.ok(!digital.includes('Angle'));
+const fallback=structuredClone(result);fallback.windows[0].channels.A1={status:'withheld',reason:'Changing voltage'};
+assert.equal(r.view(fallback,50).reference,'A2');assert.equal(r.view(fallback,50).groups.current.length,1);
+assert.equal(r.view(fallback,50,'A1').channels.get('A2').angle_deg,null,'explicit refused reference must stay explicit');

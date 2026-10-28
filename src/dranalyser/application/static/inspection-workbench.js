@@ -70,8 +70,8 @@ function renderInspectionWorkbench(host,data,row,recordController) {
     mount.querySelector('.inspection-values thead').innerHTML='<tr><th>Channel · source units</th>'+names.map(name=>`<th>${name} · sample ${name==='hover'?s.hover:s.pins[name]}</th>`).join('')+'</tr>';
     mount.querySelector('.inspection-values tbody').innerHTML=shown().map(id=>{const c=byId.get(id);return `<tr><th>${id} ${esc(c.label)}<small>${esc(c.units)}</small></th>${names.map(name=>{const point=cursorValues.get(name)?.get(id);return `<td>${esc(DRInspection.value(point))}<small>${point?point[1]===null?'Time not available':`${point[1].toPrecision(9)} local s`:'Awaiting native observation'}</small></td>`;}).join('')}</tr>`;}).join('');
     const index=follow==='hover'?s.hover:s.pins[follow],points=cursorValues.get(follow),reading=DRReadings.view(analysis,index,reference);
-    const options=(analysis?.channels||[]).map(c=>`<option value="${esc(c.id)}">${esc(c.id+' '+c.label)}</option>`).join('');
-    const ref=mount.querySelector('.inspection-reference');if(ref.innerHTML!==options)ref.innerHTML=options;ref.value=reading.reference;
+    const options='<option value="">Automatic supported source reference</option>'+(analysis?.channels||[]).map(c=>`<option value="${esc(c.id)}">${esc(c.id+' '+c.label)}</option>`).join('');
+    const ref=mount.querySelector('.inspection-reference');if(ref.innerHTML!==options)ref.innerHTML=options;ref.value=reference;
     for(const el of mount.querySelectorAll('[data-reading]'))el.innerHTML=el.dataset.reading.split(',').map(id=>DRReadings.readingMarkup(byId.get(id),points?.get(id),reading.channels.get(id),follow)).join('');
     mount.querySelector('.inspection-vector-charts').innerHTML=DRReadings.vectorMarkup(reading,Object.fromEntries(data.channels.map(c=>[c.id,color(c.id)])));
     const current=points?.get(shown()[0]);mount.querySelector('.inspection-live-cursor').textContent=`${follow==='hover'?'Hover':'Cursor '+follow} · sample ${index} · ${current?.[1]===null||!current?'Time unavailable':current[1].toPrecision(7)+' local s'}`;

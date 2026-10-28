@@ -1,5 +1,13 @@
 # Integrated DR application goal board
 
+Latest user steering (2026-10-28): operator-focused pre-fault/fault/post-fault
+conditions, cursor-adjacent instantaneous/RMS/angle values, following vector view,
+and a practical next-owner guide. Base recovery release `bc6d83a` is pushed;
+primary1813PASS/1OSskip/one existing warning109.25s. The operator milestone is in
+final verification/review. It reuses existing supported windows and explicit A/B
+region selection; no new DSP policy or detected physical fault boundary is claimed.
+Read [TAKEOVER.md](../TAKEOVER.md) and the new operator-view plan before continuing.
+
 Updated2026-10-28. Inspection milestone main935d3c9, supported reports mainaae3e2f,
 conditional source quantities/line inputs main9d1853a (primary1749passed/1OSskip/one existing warning).
 Bounded recovery/cursor milestone is in final verification; review and primary acceptance follow.

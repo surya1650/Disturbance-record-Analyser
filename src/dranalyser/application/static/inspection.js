@@ -20,7 +20,7 @@ function mountInspection(row) {
       const data=await response.json();
       if (!response.ok) throw new Error(data.detail || 'Source inspection unavailable.');
       if (controller.signal.aborted || !host.isConnected) return;
-      host.innerHTML=`<p><strong>${escapeHtml({observed:'Waveforms decoded',partial:'Partial observations',sample_only:'Samples available; timing needs review',cfg_only:'Header available; data missing',unsupported:'Sample decoding unavailable'}[data.status]||data.status)}</strong> · ${data.sample_count} observations · Operational state: ${escapeHtml(labels[data.operational_eligibility.state]||data.operational_eligibility.state)}</p><p>${escapeHtml(data.time_basis.basis || data.time_basis.reason)}</p><p>${escapeHtml(data.issues.join(' '))}</p><div class="inspection-traces"></div>`;
+      host.innerHTML=`<p><strong>${escapeHtml({observed:'Waveforms decoded',partial:'Partial observations',sample_only:'Samples available; timing needs review',cfg_only:'Header available; data missing',unsupported:'Sample decoding unavailable'}[data.status]||data.status)}</strong> · Operational state: ${escapeHtml(labels[data.operational_eligibility.state]||data.operational_eligibility.state)}</p><p>${escapeHtml(data.issues.join(' '))}</p><details><summary>Input and timing details</summary><p>${data.sample_count} source samples · ${escapeHtml(data.time_basis.basis || data.time_basis.reason)}</p></details><div class="inspection-traces"></div>`;
       if (typeof renderInspectionWorkbench === 'function') {
         const workbench=renderInspectionWorkbench(host,data,row,controller);
         mountSourceAnalysis(host,data,row,controller,workbench);
