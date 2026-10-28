@@ -26,18 +26,23 @@ const DRReadings=(()=>{
       const kind=/^V(?:\s|$)/.test(c.units)?'voltage':/^A(?:\s|$)/.test(c.units)?'current':null;
       if(kind&&reading.angle_deg!==null)groups[kind].push(reading);
     }
-    return {window,reference,channels,groups};
+    const reasons={};for(const kind of ['voltage','current']){
+      const units=kind==='voltage'?/^V(?:\s|$)/:/^A(?:\s|$)/;
+      reasons[kind]=meta.filter(c=>units.test(c.units)).map(c=>{const r=channels.get(c.id);return r.angle_deg===null?`${c.id}: ${r.reason||r.angle_reason||'A nonzero phasor is required.'}`:null;}).filter(Boolean);
+      if(!reasons[kind].length&&!groups[kind].length)reasons[kind]=[result?'No channels with supported '+kind+' units.':'Electrical analysis is being prepared.'];
+    }
+    return {window,reference,channels,groups,reasons};
   }
   function readingMarkup(meta,point,reading,cursor){
     if(meta.kind==='digital')return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><p>State: ${point?.[2]===null||!point?'Unknown':esc(point[2])}</p></div>`;
-    return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))}<small>${esc(meta.units)}</small></dd><dt>Fitted RMS</dt><dd>${num(reading?.rms)}<small>${esc(reading?.units||'Analysis pending')}</small></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl>${reading?.reason?`<small>${esc(reading.reason)}</small>`:''}${reading?.rms!==null&&reading?.angle_deg===null?`<small>${esc(reading?.angle_reason||'')}</small>`:''}</div>`;
+    return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))}<small>${esc(meta.units)}</small></dd><dt>Fitted RMS</dt><dd>${num(reading?.rms)}<small>${esc(reading?.units||'Analysis pending')}</small></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl>${reading?.reason?`<details><summary>Why unavailable?</summary>${esc(reading.reason)}</details>`:''}${reading?.rms!==null&&reading?.angle_deg===null?`<small>${esc(reading?.angle_reason||'')}</small>`:''}</div>`;
   }
   function vectorMarkup(v,colors={}){
     return ['voltage','current'].map(kind=>{
       const channels=v.groups[kind],scale=Math.max(...channels.map(c=>c.rms),0);
       const arrows=channels.map(c=>{const a=c.angle_deg*Math.PI/180,x=100+75*(c.rms/scale)*Math.cos(a),y=100-75*(c.rms/scale)*Math.sin(a),color=/^#[0-9a-f]{6}$/i.test(colors[c.id])?colors[c.id]:'#176d82';
         return `<line x1="100" y1="100" x2="${x}" y2="${y}" stroke="${color}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3" fill="${color}"/><text x="${x+3}" y="${y-3}">${esc(c.id)}</text>`;}).join('');
-      return `<section><h4>${kind==='voltage'?'Voltage':'Current'} vectors</h4>${channels.length?`<svg viewBox="0 0 200 200" role="img" aria-label="${kind} relative source vectors"><circle cx="100" cy="100" r="75" fill="none" stroke="#dae3e9"/><path d="M15 100H185M100 15V185" stroke="#dae3e9"/>${arrows}</svg><small>Independent ${kind} scale · RMS magnitude</small>`:'<p>No supported nonzero '+kind+' vectors at this cursor.</p>'}</section>`;
+      return `<section><h4>${kind==='voltage'?'Voltage':'Current'} vectors</h4><svg viewBox="0 0 200 200" role="img" aria-label="${kind} relative source vectors"><circle cx="100" cy="100" r="75" fill="none" stroke="#dae3e9"/><path d="M15 100H185M100 15V185" stroke="#dae3e9"/>${arrows}</svg>${channels.length?`<small>Independent ${kind} scale · RMS magnitude</small>`:'<p>No supported nonzero '+kind+' vectors at this cursor.</p>'}${v.reasons?.[kind]?.length?`<details><summary>${channels.length?'Some channels unavailable':'Why unavailable?'}</summary>${v.reasons[kind].map(reason=>`<p>${esc(reason)}</p>`).join('')}</details>`:''}</section>`;
     }).join('')+`<p class="field-help">Angles relative to ${esc(v.reference||'unselected reference')} at a common fitted model centre. Source/assumed scaling and physical wiring remain unverified.</p>`;
   }
   return {esc,num,windowAt,view,readingMarkup,vectorMarkup};

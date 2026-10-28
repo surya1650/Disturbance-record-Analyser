@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const model=require('../src/dranalyser/application/static/inspection-model.js');
-function fixture(n){
+function fixture(n,channels=null){
   const nodes=new Map();
   function node(key){if(!nodes.has(key))nodes.set(key,{innerHTML:'',textContent:'',dataset:{},focus(){}});return nodes.get(key);}
   const mount={querySelector:node,querySelectorAll(selector){
@@ -11,7 +11,7 @@ function fixture(n){
   },scrollIntoView(){}};
   const host={isConnected:true,querySelector(){return mount}};
   const record={file:'x.cfg',revision:1,sample_count:n,source_sha256:{'x.cfg':'aaa'},inventory:[],time_basis:{},
-    channels:[{id:'A1',label:'A',kind:'analog',units:'raw counts',trace:[]},{id:'D1',label:'D',kind:'digital',units:'state',trace:[]}]};
+    channels:channels||[{id:'A1',label:'A',kind:'analog',units:'raw counts',trace:[]},{id:'D1',label:'D',kind:'digital',units:'state',trace:[]}]};
   const calls=[],controller=new AbortController();
   let pointReply=null;
   const context=vm.createContext({DRInspection:model,DRReadings:require('../src/dranalyser/application/static/inspection-readings.js'),escapeHtml:String,AbortController,URLSearchParams,setTimeout,clearTimeout,
@@ -43,6 +43,13 @@ const settle=async()=>{for(let i=0;i<8;i++)await new Promise(resolve=>setImmedia
  assert.match(local.node('.inspection-live-cursor').textContent,/Cursor A/);
  assert.ok(!local.node('.inspection-live-cursor').textContent.includes('undefined'));
  local.controller.abort();
+ const many=fixture(25001,[...Array.from({length:9},(_,i)=>({id:'A'+(i+1),label:'Analog',kind:'analog',units:'V',trace:[]})),
+  ...Array.from({length:12},(_,i)=>({id:'D'+(i+1),label:'Digital',kind:'digital',units:'state',trace:[],activity:{transition_count:i<9?2:0}}))]);await settle();
+ assert.equal(many.calls.length,3,'all analogs and a separate digital page require bounded cursor batches');
+ for(const url of many.calls)assert.ok(JSON.parse(new URL('http://localhost'+url).searchParams.get('channel_ids')).length<=8);
+ assert.match(many.node('.inspection-values tbody').innerHTML,/A9/);
+ assert.match(many.node('.inspection-page').textContent,/1–8 of 9/);
+ many.controller.abort();
  const overview=fixture(25001);await settle();
  assert.equal(overview.calls.length,1);assert.ok(overview.calls[0].includes('/points?'));
  assert.deepEqual(JSON.parse(new URL('http://localhost'+overview.calls[0]).searchParams.get('indices')),[0,25000]);

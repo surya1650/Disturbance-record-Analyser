@@ -27,3 +27,18 @@ assert.ok(digital.includes('State'));assert.ok(!digital.includes('RMS'));assert.
 const fallback=structuredClone(result);fallback.windows[0].channels.A1={status:'withheld',reason:'Changing voltage'};
 assert.equal(r.view(fallback,50).reference,'A2');assert.equal(r.view(fallback,50).groups.current.length,1);
 assert.equal(r.view(fallback,50,'A1').channels.get('A2').angle_deg,null,'explicit refused reference must stay explicit');
+assert.ok(r.view(fallback,50,'A1').reasons.voltage.some(reason=>reason.includes('Changing voltage')));
+assert.match(r.vectorMarkup(r.view(fallback,50,'A1')),/Why unavailable/);
+const timeline={trigger_offset_s:.012,start_local:'2026-07-04T23:44:55.128000'};
+assert.equal(model.milliseconds(0,timeline),'-12.000 ms');
+assert.equal(model.milliseconds(.012,timeline),'0.000 ms');
+assert.equal(model.milliseconds(.020,timeline),'+8.000 ms');
+assert.match(model.relayTime(.020,timeline),/23:44:55.148/);
+assert.match(model.relayTime(.0008,timeline),/23:44:55.128800/);
+assert.match(model.relayTime(.0008,{start_local:'2026-07-04T23:59:59.999500'}),/2026-07-05 00:00:00.000300/);
+assert.equal(model.milliseconds(null,timeline),'Time unavailable');
+assert.match(model.milliseconds(.01,{}),/from first sample/);
+const rms=structuredClone(result);rms.windows.push({...rms.windows[0],start_index:90,stop_index:170,channels:{A1:{status:'withheld',reason:'Transient'}}});
+assert.deepEqual(model.rmsSeries(rms,'A1').map(p=>p[2]),[10,null]);
+const record={file:'view.cfg',revision:1,sample_count:3,channels:[{id:'D1',kind:'digital',activity:{transition_count:0}},{id:'A1',kind:'analog'},{id:'D2',kind:'digital',activity:{transition_count:2}}]};
+const state=model.create(record);assert.deepEqual(state.order,['A1','D2','D1']);assert.ok(state.visible('A1'));assert.ok(state.visible('D2'));assert.ok(!state.visible('D1'));

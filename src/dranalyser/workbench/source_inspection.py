@@ -6,6 +6,7 @@ from pathlib import Path
 
 from ..comtrade.source_observations import load_source
 from ..comtrade.source_header import header_information
+from .source_display import digital_activity, timeline
 
 MAX_SAMPLES = 20000
 _CACHE = OrderedDict()
@@ -119,8 +120,12 @@ def inspection_record(root, revision, filename):
         c['phase'] = headers.get(c['id'], {}).get('phase', '')
     times = source['axis'].get('elapsed_s', [])
     budget = max(1, 16000//max(1, len(channels)*4))
+    remaining_intervals = 512
     for meta, data in zip(channels, source['channels']+source['digital'], strict=True):
         meta['trace'] = _trace(data.get('values', data.get('states', [])), times, budget)
+        if meta['kind'] == 'digital':
+            meta['activity'] = digital_activity(data['states'], times, limit=min(32, remaining_intervals))
+            remaining_intervals -= len(meta['activity']['high_intervals'])
     missing = sum(v is None for c in source['channels']+source['digital'] for v in c.get('values', c.get('states', [])))
     issues = list(source['issues'])
     if missing:
@@ -135,6 +140,7 @@ def inspection_record(root, revision, filename):
                 time_range_s=[times[0], times[-1]] if times else None,
                 station=source.get('station', ''), device=source.get('device', ''),
                 recorded_times=source.get('recorded_times', {}),
+                timeline=timeline(source),
                 inventory=source.get('header_inventory', []),
                 operational_eligibility=dict(state=revision['state'], blocked=item.get('blocked', False),
                     reason=item.get('error', '') or 'Inspection does not establish operational eligibility.'),

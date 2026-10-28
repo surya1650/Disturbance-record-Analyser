@@ -2,7 +2,8 @@
 const DRInspection = (() => {
   function create(record) {
     const n=record.sample_count;
-    return {record:record.file,revision:record.revision,sourceIdentity:identity(record.source_sha256),n,order:record.channels.map(c=>c.id),hidden:new Set(),
+    const ordered=[...record.channels].sort((a,b)=>Number(a.kind==='digital')-Number(b.kind==='digital')||Number((b.activity?.transition_count||0)>0)-Number((a.activity?.transition_count||0)>0));
+    return {record:record.file,revision:record.revision,sourceIdentity:identity(record.source_sha256),n,order:ordered.map(c=>c.id),hidden:new Set(ordered.filter(c=>c.kind==='digital'&&c.activity?.transition_count===0).map(c=>c.id)),
       colors:{A:'#c94145',B:'#b88a00',C:'#316ecc',N:'#606c78',unknown:'#176d82'},phases:{},groups:{},
       setColour(phase,color){if(!/^#[0-9a-f]{6}$/i.test(color)||!Object.hasOwn(this.colors,phase))throw new Error('Use a six-digit colour.');this.colors[phase]=color;},
       pins:{A:0,B:Math.max(0,n-1)},hover:0,view:[0,Math.max(0,n-1)],generation:0,requests:new Map(),
@@ -43,12 +44,35 @@ const DRInspection = (() => {
   function groupChannels(channels,state) {
     const groups=new Map();for(const c of channels){const name=state.groups[c.id];const key=c.kind==='analog'&&name?`${name}/${c.units}`:c.id;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(c);}return [...groups.values()];
   }
+  function milliseconds(seconds,timeline){
+    if(!Number.isFinite(seconds))return 'Time unavailable';
+    const offset=timeline?.trigger_offset_s,ms=(seconds-(Number.isFinite(offset)?offset:0))*1000;
+    return `${ms>0?'+':''}${Object.is(ms,-0)||Math.abs(ms)<.0005?'0.000':ms.toFixed(3)} ms${Number.isFinite(offset)?'':' from first sample'}`;
+  }
+  function relayTime(seconds,timeline){
+    if(!Number.isFinite(seconds)||!timeline?.start_local)return 'Relay time unavailable';
+    const start=Date.parse(timeline.start_local+'Z');if(!Number.isFinite(start))return 'Relay time unavailable';
+    const fraction=(timeline.start_local.split('.')[1]||'').padEnd(6,'0').slice(0,6),extra=Number(fraction)%1000;
+    const micros=Math.round(start*1000+extra+seconds*1e6);if(!Number.isSafeInteger(micros))return 'Relay time unavailable';
+    const millis=Math.floor(micros/1000),remainder=String(micros-millis*1000).padStart(3,'0');
+    return new Date(millis).toISOString().replace('T',' ').replace('Z',remainder)+' relay local';
+  }
+  function axisTicks(data,view,native){
+    const source=[...(data.timeline?.ticks||[]),...([...(native?.values()||[])][0]||[])];
+    const unique=[...new Map(source.filter(p=>Number.isFinite(p[1])&&p[0]>=view[0]&&p[0]<=view[1]).map(p=>[p[0],p])).values()].sort((a,b)=>a[0]-b[0]);
+    if(!unique.length)return Array.from({length:6},(_,i)=>[Math.round(view[0]+i*(view[1]-view[0])/5),null]);
+    const selected=[];for(let i=0;i<6;i++){const target=view[0]+i*(view[1]-view[0])/5,p=nearest(unique,target);if(!selected.some(q=>q[0]===p[0]))selected.push(p);}return selected;
+  }
+  function rmsSeries(result,id){
+    return (result?.windows||[]).map(w=>{const fit=w.channels[id],valid=fit?.status==='model_consistent'&&Number.isFinite(fit.rms)&&fit.rms>=0;
+      return [(w.start_index+w.stop_index-1)/2,valid?fit.centre_s:null,valid?fit.rms:null];});
+  }
   function qualityMessage(file){
     if(file.duplicate_of)return `Identical copy of ${file.duplicate_of}.`;
     if(!file.ok)return 'Operational decoding needs review. Open source inspection for recoverable observations; the exact reason is in Input details.';
     const notes=(file.flags||[]).filter(f=>f.startsWith('[BLOCK')).map(f=>/gap|jitter|drift|timestamp/i.test(f)?'Sample intervals vary. Actual-time source diagnostics remain available; uniform-sample calculations need suitable timing.':/crest factor|RMS|sqrt/i.test(f)?'The exported amplitude convention needs review for physical measurements; no scaling convention is inferred.':/CH-MISSING/.test(f)?'Assign the missing phase/channel meanings for calculations that use them.':f.replace(/^\[[^\]]+\]\s*/,''));
     return notes.length?notes.join(' '):'Recorded inputs are available for assignment.';
   }
-  return {create,identity,exactPoints,delta,value,nearest,segments,phaseFor,groupChannels,qualityMessage};
+  return {create,identity,exactPoints,delta,value,nearest,segments,phaseFor,groupChannels,qualityMessage,milliseconds,relayTime,axisTicks,rmsSeries};
 })();
 if(typeof module!=='undefined')module.exports=DRInspection;
