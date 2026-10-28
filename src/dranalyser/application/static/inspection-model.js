@@ -14,6 +14,7 @@ const DRInspection = (() => {
       removePin(name){if(!['A','B'].includes(name))delete this.pins[name];},
       zoom(factor,center=(this.view[0]+this.view[1])/2){const span=Math.min(n-1,Math.max(1,(this.view[1]-this.view[0])*factor));const lo=Math.max(0,Math.min(n-1-span,center-span/2));this.view=[lo,lo+span];},
       pan(fraction){const span=this.view[1]-this.view[0],lo=Math.max(0,Math.min(n-1-span,this.view[0]+span*fraction));this.view=[lo,lo+span];},
+      follow(index){const [lo,hi]=this.view,span=hi-lo;if(index>=lo&&index<=hi)return false;const first=Math.max(0,Math.min(this.n-1-span,index<lo?index:index-span));this.view=[first,first+span];return true;},
       reset(){this.view=[0,Math.max(0,n-1)];},
       request(channel){const serial=(this.requests.get(channel)||0)+1;this.requests.set(channel,serial);return {record:this.record,revision:this.revision,source:this.sourceIdentity,channel,generation:this.generation,serial};},
       accept(token){return token.record===this.record&&token.revision===this.revision&&token.source===this.sourceIdentity&&token.generation===this.generation&&this.requests.get(token.channel)===token.serial;},

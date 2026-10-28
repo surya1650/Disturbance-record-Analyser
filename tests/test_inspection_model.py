@@ -14,3 +14,9 @@ def test_inspection_cursor_transport():
     node = shutil.which('node')
     assert node, 'Node is required for UI transport verification.'
     subprocess.run([node, str(Path(__file__).with_name('inspection_transport.cjs'))], check=True)
+
+
+def test_inspection_electrical_readings():
+    node = shutil.which('node')
+    assert node, 'Node is required for operator-reading verification.'
+    subprocess.run([node, str(Path(__file__).with_name('inspection_readings.cjs'))], check=True)

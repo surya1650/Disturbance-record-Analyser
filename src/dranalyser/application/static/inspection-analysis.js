@@ -39,7 +39,7 @@ function mountSourceAnalysis(host,data,row,recordController,workbench) {
   };
 
   function invalidate(message='Choices changed. Apply meanings & analyse to update the report.') {
-    generation++;controller?.abort();clearTimeout(timer);result=null;
+    generation++;controller?.abort();clearTimeout(timer);result=null;workbench?.setAnalysis(null);
     q('.source-summary').innerHTML=DRSourceReport.schematic({terminals:{S:'Not available',R:'Not available'},sections:[],length_km:null,location:{status:'Not available',text:'Preparing source snapshot; supplied line facts will appear with provenance.'}});q('.source-evidence').hidden=true;q('.source-report-tools').hidden=true;q('.source-job-status').textContent=message;
   }
   function options() {return DRSourceInputs.options({voltageKv:q('.source-voltage').value,
@@ -73,13 +73,13 @@ function mountSourceAnalysis(host,data,row,recordController,workbench) {
         if(body.file!==data.file||body.revision!==row.number||stable(body.options)!==stable(choices)||stable(body.source_sha256)!==stable(data.source_sha256))throw new Error('Source or choices changed; reopen this recording.');
         if(body.status==='pending'||body.status==='busy'){q('.source-job-status').textContent=body.detail;timer=setTimeout(poll,1000);return;}
         if(body.status!=='ready')throw new Error(body.detail||'Diagnostics could not finish; source inspection remains available.');
-        result=body.result;windowPage=digitalPage=0;
+        result=body.result;workbench?.setAnalysis(result);windowPage=digitalPage=0;
         const select=q('.source-projection-window'),chosen=choices.projection_window??'';select.innerHTML='<option value="">Choose a source window for projection</option>'+result.windows.map(w=>`<option value="${w.index}">Window ${w.index}: ${DRSourceReport.number(w.support_s[0])}–${DRSourceReport.number(w.support_s[1])} local s</option>`).join('');select.value=String(chosen);
         q('.source-job-status').textContent=`Analysis ready · ${result.fit_coverage.model_consistent} conditional fits / ${result.fit_coverage.total} evaluated channel-windows. Report and source evidence available.`;
         q('.source-summary').innerHTML=DRSourceReport.summary(result);q('.source-evidence').hidden=false;q('.source-report-tools').hidden=false;
         q('.source-channel-summary').innerHTML='<table><thead><tr><th>Source / assigned meaning</th><th>Units</th><th>Observed min / max</th><th>Finite / missing</th></tr></thead><tbody>'+result.channels.map(c=>`<tr><th>${esc(c.id+' '+c.label)}<small>${esc(c.meaning||'Meaning unassigned')}</small></th><td>${esc(c.units)}</td><td>${DRSourceReport.number(c.sample_min)} / ${DRSourceReport.number(c.sample_max)}</td><td>${c.finite_samples} / ${c.missing_samples}</td></tr>`).join('')+'</tbody></table>';
         renderEvidence();
-      }catch(error){if(error.name!=='AbortError'&&token===generation){q('.source-job-status').textContent=error.message;result=null;q('.source-summary').innerHTML='';q('.source-evidence').hidden=true;q('.source-report-tools').hidden=true;}}
+      }catch(error){if(error.name!=='AbortError'&&token===generation){q('.source-job-status').textContent=error.message;result=null;workbench?.setAnalysis(null);q('.source-summary').innerHTML='';q('.source-evidence').hidden=true;q('.source-report-tools').hidden=true;}}
     }
     poll();
   }
