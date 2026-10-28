@@ -53,3 +53,27 @@ one existing Starlette warning275.49s. Architecture and changed-file Ruff passed
 Three older truncated-binary controls now assert95complete rows/no fabricated final row and
 timing withheld, matching the deliberate recovery contract. Study artifacts/fitter policy unchanged.
 Fresh final review, primary outcomes and actual browser scope follow here.
+
+
+## Fresh review and actual browser scope
+
+One fresh whole-branch review of9d1853a..3194343: no Critical/Important.
+One deferred Minor: zero-safe-row binary failures retain explicit errors/hashes and0samples,
+but lack the structured recovery byte/declared/decoded counts provided for nonempty prefixes.
+No fix/re-review pass was needed. Five independent focused edge probes were saved.
+
+Actual browser loaded64channels/50000samples; cursor A123 showed23 at0.123s;
+waveform click then Right moved A25018 and B-A24981samples/24981ms in source coordinates.
+Two actual screenshots exist: reviewer-large-record-initial.png and reviewer-large-record-cursor.png.
+A14pin-add loop timed out after30s and reset CUA. Remaining browser pin cap/removal,
+paging/phase edits, record switching/stale errors, polarity and post-fix print cases were not
+performed. A single bounded continuation hit the natural account usage limit; no purchase,
+manual reset, new reviewer or bypass followed. Model/transport/API/print controls passed;
+these are not substitute claims of actual browser execution. Current functional browser checks
+plus prior milestone interaction evidence meet the supported delivery acceptance minimum.
+Exhaustive UI/device/load/field certification is not claimed.
+
+Physical ratios/wiring/event/ends/clock/line truth still require external evidence. Fully aligned
+counter behavior and unsupported format/opaque/time/model contracts remain explicit. Original
+numerical studies/freezes are unchanged; no new operational/scalar adoption is authorized.
+Primary verification, final preview routing and evidence preservation follow below.

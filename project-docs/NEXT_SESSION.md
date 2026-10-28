@@ -1,3 +1,25 @@
+**2026-10-28 bounded recovery/cursor execution checkpoint.**
+Conditional quantities/review fixes pushed main9d1853a, primary1749PASS/1OSskip/onewarning.
+Current isolated branchcodex/inspection-first candidate3194343 adds deliberate digital-only,
+short/complete-prefix/CFF recovery and8channel×17index point batches/local native cursor reuse.
+Full release1785PASS/29skip(28privatecorpus+1OS)/oneexistingwarning275.49s;92focusedGREEN.
+One fresh whole-branch reviewerrecovery_review is running against9d1853a..3194343;
+DO NOT spawn another reviewer or redo prior three milestone reviews/152study. Reviewer fresh CUA
+works and saved actual large-record screenshotout/qa/source-recovery/reviewer-large-record-initial.png.
+Parent CUA still fails. Wait for same review; one Important-fix TDD pass only if needed,
+then serial primary integration/full verification, commit/push and final acceptance closure.
+Active isolated8094 backendPID17820/session30334 explicitly usesPYTHONPATH=src;. and
+out/qa/inspection-first/app. Do not change it until reviewer UI checks finish.
+A new disposable final preview rootE:/dr analyser/out/qa/integrated-final-preview already contains
+reimported copies of8examples (delivery-demo-map.json); not yet served. It will survive native
+archival without changing realDB/revisions. Scriptout/qa/source-recovery/prepare_final_preview.py
+did this; do not rerun imports unnecessarily. NewCTexample7fe66ff2b797495085e740fa94ca6d9b,
+realcopy547ab42d5eb1414ba7916f6853380fd8, large0a3ed3c0f6f841faba2509515836fc6b.
+Before archival stop only confirmed owned8094, hash-preserve ALL ignoredQA/scopedledgers
+with out/qa/source-recovery/preserve_evidence.py, verify manifest, then nativearchive only.
+Parent protected checks confirm26originalhashes and real pendingrevision unchanged.
+Do not stop heartbeat/declareG6complete until review/fix/primary/push/preservation delivery finishes.
+
 **2026-10-28 conditional source quantities execution update.**
 Supported-analysis/report milestone is pushed ataae3e2f, primary1690PASS/1OSskip.
 Current candidate8b939ac plus one Important-fix pass adds corresponding source sequence/R-X,
