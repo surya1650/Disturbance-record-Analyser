@@ -55,6 +55,7 @@ function mountSourceAnalysis(host,data,row,recordController,workbench) {
     const suggestions=[...result.channels.map(c=>[c.id,c.meaning]),...result.digital_evidence.map(c=>[c.id,c.meanings.length===1?c.meanings[0]:''])];
     const counts=new Map();for(const[id,meaning]of suggestions)if(meaning&&meaning!=='ignore')counts.set((id[0]+'/'+meaning),(counts.get(id[0]+'/'+meaning)||0)+1);
     for(const[id,meaning]of suggestions)if(meaning&&meaning!=='ignore'&&counts.get(id[0]+'/'+meaning)===1){const select=q(`[data-meaning="${id}"]`);if(select)select.value=meaning;}
+    q('[data-diagram-field=primary_scaling_confirmed]').checked=false;
     invalidate('Unique label suggestions selected as unverified meaning choices. Apply choices to update the report.');
   };
 

@@ -7,7 +7,7 @@ import time
 import uuid
 from contextlib import contextmanager
 from pathlib import Path
-
+from .input_limits import database_revision
 
 class Conflict(ValueError):
     """A request conflicts with the current incident revision."""
@@ -69,7 +69,7 @@ class Store:
             params = [incident_id]
             if number is not None:
                 sql += " AND r.number=?"
-                params.append(number)
+                params.append(database_revision(number))
             row = db.execute(sql + " ORDER BY r.number DESC LIMIT 1", params).fetchone()
             return self.decode(row)
 

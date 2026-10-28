@@ -154,7 +154,7 @@ function renderInspectionWorkbench(host,data,row,recordController) {
     recordController.signal.addEventListener('abort',()=>controller.abort(),{once:true,signal:controller.signal});
     const lo=Math.ceil(s.view[0]),hi=Math.floor(s.view[1])+1,token=s.request('view');
     const status=mount.querySelector('.inspection-load');status.textContent=hi-lo<=20000?'Loading exact native observations…':'Display envelopes; zoom to ≤20000 samples for native paths. Cursors always use exact observations.';
-    if(hi-lo<=20000){try{const entries=await Promise.all(shown().map(async id=>[id,await getSamples(id,lo,hi,controller)]));
+    if(hi-lo<=20000){try{const entries=await DRTransport.mapLimit(shown(),4,async id=>[id,await getSamples(id,lo,hi,controller)],controller.signal);
       if(s.accept(token)&&!controller.signal.aborted&&host.isConnected){for(const[id,body]of entries){native.set(id,body.samples);if(body.rms_samples?.length)nativeRms.set(id,body.rms_samples);}status.textContent='Native observations loaded. Unknown states and missing amplitudes stay blank.';drawPaths();}
     }catch(error){if(error.name!=='AbortError'&&s.accept(token)&&!controller.signal.aborted&&host.isConnected){status.textContent=error.message;native.clear();drawPaths();}}}
     if(s.accept(token)&&!controller.signal.aborted)loadCursors();

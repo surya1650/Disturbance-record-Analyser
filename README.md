@@ -4,6 +4,8 @@ Operator and next-owner setup, usage and handover: [TAKEOVER.md](TAKEOVER.md).
 
 Recording-first browser workflow, manual line/R–X inputs and sending/receiving
 labels: [operator guide](project-docs/RECORDING_FIRST_WORKFLOW.md).
+Animated event playback, R–X/contact timing and deployment limits:
+[application review](project-docs/APPLICATION_REVIEW_AND_PLAYBACK.md).
 
 Automated analysis of disturbance records from distance protection relays at
 **one or both** terminals of a transmission line. For every line fault it

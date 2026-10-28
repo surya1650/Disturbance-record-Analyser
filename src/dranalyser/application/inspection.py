@@ -12,6 +12,8 @@ def install_inspection(app, store, registry=None):
     install_end_names(app, store)
     from .diagram_inputs import install_diagram_inputs
     install_diagram_inputs(app, store)
+    from .playback import install_playback
+    install_playback(app, store, registry)
     from .instrument_review import install_instrument_review
     install_instrument_review(app, store)
     jobs=SourceJobs(store.root,registry)

@@ -1,6 +1,6 @@
 'use strict';
 const DRIncident=(()=>{
-  const titles={viewer:'Waveforms & report',inputs:'Inputs',diagrams:'Diagrams',combine:'Combine captures',compare:'Compare recordings',evidence:'Detailed evidence',study:'Operational study',files:'Files & history'};
+  const titles={viewer:'Waveforms & report',inputs:'Inputs',diagrams:'Diagrams',playback:'Playback',combine:'Combine captures',compare:'Compare recordings',evidence:'Detailed evidence',study:'Operational study',files:'Files & history'};
   const endTitle=end=>end==='S'?'Sending end':end==='R'?'Receiving end':'End unassigned';
   const link=(row,menu)=>`#incident/${row.incident_id}/${row.number}/${menu}`;
   const activeMenu=()=>{const menu=location.hash.split('/')[3];return titles[menu]?menu:'viewer';};
@@ -8,11 +8,11 @@ const DRIncident=(()=>{
     const menu=activeMenu();
     document.querySelectorAll('[data-incident-pane]').forEach(el=>el.hidden=!el.dataset.incidentPane.split(' ').includes(menu));
     document.querySelectorAll('[data-incident-menu]').forEach(el=>{const selected=el.dataset.incidentMenu===menu;el.classList.toggle('active',selected);if(selected)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
-    const more=document.getElementById('incident-more');if(more)more.value=['viewer','inputs','diagrams'].includes(menu)?'':menu;
+    const more=document.getElementById('incident-more');if(more)more.value=['viewer','inputs','diagrams','playback'].includes(menu)?'':menu;
     const title=document.getElementById('incident-menu-title');if(title)title.textContent=titles[menu];
   }
   function navigation(row){
-    return `<nav class="incident-menu" aria-label="Incident views">${['viewer','inputs','diagrams'].map(menu=>`<a href="${link(row,menu)}" data-incident-menu="${menu}">${titles[menu]}</a>`).join('')}<label>More tools <select id="incident-more"><option value="">Choose…</option>${Object.entries(titles).filter(([k])=>!['viewer','inputs','diagrams'].includes(k)).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label></nav><h2 id="incident-menu-title" class="incident-menu-title"></h2><div class="incident-end-cards"></div>`;
+    return `<nav class="incident-menu" aria-label="Incident views">${['viewer','inputs','diagrams','playback'].map(menu=>`<a href="${link(row,menu)}" data-incident-menu="${menu}">${titles[menu]}</a>`).join('')}<label>More tools <select id="incident-more"><option value="">Choose…</option>${Object.entries(titles).filter(([k])=>!['viewer','inputs','diagrams','playback'].includes(k)).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label></nav><h2 id="incident-menu-title" class="incident-menu-title"></h2><div class="incident-end-cards"></div>`;
   }
   function recordLabel(row,name){const p=row.presentation||{},end=p.record_ends?.[name];return `${endTitle(end)}${end&&p.names?.[end]?' · '+p.names[end]:''} · ${name}`;}
   function namesMarkup(row){

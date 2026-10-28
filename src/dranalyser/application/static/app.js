@@ -6,6 +6,7 @@ const labels = {queued:'Queued',running:'Processing',needs_review:'Needs review'
 const badge = state => `<span class="badge ${escapeHtml(state)}">${escapeHtml(labels[state] || state)}</span>`;
 const date = stamp => new Date(stamp * 1000).toLocaleString(undefined, {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 const size = bytes => bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${(bytes / 1024).toFixed(1)} KB`;
+let detailController;
 let config, selected = [], page = 0, lastItems = [], current = null, polling = false, busyUpload = false;
 
 function notice(message = '') { $('notice').textContent = message; $('notice').hidden = !message; }
@@ -98,15 +99,17 @@ function assignmentForm(row) {
   }).join('')}</tbody></table></div>${stageReviewEditor(row)}<div class="detail-section">${records.some(f=>DRInspection.assignmentPolicy(f,Boolean(config.mapping_targets)).allowed)?'':'<p class="field-help">No capture is currently eligible for operational assignment. Use Source waveform inspection above; review the listed blocking facts before attempting fault-location calculations.</p>'}<button class="button primary" type="submit" ${records.some(f=>DRInspection.assignmentPolicy(f,Boolean(config.mapping_targets)).allowed)?'':'disabled'}>Confirm & analyse →</button></div></form>`;
 }
 async function detail(id, revision = '') {
-  const row = await api(`/api/incidents/${id}${revision?`?revision=${revision}`:''}`); current=row;
-  row.presentation=await api(`/api/incidents/${id}/end-names?revision=${row.number}`);
+  DRPlayback.stop();inspectionController?.abort();detailController?.abort();const request=new AbortController();detailController=request;
+  const row = await api(`/api/incidents/${id}${revision?`?revision=${revision}`:''}`,{signal:request.signal});
+  row.presentation=await api(`/api/incidents/${id}/end-names?revision=${row.number}`,{signal:request.signal});
   await loadStageReviewSource(row);
+  if(request.signal.aborted)return;current=row;
   const result = row.result;
   let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${escapeHtml(row.source)} intake · ${date(row.created)} · ${row.files.length} files</p></div><div class="detail-actions"><a class="button" href="#upload/${id}">＋ Attach late records</a>${result?.report_path?`<a class="button primary" href="/api/incidents/${id}/named-report?revision=${row.number}&download=true">Download report</a>`:''}</div></div>`;
   if (row.error) body += `<div class="hint">${escapeHtml(row.error)}</div>`;
   if (['queued','running'].includes(row.state)) body += '<div class="panel busy"><span class="spinner"></span><h2>Processing this incident</h2><p>You can leave this page. The job and its results stay in the workspace.</p></div>';
   body += DRIncident.navigation(row)+DRIncident.namesMarkup(row);
-  body += inspectionPanel(row);
+  body += inspectionPanel(row)+DRPlayback.panel(row);
   if(result?.report_path)body+=incidentPane('viewer',`<section class="panel"><div class="panel-heading"><div><h2>Incident analysis report</h2><p>${escapeHtml(result.verdict)} · ${escapeHtml(result.location_text)}</p></div><a href="/api/incidents/${id}/named-report?revision=${row.number}" target="_blank" rel="noopener">Open report ↗</a></div><iframe data-named-report class="report-frame" title="Incident analysis report" sandbox="allow-same-origin" src="/api/incidents/${id}/named-report?revision=${row.number}"></iframe></section>`);
   if(row.state==='needs_review')body+=incidentPane('inputs',`<section class="panel detail-section">${instrumentReviewEditor(row)}${mappingEditor(row)}${rxReviewEditor(row)}<p class="field-help">Channel and imported-settings reviews are saved when you confirm the <a href="${DRIncident.link(row,'study')}">operational study</a>. Manual diagram inputs are saved separately below.</p></section>`);
   if (row.state==='needs_review') body += incidentPane('study',assignmentForm(row));
@@ -127,6 +130,7 @@ async function detail(id, revision = '') {
   $('detail-content').innerHTML=body;
   DRIncident.bind(row);
   mountInspection(row);
+  DRPlayback.mount(row);
   if (result) bindNavigation(row);
   if (['completed','attention','failed'].includes(row.state)) {
     const button=document.createElement('button');
@@ -204,13 +208,14 @@ async function route() {
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==name);
   document.querySelectorAll('[data-nav]').forEach(v=>v.classList.toggle('active',v.dataset.nav===(name==='detail'?'overview':name)));
   $('breadcrumb').textContent=`Workspace / ${name==='detail'?'Incident':name[0].toUpperCase()+name.slice(1)}`;
+  if(name!=='detail'){current=null;detailController?.abort();inspectionController?.abort();DRPlayback.stop();}
   try {
     if(name==='overview') await overview();
     if(name==='upload') await uploadView(id);
     if(name==='integrations') await integrations();
     if(name==='catalogue') await catalogueView();
-    if(name==='detail'){if(current?.incident_id===id&&revision&&String(current.number)===revision)DRIncident.show();else await detail(id,revision);}else {current=null;inspectionController?.abort();}
-  }catch(error){notice(error.message);}
+    if(name==='detail'){if(current?.incident_id===id&&revision&&String(current.number)===revision)DRIncident.show();else await detail(id,revision);}
+  }catch(error){if(error.name!=='AbortError')notice(error.message);}
 }
 $('upload-form').onsubmit=submitUpload;
 $('file-picker').onchange=event=>chooseFiles(event.target.files);
@@ -237,6 +242,6 @@ setInterval(async()=>{
     if(view==='overview') await overview();
     else if(view==='incident' && current && ['queued','running'].includes(current.state)) await detail(id,revision);
     else if(view==='integrations') await integrations();
-  }catch(e){notice(e.message);}finally{polling=false;}
+  }catch(e){if(e.name!=='AbortError')notice(e.message);}finally{polling=false;}
 },2500);
 (async()=>{try{config=await api('/api/config');await route();}catch(e){notice(`Cannot reach the local application: ${e.message}`);}})();

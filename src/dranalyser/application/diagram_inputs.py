@@ -7,6 +7,14 @@ from fastapi import HTTPException, Query
 from .store import Conflict
 from ..workbench.source_diagnostics import normalise_options
 from ..workbench.source_inspection import _source
+from ..workbench.diagram_geometry import valid_polygon
+
+
+def bounded_number(value, low, high):
+    try:
+        return type(value) in (int, float) and math.isfinite(value) and low <= value <= high
+    except OverflowError:
+        return False
 
 
 def clean_diagram(raw):
@@ -28,7 +36,7 @@ def clean_diagram(raw):
     out['zone_basis'] = basis
     for key in ('ct_ratio', 'vt_ratio'):
         value = raw.get(key)
-        if value is not None and (type(value) not in (int, float) or not math.isfinite(value) or not 1e-9 <= value <= 1e12):
+        if value is not None and not bounded_number(value, 1e-9, 1e12):
             raise ValueError('Settings CT/VT ratios must be finite positive values or blank.')
         out[key] = value
     zones = raw.get('zones', [])
@@ -40,20 +48,22 @@ def clean_diagram(raw):
             raise ValueError('Supply zone name, shape, reach, angle and explicit polygon vertices.')
         if not isinstance(zone['name'], str) or not 1 <= len(zone['name'].strip()) <= 80:
             raise ValueError('Each zone needs a name of at most 80 characters.')
-        def number(v, low, high):
-            return type(v) in (int, float) and math.isfinite(v) and low <= v <= high
         if zone['shape'] == 'mho':
-            if not number(zone['reach'], 1e-9, 1e9) or not number(zone['angle'], -180, 180) or zone['points']:
+            if not bounded_number(zone['reach'], 1e-9, 1e9) or not bounded_number(zone['angle'], -180, 180) or zone['points']:
                 raise ValueError('A mho boundary requires positive reach, angle from -180 to 180 degrees and no polygon vertices.')
         elif zone['shape'] == 'polygon':
             points = zone['points']
             if zone['reach'] is not None or zone['angle'] is not None or not isinstance(points, list) or not 3 <= len(points) <= 32:
                 raise ValueError('A polygon requires 3–32 explicit ordered R/X vertices and blank mho fields.')
-            if any(not isinstance(p, list) or len(p) != 2 or not all(number(v, -1e9, 1e9) for v in p) for p in points):
+            if any(not isinstance(p, list) or len(p) != 2 or not all(bounded_number(v, -1e9, 1e9) for v in p) for p in points):
                 raise ValueError('Polygon vertices must be finite R/X pairs within the diagram range.')
+            if not valid_polygon(points):
+                raise ValueError('Polygon must have distinct vertices, nonzero area and no self-intersection.')
         else:
             raise ValueError('Choose a mho or explicit polygon boundary.')
         out['zones'].append(dict(zone, name=zone['name'].strip()))
+    if len({z['name'].casefold() for z in out['zones']}) != len(out['zones']):
+        raise ValueError('Use distinct zone names.')
     if (confirmed or zones) and not (out['reviewer'] and out['evidence']):
         raise ValueError('Supply reviewer and supporting evidence before declaring scaling or zone boundaries.')
     return out

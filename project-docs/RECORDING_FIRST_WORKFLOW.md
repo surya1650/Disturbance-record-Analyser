@@ -23,6 +23,9 @@ your old server first; running a second copy on the same port will fail.
 - **Diagrams:** named line schematic and conditional source phase-loop R–X plot.
   A supported window can be sent back to the waveform viewer. Equal R/X scales
   and disconnected unavailable windows are preserved.
+- **Playback:** animated line/R–X/waveform/contact overview with reviewed
+  per-end inputs, play/pause/scrub, AR sequences and local timing brackets.
+  See [review and limits](APPLICATION_REVIEW_AND_PLAYBACK.md).
 - **More tools:** Combine captures, Compare recordings, Detailed evidence,
   Operational study, Files & history. Switching menus keeps the active recording
   and waveform cursor. Switching recordings reloads that recording's workbench.

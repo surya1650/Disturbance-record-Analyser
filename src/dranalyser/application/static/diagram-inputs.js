@@ -31,7 +31,7 @@ const DRDiagrams=(()=>{
     async function save(options){
       const body=await api(`/api/incidents/${row.incident_id}/diagram-inputs`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:row.number,record:data.file,version,options,diagram:read()})});
       if(recordController.signal.aborted)throw new DOMException('Recording changed','AbortError');
-      version=body.version;applied=body.diagram;appliedOptions=body.options;row.diagramInputs=body;dirty=false;q('.diagram-save-status').textContent='Inputs saved for this recording and revision. Source samples and operational settings are unchanged.';draw();return body;
+      version=body.version;applied=body.diagram;appliedOptions=body.options;row.diagramInputs=body;dirty=false;document.dispatchEvent(new CustomEvent('dr-source-inputs-saved',{detail:{incident_id:row.incident_id,record:data.file,version}}));q('.diagram-save-status').textContent='Inputs saved for this recording and revision. Source samples and operational settings are unchanged.';draw();return body;
     }
     function line(){
       if(!result)return;const snapshot=DRIncident.sourceDisplay(row,data.file,result).snapshot,p=row.presentation;

@@ -14,7 +14,7 @@ function fixture(n,channels=null){
     channels:channels||[{id:'A1',label:'A',kind:'analog',units:'raw counts',trace:[]},{id:'D1',label:'D',kind:'digital',units:'state',trace:[]}]};
   const calls=[],controller=new AbortController();
   let pointReply=null;
-  const context=vm.createContext({DRInspection:model,DRReadings:require('../src/dranalyser/application/static/inspection-readings.js'),escapeHtml:String,AbortController,URLSearchParams,setTimeout,clearTimeout,
+  const context=vm.createContext({DRInspection:model,DRTransport:require('../src/dranalyser/application/static/inspection-transport.js'),DRReadings:require('../src/dranalyser/application/static/inspection-readings.js'),escapeHtml:String,AbortController,URLSearchParams,setTimeout,clearTimeout,
     fetch:async url=>{
       calls.push(url);const q=new URL('http://localhost'+url).searchParams;
       if(url.includes('/points?')){
