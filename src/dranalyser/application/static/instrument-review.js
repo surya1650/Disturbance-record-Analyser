@@ -44,6 +44,7 @@ function bindInstrumentReview(row){
             if(!['queued','running'].includes(updated.state)){
               if(location.hash.startsWith('#incident/'+row.incident_id)){
                 await detail(row.incident_id);
+                history.replaceState(null,'',DRIncident.link(updated,'viewer'));DRIncident.show();
                 const select=document.getElementById('inspection-record');
                 if(select&&[...select.options].some(o=>o.value===result.reviewed_record)){select.value=result.reviewed_record;select.dispatchEvent(new Event('change'));}
                 notice('Reviewed copy created with original files preserved. Check its latest conformance status before choosing its operational role.');

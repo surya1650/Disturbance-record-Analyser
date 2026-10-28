@@ -25,6 +25,9 @@ def test_combined_report_has_cursor_origin_provenance_and_escaped_text(environme
     record = '@join:'+json.dumps(['one/event.cfg', 'two/event.cfg'])
     url = f'/api/incidents/{identity}/inspection/combined-report'
     query = dict(record=record, revision=1, cursor=250)
+    saved = client.put(f'/api/incidents/{identity}/end-names', json=dict(revision=1, version=0,
+        names={'S': '<b>Same relay SS</b>', 'R': ''}, record_ends={'one/event.cfg': 'S', 'two/event.cfg': 'S'}))
+    assert saved.status_code == 200, saved.text
     response = client.get(url, params=query)
     assert response.status_code == 200, response.text
     assert '400 retained samples' in response.text
@@ -33,6 +36,8 @@ def test_combined_report_has_cursor_origin_provenance_and_escaped_text(environme
     assert 'not a validated fault location' in response.text
     assert '<script>unsafe()</script>' not in response.text
     assert '&lt;script&gt;unsafe()&lt;/script&gt;' in response.text
+    assert '&lt;b&gt;Same relay SS&lt;/b&gt;' in response.text
+    assert 'one/event.cfg: Sending end' in response.text and 'two/event.cfg: Sending end' in response.text
     for cursor in (-1, 400):
         assert client.get(url, params={**query, 'cursor': cursor}).status_code == 400
     assert client.get(url, params={**query, 'record': 'one/event.cfg'}).status_code == 400

@@ -1,6 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const incidentPane=(menu,html)=>`<div data-incident-pane="${menu}">${html}</div>`;
 const labels = {queued:'Queued',running:'Processing',needs_review:'Needs review',completed:'Completed',attention:'Needs attention',failed:'Failed'};
 const badge = state => `<span class="badge ${escapeHtml(state)}">${escapeHtml(labels[state] || state)}</span>`;
 const date = stamp => new Date(stamp * 1000).toLocaleString(undefined, {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -90,42 +91,47 @@ function submitUpload(event) {
 function assignmentForm(row) {
   const records = row.bundle?.files.filter(f => f.kind === 'comtrade') || [];
   const options = '<option value="">Analyse without line constants</option>' + config.lines.filter(l=>l.id).map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(l.name)} · ${l.kv} kV · ${l.parameter_status}</option>`).join('');
-  return `<form id="review-form" class="panel"><div class="panel-heading"><div><h2>Confirm the incident assignment</h2><p>Choose one primary record at each available end. Other records can corroborate it.</p></div></div><div class="detail-section"><label for="review-line">Line definition</label><select id="review-line">${options}</select><p class="field-help">Without line constants, you can still inspect protection behaviour. Provisional definitions do not establish operational distance accuracy.</p></div><div class="table-wrap"><table class="assign-table"><thead><tr><th>Record & evidence</th><th>Data quality</th><th>Use in analysis</th></tr></thead><tbody>${records.map((f,i) => {
+  return `<form id="review-form" class="panel"><div class="panel-heading"><div><h2>Confirm the incident assignment</h2><p>Choose one primary record at each available end after reviewing its substation label. Other records can corroborate it.</p></div></div><div class="detail-section"><label for="review-line">Line definition</label><select id="review-line">${options}</select><p class="field-help">Without line constants, you can still inspect protection behaviour. Provisional definitions do not establish operational distance accuracy.</p></div><div class="table-wrap"><table class="assign-table"><thead><tr><th>Record & evidence</th><th>Data quality</th><th>Use in analysis</th></tr></thead><tbody>${records.map((f,i) => {
     const policy=DRInspection.assignmentPolicy(f,Boolean(config.mapping_targets)),usable=policy.allowed;
     const state = f.duplicate_of?'Duplicate':f.blocked?(policy.requiresMapping?'Channel review required':'Operational study blocked'):!f.ok?'Source needs inspection':'Ready';
-    return `<tr><td><strong>${escapeHtml(f.name)}</strong><small>${escapeHtml(f.station)} · ${f.fs_hz} Hz</small><p class="field-help">${escapeHtml(f.blocked?'Source inspection and independent analysis available; operational assignment is pending.':f.suggested_reason || '')}${f.suggested_end?` · Suggested end ${f.suggested_end}`:''}</p></td><td>${state}${f.blocked?'<p class="field-help">This holds the operational study only. Use Source waveform inspection above for samples and independent measurements. Successive captures from one relay are not opposite line ends.</p>':''}<p class="field-help">${escapeHtml(DRInspection.qualityMessage(f))}</p><details><summary>Input details</summary><div class="flags">${escapeHtml(f.error || f.duplicate_of || f.flags.join('\n'))}</div></details></td><td><select data-record="${escapeHtml(f.name)}" data-index="${i}" ${usable?'':'disabled'}><option value="">${usable?(policy.requiresMapping?'Review mapping first…':'Choose…'):(f.blocked?'Blocked · use source viewer':'Excluded')}</option><option value="excluded">Exclude from this analysis</option><option value="S:primary">End S · Primary</option><option value="S:corroborating">End S · Corroborating</option><option value="R:primary">End R · Primary</option><option value="R:corroborating">End R · Corroborating</option></select></td></tr>`;
-  }).join('')}</tbody></table></div>${instrumentReviewEditor(row)}${mappingEditor(row)}${rxReviewEditor(row)}${stageReviewEditor(row)}<div class="detail-section">${records.some(f=>DRInspection.assignmentPolicy(f,Boolean(config.mapping_targets)).allowed)?'':'<p class="field-help">No capture is currently eligible for operational assignment. Use Source waveform inspection above; review the listed blocking facts before attempting fault-location calculations.</p>'}<button class="button primary" type="submit" ${records.some(f=>DRInspection.assignmentPolicy(f,Boolean(config.mapping_targets)).allowed)?'':'disabled'}>Confirm & analyse →</button></div></form>`;
+    return `<tr><td><strong>${escapeHtml(f.name)}</strong><small>${escapeHtml(f.station)} · ${f.fs_hz} Hz</small><p class="field-help">${escapeHtml(f.blocked?'Source inspection and independent analysis available; operational assignment is pending.':f.suggested_reason || '')}${f.suggested_end?` · Suggested end ${f.suggested_end}`:''}</p></td><td>${state}${f.blocked?'<p class="field-help">This holds the operational study only. Use Source waveform inspection above for samples and independent measurements. Successive captures from one relay are not opposite line ends.</p>':''}<p class="field-help">${escapeHtml(DRInspection.qualityMessage(f))}</p><details><summary>Input details</summary><div class="flags">${escapeHtml(f.error || f.duplicate_of || f.flags.join('\n'))}</div></details></td><td><select data-record="${escapeHtml(f.name)}" data-index="${i}" ${usable?'':'disabled'}><option value="">${usable?(policy.requiresMapping?'Review mapping first…':'Choose…'):(f.blocked?'Blocked · use source viewer':'Excluded')}</option><option value="excluded">Exclude from this analysis</option><option value="S:primary">Sending end · Primary</option><option value="S:corroborating">Sending end · Corroborating</option><option value="R:primary">Receiving end · Primary</option><option value="R:corroborating">Receiving end · Corroborating</option></select></td></tr>`;
+  }).join('')}</tbody></table></div>${stageReviewEditor(row)}<div class="detail-section">${records.some(f=>DRInspection.assignmentPolicy(f,Boolean(config.mapping_targets)).allowed)?'':'<p class="field-help">No capture is currently eligible for operational assignment. Use Source waveform inspection above; review the listed blocking facts before attempting fault-location calculations.</p>'}<button class="button primary" type="submit" ${records.some(f=>DRInspection.assignmentPolicy(f,Boolean(config.mapping_targets)).allowed)?'':'disabled'}>Confirm & analyse →</button></div></form>`;
 }
 async function detail(id, revision = '') {
   const row = await api(`/api/incidents/${id}${revision?`?revision=${revision}`:''}`); current=row;
+  row.presentation=await api(`/api/incidents/${id}/end-names?revision=${row.number}`);
   await loadStageReviewSource(row);
   const result = row.result;
-  let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${escapeHtml(row.source)} intake · ${date(row.created)} · ${row.files.length} files</p></div><div class="detail-actions"><a class="button" href="#upload/${id}">＋ Attach late records</a>${result?.report_path?`<a class="button primary" href="/api/incidents/${id}/report?revision=${row.number}&download=true">Download report</a>`:''}</div></div>`;
+  let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${escapeHtml(row.source)} intake · ${date(row.created)} · ${row.files.length} files</p></div><div class="detail-actions"><a class="button" href="#upload/${id}">＋ Attach late records</a>${result?.report_path?`<a class="button primary" href="/api/incidents/${id}/named-report?revision=${row.number}&download=true">Download report</a>`:''}</div></div>`;
   if (row.error) body += `<div class="hint">${escapeHtml(row.error)}</div>`;
   if (['queued','running'].includes(row.state)) body += '<div class="panel busy"><span class="spinner"></span><h2>Processing this incident</h2><p>You can leave this page. The job and its results stay in the workspace.</p></div>';
+  body += DRIncident.navigation(row)+DRIncident.namesMarkup(row);
   body += inspectionPanel(row);
-  if (row.state==='needs_review') body += `<details class="panel detail-section"><summary>Optional operational study · assignments and input review</summary><p>Independent source analysis and reports are available above. Use this section for an operational study with its additional method inputs.</p>${assignmentForm(row)}</details>`;
-  if (row.state==='failed') body += '<div class="panel detail-section"><h2>Processing could not finish</h2><p>The files are retained. Review the error above, then retry the job.</p><button id="retry-job" class="button">Retry processing</button></div>';
+  if(result?.report_path)body+=incidentPane('viewer',`<section class="panel"><div class="panel-heading"><div><h2>Incident analysis report</h2><p>${escapeHtml(result.verdict)} · ${escapeHtml(result.location_text)}</p></div><a href="/api/incidents/${id}/named-report?revision=${row.number}" target="_blank" rel="noopener">Open report ↗</a></div><iframe data-named-report class="report-frame" title="Incident analysis report" sandbox="allow-same-origin" src="/api/incidents/${id}/named-report?revision=${row.number}"></iframe></section>`);
+  if(row.state==='needs_review')body+=incidentPane('inputs',`<section class="panel detail-section">${instrumentReviewEditor(row)}${mappingEditor(row)}${rxReviewEditor(row)}<p class="field-help">Channel and imported-settings reviews are saved when you confirm the <a href="${DRIncident.link(row,'study')}">operational study</a>. Manual diagram inputs are saved separately below.</p></section>`);
+  if (row.state==='needs_review') body += incidentPane('study',assignmentForm(row));
+  if (row.state==='failed') body += '<div data-incident-pane="study"><div class="panel detail-section"><h2>Processing could not finish</h2><p>The files are retained. Review the error above, then retry the job.</p><button id="retry-job" class="button">Retry processing</button></div></div>';
   if (result) {
-    body += navigationPanel(result);
-    body += relayEvidencePanel(result);
-    body += stageLocationsPanel(result.stage_locations);
-    body += standardsAuditsPanel(result);
+    body += incidentPane('diagrams',navigationPanel(result));
+    body += incidentPane('evidence',relayEvidencePanel(result));
+    body += incidentPane('evidence',stageLocationsPanel(result.stage_locations));
+    body += incidentPane('evidence',standardsAuditsPanel(result));
     const operationReview = result.operation_comparisons?.some(p => p.status === 'review differences');
-    if (operationReview) body += '<div class="hint"><h2>Review relay differences</h2><p>Records contain different fault or operation observations. The selected-record rule assessment below does not resolve these differences.</p></div>';
-    body += `<div class="panel result-banner"><span class="icon-box">${result.verdict === 'Correct operation' && !operationReview ? '✓' : '!'}</span><div><div class="eyebrow">SELECTED-RECORD RULE ASSESSMENT</div><h2>${escapeHtml(result.verdict)}</h2><p>${escapeHtml(result.location_text)}</p><p class="field-help">Line parameters: ${escapeHtml(result.parameter_status)}. Review all data-quality caveats in the report.</p></div></div>`;
-    if (result.excluded?.length) body += `<details class="panel detail-section"><summary>Records not driving the estimate (${result.excluded.length})</summary><ul>${result.excluded.map(v=>`<li class="field-help">${escapeHtml(v)}</li>`).join('')}</ul></details>`;
-    if (result.report_path) body += `<div class="panel"><div class="panel-heading"><h2>Incident report</h2><a href="/api/incidents/${id}/report?revision=${row.number}" target="_blank" rel="noopener">Open full report ↗</a></div><iframe class="report-frame" title="Incident analysis report" sandbox="allow-same-origin" src="/api/incidents/${id}/report?revision=${row.number}"></iframe></div>`;
+    if (operationReview) body += '<div data-incident-pane="evidence"><div class="hint"><h2>Review relay differences</h2><p>Records contain different fault or operation observations. The selected-record rule assessment below does not resolve these differences.</p></div></div>';
+    body += `<div data-incident-pane="evidence" class="panel result-banner"><span class="icon-box">${result.verdict === 'Correct operation' && !operationReview ? '✓' : '!'}</span><div><div class="eyebrow">SELECTED-RECORD RULE ASSESSMENT</div><h2>${escapeHtml(result.verdict)}</h2><p>${escapeHtml(result.location_text)}</p><p class="field-help">Line parameters: ${escapeHtml(result.parameter_status)}. Review all data-quality caveats in the report.</p></div></div>`;
+    if (result.excluded?.length) body += `<details data-incident-pane="evidence" class="panel detail-section"><summary>Records not driving the estimate (${result.excluded.length})</summary><ul>${result.excluded.map(v=>`<li class="field-help">${escapeHtml(v)}</li>`).join('')}</ul></details>`;
+
   }
-  body += `<details class="panel detail-section"><summary>Original file inventory (${row.files.length})</summary><table class="inventory"><tbody>${row.files.map(f=>`<tr><td>${escapeHtml(f.name)}</td><td>${size(f.size)}</td><td><code>${f.sha256.slice(0,16)}…</code></td></tr>`).join('')}</tbody></table></details>`;
-  body += `<div class="bottom-grid"><div class="panel detail-section"><h2>Report revisions</h2><ul class="activity">${row.revisions.map(r=>`<li><a href="#incident/${id}/${r.number}">Revision ${r.number}</a> ${badge(r.state)}<small>${date(r.created)}</small></li>`).join('')}</ul></div><div class="panel detail-section"><h2>Activity</h2><ul class="activity">${row.activity.map(a=>`<li>${escapeHtml(a.message)}<small>${date(a.at)} · Revision ${a.revision}</small></li>`).join('')}</ul></div></div>`;
+  body += `<details data-incident-pane="files" class="panel detail-section" open><summary>Original file inventory (${row.files.length})</summary><table class="inventory"><tbody>${row.files.map(f=>`<tr><td>${escapeHtml(f.name)}</td><td>${size(f.size)}</td><td><code>${f.sha256.slice(0,16)}…</code></td></tr>`).join('')}</tbody></table></details>`;
+  body += `<div data-incident-pane="files" class="bottom-grid"><div class="panel detail-section"><h2>Report revisions</h2><ul class="activity">${row.revisions.map(r=>`<li><a href="#incident/${id}/${r.number}">Revision ${r.number}</a> ${badge(r.state)}<small>${date(r.created)}</small></li>`).join('')}</ul></div><div class="panel detail-section"><h2>Activity</h2><ul class="activity">${row.activity.map(a=>`<li>${escapeHtml(a.message)}<small>${date(a.at)} · Revision ${a.revision}</small></li>`).join('')}</ul></div></div>`;
   $('detail-content').innerHTML=body;
+  DRIncident.bind(row);
   mountInspection(row);
   if (result) bindNavigation(row);
   if (['completed','attention','failed'].includes(row.state)) {
     const button=document.createElement('button');
     button.className='button';button.textContent='Review & rerun';
-    document.querySelector('.detail-actions').append(button);
+    const panel=document.createElement('section');panel.className='panel detail-section';panel.dataset.incidentPane='study';panel.innerHTML='<h2>Review operational inputs</h2><p>Create a new revision to change line, mapping or relay settings. Previous numerical reports remain archived.</p>';panel.append(button);document.getElementById('detail-content').append(panel);DRIncident.show();
     button.onclick=async()=>{
       try{await api(`/api/incidents/${id}/reanalyse?revision=${row.number}`,{method:'POST'});location.hash=`incident/${id}`;await detail(id);}
       catch(error){notice(error.message);}
@@ -174,7 +180,7 @@ async function detail(id, revision = '') {
         if(rxReviews[select.dataset.record]) assignments[select.dataset.record].rx_review=rxReviews[select.dataset.record];
       }
       try { const stages=collectStageReviews(row,mappings,assignments); for(const [name,review] of Object.entries(stages)) assignments[name].stage_review=review; } catch(error) { return notice(error.message); }
-      try { await api(`/api/incidents/${id}/review`,jsonPost({revision:row.number,line_id:$('review-line').value,assignments})); await detail(id); }
+      try { await api(`/api/incidents/${id}/review`,jsonPost({revision:row.number,line_id:$('review-line').value,assignments})); location.hash=DRIncident.link(row,'viewer');await detail(id); }
       catch(error){notice(error.message);}
     };
   }
@@ -192,7 +198,7 @@ async function integrations() {
 }
 async function route() {
   if (!config) return;
-  notice(); current=null;
+  notice();
   const [view,id,revision]=(location.hash.slice(1)||'overview').split('/');
   const name=view==='incident'?'detail':['overview','upload','integrations','catalogue'].includes(view)?view:'overview';
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==name);
@@ -203,7 +209,7 @@ async function route() {
     if(name==='upload') await uploadView(id);
     if(name==='integrations') await integrations();
     if(name==='catalogue') await catalogueView();
-    if(name==='detail') await detail(id,revision);
+    if(name==='detail'){if(current?.incident_id===id&&revision&&String(current.number)===revision)DRIncident.show();else await detail(id,revision);}else {current=null;inspectionController?.abort();}
   }catch(error){notice(error.message);}
 }
 $('upload-form').onsubmit=submitUpload;

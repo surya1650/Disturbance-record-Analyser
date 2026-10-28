@@ -32,7 +32,7 @@ def _plot(points, boundaries, positive=False, extent=None):
     return Markup(axes+''.join('<polyline points="'+p+'" fill="none" stroke="#176d82" stroke-width="1.2"/>' for p in paths))
 
 
-def combined_report(root, row, filename, cursor=0):
+def combined_report(root, row, filename, cursor=0, presentation=None):
     record = inspection_record(root, row, filename)
     source, _ = _source(root, row, filename)
     if not source.get('join'):
@@ -55,7 +55,7 @@ def combined_report(root, row, filename, cursor=0):
     timeline = record['timeline']
     start = _recorded(source['recorded_times']['start'])
     relative = times[cursor]-(timeline['trigger_offset_s'] or 0)
-    context = dict(name=row['name'], revision=row['number'], samples=source['sample_count'],
+    context = dict(name=row['name'], revision=row['number'], samples=source['sample_count'], presentation=presentation,
         cursor=cursor, origin=source['_origins'][cursor], relative_ms=relative*1000,
         reference_label="first capture's recorded trigger" if timeline['trigger_offset_s'] is not None else 'first sample (trigger unavailable)',
         local_time=(start+timedelta(seconds=times[cursor])).isoformat(timespec='microseconds'),
@@ -66,6 +66,7 @@ def combined_report(root, row, filename, cursor=0):
     template = '''<!doctype html><html><head><meta charset="utf-8"><title>Combined inspection report</title>
 <style>body{font:14px system-ui,sans-serif;color:#233d4c;max-width:1100px;margin:30px auto;padding:0 20px}h1,h2{color:#153d4b}small{display:block;color:#607580}table{width:100%;border-collapse:collapse}td,th{text-align:left;border-bottom:1px solid #d6e1e7;padding:8px;vertical-align:top}section{margin:24px 0}svg{width:100%;height:110px;background:#f5f9fb}article{break-inside:avoid;margin:18px 0}.notice{padding:14px;background:#fff7e8;border-left:4px solid #c58d2e}.hash{overflow-wrap:anywhere;font:11px monospace}@media print{button{display:none}body{margin:0}}</style></head><body>
 <button onclick="window.print()">Print / save PDF</button><h1>Combined inspection report</h1><p>{{ name }} · revision {{ revision }} · {{ samples }} retained samples</p>
+{% if presentation %}<p><strong>Sending end:</strong> {{ presentation.names.S or 'Name not provided' }} → <strong>Receiving end:</strong> {{ presentation.names.R or 'Name not provided' }}</p><p>Names are display labels ({{ presentation.name_sources.S }} / {{ presentation.name_sources.R }}), version {{ presentation.version }}. {% for s in join.sources %}{{ s.file }}: {{ 'Sending end' if presentation.record_ends.get(s.file) == 'S' else 'Receiving end' if presentation.record_ends.get(s.file) == 'R' else 'end unassigned' }}. {% endfor %}</p>{% endif %}
 <div class="notice">Derived same-relay source inspection. This report contains recorded observations and sample RMS, not a validated fault location, protection verdict or clock synchronization claim. Every original capture remains separate evidence.</div>
 <section><h2>Capture timeline</h2><p>{{ join.clock_basis }}</p><p>{{ join.sample_policy }}</p><table><tr><th>Original capture</th><th>Start / end from joined start</th><th>Recorded trigger</th><th>Boundary</th></tr>{% for s in join.sources %}<tr><td>{{ s.file }}<small>{{ s.samples }} samples</small></td><td>{{ (s.start_s*1000)|number }} / {{ (s.end_s*1000)|number }} ms</td><td>{{ (s.trigger_s*1000)|number if s.trigger_s is not none else 'Unavailable' }} ms from joined start</td><td>{% if s.boundary_delta_s is none %}First capture{% elif s.boundary_delta_s < 0 %}{{ (-s.boundary_delta_s*1000)|number }} ms recorded overlap{% else %}{{ (s.boundary_delta_s*1000)|number }} ms between boundary samples{% endif %}</td></tr>{% endfor %}</table></section>
 <section><h2>Cursor snapshot</h2><p>Joined sample {{ cursor }} · {{ relative_ms|number }} ms relative to {{ reference_label }} · {{ local_time }} relay-local time.</p><p>Original observation: {{ origin[0] }}, sample {{ origin[1] }} (zero based).</p><table><tr><th>Channel / source units</th><th>Instantaneous</th><th>Sample RMS · trailing nominal cycle</th><th>Observed range</th></tr>{% for c in analog %}<tr><td>{{ c.id }} {{ c.label }}<small>{{ c.units }}</small></td><td>{{ c.instant|number }}</td><td>{{ c.rms|number }}</td><td>{{ c.minimum|number }} to {{ c.maximum|number }}</td></tr>{% endfor %}</table><p>Sample RMS includes DC/harmonics and uses equal sample weights. Incomplete, missing, gapped and cross-capture supports remain unavailable. It is not the fitted fundamental phasor magnitude.</p></section>

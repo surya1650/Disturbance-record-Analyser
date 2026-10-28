@@ -8,6 +8,10 @@ from .source_jobs import SourceJobs
 
 
 def install_inspection(app, store, registry=None):
+    from .end_names import install_end_names
+    install_end_names(app, store)
+    from .diagram_inputs import install_diagram_inputs
+    install_diagram_inputs(app, store)
     from .instrument_review import install_instrument_review
     install_instrument_review(app, store)
     jobs=SourceJobs(store.root,registry)
@@ -77,7 +81,8 @@ def install_inspection(app, store, registry=None):
         row = store.get(incident_id, revision)
         if row is None:
             raise HTTPException(404, 'Revision not found.')
-        return HTMLResponse(combined_report(store.root, row, record, cursor))
+        from .end_names import read_end_names
+        return HTMLResponse(combined_report(store.root, row, record, cursor, read_end_names(store, row)))
 
     @app.get('/api/incidents/{incident_id}/inspection/samples')
     def inspection_native(incident_id: str, record: str, channel_id: str, start_index: int, stop_index: int,

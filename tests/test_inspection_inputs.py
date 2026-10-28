@@ -8,3 +8,9 @@ def test_source_input_model():
     node=shutil.which('node')
     assert node
     subprocess.run([node,str(Path(__file__).with_name('inspection_inputs.cjs'))],check=True)
+
+
+def test_named_source_coordinate_guard():
+    node=shutil.which('node')
+    assert node
+    subprocess.run([node,str(Path(__file__).with_name('incident_layout.cjs'))],check=True)

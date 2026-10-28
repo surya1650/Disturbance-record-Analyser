@@ -26,7 +26,7 @@ function mountNavigation(host, data, row) {
   let evidence, record, axis, lo, hi, cursor, analogIndex=0, digitalIndex=-1, loop='AB';
   let exact=null, requestNumber=0;
   function clearExact(){exact=null;requestNumber++;const b=host.querySelector('#nav-native');if(b)b.disabled=false;}
-  host.innerHTML = `<label>Relay record<select id="nav-record">${records.map((r,i)=>`<option value="${i}">End ${esc(r.end || 'unassigned')} · ${esc(r.protection_system)} · ${esc(r.file)}</option>`).join('')}</select></label><div id="nav-controls"></div><div id="nav-view"></div>`;
+  host.innerHTML = `<label>Relay record<select id="nav-record">${records.map((r,i)=>`<option value="${i}">${esc(DRIncident.recordLabel(row,r.file))} · ${esc(r.protection_system)}</option>`).join('')}</select></label><div id="nav-controls"></div><div id="nav-view"></div>`;
   const el = name => host.querySelector('#'+name);
   const svg = (label, content, height=230) => `<div class="nav-plot" role="region" tabindex="0" aria-label="${esc(label)}"><svg role="img" aria-label="${esc(label)}" viewBox="0 0 800 ${height}">${content}</svg></div>`;
   const text = (x,y,value,extra='') => `<text x="${x}" y="${y}" ${extra}>${esc(value)}</text>`;
@@ -39,7 +39,7 @@ function mountNavigation(host, data, row) {
       line(60,35,60,110)+line(740,35,740,110)+line(60,70,180,70)+line(260,70,540,70)+line(620,70,740,70)+
       '<rect x="180" y="48" width="80" height="44" fill="#f1f5f6" stroke="#82999e" stroke-dasharray="5 4"/>'+
       '<rect x="540" y="48" width="80" height="44" fill="#f1f5f6" stroke="#82999e" stroke-dasharray="5 4"/>'+
-      text(30,22,'Bus S')+text(708,22,'Bus R')+text(220,75,'CB ?', 'text-anchor="middle"')+text(580,75,'CB ?', 'text-anchor="middle"')+
+      text(30,22,'Sending · '+(row.presentation?.names.S||'Name not provided').slice(0,30))+text(770,22,'Receiving · '+(row.presentation?.names.R||'Name not provided').slice(0,30),'text-anchor="end"')+text(220,75,'CB ?', 'text-anchor="middle"')+text(580,75,'CB ?', 'text-anchor="middle"')+
       text(400,58,'Line / circuit', 'text-anchor="middle"')+text(30,135,side('S'))+text(450,135,side('R'))+
       text(30,160,'Logical connectivity only. Trip or inactive open indication does not prove breaker position.'),180);
   }
@@ -153,11 +153,13 @@ function mountNavigation(host, data, row) {
     }
     el('nav-export').onclick=()=>{
       const copy=el('nav-view').cloneNode(true);copy.querySelectorAll('button').forEach(b=>b.remove());
-      const html=`<!doctype html><meta charset="utf-8"><title>Local DR event view</title><style>body{font:14px system-ui;max-width:1100px;margin:30px auto;padding:20px}svg{width:100%;max-height:320px}text{font:13px system-ui}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:10px}small{display:block}p{line-height:1.6}</style><h1>Local DR event view</h1><p>Incident ${esc(row.incident_id || row.id)} · Original record SHA-256 ${esc(evidence.record_hash)}</p>${copy.innerHTML}`;
+      const html=`<!doctype html><meta charset="utf-8"><title>Local DR event view</title><style>body{font:14px system-ui;max-width:1100px;margin:30px auto;padding:20px}svg{width:100%;max-height:320px}text{font:13px system-ui}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:10px}small{display:block}p{line-height:1.6}</style><h1>Local DR event view</h1><p>Incident ${esc(row.incident_id || row.id)} · Original record SHA-256 ${esc(evidence.record_hash)}</p>${DRIncident.reportHeading(row,evidence.file)}${copy.innerHTML}`;
       const url=URL.createObjectURL(new Blob([html],{type:'text/html'}));const a=document.createElement('a');a.href=url;a.download=`local-event-r${row.number}.html`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
     draw();
   }
+  const refreshNames=()=>{if(!host.isConnected){document.removeEventListener('dr-end-names',refreshNames);return;}for(const [i,option] of [...el('nav-record').options].entries())option.textContent=DRIncident.recordLabel(row,records[i].file)+' · '+records[i].protection_system;if(record)draw();};
+  document.addEventListener('dr-end-names',refreshNames);
   el('nav-record').onchange=e=>selectRecord(Number(e.target.value));
   if(records.length) selectRecord(0);
 }
