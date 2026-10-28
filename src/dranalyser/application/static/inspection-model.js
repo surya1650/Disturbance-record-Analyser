@@ -84,16 +84,23 @@ const DRInspection = (() => {
     if(file.duplicate_of)return `Identical copy of ${file.duplicate_of}.`;
     if(!file.ok)return 'Operational decoding needs review. Open source inspection for recoverable observations; the exact reason is in Input details.';
     const notes=(file.flags||[]).filter(f=>f.startsWith('[BLOCK')).map(f=>/gap|jitter|drift|timestamp/i.test(f)?'Sample intervals vary. Actual-time source diagnostics remain available; uniform-sample calculations need suitable timing.':/crest factor|RMS|sqrt/i.test(f)?'The exported amplitude convention needs review for physical measurements; no scaling convention is inferred.':/CH-MISSING/.test(f)?'Assign the missing phase/channel meanings for calculations that use them.':f.replace(/^\[[^\]]+\]\s*/,''));
+    if((file.flags||[]).some(n=>n.startsWith('[BLOCK RATIO-PS]')))return 'Secondary quantities have missing or invalid CT/VT ratios. Primary-unit calculations are withheld; channel names, end selection and recording profiles do not supply instrument ratios.';
     return notes.length?notes.join(' '):'Recorded inputs are available for assignment.';
+  }
+  function assignmentPolicy(file,canReview=false){
+    const flags=(file.flags||[]).filter(f=>f.startsWith('[BLOCK ')),codes=flags.map(f=>f.match(/^\[BLOCK ([^\]]+)\]/)?.[1]||'UNKNOWN');
+    const requiresMapping=Boolean(file.blocked&&canReview&&file.channel_inventory?.length&&codes.length&&codes.every(c=>c==='CH-MISSING'));
+    return {allowed:Boolean(file.ok&&!file.duplicate_of&&(!file.blocked||requiresMapping)),requiresMapping,codes};
   }
   function operationalGuidance(file){
     const flags=(file.flags||[]).join(' '),notes=[];
     if(flags.includes('TIME-DAT'))notes.push('TIME-DAT: the uniform-grid fault-location pipeline withheld this capture. Monotonic DAT source timestamps can still support waveform inspection and sample RMS. No timestamp repair is applied.');
     if(flags.includes('SCALE-CF'))notes.push('SCALE-CF: the crest-factor check needs review. Short pre-trigger support can make it inconclusive. Crest factor alone does not establish RMS storage or a gain correction; do not multiply the record by √2 on this basis.');
+    if(flags.includes('RATIO-PS'))notes.push('RATIO-PS: secondary quantities lack usable CT/VT ratios. Obtain the verified primary/secondary ratings from relay settings or instrument nameplates and a corrected, traceable export. End selection and recording profiles do not define those ratios. Counts remain inspectable when engineering-unit conversion is unavailable.');
     if(flags.includes('WIN-PREFAULT'))notes.push('Short pre-trigger capture: some pre-fault and superimposed methods lack support. Inspect each capture or join compatible successive captures from the same relay; joining does not automatically clear operational blocks.');
     if(file.blocked&&!notes.length)notes.push('Operational calculations are withheld pending the input checks below. Independent source inspection remains available where samples can be recovered.');
     return notes;
   }
-  return {create,identity,exactPoints,delta,value,nearest,segments,phaseFor,groupChannels,qualityMessage,operationalGuidance,milliseconds,relayTime,axisTicks,rmsSeries,amplitudeScale,amplitudeLabel};
+  return {create,identity,exactPoints,delta,value,nearest,segments,phaseFor,groupChannels,qualityMessage,operationalGuidance,assignmentPolicy,milliseconds,relayTime,axisTicks,rmsSeries,amplitudeScale,amplitudeLabel};
 })();
 if(typeof module!=='undefined')module.exports=DRInspection;

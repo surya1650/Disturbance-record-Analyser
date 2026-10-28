@@ -118,6 +118,8 @@ def test_a_blocked_record_cannot_be_assigned_to_an_end(tmp_path):
 
     refusals = assign(b, {"short.cfg": ("S", "primary")})
     assert refusals and "blocked by the conformance gate" in refusals[0]
+    assert '[BLOCK CH-MISSING]' in refusals[0]
+    assert 'required channels absent' in refusals[0]
     assert rec.terminal_end == ""
 
 

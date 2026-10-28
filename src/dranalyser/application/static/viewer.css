@@ -58,6 +58,22 @@
 #source-inspection .inspection-join-controls,#source-inspection .inspection-joined-notice,#source-inspection .inspection-operational-notes{border:1px solid #d4e2e9;border-radius:8px;padding:12px;margin:14px 0;font-size:12px;background:#f7fafc}
 #source-inspection .inspection-join-controls select{width:100%;margin:8px 0}
 #source-inspection .inspection-operational-notes{border-left:3px solid #bd8b30;background:#fffaf0}
+.instrument-review{padding:16px;margin:16px 0;border:1px solid #d4e2e9;border-radius:8px;background:#f7fafc}
+.instrument-review details{padding:12px 0;border-bottom:1px solid #d4e2e9}
+.instrument-review small{display:block;font-weight:400;color:#607080}
+.instrument-review input[type=number]{width:130px;max-width:100%}
+.instrument-review label{display:block;margin:12px 0}
+.instrument-review input[type=checkbox]{width:auto;display:inline-block}
+.instrument-review textarea{width:100%;min-height:70px;font:inherit;padding:10px;border:1px solid #d4e2e9;border-radius:6px}
+.instrument-review button{font:inherit;font-size:12px;background:#f1f7f9;color:#264e60;border:1px solid #c9dae3;border-radius:6px;padding:8px 12px;cursor:pointer}
+.instrument-review button:hover{background:#e5f0f3}
+.instrument-review button:disabled{opacity:.5;cursor:default}
+.instrument-common{display:grid;grid-template-columns:1fr 1fr minmax(160px,1fr);align-items:end;gap:10px}
+.instrument-common label{margin:8px 0;min-width:0}
+.instrument-common input[type=number]{display:block;width:100%;margin-top:5px}
+.instrument-common button{margin:8px 0}
+.instrument-rating-result{font-size:12px;padding:10px 0;overflow-wrap:anywhere}
+@media(max-width:650px){.instrument-common{grid-template-columns:1fr}}
 @media(max-width:1000px){
   #source-inspection .inspection-display{grid-template-columns:minmax(0,1fr) 245px;gap:10px}
   #source-inspection .inspection-vector{padding:10px}

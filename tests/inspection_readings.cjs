@@ -52,3 +52,23 @@ assert.equal(model.amplitudeLabel(200000),'200k');
 const graph=r.graphMarkup({id:'A1',kind:'analog',units:'V (CFG-declared, unverified)'},[20,.02,12],[20,.02,9],null,'rms','+8.000 ms');
 assert.match(graph,/Instantaneous/);assert.match(graph,/12.0000 V/);assert.match(graph,/Sample RMS/);assert.match(graph,/9.00000 V/);assert.match(graph,/\+8.000 ms/);
 assert.ok(!graph.includes('Fundamental RMS'));
+
+const secondary={ok:true,blocked:true,flags:['[BLOCK RATIO-PS] IA secondary=0'],channel_inventory:[{id:'A1'}]};
+assert.equal(model.assignmentPolicy(secondary,true).allowed,false);
+assert.match(model.qualityMessage(secondary),/CT\/VT ratios/);
+assert.ok(model.operationalGuidance(secondary).some(s=>s.startsWith('RATIO-PS:')));
+assert.equal(model.assignmentPolicy({...secondary,flags:['[BLOCK TIME-DAT] invalid grid']},true).allowed,false);
+assert.equal(model.assignmentPolicy({...secondary,flags:['[BLOCK UNKNOWN] inspect']},true).allowed,false);
+const mapOnly={...secondary,flags:['[BLOCK CH-MISSING] missing IA']};
+assert.equal(model.assignmentPolicy(mapOnly,true).allowed,true);
+assert.equal(model.assignmentPolicy(mapOnly,true).requiresMapping,true);
+assert.equal(model.assignmentPolicy(mapOnly,false).allowed,false);
+assert.equal(model.assignmentPolicy({...secondary,blocked:false,flags:[]},true).allowed,true);
+
+const questions=require('../src/dranalyser/application/static/instrument-review.js');
+assert.deepEqual(questions.missingInstrumentRatings({channel_inventory:[
+ {id:'A1',kind:'analog',unit:'A',ps:'S',primary:1,secondary:0},
+ {id:'A2',kind:'analog',unit:'V',ps:'S',primary:220000,secondary:110},
+ {id:'A3',kind:'analog',unit:'A',ps:'P',primary:1,secondary:0},
+ {id:'D1',kind:'digital',unit:'state',ps:'S',primary:1,secondary:0}
+]}).map(c=>c.id),['A1']);

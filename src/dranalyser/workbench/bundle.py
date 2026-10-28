@@ -310,7 +310,7 @@ def assign(bundle: Bundle, choices: Dict[str, Tuple[str, str]],
             refusals.append(name + ": terminal must be S, R or unassigned")
             continue
         if end and not f.usable:
-            why = (f.error or ("blocked by the conformance gate" if f.blocked
+            why = (f.error or (("blocked by the conformance gate: "+("; ".join(s for s in f.flags if s.startswith('[BLOCK ')) or 'see Input details'))[:2500] if f.blocked
                                else "duplicate of " + f.duplicate_of))
             refusals.append(name + ": cannot be assigned to an end -- " + why)
             continue

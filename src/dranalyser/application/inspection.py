@@ -8,6 +8,8 @@ from .source_jobs import SourceJobs
 
 
 def install_inspection(app, store, registry=None):
+    from .instrument_review import install_instrument_review
+    install_instrument_review(app, store)
     jobs=SourceJobs(store.root,registry)
     app.state.source_jobs=jobs
     original=app.router.lifespan_context
@@ -67,6 +69,15 @@ def install_inspection(app, store, registry=None):
         source, _ = _source(store.root, row, record)
         return Response(export_join(source), media_type='application/zip',
                         headers={'Content-Disposition': 'attachment; filename="joined-comtrade.zip"'})
+
+    @app.get('/api/incidents/{incident_id}/inspection/combined-report')
+    def joined_report(incident_id: str, record: str, revision: int = Query(..., ge=1), cursor: int = 0):
+        from fastapi.responses import HTMLResponse
+        from ..workbench.join_report import combined_report
+        row = store.get(incident_id, revision)
+        if row is None:
+            raise HTTPException(404, 'Revision not found.')
+        return HTMLResponse(combined_report(store.root, row, record, cursor))
 
     @app.get('/api/incidents/{incident_id}/inspection/samples')
     def inspection_native(incident_id: str, record: str, channel_id: str, start_index: int, stop_index: int,
