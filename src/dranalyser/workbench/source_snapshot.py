@@ -8,6 +8,7 @@ from pathlib import Path
 import yaml
 
 from .source_inspection import inspection_record
+from .location_summary import snapshot_location
 
 
 def _finite(value):
@@ -22,6 +23,8 @@ def line_facts(root,revision):
         location=dict(status='Not available',text='Line/model and eligible location evidence are not supplied.',km_from_S=None))
     saved=result.get('line_snapshot')
     if not saved:
+        if 'location_summary' in result:
+            out['location']=snapshot_location(result['location_summary'],revision,None,None,False,result.get('location_text',''))
         return out
     allowed=(Path(root)/'runs'/revision['incident_id']/str(revision['number'])).resolve()
     path=Path(saved).resolve()
@@ -52,6 +55,10 @@ def line_facts(root,revision):
             out['sections'].append(dict(from_km=lo,to_km=hi,**{key+'_ohm_per_km':_finite(section.get(key)) for key in ('r1','x1','r0','x0')}))
         out['length_km']=previous if covered and out['sections'] else None
         text=result.get('location_text') or ''
+        if 'location_summary' in result:
+            eligible=out['parameter_status']!='provisional' and not data.get('model_review_required',False)
+            out['location']=snapshot_location(result['location_summary'],revision,out['sha256'],out['length_km'],eligible,text)
+            return out
         match=re.match(r'^([0-9]+(?:\.[0-9]+)?) km from ',text)
         if match:
             km=float(match.group(1))

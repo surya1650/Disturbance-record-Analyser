@@ -21,7 +21,7 @@ Two conventions that matter:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
@@ -137,6 +137,14 @@ def terminal_features(
     asserts = {k: first(k) for k in ("TRIP_Z2", "TRIP_Z3", "TRIP_Z4")}
     operate = None if trip_t is None else trip_t - t0
 
+    # A timing-derived zone needs this terminal's actual timer. A caller's shared
+    # project default or the other end's settings cannot establish its zone.
+    zone2 = settings.zone("Z2") if settings is not None else None
+    timer = (zone2.t1 if zone2 is not None and type(zone2.t1) in (int, float)
+             and np.isfinite(zone2.t1) and zone2.t1 > 0 else None)
+    operated_zone = (infer_zone_operated(asserts, operate, timer) if timer is not None
+                     else infer_zone_operated(asserts, None))
+
     # Single-pole against three-pole tripping. Pole-to-pole timing is only
     # meaningful when all three poles were commanded together; on a
     # single-pole trip the healthy poles open later because they were
@@ -198,7 +206,9 @@ def terminal_features(
         "breaker_ms": (None if (trip_t is None or t_open is None)
                        else (t_open - trip_t) * MS),
         "clear_ms": _ms(t_open, t0),
-        "zone_operated": infer_zone_operated(asserts, operate, z2_time_s),
+        "zone_operated": operated_zone,
+        "zone_timer_s": timer,
+        "zone_timer_source": "Terminal settings export" if timer is not None else "Not supplied",
         "carrier_send": cs is not None,
         "carrier_send_ms": _ms(cs, t0),
         "carrier_send_mapped": sm.has("CARRIER_SEND"),

@@ -56,3 +56,31 @@ Targeted capability, real source-analysis mount, input, cursor and layout tests:
 **30 passed**. All four changed JavaScript files pass Node syntax checks. The
 line-selection regression was reproduced against baseline (132 vs expected 0),
 then passed with the fix. No numerical estimator or source bytes changed.
+
+## P2 — calculation and versioned physical result
+
+Simple report now exposes Calculate fault location using the existing durable
+review/worker path, explicit line/S/R declarations and preserved accepted mappings.
+Other records are explicitly excluded, without deletion. Reruns create a new
+revision, check identical frozen sources and keep previous reports. Route changes
+cancel client work; server revision checks remain authoritative. Same-relay
+successive captures cannot be assigned as opposite-end primaries.
+
+New results add `location_summary.version=1`: exact engine distances, named method,
+mode/type, per-method acceptance/weights, supported local windows, public finite
+diagnostics and line/source/metadata/revision hashes. Private callable diagnostics
+are excluded. Existing prose/history remain readable; invalid new evidence never
+falls back to a distance parsed from prose. Section-aware km conversion is retained.
+
+Settings-dependent zone inference now requires that terminal's actual Z2 timer;
+a project fallback or the other end's timer cannot prove its zone. Explicit
+zone-qualified contacts remain observations. Worker/features ratchet increases
+are intentional for binding and per-terminal evidence (no blanket reseed).
+
+Targeted application checks: 31 passed; summary checks: 7 passed; settings checks:
+9 passed; prior rules/report group: 42 passed, 8 private skips. Calculation UI
+checks verify missing facts, single-end selection, stale sources, revisions and
+cancellation. Browser primary action yields E5 **41.98828243177587 km** on desktop
+and mobile. HTML/JSON report exports retain E5 and the observation model, without
+page errors or mobile overflow. Minimum-input schema follow-up is in progress:
+E5 must not require unrelated missing Z0/source impedances.

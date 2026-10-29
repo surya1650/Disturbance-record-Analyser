@@ -1,0 +1,43 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const context=vm.createContext({setTimeout});
+vm.runInContext(fs.readFileSync('src/dranalyser/application/static/fault-calculation.js','utf8')+';globalThis.calc=DRFaultCalculation',context);
+const calc=context.calc;
+const row={incident_id:'incident',number:2,state:'needs_review',files:[{name:'S.cfg',sha256:'a'},{name:'R.cfg',sha256:'b'}],metadata:{line_id:'line',assignments:{'S.cfg':{end:'S',role:'primary',rx_review:{accepted:true},channel_mapping:{record_hash:'a'}},'R.cfg':{end:'R',role:'primary'}}},bundle:{files:[{kind:'comtrade',name:'S.cfg',ok:true},{kind:'comtrade',name:'R.cfg',ok:true},{kind:'comtrade',name:'other.cfg',ok:true}]}};
+const choices={line_id:'line',S:'S.cfg',R:'R.cfg',confirmed:true};
+assert.throws(()=>calc.payload(row,{...choices,confirmed:false}),/Confirm/);
+assert.throws(()=>calc.payload(row,{...choices,line_id:''}),/line model/);
+assert.throws(()=>calc.payload(row,{...choices,R:'S.cfg'}),/both physical ends/);
+assert.throws(()=>calc.payload(row,{...choices,S:'unknown.cfg'}),/recoverable/);
+assert.equal(calc.payload(row,choices).assignments['other.cfg'].role,'excluded');
+assert.equal(calc.payload(row,{...choices,R:''}).assignments['R.cfg'].role,'excluded');
+assert.equal(calc.payload(row,choices).assignments['S.cfg'].rx_review.accepted,true);
+assert.equal(calc.payload(row,{...choices,line_id:'different'}).assignments['S.cfg'].rx_review,undefined);
+assert.equal(calc.payload(row,{...choices,S:'',R:'S.cfg'}).assignments['S.cfg'].rx_review,undefined);
+assert.equal(calc.payload(row,{...choices,S:'',R:'S.cfg'}).assignments['S.cfg'].channel_mapping.record_hash,'a');
+assert.match(calc.panel(row,{lines:[]}),/Needs a declared line model/);
+assert.match(calc.panel({...row,state:'running'},{lines:[{id:'line'}]}),/Wait for the current revision/);
+(async()=>{
+ let calls=[];
+ const req=async(path,options)=>{calls.push([path,options]);return {};};
+ assert.equal(await calc.queue(row,choices,req),2);
+ assert.equal(calls.length,1);assert.match(calls[0][0],/\/review$/);
+ let step=0;
+ const next=async(path,options)=>{
+  calls.push([path,options]);
+  if(path.includes('/reanalyse'))return {revision:3};
+  if(path.includes('?revision=3'))return {...row,number:3,state:step++?'needs_review':'running'};
+  return {};
+ };
+ calls=[];
+ assert.equal(await calc.queue({...row,state:'completed'},choices,next,{wait:async()=>{}}),3);
+ assert.equal(JSON.parse(calls.at(-1)[1].body).revision,3);
+ let writes=0;
+ await assert.rejects(()=>calc.queue({...row,state:'completed'},choices,async(path)=>{
+  if(path.includes('/reanalyse'))return {revision:3};
+  if(path.includes('?revision='))return {...row,number:3,files:[]};
+  writes++;return {};
+ }),/Source files changed/);
+ assert.equal(writes,0);
+ await assert.rejects(()=>calc.queue(row,choices,req,{signal:{aborted:true}}),/cancelled/);
+ console.log('Fault calculation: assignments, missing inputs, single end, revision, source and cancellation checks passed');
+})().catch(e=>{console.error(e);process.exitCode=1;});

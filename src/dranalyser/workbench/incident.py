@@ -31,6 +31,7 @@ from .settings import settings_by_record
 from .stage_review import apply_stage_review
 from .stage_location import stage_locations
 from .audits import audit_bundle
+from .location_summary import summarize
 from ..standards.checklist import reference_pack
 
 
@@ -56,6 +57,7 @@ class IncidentResult:
     standards_sources: List[dict] = field(default_factory=list)
     navigator_path: str = ""
     stage_locations: List[dict] = field(default_factory=list)
+    location_summary: dict = field(default_factory=dict)
 
 
 def _read(bundle: Bundle, bf: BundleFile, end: str):
@@ -167,6 +169,7 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
             res.excluded.append(why)
 
     if not ans:
+        res.location_summary = summarize(None, line, line_path, ans, res.used, reasons=res.errors + res.excluded)
         res.verdict = "No record reached the analysis."
         return res
 
@@ -177,12 +180,8 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
                                              zs0=line.terminals[e].zs0,
                                              polarity=line.terminals[e].i_polarity)
                             for e, a in ans.items()})
-    z2 = 0.35
-    for s in settings.values():
-        if s.zone("Z2"):
-            z2 = s.zone("Z2").t1
-    feats = incident_features(ans, location=loc, line=line, settings=settings,
-                              z2_time_s=z2)
+    res.location_summary = summarize(loc, line, line_path, ans, res.used, reasons=res.errors + res.excluded)
+    feats = incident_features(ans, location=loc, line=line, settings=settings)
     rr = apply_rules(feats, load_rules())
     rep = build(ans, feats, rr, location=loc, line=line, settings=settings,
                 ground_truth_url=confirm_url)

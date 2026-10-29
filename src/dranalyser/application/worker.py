@@ -10,6 +10,7 @@ from ..registry.loader import load_line
 from ..workbench.bundle import assign, open_bundle
 from ..workbench.incident import analyse_bundle, default_line_files
 from ..workbench.resolve import suggest
+from ..workbench.location_summary import bind_summary
 from ..workbench.settings import settings_by_record
 from .intake import Intake, metadata_value
 from .store import Store
@@ -54,6 +55,15 @@ def validate_assignments(bundle, raw, registry):
         at_end = [f for f in selected if f.terminal_end == end]
         if at_end and sum(f.role == "primary" for f in at_end) != 1:
             refusals.append(f"End {end} requires exactly one primary; other records may corroborate it.")
+    primaries = {f.terminal_end: f for f in selected if f.role == "primary"}
+    if set(primaries) == {"S", "R"}:
+        sending, receiving = primaries["S"], primaries["R"]
+        def identity(record):
+            return tuple(str(v or "").strip().casefold() for v in (record.station, record.device_id))
+        if sending.content_hash and sending.content_hash == receiving.content_hash:
+            refusals.append("The same capture cannot represent both physical ends.")
+        if all(identity(sending)) and identity(sending) == identity(receiving):
+            refusals.append("Both primary captures declare the same station and relay; successive captures from one relay cannot represent opposite physical ends.")
     if refusals:
         raise ValueError(" ".join(refusals))
     bundle.line_path = paths[0] if paths else ""
@@ -118,6 +128,7 @@ class Worker:
             result["line_snapshot"] = line_path
             result["parameter_status"] = next((x["parameter_status"] for x in registry_entries(self.registry)
                                                 if x["id"] == bundle.line_id), "not supplied")
+            result["location_summary"] = bind_summary(res.location_summary, job, result["parameter_status"])
             self.store.finish(job, "completed" if res.report_path and not res.errors else "attention",
                               bundle=dataclasses.asdict(bundle), result=result,
                               error="; ".join(res.errors))
