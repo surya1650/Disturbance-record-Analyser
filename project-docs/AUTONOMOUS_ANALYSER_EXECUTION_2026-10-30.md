@@ -84,3 +84,16 @@ cancellation. Browser primary action yields E5 **41.98828243177587 km** on deskt
 and mobile. HTML/JSON report exports retain E5 and the observation model, without
 page errors or mobile overflow. Minimum-input schema follow-up is in progress:
 E5 must not require unrelated missing Z0/source impedances.
+
+## P3 — concise observations and qualified interpretation
+
+The shared event report adds a versioned explanation separating source-bound
+analog/digital observations, matching operational classification/location, and
+uncertainty. Missing healthy baselines stay missing; command assertions cannot
+prove physical CB opening/reclosure or settings compliance. Sample/time brackets,
+region/source hashes and omitted-transition notes remain in JSON. The UI and
+HTML export consume the same explanation. Exact stored record selection is
+required before a method-labelled location/classification can be shown.
+Fresh focused report/explanation/UI tests: **37 passed**, one upstream warning.
+The broader event/navigation/R-X group passed **81 tests**. Private opposite-end
+records and patrol truth remain unavailable; this is synthetic/software evidence.

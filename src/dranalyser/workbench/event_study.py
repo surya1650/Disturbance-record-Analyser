@@ -8,6 +8,7 @@ from .source_inspection import _source, _trace
 from .source_rms import sample_rms
 from .source_snapshot import line_facts
 from .source_regions import auto_regions
+from .event_explanation import explain_event, visual_context
 
 
 def _object(value, allowed, label):
@@ -108,7 +109,7 @@ def prepare_inputs(root, revision, value):
         def identity(s):
             return tuple(str(s.get(k) or '').strip().casefold() for k in ('station','device'))
         if all(identity(a)) and identity(a)==identity(b):
-            raise ValueError('Both captures declare the same station and relay. Successive captures from one relay are joined at one end, not assigned to opposite ends.')
+            raise ValueError('Both captures declare the same station and relay. Keep successive captures separate at one end; they cannot be assigned to opposite ends. Joining/export is not available.')
     return dict(same_event_confirmed=value.get('same_event_confirmed',False),ends=prepared),sources
 
 
@@ -215,6 +216,7 @@ def _end_report(source,item,inputs):
         mappings=inputs['mappings'],asserted_states=inputs['asserted_states'],
         timing_mode=inputs['timing_mode'],timing_evidence=inputs['timing_evidence'],
         pre=inputs['pre'],fault=inputs['fault'],post=inputs['post'],
+        region_support={kind:dict(indices=inputs[kind],time_range_s=[times[inputs[kind][0]],times[inputs[kind][1]-1]]) if inputs[kind] else None for kind in ('pre','fault','post')},
         time_basis='Source-local seconds; selected fault-region start is a display reference only, not synchronized or detected fault inception.',
         rms_basis='Median of complete trailing one-cycle sample RMS observations wholly within each selected region; includes DC/harmonics. Source units and declared scaling are unverified.')
 
@@ -229,7 +231,9 @@ def build_event_report(root,revision,inputs, *, prepared=None):
     selected={end:chosen['record'] for end,chosen in inputs['ends'].items()}
     matches=bool(used) and used==selected
     location=facts['location']
-    method=existing.get('location_text','').partition(' by ')[2].strip() or None
+    method=location.get('method')
+    if not method and not existing.get('location_summary'):
+        method=existing.get('location_text','').partition(' by ')[2].strip() or None
     km=location.get('km_from_S') if matches and method and location.get('overlay_eligible') is True and facts.get('parameter_status')!='provisional' else None
     reasons=['Display selections and one-cycle RMS do not authorize fault location.',facts['provenance'],
         'A stored operational estimate uses its reviewed mappings and line model; display-only choices do not recompute it.']
@@ -248,7 +252,9 @@ def build_event_report(root,revision,inputs, *, prepared=None):
         method=method if km is not None else None,parameter_status=facts.get('parameter_status','Not available'),
         km_from_S=km,reference='S',reason=' '.join(reasons),
         source_records=used,next_action=dict(kind='operational-study',label='Review end assignments and run incident study',
-            requirements=['Verified CT/VT ratios and channel meanings','Line section impedances and length','Physical sending/receiving end assignments','Eligible fault and pre-fault observations']))
+            requirements=['Verified CT/VT ratios and channel meanings','Line section impedances and length','Physical sending/receiving end assignments','Eligible method-specific windows; pre-fault only when the method requires it']))
+    if matches and location.get('summary'):
+        distance.update(summary=location['summary'],mode=location.get('mode'),fault_type=location.get('fault_type') if km is not None else None)
     reported=[]
     for end,chosen in inputs['ends'].items():
         entry=chosen['relay_distance']
@@ -261,6 +267,8 @@ def build_event_report(root,revision,inputs, *, prepared=None):
         reported.append(dict(end=end,**entry,reported_from_S_km=converted,delta_to_calculated_km=delta,
             reason='Operator-transcribed relay estimate, not patrol-confirmed distance. '+('Reported distance exceeds the declared line length; no comparison is made.' if outside else 'Receiving-end conversion needs a declared line length.' if converted is None else 'Compared only in the declared S reference.')))
     return dict(incident_id=revision['incident_id'],revision=revision['number'],ends=ends,distance=distance,
+        explanation=explain_event(ends,distance,fault_type=location.get('fault_type') if km is not None else None),
+        **visual_context(facts,existing,selected),
         relay_distances=reported,authorizes_location=False,notes=[
             'End names and same-event confirmation are operator declarations. Automatic intervals retain their RMS/indication support; manual intervals remain operator selections. Neither establishes synchronized clocks.',
             'No channel ratios, missing samples or physical breaker operation are inferred. Automatic change boundaries are observation support, not certified fault inception. Raw counts remain raw counts; declared engineering units are not independently verified.',
