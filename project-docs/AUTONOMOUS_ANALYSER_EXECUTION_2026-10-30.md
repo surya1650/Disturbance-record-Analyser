@@ -125,3 +125,15 @@ Stage-A 10,000 remains PASS, clean p95 **0.4361%**, no uncaveated impossible res
 Accepted physical declarations are retained on unchanged reruns; editing the
 line or either end clears confirmation. Display selections are never promoted.
 Exact intentional module-growth budgets are updated without unrelated reseeding.
+
+## P5 — honest same-relay joining boundary
+
+A bounded route/module audit found no supported same-relay join/COMTRADE-export
+workflow. The misleading joined-recording viewer promise is removed. Captures
+remain separately inspectable/comparable, and both report and operational
+assignment validation reject the same relay/capture as opposite physical ends.
+There is no dead join action or filled missing interval. The plan's explicit
+honest-unavailability completion option is used; no export is claimed without
+source-compatible timestamp/state round-trip evidence. This preserves originals
+and avoids turning DR1/DR2 into S/R. Event-study Node assertions and the synthetic
+browser check verify the unavailable wording and absence of the old promise.
