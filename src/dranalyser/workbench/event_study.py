@@ -7,6 +7,7 @@ from .source_events import digital_evidence, trip_ar
 from .source_inspection import _source, _trace
 from .source_rms import sample_rms
 from .source_snapshot import line_facts
+from .source_regions import auto_regions
 
 
 def _object(value, allowed, label):
@@ -57,7 +58,7 @@ def prepare_inputs(root, revision, value):
     prepared={}
     sources={}
     for end, chosen in ends.items():
-        chosen=_object(chosen, {'record','substation','pre','fault','post','relay_distance','mappings','asserted_states'}, end+' inputs')
+        chosen=_object(chosen, {'record','substation','pre','fault','post','relay_distance','mappings','asserted_states','timing_mode','timing_evidence'}, end+' inputs')
         record=_text(chosen.get('record'), end+' record', 1000)
         source,item=_source(root, revision, record)
         times=source.get('axis',{}).get('elapsed_s',[])
@@ -69,8 +70,14 @@ def prepare_inputs(root, revision, value):
         options=normalise_options(dict(voltage_kv=0,mappings=chosen.get('mappings',{}),
             asserted_states=chosen.get('asserted_states',{})),source)
         inputs.update(mappings=options['mappings'],asserted_states=options.get('asserted_states',{}))
+        mode=chosen.get('timing_mode','manual')
+        if mode not in ('auto','manual'):
+            raise ValueError('Timing selection must be auto or manual.')
+        inputs['timing_mode']=mode
+        automatic=auto_regions(source,item,mappings=inputs['mappings'],asserted_states=inputs['asserted_states']) if mode=='auto' else None
+        inputs['timing_evidence']=automatic if automatic else dict(status='manual',method='Operator-selected sample intervals',authorizes_location=False)
         for field in ('pre','fault','post'):
-            region=chosen.get(field)
+            region=automatic[field] if automatic else chosen.get(field)
             if region is not None and (not isinstance(region,list) or len(region)!=2
                     or any(type(i) is not int for i in region) or not 0<=region[0]<region[1]<=len(times)):
                 raise ValueError(end+' '+field+' interval must be two native indices [start, stop), within this capture.')
@@ -206,6 +213,7 @@ def _end_report(source,item,inputs):
         time_range_s=[times[0],times[-1]],source_sha256=source['source_sha256'],origin_s=origin,
         groups=groups,phase_values=values,withheld_phases=withheld,insights=insights,digital=_digital(source,mapped,provenance,origin,inputs['asserted_states']),
         mappings=inputs['mappings'],asserted_states=inputs['asserted_states'],
+        timing_mode=inputs['timing_mode'],timing_evidence=inputs['timing_evidence'],
         pre=inputs['pre'],fault=inputs['fault'],post=inputs['post'],
         time_basis='Source-local seconds; selected fault-region start is a display reference only, not synchronized or detected fault inception.',
         rms_basis='Median of complete trailing one-cycle sample RMS observations wholly within each selected region; includes DC/harmonics. Source units and declared scaling are unverified.')
@@ -254,6 +262,6 @@ def build_event_report(root,revision,inputs, *, prepared=None):
             reason='Operator-transcribed relay estimate, not patrol-confirmed distance. '+('Reported distance exceeds the declared line length; no comparison is made.' if outside else 'Receiving-end conversion needs a declared line length.' if converted is None else 'Compared only in the declared S reference.')))
     return dict(incident_id=revision['incident_id'],revision=revision['number'],ends=ends,distance=distance,
         relay_distances=reported,authorizes_location=False,notes=[
-            'End names, same-event confirmation and intervals are operator declarations, not independent evidence of physical assignment or synchronized clocks.',
-            'No channel ratios, missing samples, fault boundaries or breaker operation are inferred. Raw counts remain raw counts; declared engineering units are not independently verified.',
+            'End names and same-event confirmation are operator declarations. Automatic intervals retain their RMS/indication support; manual intervals remain operator selections. Neither establishes synchronized clocks.',
+            'No channel ratios, missing samples or physical breaker operation are inferred. Automatic change boundaries are observation support, not certified fault inception. Raw counts remain raw counts; declared engineering units are not independently verified.',
             'One-cycle RMS is an observation summary. Existing validated incident location methods remain separate; a missing or gated estimate is not replaced with a fabricated distance.'])

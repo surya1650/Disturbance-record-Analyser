@@ -6,6 +6,9 @@ const DRInspection = (() => {
     const initial=new Set(analogs),analogIds=new Set(record.channels.filter(c=>c.kind==='analog').map(c=>c.id));
     const remaining=record.channels.filter(c=>!initial.has(c.id)).sort((a,b)=>Number((b.activity?.transition_count||0)>0)-Number((a.activity?.transition_count||0)>0));
     const order=[...analogs,...remaining.map(c=>c.id)],hidden=new Set(record.channels.filter(c=>c.kind==='digital'&&c.activity?.transition_count===0&&!(c.activity?.unknown_samples>0)).map(c=>c.id));
+    const digitalIds=order.filter(id=>record.channels.find(c=>c.id===id)?.kind==='digital');
+    let visibleDigital=digitalIds.filter(id=>!hidden.has(id)).length;
+    for(const id of digitalIds){if(visibleDigital>=Math.min(4,digitalIds.length))break;if(hidden.delete(id))visibleDigital++;}
     return {record:record.file,revision:record.revision,sourceIdentity:identity(record.source_sha256),n,order,hidden,
       colors:{A:'#c94145',B:'#b88a00',C:'#316ecc',N:'#606c78',unknown:'#176d82'},phases:{},groups:{},
       setColour(phase,color){if(!/^#[0-9a-f]{6}$/i.test(color)||!Object.hasOwn(this.colors,phase))throw new Error('Use a six-digit colour.');this.colors[phase]=color;},
@@ -44,6 +47,8 @@ const DRInspection = (() => {
     if(ryb&&['R','Y','B'].includes(raw))return {R:'A',Y:'B',B:'C'}[raw];
     if(['A','B','C','N'].includes(raw))return raw;
     if(['L1','L2','L3','1','2','3'].includes(raw))return {L1:'A',L2:'B',L3:'C',1:'A',2:'B',3:'C'}[raw];
+    const displayPhase=comparison?.identify(channel,{channels}).phase;
+    if(['A','B','C','N'].includes(displayPhase))return displayPhase;
     const match=String(channel.label||'').toUpperCase().match(/^(?:I|V)([ABCN])$/);
     return match?match[1]:'unknown';
   }

@@ -6,6 +6,7 @@ import json
 import math
 
 from ..comtrade.source_observations import _number
+from ..comtrade.source_identity import source_meanings
 from .source_models import analyse_models
 from ..rules.signals import CANONICAL
 from .channel_mapping import ANALOG_TARGETS
@@ -107,13 +108,20 @@ def _prepared(source,item,options):
     out['channels']=[dict(c) for c in source['channels']]
     headers={c['id']:c for c in source.get('header_inventory',[])}
     mapped,mapping_sources=_effective_meanings(item,options)
+    automatic=source_meanings(source)
     assumptions=[]
     notes=[]
     for c in out['channels']:
         key=c['key']
         h=headers.get(key,{})
-        c['meaning']=mapped.get(key) or (c['label'] if c['label'] in ANALOG_TARGETS else '')
-        if key in mapped:
+        c['meaning']=mapped.get(key) or automatic.get(key, '')
+        if mapping_sources.get(key)=='label suggestion':
+            c['meaning']=automatic.get(key, '')
+            if not c['meaning']:
+                notes.append(key+': automatic label/header identity is unresolved or ambiguous; review the channel meaning. Source samples remain visible.')
+        if key not in mapped and c['meaning']:
+            mapping_sources[key]='normalized source label/header suggestion'
+        if key in mapped or key in automatic:
             c['frequency_reference']=c['meaning'] in ('VA','VB','VC')
             c['current_reference']=c['meaning'] in ('IA','IB','IC')
         unit=h.get('declared_units','').upper()

@@ -112,6 +112,11 @@ assert.equal(result.filter(r=>r.left).length,64);assert.equal(result.filter(r=>r
 assert.equal(new Set(result.map(r=>r.key)).size,128);
 assert.deepEqual(model.plan(null,null),[]);
 assert.equal(model.identify(channel('A1','IA'),record([])).quantity,'current');
+for(const label of ['Ia','i_a','I-A','I a','I.a','I_L1','I₁']){
+  const planned=rows(model.plan(record([channel('A1',label)]),record([channel('A2','IA')])));
+  assert.equal(planned.length,1,label);assert.equal(planned[0].meaning,'IA');assert.equal(planned[0].right.id,'A2');
+}
+assert.equal(rows(model.plan(record([channel('A1','Ia'),channel('A2','I_A')]),record([channel('A3','IA')]))).length,3,'case variants do not merge actual duplicate channels');
 console.log('Channel comparison: reordered quantities, all channels, duplicates, conflicts, qualifiers, phases and64-channel sources passed');
 
 // IEC numeric phase names are not reinterpreted by neighboring R/Y/B names.

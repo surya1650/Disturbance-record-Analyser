@@ -1,5 +1,20 @@
 # Next owner: start here
 
+2026-10-29 automatic interval/notation follow-up: read
+AUTOMATIC_EVENT_ACCEPTANCE_2026-10-29.md and its plan. Simple report defaults new
+end selections to automatic source-local intervals; manual bounds remain optional
+and historical nonempty selections are preserved. Source-bound suggestions are
+recomputed on save/report and retain method, support, gaps/coverage and provenance.
+Digital pane initially selects at least4signals when available and fits4compact
+tracks desktop/mobile. Source analysis/report and comparison normalize Ia/IA/I_A,
+Ua/U_A and supported notation conservatively; unreviewed unsafe prefix guesses
+are suppressed without changing source bytes or operational DSP. Full1957PASS,
+28private skips, one existing warning132.52s. Stage-A10000PASS .4361% cleanp95;
+architecture/self-tests, changed lint/JSsyntax and browser auto/manual/stale/reload
+checks pass. LocalDR1 automatic3regions; DR2 partialwithprefault withheld because
+the recorded trigger lies inside baseline support. QAout/qa/auto-event-2026-10-29
+ignored. Same authorized review branch; no merge/main/environment publication.
+
 2026-10-29 one-cycle/event-report delivery: read EVENT_STUDY_ACCEPTANCE_2026-10-29.md
 and its plan. All analogs/changed digitals retain aligned plotting widths; shared
 cursor click/numeric/keyboard locking, explicit follow-hover, exact zoomed sample

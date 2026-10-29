@@ -5,6 +5,9 @@ from fastapi import HTTPException, Query
 
 from .store import Conflict
 from ..workbench.event_study import build_event_report, prepare_inputs, record_inventory
+from ..workbench.source_diagnostics import normalise_options
+from ..workbench.source_inspection import _source
+from ..workbench.source_regions import auto_regions
 
 
 def install_event_study(app,store):
@@ -26,6 +29,16 @@ def install_event_study(app,store):
     def request(body,fields):
         if not isinstance(body,dict) or set(body)-set(fields):
             raise ValueError('Unsupported event-study request field.')
+
+    @app.post('/api/incidents/{incident_id}/event-study/regions')
+    def select_regions(incident_id:str,body:dict):
+        request(body,{'revision','record','mappings','asserted_states'})
+        row=row_for(incident_id,body.get('revision'))
+        record=body.get('record')
+        source,item=_source(store.root,row,record)
+        options=normalise_options(dict(mappings=body.get('mappings',{}),asserted_states=body.get('asserted_states',{})),source)
+        selected=auto_regions(source,item,mappings=options['mappings'],asserted_states=options.get('asserted_states',{}))
+        return dict(selected,file=record,revision=row['number'],source_sha256=source['source_sha256'],sample_count=source['sample_count'])
 
     @app.get('/api/incidents/{incident_id}/event-study')
     def get_event_study(incident_id:str,revision:int=Query(...,ge=1,le=2147483647)):

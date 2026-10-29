@@ -5,7 +5,7 @@ const DRChannelComparison = (() => {
   const phases={A:0,B:1,C:2,AB:3,BC:4,CA:5,BA:6,CB:7,AC:8,N:9,'0':10,'3I0':11,'3V0':11};
   const titles={voltage:'Voltage channels',other:'Other analog channels',current:'Current channels'};
   const qualifiers=new Set(['RMS','DC','PEAK','MAG','ANGLE','FUNDAMENTAL','PHASOR','FREQUENCY','FREQ']);
-  const clean=value=>String(value??'').trim().toUpperCase();
+  const clean=value=>String(value??'').normalize('NFKC').trim().toUpperCase();
   const tokens=value=>clean(value).split(/[^A-Z0-9]+/).filter(Boolean);
   function unitQuantity(value){
     const unit=clean(value).split(/[\s(]/)[0];
@@ -38,7 +38,12 @@ const DRChannelComparison = (() => {
     return ryb&&abc?'mixed':ryb?'ryb':'abc';
   }
   function labelWords(label){
-    return tokens(label).flatMap(t=>{
+    const parts=tokens(label),joined=[];
+    for(let i=0;i<parts.length;i++){
+      if(/^[IVU]$/.test(parts[i])&&/^(?:[ABCNRY]|L?[123])$/.test(parts[i+1]||'')){joined.push(parts[i]+parts[++i]);}
+      else joined.push(parts[i]);
+    }
+    return joined.flatMap(t=>{
       for(const q of qualifiers){
         if(t.startsWith(q)&&alias(t.slice(q.length)))return [q,t.slice(q.length)];
         if(t.endsWith(q)&&alias(t.slice(0,-q.length)))return [t.slice(0,-q.length),q];

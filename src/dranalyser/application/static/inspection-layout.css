@@ -11,3 +11,14 @@
 }
 .inspection-pins button[aria-pressed="true"]{background:#e8f3fb;border-color:#2776a5;color:#15547b}
 @media(prefers-reduced-motion:reduce){.operator-workspace *{scroll-behavior:auto!important;transition:none!important}}
+/* Four compact signal tracks fit without scrolling; detail spans remain opt-in. */
+.operator-workspace .inspection-pane.digital{height:540px;min-height:520px}
+.operator-workspace .digital .inspection-slot{padding:5px 0;margin:0;border-bottom:1px solid #e1e9ee}
+.operator-workspace .digital .inspection-slot>strong{font-size:12px;line-height:18px}
+.operator-workspace .digital .inspection-slot svg{height:42px;min-height:42px}
+.operator-workspace .digital .inspection-digital-activity{font-size:11px;line-height:16px;margin:0 0 3px}
+.operator-workspace .digital .inspection-reading{padding:3px 8px;min-height:36px}
+.operator-workspace .digital .inspection-reading>strong{display:none}
+.operator-workspace .digital .inspection-reading p{margin:4px 0;font-size:12px}
+.operator-workspace .digital>.field-help{font-size:11px;line-height:16px;margin:4px 0 8px}
+@media(max-width:699px){.operator-workspace .digital .inspection-trace-readings{grid-template-columns:minmax(0,1fr);position:relative}.operator-workspace .digital .inspection-inline-values{position:absolute;right:0;top:0;max-width:76px;pointer-events:none}.operator-workspace .digital .inspection-slot>strong{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.operator-workspace .digital .inspection-digital-activity{max-width:100%;overflow:hidden;white-space:nowrap}.operator-workspace .digital .inspection-digital-activity:has(details[open]){white-space:normal;overflow:visible}}

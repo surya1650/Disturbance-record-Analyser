@@ -157,12 +157,20 @@ The fundamental vector uses one complete trailing nominal cycle and explains
 incomplete support or missing samples. It does not replace the operational fit.
 
 In **Simple report**, choose the sending/receiving recordings and substation
-names, then select pre-fault, fault and optional post-fault intervals. Voltages
+names. Pre-fault, fault and available post-fault intervals are selected
+automatically from supported source changes. A concise timing summary shows the
+reference and missing coverage; **Manual adjustment** and waveform cursors remain
+available. Voltages
 are compared side by side above currents. The report shows RMS changes,
 recorded digital timing and an existing eligible method-labelled distance;
 an optional relay-reported distance is separate evidence. Universal CT/VT
 ratings and reviewed copies remain in **Inputs & help**. Successive captures
 from one relay belong in the joined viewer, rather than opposite ends.
+At least four digital tracks are initially selected when available, with changed
+signals first. Channel notation such as `Ia`, `IA`, `I_A`, `Ua` and `U_A` is
+normalized for display/report roles; original labels and separate channel IDs
+remain intact. Ambiguous duplicates, derived quantities and conflicting phase
+identities need explicit review.
 
 See [local application setup and integration contracts](project-docs/LOCAL_APPLICATION.md).
 The current app includes all-relay evidence, separate Main-1/Main-2 identity,

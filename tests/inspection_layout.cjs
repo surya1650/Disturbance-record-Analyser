@@ -7,6 +7,10 @@ const channels=[...Array.from({length:64},(_,i)=>({id:'A'+(i+1),label:'Analog '+
  ...Array.from({length:16},(_,i)=>({id:'D'+(i+1),label:'Digital '+i,kind:'digital',units:'state',trace:[],activity:{transition_count:i<12?2:0,active_duration_s:.01,unknown_samples:0,high_intervals:[]}}))];
 const record={file:'large.cfg',revision:1,sample_count:25001,channels,inventory:[],time_basis:{},source_sha256:{'large.cfg':'aaa'},timeline:{trigger_offset_s:.5,start_local:'2026-01-01T00:00:00.000000',ticks:[[0,0],[25000,25]]}};
 const state=model.create(record);assert.equal(state.order.filter(id=>state.visible(id)).length,76);state.toggle('A1');assert.equal(state.visible('A1'),true);state.toggle('D16');assert.equal(state.visible('D16'),true);
+const fewDigital={...record,channels:Array.from({length:8},(_,i)=>({id:'D'+(i+1),kind:'digital',label:'Signal '+i,activity:{transition_count:i===6?1:0,unknown_samples:0}}))};
+const initial=model.create(fewDigital);assert.equal(initial.order.filter(id=>initial.visible(id)).length,4);assert.equal(initial.order[0],'D7');
+const two=model.create({...fewDigital,channels:fewDigital.channels.slice(0,2)});
+assert.equal(two.order.filter(id=>two.visible(id)).length,2,'do not invent signals when fewer than four exist');
 assert.deepEqual(state.order.slice(-16,-4),Array.from({length:12},(_,i)=>'D'+(i+1)));
 assert.deepEqual(model.segments([[0,0,1],[20,.02,2],[40,.04,3]],Infinity,[30]),[[[0,0,1],[20,.02,2]],[[40,.04,3]]]);
 assert.equal(model.milliseconds(.5,record.timeline),'0.000 ms');assert.equal(model.milliseconds(.4,record.timeline),'-100.000 ms');

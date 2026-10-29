@@ -14,11 +14,14 @@ const DREventStudy=(()=>{
   const live=new WeakMap();
   const interpretation=value=>String(value||'Comparison unavailable').replace(' between the selected regions; this alone does not establish fault type or breaker operation.','.');
   const list=items=>'<ul>'+arr(items).map(v=>'<li>'+esc(v)+'</li>').join('')+'</ul>';
+  function timingFields(role){
+    return `<label>Analysis timings<select name="${role}.timing_mode"><option value="auto">Automatic · from recording</option><option value="manual">Manual adjustment</option></select></label><div class="event-study-timing" data-timing-summary="${role}" role="status">Choose a recording to select timings automatically.</div><button type="button" data-auto-timing="${role}">Auto select timings</button>`;
+  }
   function endFields(role){
-    return `<fieldset class="event-study-end" data-event-end="${role}"><legend>${roles[role]}</legend><label>Recording${role==='R'?' · optional':''}<select name="${role}.record"><option value="">Choose recording</option></select></label><label>Substation name<input name="${role}.substation" maxlength="160" placeholder="Enter substation name"></label><p class="event-study-help" data-end-meta="${role}"></p><details><summary>Pre-fault, fault and optional post-fault intervals</summary><p>Choose stable pre-fault samples and the fault interval separately. Use source sample indices; the start is included and the end is excluded. Empty intervals leave comparison values unavailable.</p><div class="event-study-ranges">${regions.map(kind=>`<fieldset><legend>${regionName(kind)} samples</legend><label>Start<input name="${role}.${kind}.0" type="number" min="0" step="1" placeholder="Not selected"></label><label>End, excluded<input name="${role}.${kind}.1" type="number" min="1" step="1" placeholder="Not selected"></label><button type="button" data-request-region="${role}:${kind}">Use waveform A–B</button></fieldset>`).join('')}</div></details><details><summary>Relay-reported distance · optional</summary><p>Enter the relay reading and its reference end. This remains separate from the application calculation.</p><label>Distance, km<input name="${role}.relay.km" type="number" min="0" step="any" placeholder="Not supplied"></label><label>Measured from<select name="${role}.relay.reference"><option value="">Choose reference end</option><option value="S">Sending end</option><option value="R">Receiving end</option></select></label><label>Source of this reading<input name="${role}.relay.evidence" maxlength="500" placeholder="Relay event report or setting reference"></label></details></fieldset>`;
+    return `<fieldset class="event-study-end" data-event-end="${role}"><legend>${roles[role]}</legend><label>Recording${role==='R'?' · optional':''}<select name="${role}.record"><option value="">Choose recording</option></select></label><label>Substation name<input name="${role}.substation" maxlength="160" placeholder="Enter substation name"></label><p class="event-study-help" data-end-meta="${role}"></p>${timingFields(role)}<details data-manual-timing="${role}" hidden><summary>Adjust pre-fault, fault and post-fault intervals</summary><p>Choose stable pre-fault samples and the fault interval separately. Use source sample indices; the start is included and the end is excluded. Empty intervals leave comparison values unavailable.</p><div class="event-study-ranges">${regions.map(kind=>`<fieldset><legend>${regionName(kind)} samples</legend><label>Start<input name="${role}.${kind}.0" type="number" min="0" step="1" placeholder="Not selected"></label><label>End, excluded<input name="${role}.${kind}.1" type="number" min="1" step="1" placeholder="Not selected"></label><button type="button" data-request-region="${role}:${kind}">Use waveform A–B</button></fieldset>`).join('')}</div></details><details><summary>Relay-reported distance · optional</summary><p>Enter the relay reading and its reference end. This remains separate from the application calculation.</p><label>Distance, km<input name="${role}.relay.km" type="number" min="0" step="any" placeholder="Not supplied"></label><label>Measured from<select name="${role}.relay.reference"><option value="">Choose reference end</option><option value="S">Sending end</option><option value="R">Receiving end</option></select></label><label>Source of this reading<input name="${role}.relay.evidence" maxlength="500" placeholder="Relay event report or setting reference"></label></details></fieldset>`;
   }
   function panel(row={}){
-    return `<section class="event-study" data-event-study data-incident="${esc(row.incident_id??row.id??'')}"><header><h2>Simple event analysis</h2><p>Compare both ends of one fault: voltages, currents, selected pre-fault and fault values, digital indications and available distance evidence.</p></header><form data-event-study-form><div class="event-study-end-grid">${endFields('S')}${endFields('R')}</div><label class="event-study-confirm"><input type="checkbox" name="same_event_confirmed"> I confirm these recordings are from opposite physical ends of the same event.</label><p class="event-study-help">Successive DR1/DR2 captures from the same relay belong in the joined-recording viewer. They are not opposite line ends.</p><div class="event-study-actions"><button type="submit" disabled>Build event report</button><span data-event-study-status role="status" aria-live="polite">Loading recording choices…</span></div><details class="event-study-explain"><summary>Which inputs do I need?</summary><p>For waveform inspection, choose a recording. For a pre-fault/fault comparison, select both intervals in each recording. Review universal CT/VT ratios and channel meanings in Inputs before interpreting primary values. Applied channel-meaning and digital-polarity choices carry into this report for display; they do not assign physical ends or authorize an operational calculation.</p><p>For a fault-distance calculation, use the operational study with the actual line model, end assignments and method-specific evidence. This report presents its eligible existing result with its method and reference. Digital operation times require reviewed signal meanings, polarity and suitable contact evidence.</p></details></form><div data-event-study-output></div></section>`;
+    return `<section class="event-study" data-event-study data-incident="${esc(row.incident_id??row.id??'')}"><header><h2>Simple event analysis</h2><p>Compare both ends of one fault: voltages, currents, selected pre-fault and fault values, digital indications and available distance evidence.</p></header><form data-event-study-form><div class="event-study-end-grid">${endFields('S')}${endFields('R')}</div><label class="event-study-confirm"><input type="checkbox" name="same_event_confirmed"> I confirm these recordings are from opposite physical ends of the same event.</label><p class="event-study-help">Successive DR1/DR2 captures from the same relay belong in the joined-recording viewer. They are not opposite line ends.</p><div class="event-study-actions"><button type="submit" disabled>Build event report</button><span data-event-study-status role="status" aria-live="polite">Loading recording choices…</span></div><details class="event-study-explain"><summary>Which inputs do I need?</summary><p>For waveform inspection, choose a recording. Timings are selected automatically from supported changes in each recording; manual adjustment is optional. Review universal CT/VT ratios and channel meanings in Inputs before interpreting primary values. Applied channel-meaning and digital-polarity choices carry into this report for display; they do not assign physical ends or authorize an operational calculation.</p><p>For a fault-distance calculation, use the operational study with the actual line model, end assignments and method-specific evidence. This report presents its eligible existing result with its method and reference. Digital operation times require reviewed signal meanings, polarity and suitable contact evidence.</p></details></form><div data-event-study-output></div></section>`;
   }
   function collect(values){
     const get=name=>String(typeof values==='function'?values(name)??'':values[name]??'').trim();
@@ -29,8 +32,11 @@ const DREventStudy=(()=>{
       if(!record){if(role==='S')throw new Error('Choose the sending-end recording.');continue;}
       const substation=get(role+'.substation');
       if(!substation)throw new Error('Enter the '+roles[role].toLowerCase()+' substation name.');
-      const end={record,substation};
+      const timing_mode=get(role+'.timing_mode')||'manual';
+      if(!['auto','manual'].includes(timing_mode))throw new Error('Choose automatic or manual timings.');
+      const end={record,substation,timing_mode};
       for(const kind of regions){
+        if(timing_mode==='auto'){end[kind]=null;continue;}
         const lo=get(`${role}.${kind}.0`),hi=get(`${role}.${kind}.1`);
         if(!lo&&!hi){end[kind]=null;continue;}
         const a=Number(lo),b=Number(hi);
@@ -89,7 +95,7 @@ const DREventStudy=(()=>{
   }
   function phaseTable(end,role){
     const rows=arr(end?.phase_values);
-    return `<section class="event-study-values"><h4>${roles[role]}${end?' · '+esc(end.substation):''}</h4>${end?'<p class="event-study-help">Selected sample intervals: '+regions.map(kind=>regionName(kind)+' '+(arr(end[kind]).length===2?'['+end[kind].map(esc).join(', ')+')':'not selected')).join(' · ')+'.</p>':''}${rows.length?'<div class="event-study-table-wrap" tabindex="0" role="region" aria-label="'+roles[role]+' pre-fault and fault RMS values"><table><thead><tr><th>Phase / units</th><th>Pre-fault RMS</th><th>Fault RMS</th><th>Post-fault RMS</th><th>Fault change</th></tr></thead><tbody>'+rows.map(c=>`<tr><th>${esc(c.meaning||c.label||c.id)}<small>${esc(c.units||'Unknown units')}</small></th><td>${num(c.pre_rms)}</td><td>${num(c.fault_rms)}</td><td>${num(c.post_rms)}</td><td class="event-study-change" data-direction="${finite(c.change_percent)?c.change_percent>0?'rise':c.change_percent<0?'fall':'steady':'unknown'}">${finite(c.change_percent)?(c.change_percent>0?'↑ ':c.change_percent<0?'↓ ':'↔ ')+num(c.change_percent)+'%':'Not available'}<small>${esc(interpretation(c.interpretation))}</small>${c.reason?'<small>'+esc(c.reason)+'</small>':''}</td></tr>`).join('')+'</tbody></table></div>':'<p>No selected-end phase comparison is available.</p>'}${list(end?.insights)}</section>`;
+    return `<section class="event-study-values"><h4>${roles[role]}${end?' · '+esc(end.substation):''}</h4>${end?'<p class="event-study-help">Selected sample intervals: '+regions.map(kind=>regionName(kind)+' '+(arr(end[kind]).length===2?'['+end[kind].map(esc).join(', ')+')':'not selected')).join(' · ')+'.</p>':''}${rows.length?'<div class="event-study-table-wrap" tabindex="0" role="region" aria-label="'+roles[role]+' pre-fault and fault RMS values"><table><thead><tr><th>Phase / units</th><th>Pre-fault RMS</th><th>Fault RMS</th><th>Post-fault RMS</th><th>Fault change</th></tr></thead><tbody>'+rows.map(c=>`<tr><th>${esc(c.meaning||c.label||c.id)}<small>${esc(c.units||'Unknown units')}</small></th><td>${num(c.pre_rms)}</td><td>${num(c.fault_rms)}</td><td>${num(c.post_rms)}</td><td class="event-study-change" data-direction="${finite(c.change_percent)?c.change_percent>0?'rise':c.change_percent<0?'fall':'steady':'unknown'}">${finite(c.change_percent)?(c.change_percent>0?'↑ ':c.change_percent<0?'↓ ':'↔ ')+num(c.change_percent)+'%':'Not available'}<small>${esc(interpretation(c.interpretation))}</small>${c.reason?'<small>'+esc(c.reason)+'</small>':''}</td></tr>`).join('')+'</tbody></table></div>':'<p>No selected-end phase comparison is available.</p>'}${end?.timing_mode==='auto'?'<details><summary>Automatic timing evidence</summary>'+timingMarkup(end.timing_evidence)+'</details>':''}${list(end?.insights)}</section>`;
   }
   function digital(end,role){
     const d=end?.digital||{},events=arr(d.events);
@@ -115,6 +121,13 @@ const DREventStudy=(()=>{
     }
     return result;
   }
+  function timingMarkup(value){
+    if(!value)return '<p>Choose a recording to select timings automatically.</p>';
+    const offset=finite(value.timeline?.trigger_offset_s)?value.timeline.trigger_offset_s:0;
+    const point=t=>num((t-offset)*1000)+' ms';
+    const rows=regions.map(kind=>{const bounds=value[kind],span=value.intervals?.[kind];return '<li><strong>'+regionName(kind)+':</strong> '+(span?point(span.start_s)+' to '+point(span.last_s):Array.isArray(bounds)?'samples ['+esc(bounds.join(', '))+')':'Unavailable')+'</li>';});
+    return '<p><strong>'+esc(value.status==='manual'?'Manual selection':'Automatic timings · '+value.status)+'</strong></p><p>'+ (finite(value.timeline?.trigger_offset_s)?'Times relative to the recorded trigger (0 ms).':'Times in source-local milliseconds.')+'</p><ul>'+rows.join('')+'</ul><p>'+esc(value.reason||value.method||'')+'</p>'+list(value.notes||[]);
+  }
   function bind(row,host,signal,options={}){
     const root=host?.matches?.('[data-event-study]')?host:host?.querySelector?.('[data-event-study]');
     if(!root)return {destroy(){},applyRegion(){return false;}};
@@ -123,16 +136,42 @@ const DREventStudy=(()=>{
     const form=root.querySelector('form'),status=root.querySelector('[data-event-study-status]'),output=root.querySelector('[data-event-study-output]');
     const submit=form.querySelector('[type=submit]'),base='/api/incidents/'+encodeURIComponent(row.incident_id??row.id)+'/event-study',revision=row.number??row.revision??row.current_revision??1;
     let version=0,records=[],model=null,busy=false,mode='trace',held=false,savedInputs={};
+    const automatic=new Map(),pending=new Map();
     const current=()=>!local.aborted&&root.isConnected;
     const field=name=>form.elements.namedItem(name);
     const setStatus=(message,error=false)=>{if(current()){status.textContent=message;status.classList.toggle('event-study-error',error);}};
     function stale(){const warning=output.querySelector('[data-event-stale]');if(warning)warning.hidden=false;setStatus('Inputs changed. Build the event report to apply them.');}
-    const freeze=value=>form.querySelectorAll('input,select,button').forEach(control=>{control.disabled=value;});
+    const freeze=value=>{form.querySelectorAll('input,select,button').forEach(control=>{control.disabled=value;});if(!value)for(const role of ['S','R'])syncTiming(role);};
     const request=async(path,options={})=>{
       if(typeof api!=='function')throw new Error('Application API is unavailable. Reload this page.');
-      return api(path,{...options,signal:local});
+      return api(path,{...options,signal:options.signal||local});
     };
     const json=(method,body)=>({method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    function syncTiming(role){
+      const auto=field(role+'.timing_mode').value==='auto',details=form.querySelector('[data-manual-timing="'+role+'"]');
+      details.hidden=auto;
+      for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).disabled=auto||busy;
+    }
+    function choicesFor(role){
+      const record=field(role+'.record').value;
+      return withChoices({ends:{[role]:{record}}},savedInputs,options.sourceChoices).ends[role];
+    }
+    function selectTimings(role){
+      automatic.get(role)?.abort();const record=field(role+'.record').value;
+      if(!record||field(role+'.timing_mode').value!=='auto')return Promise.resolve();
+      const child=new AbortController();automatic.set(role,child);local.addEventListener('abort',()=>child.abort(),{once:true,signal:child.signal});
+      const choices=choicesFor(role),signature=JSON.stringify(choices),target=form.querySelector('[data-timing-summary="'+role+'"]');
+      target.textContent='Selecting pre-fault, fault and post-fault timings…';
+      const valid=()=>current()&&!child.signal.aborted&&field(role+'.record').value===record&&field(role+'.timing_mode').value==='auto'&&JSON.stringify(choicesFor(role))===signature;
+      const task=request(base+'/regions',{...json('POST',{revision,record,mappings:choices.mappings||{},asserted_states:choices.asserted_states||{}}),signal:child.signal}).then(value=>{
+        if(!valid())return;
+        const inventory=records.find(item=>item.file===record),hash=v=>JSON.stringify(Object.entries(v||{}).sort(([a],[b])=>a.localeCompare(b)));
+        if(value.file!==record||value.revision!==revision||(inventory?.source_sha256&&hash(value.source_sha256)!==hash(inventory.source_sha256)))throw new Error('Automatic timings source identity changed; reopen the recording.');
+        for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).value=value[kind]?.[i]??'';
+        target.innerHTML=timingMarkup(value);if(inventory)inventory.sample_count=value.sample_count;describe(role);
+      }).catch(error=>{if(valid())target.textContent=error.message||'Automatic timings are unavailable. You may adjust them manually.';}).finally(()=>{if(pending.get(role)===task)pending.delete(role);});
+      pending.set(role,task);return task;
+    }
     function describe(role){
       const selected=records.find(r=>r.file===field(role+'.record').value),node=form.querySelector('[data-end-meta="'+role+'"]');
       node.textContent=selected?[selected.station,selected.device,Number.isInteger(selected.sample_count)?selected.sample_count+' samples':'Sample count available when decoded'].filter(Boolean).join(' · '):'Choose the recording for this physical end.';
@@ -142,11 +181,19 @@ const DREventStudy=(()=>{
       for(const role of ['S','R']){
         const end=inputs.ends?.[role]||{};
         field(role+'.record').value=end.record||'';field(role+'.substation').value=end.substation||'';
+        field(role+'.timing_mode').value=end.record?(end.timing_mode||(regions.some(kind=>Array.isArray(end[kind]))?'manual':'auto')):'auto';
         for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).value=end[kind]?.[i]??'';
         for(const key of ['km','reference','evidence'])field(role+'.relay.'+key).value=end.relay_distance?.[key]??'';
         describe(role);
+        syncTiming(role);form.querySelector('[data-timing-summary="'+role+'"]') .innerHTML=timingMarkup(end.timing_evidence||{...end,status:end.record?'manual':'unavailable'});
       }
       field('same_event_confirmed').checked=inputs.same_event_confirmed===true;
+    }
+    function applyAutomaticReport(report){
+      for(const [role,end] of Object.entries(report.ends||{}))if(end.timing_mode==='auto'&&field(role+'.record').value===end.record){
+        for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).value=end[kind]?.[i]??'';
+        form.querySelector('[data-timing-summary="'+role+'"]') .innerHTML=timingMarkup(end.timing_evidence);
+      }
     }
     function cursor(fraction){
       if(!model)return;fraction=Math.max(0,Math.min(1,fraction));const space=coordinates(model),time=space.lo+(space.hi-space.lo)*fraction;
@@ -160,8 +207,12 @@ const DREventStudy=(()=>{
       output.innerHTML=markup(model,mode);held=false;
     }}
     form.addEventListener('input',stale,{signal:local});
-    form.addEventListener('change',event=>{stale();for(const role of ['S','R'])if(event.target===field(role+'.record')){field('same_event_confirmed').checked=false;for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).value='';describe(role);}},{signal:local});
+    form.addEventListener('change',event=>{stale();for(const role of ['S','R']){
+      if(event.target===field(role+'.record')){field('same_event_confirmed').checked=false;field(role+'.timing_mode').value='auto';for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).value='';describe(role);syncTiming(role);selectTimings(role);}
+      if(event.target===field(role+'.timing_mode')){automatic.get(role)?.abort();syncTiming(role);if(event.target.value==='auto')selectTimings(role);else form.querySelector('[data-timing-summary="'+role+'"]') .textContent='Manual adjustment: retained intervals can be edited below.';}
+    }},{signal:local});
     form.addEventListener('click',event=>{
+      const auto=event.target.closest('[data-auto-timing]');if(auto){const role=auto.dataset.autoTiming;field(role+'.timing_mode').value='auto';syncTiming(role);stale();selectTimings(role);return;}
       const button=event.target.closest('[data-request-region]');if(!button)return;
       const [role,kind]=button.dataset.requestRegion.split(':'),record=field(role+'.record').value;
       if(!record){setStatus('Choose the '+roles[role].toLowerCase()+' recording first.',true);return;}
@@ -172,11 +223,13 @@ const DREventStudy=(()=>{
       event.preventDefault();if(busy)return;
       try{
         if(!form.reportValidity())return;
+        busy=true;freeze(true);await Promise.all([...pending.values()]);if(!current())return;
         const inputs=withChoices(collect(name=>name==='same_event_confirmed'?field(name).checked:field(name).value),savedInputs,options.sourceChoices);
-        busy=true;freeze(true);setStatus('Saving reviewed inputs and building the event report…');
+        setStatus('Saving reviewed inputs and building the event report…');
         const saved=await request(base,json('PUT',{revision,expected_version:version,inputs}));if(!current())return;version=saved.version;savedInputs=saved.inputs||inputs;
-        const report=await request(base+'/report',json('POST',{revision,inputs}));if(!current())return;
-        model=report;render();setStatus('Event report ready. Review its missing values and evidence limits.');
+        populate(savedInputs);
+        const report=await request(base+'/report',json('POST',{revision,inputs:savedInputs}));if(!current())return;
+        model=report;applyAutomaticReport(report);render();setStatus('Event report ready. Review its missing values and evidence limits.');
       }catch(error){setStatus(error.message||'The event report could not be built.',true);}finally{busy=false;if(current())freeze(false);}
     },{signal:local});
     output.addEventListener('change',event=>{if(event.target.matches('[data-event-mode]')){mode=event.target.value;render();}},{signal:local});
@@ -195,16 +248,20 @@ const DREventStudy=(()=>{
       savedInputs=data.inputs||{};populate(data.inputs);submit.disabled=false;setStatus(data.note||'Choose records and intervals, then build the event report.');
       if(version>0&&data.inputs?.ends?.S?.record){
         busy=true;freeze(true);setStatus('Loading the saved event report…');
-        return request(base+'/report',json('POST',{revision,inputs:data.inputs})).then(report=>{if(current()){model=report;render();setStatus('Saved event report loaded. Input changes apply when you build it again.');}}).finally(()=>{busy=false;if(current())freeze(false);});
+        const initial=JSON.parse(JSON.stringify(data.inputs));let migrated=false;
+        for(const [role,end] of Object.entries(initial.ends))if(!end.timing_mode&&field(role+'.timing_mode').value==='auto'){end.timing_mode='auto';migrated=true;}
+        return request(base+'/report',json('POST',{revision,inputs:initial})).then(report=>{if(current()){model=report;applyAutomaticReport(report);render();setStatus(migrated?'Automatic timings filled previously empty intervals. Build the report to save them.':'Saved event report loaded. Input changes apply when you build it again.');}}).finally(()=>{busy=false;if(current())freeze(false);});
       }
     }).catch(error=>setStatus(error.message||'Recording choices could not be loaded.',true));
     return {destroy(){controller.abort();},applyRegion(record,bounds,kind='fault'){
       if(!current()||busy||!regions.includes(kind)||!Array.isArray(bounds)||bounds.length!==2||!bounds.every(Number.isSafeInteger)||bounds[0]<0||bounds[1]<=bounds[0])return false;
       const role=['S','R'].find(r=>field(r+'.record').value===record);if(!role)return false;
+      automatic.get(role)?.abort();field(role+'.timing_mode').value='manual';syncTiming(role);
+      form.querySelector('[data-timing-summary="'+role+'"]') .textContent='Manual interval selected from waveform cursors. Build the report to apply it.';
       bounds.forEach((value,i)=>{field(`${role}.${kind}.${i}`).value=value;});stale();setStatus(roles[role]+' '+(regionName(kind).toLowerCase())+' interval selected. Build the report to apply this change.');return true;
     }};
   }
-  return {panel,collect,withChoices,coordinates,tracePaths,plot,markup,bind};
+  return {panel,collect,withChoices,timingMarkup,coordinates,tracePaths,plot,markup,bind};
 })();
 function eventStudyPanel(row){return DREventStudy.panel(row);}
 function bindEventStudy(row,host,signal,options){return DREventStudy.bind(row,host,signal,options);}
