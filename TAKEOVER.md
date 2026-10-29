@@ -8,6 +8,25 @@ See `project-docs/NEXT_SESSION.md` for the exact manifest and retained path.
 
 Start here. The product is the integrated FastAPI/vanillaJS application in this repository. The old standalone 8092 report is historical evidence.
 
+## Latest review branch in Codespaces
+
+The user authorized pushing the UI/report draft for review on 2026-10-29. Use
+branch `codex/operator-ui-review`, based on published `f52911e`:
+
+```bash
+git fetch origin
+git switch codex/operator-ui-review
+bash start-preview.sh
+```
+
+Open **Ports → 8098 → Open in Browser**, keeping visibility Private. The launcher
+installs app dependencies, serves this checkout, trusts the exact Codespaces
+forwarding hostname and loads a synthetic two-record example. Upload your own
+matching files to inspect them. Preview data stays in `out/web-preview`; the
+existing `out/application` data and port 8091 are not changed. If port 8098 is
+occupied, use `DR_PREVIEW_PORT=8099 bash start-preview.sh` and open port 8099.
+Leave the terminal running. The launcher prints the actual browser URL.
+
 ## Use the demonstration
 
 Open http://127.0.0.1:8094/#incident/bacb3608c1e84d17a377823c50e3ebfc for copied Dhone/DR2 recordings. Select either independently. Their common incident, physical ends and clock have not been authenticated.
@@ -44,6 +63,22 @@ Compress-Archive -Path out/synthetic-demo/S,out/synthetic-demo/R -DestinationPat
 Open 8095 and upload the ZIP. This is synthetic data, not field evidence. Use dedicated demo paths as shown.
 
 ## Operator workflow
+
+Latest cloud draft, 2026-10-29: recording tasks are separated into Waveforms,
+Simple report, Inputs & help, Compare recordings and Technical evidence. Optional
+operational/history tools are under More tools. Inputs & help explains prerequisites
+per feature. The simple report leads with applied pre/fault/post values, distance
+availability and analog/digital interpretation; JSON and HTML carry the same model.
+Read `project-docs/OPERATOR_UI_REPORT_ACCEPTANCE_2026-10-29.md` for the exact workflow,
+verification, browser-session selection behavior and scalability limits.
+
+Cloud draft continuation, 2026-10-29: **Compare independent source recordings**
+shows all analog channels in matching rows, voltage first and current last. Select
+the second recording below the source report. Missing/ambiguous counterparts retain
+placeholders. Shared display positions measure from each source start; this does not
+synchronize clocks. Each waveform has its own labelled amplitude scale. Exact cursor
+values remain in the main workbench. See
+`project-docs/CHANNEL_COMPARISON_ACCEPTANCE_2026-10-29.md` for verification and limits.
 
 1. Open an incident and choose a recording. Waveforms are available before line/terminal assignment or successful operational calculation.
 2. Review channel meanings and voltage level. Missing-CT defaults are 132 kV: **600/1**, 220 kV: **800/1**, only for otherwise-known secondary-current channels with valid gain/offset. Valid supplied ratios remain; unknown units/side stay counts.

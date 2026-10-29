@@ -132,6 +132,12 @@ the recording-settings change in the brief's section 4.3.
 
 ### Local browser application
 
+**Codespaces / latest UI review:** switch to `codex/operator-ui-review`, then run
+`bash start-preview.sh`. Open **Ports → 8098 → Open in Browser**. This launcher
+supports the exact Codespaces forwarding hostname, creates an isolated
+`out/web-preview` workspace and includes a synthetic two-record example.
+See [the takeover guide](TAKEOVER.md#latest-review-branch-in-codespaces) for steps.
+
 On Windows, double-click **`start-local.cmd`**, then open
 **http://127.0.0.1:8091**. The launcher creates `.venv` and installs the app
 dependencies on first use. For an existing environment, run

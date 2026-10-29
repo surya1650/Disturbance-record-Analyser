@@ -1,5 +1,28 @@
 # Next owner: start here
 
+2026-10-29 push authorization: user explicitly requested pushing the latest changes
+for checking. Review branch: `codex/operator-ui-review`, from `f52911e` (remote main
+at inspection). It includes channel comparison, explanatory UI/simple reports and
+`start-preview.sh` / `start-preview.py` for Codespaces port 8098 with isolated
+`out/web-preview` data. The earlier hold on GitHub pushing is superseded. No merge
+to main or cloud-environment publication is requested. Push result follows after
+remote verification. Historical local-only statements below describe prior stages.
+
+2026-10-29 operator UI/report continuation: five task panels, scoped feature-input
+guidance, shared simple report model/HTML/JSON and stale-route protection implemented
+in the local draft. Read OPERATOR_UI_REPORT_ACCEPTANCE_2026-10-29.md and its plan.
+Disposable preview: port 8128, `out/qa/operator-ui-2026-10-29/app`. No publication.
+Earlier channel-comparison work is retained; do not replace it with the earlier
+published snapshot. The latest review branch supersedes this draft-only stage.
+
+2026-10-29 cloud continuation: local channel-comparison draft on published `f52911e`.
+Read CHANNEL_COMPARISON_ACCEPTANCE_2026-10-29.md and CHANNEL_COMPARISON_PLAN_v1.md.
+All analog comparison rows now match quantities/phases; primary default order and
+overlay/phase-colour guards use the same quantity distinctions. Earlier completed
+work was preserved, not reapplied. No commit/push/environment publication. Historical
+Windows preview URLs/processes below do not describe this cloud runtime. A disposable
+cloud QA server uses port 8127 and `out/qa/channel-comparison-2026-10-29/app`.
+
 The requested integrated application and operator-view delivery is implemented and
 reviewed. Read ../TAKEOVER.md first; it gives setup/run/public-demo/operator workflows,
 code entry points, limits and concrete next tasks. README links it.

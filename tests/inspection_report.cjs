@@ -18,3 +18,12 @@ const op={selection:{source:'operator A/B selection',start:0,end:10,start_s:0,en
 const withOperator={...printResult,operator_conditions:op};
 assert.ok(r.summary(withOperator).includes('Pre-fault, fault and post-fault conditions'));
 assert.ok(!r.summary(withOperator,false).includes('Pre-fault, fault and post-fault conditions'));
+
+// Screen and printable summary consume the same serialized simple report.
+global.DRSimpleReport=require('../src/dranalyser/application/static/simple-report.js');
+const simpleResult={...printResult,sample_count:96,file:'public.cfg'};
+simpleResult.simple_report=global.DRSimpleReport.build(simpleResult);
+const simpleHtml=r.summary(simpleResult);
+assert.ok(simpleHtml.indexOf('Simple analysis report')<simpleHtml.indexOf('Technical evidence and provenance'));
+assert.ok(!r.summary(simpleResult,false).includes('Simple analysis report'));
+assert.ok(simpleHtml.includes('Fault interval not selected'));

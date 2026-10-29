@@ -1139,3 +1139,24 @@ right move; the ratchet becomes a real constraint once §14 lands.
    vendor files is currently supported.
 5. §17 [OPEN] items 1–7 in `PROJECT_CONTEXT.md` are still unanswered; item 8 ("what is in
    E:\dr analyser") is now answered by the working tree itself.
+
+
+2026-10-29: User resumed channel comparison work on published f52911e.
+Plan: CHANNEL_COMPARISON_PLAN_v1.md. Preserve current snapshot; no environment
+publication. Matching model, paired overview and default order complete.
+Acceptance: CHANNEL_COMPARISON_ACCEPTANCE_2026-10-29.md; 1790 tests passed,
+28 absent-corpus skips; Stage-A 10,000 PASS. Full Ruff retains40 pre-existing
+findings in22 untouched files. Desktop/mobile and128-channel renderer verified.
+
+2026-10-29: User requested clearer UI, feature-specific input explanations and a
+simple region/distance/analog/digital report. Implemented OPERATOR_UI_REPORT_PLAN_v1;
+acceptance is OPERATOR_UI_REPORT_ACCEPTANCE_2026-10-29.md. Five task panels, shared
+report exports, failure isolation and desktop/mobile/keyboard/download checks.
+Full1792PASS/28private-corpus skips; Stage-A10000PASS. Existing40Ruff findings remain
+in22 untouched files. No environment publication, push or commit.
+
+2026-10-29: User explicitly authorized pushing the latest UI for checking.
+Prepared review branch codex/operator-ui-review on remote-main base f52911e;
+added a Codespaces launcher for port8098 with separateout/web-preview data.
+Architecture and launcher Ruff passed;15focused tests passed (six launcher checks).
+Earlier full1792PASS/Stage-A10000PASS evidence retained. Main/environment unchanged.

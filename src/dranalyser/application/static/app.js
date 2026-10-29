@@ -96,14 +96,18 @@ function assignmentForm(row) {
     return `<tr><td><strong>${escapeHtml(f.name)}</strong><small>${escapeHtml(f.station)} · ${f.fs_hz} Hz</small><p class="field-help">${escapeHtml(f.blocked?'Source inspection and independent analysis available; operational assignment is pending.':f.suggested_reason || '')}${f.suggested_end?` · Suggested end ${f.suggested_end}`:''}</p></td><td>${state}<p class="field-help">${escapeHtml(DRInspection.qualityMessage(f))}</p><details><summary>Input details</summary><div class="flags">${escapeHtml(f.error || f.duplicate_of || f.flags.join('\n'))}</div></details></td><td><select data-record="${escapeHtml(f.name)}" data-index="${i}" ${usable?'':'disabled'}><option value="">${usable?'Choose…':'Excluded'}</option><option value="excluded">Exclude from this analysis</option><option value="S:primary">End S · Primary</option><option value="S:corroborating">End S · Corroborating</option><option value="R:primary">End R · Primary</option><option value="R:corroborating">End R · Corroborating</option></select></td></tr>`;
   }).join('')}</tbody></table></div>${mappingEditor(row)}${rxReviewEditor(row)}${stageReviewEditor(row)}<div class="detail-section"><button class="button primary" type="submit">Confirm & analyse →</button></div></form>`;
 }
-async function detail(id, revision = '') {
-  const row = await api(`/api/incidents/${id}${revision?`?revision=${revision}`:''}`); current=row;
+let routeGeneration=0;
+async function detail(id, revision = '', generation=routeGeneration) {
+  const row = await api(`/api/incidents/${id}${revision?`?revision=${revision}`:''}`);
+  if(generation!==routeGeneration)return;current=row;
   await loadStageReviewSource(row);
+  if(generation!==routeGeneration)return;
   const result = row.result;
   let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${escapeHtml(row.source)} intake · ${date(row.created)} · ${row.files.length} files</p></div><div class="detail-actions"><a class="button" href="#upload/${id}">＋ Attach late records</a>${result?.report_path?`<a class="button primary" href="/api/incidents/${id}/report?revision=${row.number}&download=true">Download report</a>`:''}</div></div>`;
   if (row.error) body += `<div class="hint">${escapeHtml(row.error)}</div>`;
   if (['queued','running'].includes(row.state)) body += '<div class="panel busy"><span class="spinner"></span><h2>Processing this incident</h2><p>You can leave this page. The job and its results stay in the workspace.</p></div>';
   body += inspectionPanel(row);
+  body += '<details class="panel detail-section incident-more"><summary>More tools · operational study, saved report and history</summary><p class="field-help">Use these tools when you need reviewed physical assignments, the stored incident report or original evidence. Source waveforms and the simple report are available above.</p>';
   if (row.state==='needs_review') body += `<details class="panel detail-section"><summary>Optional operational study · assignments and input review</summary><p>Independent source analysis and reports are available above. Use this section for an operational study with its additional method inputs.</p>${assignmentForm(row)}</details>`;
   if (row.state==='failed') body += '<div class="panel detail-section"><h2>Processing could not finish</h2><p>The files are retained. Review the error above, then retry the job.</p><button id="retry-job" class="button">Retry processing</button></div>';
   if (result) {
@@ -119,6 +123,7 @@ async function detail(id, revision = '') {
   }
   body += `<details class="panel detail-section"><summary>Original file inventory (${row.files.length})</summary><table class="inventory"><tbody>${row.files.map(f=>`<tr><td>${escapeHtml(f.name)}</td><td>${size(f.size)}</td><td><code>${f.sha256.slice(0,16)}…</code></td></tr>`).join('')}</tbody></table></details>`;
   body += `<div class="bottom-grid"><div class="panel detail-section"><h2>Report revisions</h2><ul class="activity">${row.revisions.map(r=>`<li><a href="#incident/${id}/${r.number}">Revision ${r.number}</a> ${badge(r.state)}<small>${date(r.created)}</small></li>`).join('')}</ul></div><div class="panel detail-section"><h2>Activity</h2><ul class="activity">${row.activity.map(a=>`<li>${escapeHtml(a.message)}<small>${date(a.at)} · Revision ${a.revision}</small></li>`).join('')}</ul></div></div>`;
+  body += '</details>';
   $('detail-content').innerHTML=body;
   mountInspection(row);
   if (result) bindNavigation(row);
@@ -189,6 +194,7 @@ async function integrations() {
 }
 async function route() {
   if (!config) return;
+  const generation=++routeGeneration;inspectionController?.abort();
   notice(); current=null;
   const [view,id,revision]=(location.hash.slice(1)||'overview').split('/');
   const name=view==='incident'?'detail':['overview','upload','integrations','catalogue'].includes(view)?view:'overview';
@@ -200,8 +206,8 @@ async function route() {
     if(name==='upload') await uploadView(id);
     if(name==='integrations') await integrations();
     if(name==='catalogue') await catalogueView();
-    if(name==='detail') await detail(id,revision);
-  }catch(error){notice(error.message);}
+    if(name==='detail') await detail(id,revision,generation);
+  }catch(error){if(generation===routeGeneration)notice(error.message);}
 }
 $('upload-form').onsubmit=submitUpload;
 $('file-picker').onchange=event=>chooseFiles(event.target.files);
