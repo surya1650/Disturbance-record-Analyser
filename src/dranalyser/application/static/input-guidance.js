@@ -14,7 +14,7 @@ const DRInputGuidance=(()=>{
   }
   function markup(record={}){
     const state=assess(record);if(!state.blocked)return '';
-    return `<section class="record-input-notice"><strong>Waveforms are available. Some operational calculations need input review.</strong>${state.items.map(v=>`<p>${esc(v)}</p>`).join('')}<button type="button" data-go-feature="inputs">Review required inputs →</button><details><summary>Exact operational findings</summary>${state.blocks.map(v=>`<p>${esc(v)}</p>`).join('')}</details></section>`;
+    return `<section class="record-input-notice"><strong>Recoverable waveforms can be inspected. Some operational calculations need input review.</strong>${state.items.map(v=>`<p>${esc(v)}</p>`).join('')}<button type="button" data-go-feature="inputs">Review required inputs →</button><details><summary>Exact operational findings</summary>${state.blocks.map(v=>`<p>${esc(v)}</p>`).join('')}</details></section>`;
   }
   function preferredRecording(row,records){
     const assignments=row.metadata?.assignments||{};

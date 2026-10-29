@@ -9,14 +9,14 @@ const DRFeatureGuide=(()=>{
       optional:['Line data, CT/VT ratios and terminal assignment are not needed to inspect raw observations.'],
       next:'Open waveforms'},
     {id:'rms-vectors',title:'RMS values & vectors',destination:'waveforms',
-      what:'RMS describes the fitted fundamental magnitude. Vectors compare phase angles at a common supported model centre.',
-      inputs:['Source analysis with suitable timing and complete four-cycle supports.','Correct voltage/current meanings and a supported angle reference for relative vectors.'],
-      optional:['At 50 Hz four cycles span 80 ms. Short, changing or missing data can leave a value unavailable.','Moving a cursor does not create a fit or prove physical CT/VT wiring.'],
+      what:'One-cycle sample RMS includes DC and harmonics. Fundamental RMS and relative vectors use an actual-time Fourier projection over the same trailing nominal cycle.',
+      inputs:['Recoverable analog samples, actual source times and a declared nominal frequency of 40–70 Hz.','A complete trailing nominal cycle without unknown samples or gaps; engineering units and a nonzero supported reference for voltage/current vectors.'],
+      optional:['At 50 Hz one nominal cycle spans 20 ms. Leading samples, gaps or unsupported Fourier content can leave a cursor value unavailable.','No line model or four-cycle operational fit is required for these display observations. Source units and physical CT/VT wiring remain unverified.'],
       next:'Inspect RMS & vectors'},
     {id:'conditions',title:'Pre-fault, fault & post-fault',destination:'report',
-      what:'Compare supported typical RMS values before, during and after an interval you select.',
-      inputs:['Apply source analysis.','Place A at fault start and B at post-fault start, with A before B; apply the A–B interval.','Each reported region needs complete supported fitted windows inside that region.'],
-      optional:['Intervals are operator choices, not automatically authenticated physical fault boundaries.','The report can still explain raw observations and missing values when region RMS is unavailable.'],
+      what:'Compare supported pre-fault, fault and optional post-fault values using automatic source-local timing suggestions or your manual refinement.',
+      inputs:['Choose a recording in Simple report. Automatic timings require supported changes or indications and sufficient source coverage.','Each reported region needs a complete nominal-cycle RMS support inside it. Missing pre-fault or post-fault values stay unavailable.'],
+      optional:['Manual interval adjustment is optional. Waveform A–B cursors can refine a selected interval; they are not a prerequisite for automatic suggestions.','Source-local suggestions do not authenticate physical fault boundaries, pair opposite ends or synchronize clocks.'],
       next:'Open simple report'},
     {id:'compare',title:'Compare recordings',destination:'compare',
       what:'See every analog channel in matching voltage/current rows, with explicit missing counterparts.',
@@ -30,18 +30,19 @@ const DRFeatureGuide=(()=>{
       next:'Review distance inputs'},
     {id:'study',title:'Operational incident study',destination:'study',
       what:'Assess an incident using confirmed line/end assignments, compatible records and the eligible calculation methods.',
-      inputs:['Actual line/terminal evidence and verified channel meanings, scaling and CT polarity.','Suitable records assigned to their physical ends; two compatible end records for two-ended E5.','Reviewed digital meanings and asserted-state polarity for protection indication interpretation.'],
-      optional:['E5 is unsynchronized: GPS/common clock quality is not a dependency.','E4 is an additional synchronized method and requires established clock quality at both ends.','A trip indication alone does not prove breaker opening or clearing time.'],
+      inputs:['Actual line/terminal evidence and verified channel meanings, scaling and bus-into-line current polarity.','Suitable records assigned to their physical ends; two compatible same-event opposite-end records for two-ended E5.'],
+      optional:['E5 uses the positive-sequence line/section model and usable end windows. GPS/common clock quality, zero-sequence inputs, source impedances and protection settings are not E5 prerequisites.','Single-ended E1 needs eligible loop V/I, line impedance and a usable window; ground loops additionally need actual zero-sequence/compensation evidence. E2 also needs usable pre-fault/superimposed current.','E3 alone needs its source/line zero-sequence inputs and verified zero-sequence transfer. E4 is an additional synchronized method and requires established clock quality and a common phasor reference at both ends.','Reviewed digital meanings and asserted-state polarity are needed only for indication interpretation; actual applicable settings are needed for protection pass/fail. A trip indication alone does not prove breaker opening or clearing time.'],
       next:'Open operational study'}
   ];
   function build(context={}){
     const c=context&&typeof context==='object'?context:{};
     const yes=key=>c[key]===true;
     const samples=yes('hasSamples'),analysis=yes('analysisReady'),fits=yes('hasSupportedFits');
+    const cursorFacts=yes('hasAnalogSamples')&&yes('hasSourceTimes')&&yes('hasNominalFrequency');
     const states={
       waveforms:samples?['available','Source observations are available. Source scaling and timing limitations remain visible.']:['missing','No recoverable source samples are available. Check the matching data file and the decode reason.'],
-      'rms-vectors':!samples?['missing','Open a recording with recoverable samples first.']:!analysis?['missing','Apply source analysis to evaluate supported RMS and angle windows.']:!fits?['limited','No supported fits were found. Exact source samples remain available; inspect the stated timing, support or fit reason.']:['available','Supported fits exist for some channel/windows. The current cursor or selected reference can still be unavailable.'],
-      conditions:!analysis?['missing','Apply source analysis first; the report does not invent pre-fault or fault values.']:!yes('hasRegions')?['missing','Select and apply A–B. Until then there is no chosen pre-fault/fault/post-fault comparison.']:!fits?['limited','The selected interval is recorded, but region RMS needs supported windows wholly inside each region.']:['available','Applied regions can be reported. Each region/channel still needs its own wholly contained supported windows.'],
+      'rms-vectors':!samples?['missing','Open a recording with recoverable samples first.']:!cursorFacts?['limited','One-cycle measurements need recoverable analog samples, actual source times and a valid declared nominal frequency. Inspect the cursor reason; raw observations remain available.']:['limited','One-cycle cursor measurements are available where a complete trailing cycle is supported. Each cursor/channel and angle reference still has its own eligibility; four-cycle model fits are not required.'],
+      conditions:!samples?['missing','Choose a recording with recoverable samples in Simple report.']:['limited','Automatic timing suggestions are evaluated from the chosen recording. Review their evidence and refine manually only if needed; short, ongoing or incomplete events may leave some regions unavailable.'],
       compare:!yes('hasSecondRecord')?['missing','Add another recording to this incident to compare sources.']:!samples?['limited','A second recording exists, but this source has no recoverable samples. Inspect the decode reason.']:['available','Choose a second recording. Its recoverable channels determine which counterparts can be shown.'],
       study:yes('hasOperationalResult')?['available','An operational study result is stored. Read its method, exclusions and data-quality caveats.']:['missing','Confirm the line/end assignments and method-specific inputs in the operational study. Raw inspection and the simple report remain usable.']
     };

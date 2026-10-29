@@ -43,3 +43,16 @@ or unpushed work after remote refresh. A full byte-compared archive, including
 Git metadata and ignored files, was retained outside checkout roots at
 `/workspace/preserved-checkouts/AHI-portal-deploy.tar.gz` before removal.
 Saved repository selection was not changed.
+
+## P1 — honest capability and input guidance
+
+Help now describes actual one-cycle sample RMS/Fourier support and automatic event
+regions, with manual A–B refinement optional. Location prerequisites are scoped by
+E1/E2/E3/E5/E4; digital/settings facts are requested only for their interpretations.
+Custom zero-sequence fields are optional/collapsed. Selecting a registry line no
+longer silently opts into assumed CT defaults; existing explicit choices remain.
+The report-pane calculation extension is guarded until the P2 module is loaded.
+Targeted capability, real source-analysis mount, input, cursor and layout tests:
+**30 passed**. All four changed JavaScript files pass Node syntax checks. The
+line-selection regression was reproduced against baseline (132 vs expected 0),
+then passed with the fix. No numerical estimator or source bytes changed.

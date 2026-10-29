@@ -41,10 +41,14 @@ const DROperatorWorkspace=(()=>{
         if(eventStudy.applyRegion(record,[lo,hi],kind))notice('Applied samples '+lo+'–'+(hi-1)+' inclusive to the '+kind+' interval. Build the event report to update it.');
       },{signal});
     }
+    if(typeof DRFaultCalculation!=='undefined'){
+      const calculation=document.createElement('section');calculation.className='panel';calculation.innerHTML=DRFaultCalculation.panel(row,config);content('report').insertBefore(calculation,content('report').firstChild);
+      DRFaultCalculation.bind(row,calculation,signal,{onQueued:async()=>detail(row.incident_id)});
+    }
     if(!content('compare').children.length)content('compare').innerHTML='<p class="operator-empty">Attach another recording to this incident to compare channels. Keep matching CFG/DAT files together in distinct folders.</p>';
     const end=document.createElement('div');end.className='operator-next-actions';end.innerHTML='<button type="button" data-go-feature="inputs">Review inputs & explanations →</button><button type="button" data-go-feature="report">Read simple report →</button>';content('waveforms').append(end);
-    const reportHelp=document.createElement('details');reportHelp.className='operator-region-help';reportHelp.innerHTML='<summary>How to select pre-fault, fault and post-fault regions</summary><p>On Waveforms place A and B around the interval you want, then use the matching interval button in the event report. Both selected samples are included. At least one complete nominal cycle must fit inside each region. Moving cursors does not change an already built report.</p>';content('report').insertBefore(reportHelp,content('report').firstChild);
-    const back=document.createElement('button');back.type='button';back.dataset.goFeature='waveforms';back.textContent='← Set A and B on waveforms';reportHelp.after(back);
+    const reportHelp=document.createElement('details');reportHelp.className='operator-region-help';reportHelp.innerHTML='<summary>Optional: refine automatic event timings</summary><p>Simple report suggests source-local timings from supported changes and recorded indications. Review its timing evidence first. If refinement is needed, select Manual adjustment, place waveform A and B around the interval, then use the matching interval button. Both selected samples are included; at least one complete nominal cycle must fit inside each reported region. Moving cursors does not change an already built report.</p>';content('report').insertBefore(reportHelp,content('report').firstChild);
+    const back=document.createElement('button');back.type='button';back.dataset.goFeature='waveforms';back.textContent='Open waveforms to refine A–B';reportHelp.append(back);
     function select(id,focus=false){
       if(!tabs.some(t=>t[0]===id))id='waveforms';
       preferences.set(key,id);if(preferences.size>12)preferences.delete(preferences.keys().next().value);
@@ -67,7 +71,7 @@ const DROperatorWorkspace=(()=>{
     });
     function update(result){
       const chosenLoop=section.querySelector('.source-fault-loop')?.value;
-      guide.innerHTML=DRFeatureGuide.markup({hasSamples:data.sample_count>0,hasSecondRecord:(row.bundle?.files||[]).filter(f=>f.kind==='comtrade').length>1,analysisReady:Boolean(result),hasSupportedFits:(result?.fit_coverage?.model_consistent||0)>0,hasRegions:Boolean(result?.operator_conditions?.selection),hasLine:Boolean(result?.snapshot?.line?.length_km>0),hasLoop:Boolean(chosenLoop),faultLoop:chosenLoop,hasWindow:Number.isInteger(result?.options?.projection_window),hasOperationalResult:Boolean(row.result)});
+      guide.innerHTML=DRFeatureGuide.markup({hasSamples:data.sample_count>0,hasSecondRecord:(row.bundle?.files||[]).filter(f=>f.kind==='comtrade').length>1,hasAnalogSamples:data.channels.some(c=>c.kind==='analog'),hasSourceTimes:Array.isArray(data.time_range_s)&&data.time_range_s.length===2&&data.time_range_s.every(Number.isFinite)&&data.time_range_s[1]>data.time_range_s[0],hasNominalFrequency:Number.isFinite(data.nominal_frequency_hz)&&data.nominal_frequency_hz>=40&&data.nominal_frequency_hz<=70,analysisReady:Boolean(result),hasSupportedFits:(result?.fit_coverage?.model_consistent||0)>0,hasRegions:Boolean(result?.operator_conditions?.selection),hasLine:Boolean(result?.snapshot?.line?.length_km>0),hasLoop:Boolean(chosenLoop),faultLoop:chosenLoop,hasWindow:Number.isInteger(result?.options?.projection_window),hasOperationalResult:Boolean(row.result)});
       const run=section.querySelector('.source-run');if(run){run.classList.add('operator-primary-action');run.textContent='Apply inputs & update report';}
       const report=section.querySelector('.source-condition-summary');if(!result&&report&&!report.innerHTML)report.innerHTML='<div class="operator-empty"><h3>Report waiting for analysis</h3><p>Read the analysis status above. Exact waveform inspection remains available. Open Inputs & help to review changed or missing inputs; unavailable calculations keep their explanation.</p></div>';
     }

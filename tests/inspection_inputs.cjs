@@ -13,3 +13,13 @@ console.log('Source input choices preserve unknowns, explicit state0 and stable 
 assert.throws(()=>m.catalogue({detail:'Line registry budget exceeded'},false),/budget exceeded/);
 assert.throws(()=>m.catalogue({unexpected:true},true),/list/);
 assert.deepEqual(m.catalogue({items:[{id:'EXPLICIT'}]},true),[{id:'EXPLICIT'}]);
+
+const html=m.markup({line_model:{r0_ohm_per_km:.3,x0_ohm_per_km:1.2,provenance:'<unsafe>'}});
+assert.ok(html.includes('<details class="source-zero-sequence">'));
+assert.ok(!html.includes('<details class="source-zero-sequence" open'));
+assert.ok(html.includes('Phase-loop projection and E5 do not need these fields'));
+assert.ok(html.includes('data-line-field="r0_ohm_per_km"'));
+assert.ok(html.includes('value="0.3"'));
+assert.ok(html.includes('value="1.2"'));
+assert.ok(!html.includes('<unsafe>'));
+assert.ok(html.includes('&lt;unsafe&gt;'));
