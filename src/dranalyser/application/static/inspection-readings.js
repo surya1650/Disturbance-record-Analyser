@@ -30,7 +30,10 @@ const DRReadings=(()=>{
   }
   function readingMarkup(meta,point,reading,cursor){
     if(meta.kind==='digital')return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><p>State: ${point?.[2]===null||!point?'Unknown':esc(point[2])}</p></div>`;
-    return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))}<small>${esc(meta.units)}</small></dd><dt>Fitted RMS</dt><dd>${num(reading?.rms)}<small>${esc(reading?.units||'Analysis pending')}</small></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl>${reading?.reason?`<small>${esc(reading.reason)}</small>`:''}${reading?.rms!==null&&reading?.angle_deg===null?`<small>${esc(reading?.angle_reason||'')}</small>`:''}</div>`;
+    const shortUnit=units=>/^raw counts|^counts/i.test(units||'')?'counts':String(units||'').split(/[ (]/)[0]||'?';
+    const sourceUnit=meta.units,analysisUnit=reading?.units||'Analysis pending',reason=reading?.reason||reading?.angle_reason||'';
+    const summary=/assumed/i.test(analysisUnit)?'Assumed scaling · details':reason?'Why / units':'Units / fit details';
+    return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))} <span title="${esc(sourceUnit)}">${esc(shortUnit(sourceUnit))}</span></dd><dt>Fitted RMS</dt><dd>${num(reading?.rms)} <span title="${esc(analysisUnit)}">${reading?.rms===null||!reading?'':esc(shortUnit(analysisUnit))}</span></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl><details class="inspection-reading-details"><summary>${summary}</summary><small>Instantaneous: ${esc(sourceUnit)}. Analysis: ${esc(analysisUnit)}.</small>${reason?'<small>'+esc(reason)+'</small>':''}</details></div>`;
   }
   function vectorMarkup(v,colors={}){
     return ['voltage','current'].map(kind=>{

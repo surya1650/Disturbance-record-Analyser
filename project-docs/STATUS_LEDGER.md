@@ -1160,3 +1160,10 @@ Prepared review branch codex/operator-ui-review on remote-main base f52911e;
 added a Codespaces launcher for port8098 with separateout/web-preview data.
 Architecture and launcher Ruff passed;15focused tests passed (six launcher checks).
 Earlier full1792PASS/Stage-A10000PASS evidence retained. Main/environment unchanged.
+
+
+2026-10-29: Restored user-preferred recording-first behavior on the review branch:
+all analogs without pages, side vectors, changed digitals below; explicit CT/VT
+questions and reviewed-copy/ZIP with original preservation. Specific gate guidance.
+Full1843PASS/28skips, Stage-A10000PASS, browser64analog+12digital and realDR2 replay.
+See VIEWER_REGRESSION_RESTORE_ACCEPTANCE_2026-10-29.md. No merge to main.

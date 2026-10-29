@@ -2,10 +2,12 @@
 import hashlib
 import threading
 from collections import OrderedDict
+from copy import deepcopy
 from pathlib import Path
 
 from ..comtrade.source_observations import load_source
 from ..comtrade.source_header import header_information
+from .source_display import display_facts
 
 MAX_SAMPLES = 20000
 _CACHE = OrderedDict()
@@ -113,14 +115,20 @@ def _trace(values, times, budget):
 
 def inspection_record(root, revision, filename):
     source, item = _source(root, revision, filename)
+    with _LOCK:
+        if '_viewer_display' not in source:
+            source['_viewer_display'] = display_facts(source)
+        display = deepcopy(source['_viewer_display'])
     channels = _channels(source)
     headers = {c['id']: c for c in source.get('header_inventory', [])}
     for c in channels:
         c['phase'] = headers.get(c['id'], {}).get('phase', '')
     times = source['axis'].get('elapsed_s', [])
-    budget = max(1, 16000//max(1, len(channels)*4))
+    budget = max(1, 16000//max(1, len(channels)*5))
     for meta, data in zip(channels, source['channels']+source['digital'], strict=True):
         meta['trace'] = _trace(data.get('values', data.get('states', [])), times, budget)
+        if meta['kind'] == 'digital':
+            meta['activity'] = display['activities'][meta['id']]
     missing = sum(v is None for c in source['channels']+source['digital'] for v in c.get('values', c.get('states', [])))
     issues = list(source['issues'])
     if missing:
@@ -135,6 +143,8 @@ def inspection_record(root, revision, filename):
                 time_range_s=[times[0], times[-1]] if times else None,
                 station=source.get('station', ''), device=source.get('device', ''),
                 recorded_times=source.get('recorded_times', {}),
+                timeline=display['timeline'],
+                break_indices=display['break_indices'], omitted_break_indices=display['omitted_break_indices'],
                 inventory=source.get('header_inventory', []),
                 operational_eligibility=dict(state=revision['state'], blocked=item.get('blocked', False),
                     reason=item.get('error', '') or 'Inspection does not establish operational eligibility.'),

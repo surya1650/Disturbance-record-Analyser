@@ -8,6 +8,8 @@ from .source_jobs import SourceJobs
 
 
 def install_inspection(app, store, registry=None):
+    from .instrument_review import install_instrument_review
+    install_instrument_review(app, store)
     jobs=SourceJobs(store.root,registry)
     app.state.source_jobs=jobs
     original=app.router.lifespan_context

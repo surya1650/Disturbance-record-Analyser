@@ -2,7 +2,8 @@
 function inspectionPanel(row) {
   const records = row.bundle?.files.filter(f => f.kind === 'comtrade') || [];
   if (!records.length) return '';
-  return `<section id="source-inspection" class="panel detail-section"><h2>Source waveform inspection</h2><p>Open recorded observations before assignment. Source scaling and timing do not establish physical, clock or fault-location authority.</p><label>Recording <select id="inspection-record">${records.map(f=>`<option value="${escapeHtml(f.name)}">${escapeHtml(f.name)}</option>`).join('')}</select></label><div id="inspection-workspace" aria-live="polite"></div></section>`;
+  const preferred=DRInputGuidance.preferredRecording(row,records);
+  return `<section id="source-inspection" class="panel detail-section"><h2>Source waveform inspection</h2><p>Open recorded observations before assignment. Source scaling and timing do not establish physical, clock or fault-location authority.</p><label>Recording <select id="inspection-record">${records.map(f=>`<option value="${escapeHtml(f.name)}" ${f.name===preferred?'selected':''}>${escapeHtml(f.name)}</option>`).join('')}</select></label><div id="inspection-workspace" aria-live="polite"></div></section>`;
 }
 let inspectionController;
 function mountInspection(row) {

@@ -110,6 +110,6 @@ function mountSourceAnalysis(host,data,row,recordController,workbench) {
     }catch(error){if(error.name!=='AbortError'&&token===comparisonGeneration)container.textContent=error.message;}
   }
   recordController.signal.addEventListener('abort',()=>{generation++;comparisonGeneration++;controller?.abort();comparisonController?.abort();clearTimeout(timer);},{once:true});
-  flow=DROperatorWorkspace.mount(section,{traces:host.querySelector('.inspection-traces'),row,data});
+  flow=DROperatorWorkspace.mount(section,{traces:host.querySelector('.inspection-traces'),row,data,signal:recordController.signal});
   run();
 }

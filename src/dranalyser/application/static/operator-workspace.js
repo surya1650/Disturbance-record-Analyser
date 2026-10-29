@@ -2,13 +2,21 @@
 const DROperatorWorkspace=(()=>{
   const preferences=new Map();
   const tabs=[['waveforms','Waveforms','Inspect analog and digital observations. Move a cursor for exact values; no line model is required.'],['report','Simple report','Read selected pre-fault, fault and post-fault values, distance availability and recorded indications.'],['inputs','Inputs & help','Choose only the inputs needed for the feature you want. Apply changed choices to update the report.'],['compare','Compare recordings','Compare the same quantities side by side. Visual comparison does not confirm common events or clocks.'],['evidence','Technical evidence','Inspect method availability, supported windows and source-quality evidence when you need detail.']];
-  function mount(section,{traces,row,data}){
+  function mount(section,{traces,row,data,signal}){
     const root=document.createElement('div');root.className='operator-workspace';
     const key=row.incident_id+'/'+row.number,prefix='operator-'+String(row.incident_id).replace(/[^a-zA-Z0-9]/g,'')+'-'+row.number;
     root.innerHTML=`<div class="operator-tabs" role="tablist" aria-label="Recording tasks">${tabs.map(([id,title])=>`<button type="button" role="tab" id="${prefix}-${id}-tab" aria-controls="${prefix}-${id}" data-workspace-tab="${id}">${title}</button>`).join('')}</div>`+tabs.map(([id,title,help])=>`<section role="tabpanel" tabindex="0" id="${prefix}-${id}" aria-labelledby="${prefix}-${id}-tab" data-workspace-pane="${id}" hidden><div class="operator-task-heading"><h2>${title}</h2><p>${help}</p></div><div data-workspace-content="${id}"></div></section>`).join('');
     section.append(root);
     const content=id=>root.querySelector(`[data-workspace-content="${id}"]`);
+    const record=(row.bundle?.files||[]).find(f=>f.name===data.file)||{};
+    const noticePanel=document.createElement('div');noticePanel.innerHTML=DRInputGuidance.markup(record);content('waveforms').append(noticePanel);
     if(traces)content('waveforms').append(traces);
+    const reviewInputs=document.createElement('div');reviewInputs.innerHTML=instrumentReviewEditor(row,data.file);content('inputs').append(reviewInputs);
+    bindInstrumentReview(row,reviewInputs,{signal,onSuccess:async(updated,result)=>{
+      history.replaceState(null,'','#incident/'+row.incident_id);await detail(row.incident_id);
+      const select=document.getElementById('inspection-record');if(select&&[...select.options].some(o=>o.value===result.reviewed_record)){select.value=result.reviewed_record;select.dispatchEvent(new Event('change'));}
+      notice('Reviewed CFG copy created in revision '+updated.number+'. Original files are preserved; inspect the rechecked copy before operational assignment.');
+    }});
     const guide=document.createElement('section');guide.className='operator-feature-guide';content('inputs').append(guide);
     const original=[...section.children].filter(el=>el!==root);
     for(const el of original){
@@ -50,7 +58,8 @@ const DROperatorWorkspace=(()=>{
     const apply=section.querySelector('.source-use-region');if(apply)apply.setAttribute('aria-label','Apply A–B as the fault interval');
     const scalingHelp=document.createElement('p');scalingHelp.className='field-help';scalingHelp.textContent='Voltage-level choice is optional. Leave it unspecified for raw inspection. The 132 kV and 220 kV options apply assumption-labelled missing CT defaults of 600/1 and 800/1 only to otherwise-known secondary-current channels. Valid supplied ratios remain; this does not verify CT/VT wiring.';
     section.querySelector('.source-voltage')?.closest('.inspection-toolbar')?.after(scalingHelp);
-    select(preferences.get(key)||'waveforms');update(null);
+    const inspectionHost=document.getElementById('inspection-workspace'),requested=inspectionHost?.dataset.requestedRecord===data.file?inspectionHost.dataset.requestedTask:null;
+    select(requested||preferences.get(key)||'waveforms');if(requested){delete inspectionHost.dataset.requestedRecord;delete inspectionHost.dataset.requestedTask;}update(null);
     return {select,update};
   }
   return {mount};

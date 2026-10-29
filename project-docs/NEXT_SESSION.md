@@ -1,5 +1,15 @@
 # Next owner: start here
 
+2026-10-29 viewer regression fix: read VIEWER_REGRESSION_RESTORE_ACCEPTANCE_2026-10-29.md.
+Restored all analogs/no paging, side vectors, changed digitals below, exact native
+activity/time axes, bounded all-channel cursors and the e3a9db3 reviewed CT/VT-copy
+workflow. Inputs & help creates a marked new revision/ZIP; original bytes remain
+immutable. Operational refusals explain actual findings. Same authorized review
+branch codex/operator-ui-review; main/environment publication remain unchanged.
+Full1843PASS/28private-corpus skips and Stage-A10000PASS. Browser verified ratio-copy
+flow, real localDR2 and64analogs+12changed digitals. QA rootout/qa/viewer-regression-2026-10-29.
+
+
 2026-10-29 push authorization: user explicitly requested pushing the latest changes
 for checking. Review branch: `codex/operator-ui-review`, from `f52911e` (remote main
 at inspection). It includes channel comparison, explanatory UI/simple reports and

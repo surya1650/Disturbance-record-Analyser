@@ -64,6 +64,19 @@ Open 8095 and upload the ZIP. This is synthetic data, not field evidence. Use de
 
 ## Operator workflow
 
+Latest restoration: **all analogs stay visible without channel pages**, with vectors
+alongside on desktop and native-state changed digital channels below. Add other
+digitals using the top Channels & colours disclosure. Shared cursor readouts remain
+exact; the horizontal axis uses recorded-trigger-relative milliseconds when known.
+
+For missing secondary CT/VT ratios, open **Inputs & help → Resolve missing CT / VT
+ratings**. Enter actual primary/secondary ratings, reviewer and evidence, then check
+or create a reviewed copy. Saving creates a new revision and selects the marked
+copy; original files are preserved. A reviewed ZIP can also be downloaded. Timing
+and other independent findings remain visible. See
+`project-docs/VIEWER_REGRESSION_RESTORE_ACCEPTANCE_2026-10-29.md` for verified scope.
+
+
 Latest cloud draft, 2026-10-29: recording tasks are separated into Waveforms,
 Simple report, Inputs & help, Compare recordings and Technical evidence. Optional
 operational/history tools are under More tools. Inputs & help explains prerequisites

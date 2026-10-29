@@ -93,7 +93,7 @@ function assignmentForm(row) {
   return `<form id="review-form" class="panel"><div class="panel-heading"><div><h2>Confirm the incident assignment</h2><p>Choose one primary record at each available end. Other records can corroborate it.</p></div></div><div class="detail-section"><label for="review-line">Line definition</label><select id="review-line">${options}</select><p class="field-help">Without line constants, you can still inspect protection behaviour. Provisional definitions do not establish operational distance accuracy.</p></div><div class="table-wrap"><table class="assign-table"><thead><tr><th>Record & evidence</th><th>Data quality</th><th>Use in analysis</th></tr></thead><tbody>${records.map((f,i) => {
     const usable = f.ok && !f.duplicate_of && (!f.blocked || (config.mapping_targets && f.channel_inventory?.length));
     const state = f.duplicate_of?'Duplicate':f.blocked?'Input notes':!f.ok?'Source needs inspection':'Ready';
-    return `<tr><td><strong>${escapeHtml(f.name)}</strong><small>${escapeHtml(f.station)} · ${f.fs_hz} Hz</small><p class="field-help">${escapeHtml(f.blocked?'Source inspection and independent analysis available; operational assignment is pending.':f.suggested_reason || '')}${f.suggested_end?` · Suggested end ${f.suggested_end}`:''}</p></td><td>${state}<p class="field-help">${escapeHtml(DRInspection.qualityMessage(f))}</p><details><summary>Input details</summary><div class="flags">${escapeHtml(f.error || f.duplicate_of || f.flags.join('\n'))}</div></details></td><td><select data-record="${escapeHtml(f.name)}" data-index="${i}" ${usable?'':'disabled'}><option value="">${usable?'Choose…':'Excluded'}</option><option value="excluded">Exclude from this analysis</option><option value="S:primary">End S · Primary</option><option value="S:corroborating">End S · Corroborating</option><option value="R:primary">End R · Primary</option><option value="R:corroborating">End R · Corroborating</option></select></td></tr>`;
+    return `<tr><td><strong>${escapeHtml(f.name)}</strong><small>${escapeHtml(f.station)} · ${f.fs_hz} Hz</small><p class="field-help">${escapeHtml(f.blocked?'Source inspection and independent analysis available; operational assignment is pending.':f.suggested_reason || '')}${f.suggested_end?` · Suggested end ${f.suggested_end}`:''}</p></td><td>${state}<p class="field-help">${escapeHtml(DRInspection.qualityMessage(f))}</p>${f.blocked?`<button type="button" data-review-record-inputs="${escapeHtml(f.name)}">Review required inputs</button>`:''}<details><summary>Input details</summary><div class="flags">${escapeHtml(f.error || f.duplicate_of || f.flags.join('\n'))}</div></details></td><td><select data-record="${escapeHtml(f.name)}" data-index="${i}" ${usable?'':'disabled'}><option value="">${usable?'Choose…':'Excluded'}</option><option value="excluded">Exclude from this analysis</option><option value="S:primary">End S · Primary</option><option value="S:corroborating">End S · Corroborating</option><option value="R:primary">End R · Primary</option><option value="R:corroborating">End R · Corroborating</option></select></td></tr>`;
   }).join('')}</tbody></table></div>${mappingEditor(row)}${rxReviewEditor(row)}${stageReviewEditor(row)}<div class="detail-section"><button class="button primary" type="submit">Confirm & analyse →</button></div></form>`;
 }
 let routeGeneration=0;
@@ -126,6 +126,7 @@ async function detail(id, revision = '', generation=routeGeneration) {
   body += '</details>';
   $('detail-content').innerHTML=body;
   mountInspection(row);
+  document.querySelectorAll('[data-review-record-inputs]').forEach(button=>button.onclick=()=>DRInputGuidance.openInputs(button.dataset.reviewRecordInputs));
   if (result) bindNavigation(row);
   if (['completed','attention','failed'].includes(row.state)) {
     const button=document.createElement('button');
@@ -168,6 +169,8 @@ async function detail(id, revision = '', generation=routeGeneration) {
       for (const select of document.querySelectorAll('[data-record]')) {
         if (select.disabled) continue;
         if (!select.value) return notice('Choose how to use each usable record, or explicitly exclude it.');
+        const file=row.bundle.files.find(f=>f.name===select.dataset.record);
+        if(select.value!=='excluded'&&DRInputGuidance.assess(file).ratio){notice(file.name+': actual CT/VT ratings are missing. Complete the required inputs and create a reviewed copy before choosing its operational end.');DRInputGuidance.openInputs(file.name);return;}
         const [end,role]=select.value==='excluded'?['','excluded']:select.value.split(':');
         const system = [...document.querySelectorAll('[data-system]')].find(s => s.dataset.system === select.dataset.record);
         const profile = [...document.querySelectorAll('[data-profile]')].find(s => s.dataset.profile === select.dataset.record);
