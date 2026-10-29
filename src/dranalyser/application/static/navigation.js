@@ -19,9 +19,9 @@ function bindNavigation(row) {
   };
 }
 
-function mountNavigation(host, data, row) {
+function mountNavigation(host, data, row, selection={}) {
   const esc = escapeHtml, model = DRNavigation;
-  const records = row.result.relay_evidence || [];
+  const records = (row.result.relay_evidence || []).filter(item=>!selection.records||selection.records.includes(item.file));
   const num = n => Number.isFinite(n) ? n.toFixed(3) : 'unavailable';
   let evidence, record, axis, lo, hi, cursor, analogIndex=0, digitalIndex=-1, loop='AB';
   let exact=null, requestNumber=0;
@@ -77,7 +77,7 @@ function mountNavigation(host, data, row) {
       if(path) marks+=`<polyline points="${path} ${next}" fill="none" stroke="#087f75"/>`;
       marks+=`<circle cx="${x(p[1])}" cy="${y(p[2])}" r="2" fill="#087f75"/>`;path=next;
     }
-    const preceding=good.filter(p=>p[0]<=cursor).at(-1);
+    const preceding=model.rxPoint(series,cursor);
     if(preceding) marks+=`<circle cx="${x(preceding[1])}" cy="${y(preceding[2])}" r="6" fill="none" stroke="#b65927" stroke-width="2"/>`;
     return svg(loop+' R-X trajectory in primary ohm; equal axis scales',marks+
       line(315,195,485,195)+line(315,25,315,195)+text(510,205,'R primary Ω')+text(245,18,'X primary Ω')+
@@ -159,5 +159,11 @@ function mountNavigation(host, data, row) {
     draw();
   }
   el('nav-record').onchange=e=>selectRecord(Number(e.target.value));
-  if(records.length) selectRecord(0);
+  if(records.length){const index=Math.max(0,records.findIndex(item=>item.file===selection.record));el('nav-record').value=String(index);selectRecord(index);}
+  return {followCursor(localByRecord){
+    if(!host.isConnected||selection.signal?.aborted||record?.status!=='available')return false;
+    const t=localByRecord[evidence.file],view=el('nav-view');
+    if(!Number.isFinite(t)||t<record.capture_s[0]||t>record.capture_s[1]||t<lo||t>hi){view.hidden=true;el('nav-error').textContent='Report cursor is outside this source-local view; no point is carried across the missing interval.';return false;}
+    view.hidden=false;el('nav-error').textContent='';setCursor(t);return true;
+  }};
 }

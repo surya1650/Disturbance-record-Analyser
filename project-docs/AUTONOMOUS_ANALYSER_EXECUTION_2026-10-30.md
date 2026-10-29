@@ -97,3 +97,14 @@ required before a method-labelled location/classification can be shown.
 Fresh focused report/explanation/UI tests: **37 passed**, one upstream warning.
 The broader event/navigation/R-X group passed **81 tests**. Private opposite-end
 records and patrol truth remain unavailable; this is synthetic/software evidence.
+
+## P4 — existing R–X and full-line view
+
+Simple report renders the shared explanation, a full declared line sketch and
+only an eligible method-labelled in-range marker. Its secondary disclosure
+loads the existing stored R–X/source navigator for selected records and follows
+the same source-local report cursor; no end synchronization is implied. Missing
+line/towers/settings are not synthesized. A regression fix prevents the last
+valid R–X marker from persisting across an explicit missing-point interval.
+Node navigation/event-study tests and the broader **81-test** group passed;
+browser report/HTML/JSON render on desktop/mobile without overflow or errors.

@@ -24,6 +24,11 @@ const DRNavigation = (() => {
     return [Math.max(lo,capture[0]), Math.min(hi,capture[1])];
   }
   function selectedBins(channel, lo, hi) { return (channel?.bins || []).filter(b => b[0] <= hi && b[1] >= lo); }
-  return {axis, pointState, events, interval, selectedBins};
+  function rxPoint(series, t) {
+    if(!Number.isFinite(t)||!series.length||t<series[0][0]||t>series.at(-1)[0])return null;
+    const point=series.filter(p=>p[0]<=t).at(-1);
+    return point&&Number.isFinite(point[1])&&Number.isFinite(point[2])?point:null;
+  }
+  return {axis, pointState, events, interval, selectedBins, rxPoint};
 })();
 if (typeof module !== 'undefined') module.exports = DRNavigation;
