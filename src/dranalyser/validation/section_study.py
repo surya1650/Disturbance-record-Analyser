@@ -27,11 +27,11 @@ def aligned_section_candidates(line, vs, is_, vr, ir, *, tolerance=1e-8):
         return out
     previous, seen = 0.0, set()
     for section in line.sections:
-        values = (section.from_km, section.to_km, section.r1, section.x1,
-                  section.r0, section.x0, section.b1, section.b0)
+        zero = [v for v in (section.r0, section.x0) if v is not None]
+        values = (section.from_km, section.to_km, section.r1, section.x1, section.b1, section.b0, *zero)
         if (not all(math.isfinite(v) for v in values) or section.to_km <= section.from_km or
                 not math.isclose(section.from_km, previous, rel_tol=0, abs_tol=1e-8) or
-                section.x1 <= 0 or min(section.r1, section.r0, section.x0) < 0 or
+                section.x1 <= 0 or min([section.r1, *zero]) < 0 or
                 section.b1 != 0 or section.b0 != 0 or section.seq in seen):
             out['reason'] = 'Invalid/noncontiguous sections, duplicate locators or unsupported shunt admittance.'
             return out

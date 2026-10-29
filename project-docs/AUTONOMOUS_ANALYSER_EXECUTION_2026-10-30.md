@@ -108,3 +108,20 @@ line/towers/settings are not synthesized. A regression fix prevents the last
 valid R–X marker from persisting across an explicit missing-point interval.
 Node navigation/event-study tests and the broader **81-test** group passed;
 browser report/HTML/JSON render on desktop/mobile without overflow or errors.
+
+## P2 follow-up — genuinely method-specific engineering inputs
+
+The registry now preserves absent R0/X0 and terminal source impedances as unknown,
+rather than demanding them for E5 or treating absent sources as zero. Eligible
+phase loops do not derive unused ground compensation. Ground single-ended
+methods refuse missing line Z0; E3 refuses missing actual source Z0. CLI and
+Tier1 explain missing compensation. No estimator equation, synthetic generator,
+clock, scaling or ambiguity gate changed. Existing known-Z0 outputs stay the same.
+Synthetic cases cover 12 E5 fault/distance combinations, three single-end phase
+loops, named refusals, invalid declared values, mixed-section chainage, CLI and
+HTTP intake → Worker → immutable structured result. New suite: **23 cases**;
+final selected integration group **35 passed**; broader physics/ML **144 passed**.
+Stage-A 10,000 remains PASS, clean p95 **0.4361%**, no uncaveated impossible result.
+Accepted physical declarations are retained on unchanged reruns; editing the
+line or either end clears confirmation. Display selections are never promoted.
+Exact intentional module-growth budgets are updated without unrelated reseeding.

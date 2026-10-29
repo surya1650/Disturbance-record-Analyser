@@ -14,6 +14,8 @@ assert.equal(calc.payload(row,choices).assignments['S.cfg'].rx_review.accepted,t
 assert.equal(calc.payload(row,{...choices,line_id:'different'}).assignments['S.cfg'].rx_review,undefined);
 assert.equal(calc.payload(row,{...choices,S:'',R:'S.cfg'}).assignments['S.cfg'].rx_review,undefined);
 assert.equal(calc.payload(row,{...choices,S:'',R:'S.cfg'}).assignments['S.cfg'].channel_mapping.record_hash,'a');
+assert.match(calc.panel({...row,result:{location_summary:{}}},{lines:[{id:'line'}]}),/name="confirmed" checked/);
+assert.ok(!calc.panel(row,{lines:[{id:'line'}]}).includes('name="confirmed" checked'));
 assert.match(calc.panel(row,{lines:[]}),/Needs a declared line model/);
 assert.match(calc.panel({...row,state:'running'},{lines:[{id:'line'}]}),/Wait for the current revision/);
 (async()=>{

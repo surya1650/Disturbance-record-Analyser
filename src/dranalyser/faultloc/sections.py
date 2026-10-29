@@ -21,10 +21,11 @@ def section_model_reasons(line):
         return reasons + ['No line sections supplied.']
     previous, seen = 0.0, set()
     for s in line.sections:
-        values = (s.from_km, s.to_km, s.r1, s.x1, s.r0, s.x0, s.b1, s.b0)
+        zero = [v for v in (s.r0, s.x0) if v is not None]
+        values = (s.from_km, s.to_km, s.r1, s.x1, s.b1, s.b0, *zero)
         if (not all(math.isfinite(v) for v in values) or s.to_km <= s.from_km or
                 not math.isclose(s.from_km, previous, rel_tol=0, abs_tol=1e-8) or
-                s.x1 <= 0 or min(s.r1, s.r0, s.x0) < 0 or s.seq in seen):
+                s.x1 <= 0 or min([s.r1, *zero]) < 0 or s.seq in seen):
             return reasons + ['Invalid/noncontiguous sections or duplicate section identifiers.']
         if s.b1 != 0 or s.b0 != 0:
             reasons.append('Declared shunt admittance: charging is unsupported.')

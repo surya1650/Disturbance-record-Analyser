@@ -113,10 +113,13 @@ def cmd_locate(args) -> int:
     print("LINE  ", line.id, "-", line.name)
     print("       ", format(line.kv, ".0f"), "kV,", format(line.length_km, ".3f"), "km,",
           len(line.sections), "section(s),", len(line.towers), "towers")
-    print("        Z1 =", format(line.z1.real, ".4f"), "+ j" + format(line.z1.imag, ".4f"),
-          "ohm    Z0 =", format(line.z0.real, ".4f"), "+ j" + format(line.z0.imag, ".4f"), "ohm")
-    print("        k0 =", format(abs(line.k0_line), ".4f"), "angle",
-          format(math.degrees(np.angle(line.k0_line)), "+.3f"), "deg")
+    print("        Z1 =", format(line.z1.real, ".4f"), "+ j" + format(line.z1.imag, ".4f"), "ohm")
+    if line.z0 is None:
+        print("        Z0 / ground-loop k0: Not supplied; ground single-ended methods are unavailable. E5 does not require Z0.")
+    else:
+        print("        Z0 =", format(line.z0.real, ".4f"), "+ j" + format(line.z0.imag, ".4f"), "ohm")
+        print("        k0 =", format(abs(line.k0_line), ".4f"), "angle",
+              format(math.degrees(np.angle(line.k0_line)), "+.3f"), "deg")
 
     paths = {"S": args.S, "R": args.R}
     terminals: Dict[str, TerminalInput] = {}
@@ -267,13 +270,8 @@ def cmd_verdict(args) -> int:
                  for e, a in ans.items()}
         res = locate(line, terms)
 
-    z2 = 0.35
-    for s in settings.values():
-        z = s.zone("Z2")
-        if z:
-            z2 = z.t1
-    feats = incident_features(ans, location=res, line=line, settings=settings,
-                              z2_time_s=z2)
+    # Relay-dependent verdicts use the actual applicable settings at each end.
+    feats = incident_features(ans, location=res, line=line, settings=settings)
 
     print(BAR)
     print("TIMELINE (ms from fault inception at that terminal)")
@@ -283,13 +281,15 @@ def cmd_verdict(args) -> int:
     print("    " + format("", "<18") + format("S", ">12") + format("R", ">12"))
     for k in rows:
         sv, rv = feats.get("S_" + k), feats.get("R_" + k)
-        fmt = lambda x: ("%12.1f" % x) if isinstance(x, (int, float)) else format("-", ">12")
+        def fmt(x):
+            return ("%12.1f" % x) if isinstance(x, (int, float)) else format("-", ">12")
         print("    " + format(k, "<18") + fmt(sv) + fmt(rv))
     for k in ("fault_type", "zone_operated", "zone_expected", "i_fault_ka",
               "three_pole_trip", "ct_saturation", "zero_seq_voltage", "window_cycles"):
         sv, rv = feats.get("S_" + k), feats.get("R_" + k)
-        f2 = lambda x: format("-" if x is None else
-                              (("%12.3f" % x) if isinstance(x, float) else str(x)), ">12")
+        def f2(x):
+            return format("-" if x is None else
+                          (("%12.3f" % x) if isinstance(x, float) else str(x)), ">12")
         print("    " + format(k, "<18") + f2(sv) + f2(rv))
 
     print(BAR)

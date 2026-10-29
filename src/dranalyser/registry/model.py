@@ -71,8 +71,8 @@ class LineSection:
     to_km: float
     r1: float
     x1: float
-    r0: float
-    x0: float
+    r0: Optional[float] = None
+    x0: Optional[float] = None
     b1: float = 0.0
     b0: float = 0.0
     conductor: str = ""
@@ -86,8 +86,8 @@ class LineSection:
         return complex(self.r1, self.x1) * self.length_km
 
     @property
-    def z0(self) -> complex:
-        return complex(self.r0, self.x0) * self.length_km
+    def z0(self) -> Optional[complex]:
+        return None if self.r0 is None or self.x0 is None else complex(self.r0, self.x0) * self.length_km
 
 
 @dataclass
@@ -174,8 +174,8 @@ class Terminal:
     end: str
     substation: str
     it: InstrumentTransformer = field(default_factory=InstrumentTransformer)
-    zs1: complex = 0j
-    zs0: complex = 0j
+    zs1: Optional[complex] = None
+    zs0: Optional[complex] = None
     relays: List[Relay] = field(default_factory=list)
     # +1 = current positive from bus INTO the line, which is what every
     # equation in faultloc assumes. A flipped CT here is silent, not an error.
@@ -221,11 +221,13 @@ class Line:
         return sum((s.z1 for s in self.sections), 0j)
 
     @property
-    def z0(self) -> complex:
-        return sum((s.z0 for s in self.sections), 0j)
+    def z0(self) -> Optional[complex]:
+        return None if any(s.z0 is None for s in self.sections) else sum((s.z0 for s in self.sections), 0j)
 
     @property
     def k0_line(self) -> complex:
+        if self.z0 is None:
+            raise ValueError("Line zero-sequence R0/X0 are required to derive ground-loop compensation.")
         return k0_from_impedances(self.z1, self.z0)
 
     def m_to_km(self, m: float) -> float:

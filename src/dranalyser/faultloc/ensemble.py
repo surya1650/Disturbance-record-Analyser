@@ -40,8 +40,8 @@ class TerminalInput:
 
     analysed: Analysed
     end: str
-    zs1: complex = 0j
-    zs0: complex = 0j
+    zs1: Optional[complex] = None
+    zs0: Optional[complex] = None
     clock_good: bool = False
     polarity: int = 1
     # Section E4 requires phasors already transformed to a common reference.
@@ -167,10 +167,16 @@ def _single_ended(ti: TerminalInput, line: Line, fault: str) -> List[Estimate]:
         return [Estimate(method=m, m=float("nan"), residual=float("inf"), ok=False,
                          reason=why, ends="single") for m in ("E1", "E2", "E3")]
 
-    k0 = k0_from_impedances(line.z1, line.z0)
+    # Section 7.2: only ground loops require Z0; phase loops ignore k0 entirely.
     z1, z0 = line.z1, line.z0
+    if fault in SLG and z0 is None:
+        return [Estimate(method=m, m=float("nan"), residual=float("inf"), ok=False,
+                         reason="gated: line zero-sequence R0/X0 required for ground-loop compensation", ends="single")
+                for m in ("E1", "E2", "E3")]
+    k0 = k0_from_impedances(z1, z0) if fault in SLG else 0j
     far = "R" if ti.end == "S" else "S"
-    zs0_far = line.terminals[far].zs0 if far in line.terminals else ti.zs0
+    zs0_far = line.terminals[far].zs0 if far in line.terminals else None
+    e3_sources = ti.zs0 is not None and zs0_far is not None
 
     m1, m2, m3 = [], [], []
     d1: Dict[str, float] = {}
@@ -197,7 +203,7 @@ def _single_ended(ti: TerminalInput, line: Line, fault: str) -> List[Estimate]:
         r2 = e2_takagi(vl, il, il - ilp, z1)
         if r2.ok:
             m2.append(r2.m)
-        if fault in SLG:
+        if fault in SLG and e3_sources:
             r3 = e3_modified_takagi(vl, il, i0, z1, z0, ti.zs0, zs0_far,
                                     m_seed=float(np.median(m1)) if m1 else 0.5)
             if r3.ok:
@@ -206,8 +212,8 @@ def _single_ended(ti: TerminalInput, line: Line, fault: str) -> List[Estimate]:
     out: List[Estimate] = []
     for name, vals in (("E1", m1), ("E2", m2), ("E3", m3)):
         if not vals:
-            reason = ("gated: single-phase-to-ground only" if name == "E3"
-                      else "no valid sample in window")
+            reason = (("gated: source zero-sequence impedances required at both ends" if fault in SLG and not e3_sources
+                       else "gated: single-phase-to-ground only") if name == "E3" else "no valid sample in window")
             out.append(Estimate(method=name, m=float("nan"), residual=float("inf"),
                                 ok=False, reason=reason, ends="single"))
             continue

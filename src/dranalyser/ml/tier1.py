@@ -38,7 +38,7 @@ from __future__ import annotations
 import cmath
 import math
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, Optional, Sequence
 
 import numpy as np
 
@@ -127,6 +127,8 @@ def estimate_k0(
     min_events: int = 2,
 ) -> K0Estimate:
     """Least-squares complex k0 from a set of confirmed-geometry incidents."""
+    if line.z0 is None:
+        raise ValueError("Tier 1 compensation review requires declared line zero-sequence R0/X0; no baseline is invented.")
     k0_reg = k0_from_impedances(line.z1, line.z0)
     A_all, b_all = [], []
     used = 0
@@ -182,6 +184,8 @@ def apply_k0(line: Line, est: K0Estimate) -> Line:
     if not est.accepted:
         return line
     out = copy.deepcopy(line)
+    if line.z0 is None:
+        raise ValueError("Cannot apply compensation correction without the declared original line Z0.")
     scale = est.z0_implied / line.z0
     for s in out.sections:
         z = complex(s.r0, s.x0) * scale
@@ -200,7 +204,7 @@ def estimate_z1_from_ground_truth(
     two confirmed events determine Z1. Needs the ground_truth table, which is
     the scarcest and most valuable data in the system.
     """
-    rows, rhs = [], []
+    rows = []
     for obs in observations:
         s = obs.terminals.get("S")
         r = obs.terminals.get("R")

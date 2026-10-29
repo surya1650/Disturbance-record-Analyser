@@ -6,7 +6,7 @@ traced to a stated number rather than to a constant buried in code.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import yaml
 
@@ -14,7 +14,7 @@ from .model import (InstrumentTransformer, Line, LineSection, Relay,
                     RelaySetting, Terminal, Tower)
 
 
-def _cx(v: Any, default: complex = 0j) -> complex:
+def _cx(v: Any, default: Optional[complex] = None) -> Optional[complex]:
     """Accept [r, x], {r:, x:}, "r+xj" or a bare number."""
     if v is None:
         return default
@@ -86,14 +86,13 @@ def line_from_dict(d: Dict[str, Any]) -> Line:
             seq=int(s.get("seq", i + 1)),
             from_km=float(s["from_km"]), to_km=float(s["to_km"]),
             r1=float(s["r1"]), x1=float(s["x1"]),
-            r0=float(s["r0"]), x0=float(s["x0"]),
+            r0=float(s["r0"]) if s.get("r0") is not None else None,
+            x0=float(s["x0"]) if s.get("x0") is not None else None,
             b1=float(s.get("b1", 0.0)), b0=float(s.get("b0", 0.0)),
             conductor=str(s.get("conductor", "")),
         ))
     if not secs:
-        raise ValueError("line definition has no sections; Z1 and Z0 per km are "
-                         "mandatory - a wrong Z0 is the largest single cause of "
-                         "a wrong location")
+        raise ValueError("line definition has no sections; positive-sequence R1/X1 and physical chainage are required.")
 
     terms = {e: _terminal(e, (d.get("terminals", {}) or {}).get(e, {}))
              for e in ("S", "R")}

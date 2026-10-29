@@ -14,18 +14,22 @@ def scalar_model_reasons(line):
         reasons.append('Double-circuit line: coupled-network location is unvalidated; scalar distance withheld.')
     if not line.sections:
         return reasons + ['No line sections supplied.']
-    ratios, previous = [], 0.0
+    ratios, zero_ratios, previous = [], [], 0.0
     for s in line.sections:
-        values = (s.from_km, s.to_km, s.r1, s.x1, s.r0, s.x0, s.b1, s.b0)
+        zero = [v for v in (s.r0, s.x0) if v is not None]
+        values = (s.from_km, s.to_km, s.r1, s.x1, s.b1, s.b0, *zero)
         if (not all(math.isfinite(v) for v in values) or s.to_km <= s.from_km or s.x1 <= 0 or
-                s.r1 < 0 or s.r0 < 0 or s.x0 < 0 or not math.isclose(s.from_km, previous, abs_tol=1e-8)):
+                min([s.r1, *zero]) < 0 or not math.isclose(s.from_km, previous, abs_tol=1e-8)):
             reasons.append('Invalid/noncontiguous line sections; physical chainage and positive reactance required.')
             break
         previous = s.to_km
         if s.b1 != 0 or s.b0 != 0:
             reasons.append('Declared shunt admittance: the series-only scalar model omits charging; distance withheld.')
-        ratios.append([s.r1/s.x1, s.r0/s.x1, s.x0/s.x1])
-    if ratios and not np.allclose(ratios, ratios[0], rtol=1e-8, atol=1e-10):
+        ratios.append(s.r1/s.x1)
+        if s.z0 is not None:
+            zero_ratios.append([s.r0/s.x1, s.x0/s.x1])
+    if ((ratios and not np.allclose(ratios, ratios[0], rtol=1e-8, atol=1e-10)) or
+            (zero_ratios and not np.allclose(zero_ratios, zero_ratios[0], rtol=1e-8, atol=1e-10))):
         reasons.append('Nonproportional section impedances require section-aware electrical solving; '
                        'reactance-to-km conversion alone is insufficient.')
     return list(dict.fromkeys(reasons))
