@@ -6,6 +6,15 @@ If a lesson generalises into a rule, move it to `CLAUDE.md` or a skill.
 
 ---
 
+### 2026-10-30 — Feature help can lag behind a working viewer
+
+The one-cycle viewer and automatic timing report work, but feature-guide.js still
+describes four-cycle fits and mandatory manual A/B as their prerequisites. Runtime
+tests alone do not catch this contradictory product guidance. Check capability
+text and required-input states against the actual endpoint/UI contract whenever
+measurement modes or autonomous selections change; preserve the older four-cycle
+description only for its advanced operational/fit feature.
+
 ### 2026-09-07 — `BrokenProcessPool` and two ML test failures were one OpenBLAS problem
 
 **Symptom:** `dranalyse stage-a` died with `BrokenProcessPool` at the default worker

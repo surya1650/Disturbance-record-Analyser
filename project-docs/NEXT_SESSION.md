@@ -1,5 +1,18 @@
 # Next owner: start here
 
+2026-10-30 NEW SESSION GOAL: read AUTONOMOUS_ANALYSER_GOAL_AND_PLAN_v1.md and
+NEW_CHAT_START.md first. The user authorizes a fresh-session, phased autonomous
+analyser improvement while preserving the current viewer/report. This session
+only audited and documented; runtime code remains58ce8eb. Priorities: correct
+stale feature prerequisites, method-specific required inputs, connect the existing
+E5/single-ended engine to a clear primary calculation action, persist structured
+location evidence, and simplify supported digital/analog explanations. Joining
+is mentioned in UI but was not located in the bounded route/module audit; verify
+before advertising it. Fresh synthetic CLI E5=41.988km for known42.000km with
+1000/1200Hz and1418s clock offset; E4 remains gated. No field accuracy claimed.
+Prior1957-test/StageA evidence is historical, not rerun in this docs-only session.
+No automatic second chat, runtime change, main merge or environment publication.
+
 2026-10-29 automatic interval/notation follow-up: read
 AUTOMATIC_EVENT_ACCEPTANCE_2026-10-29.md and its plan. Simple report defaults new
 end selections to automatic source-local intervals; manual bounds remain optional

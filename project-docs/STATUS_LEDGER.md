@@ -6,6 +6,30 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-10-30 — Authorized autonomous analyser handoff for a new chat
+
+Prepared AUTONOMOUS_ANALYSER_GOAL_AND_PLAN_v1.md and NEW_CHAT_START.md from an
+actual source audit. Runtime baseline58ce8eb on codex/operator-ui-review remains
+untouched. User authorizes phased implementation in the new session without
+routine reconfirmation, preserving working functions and asking only relevant
+missing engineering facts. This is a handoff, not completed new implementation.
+
+Fresh synthetic CLI: known42.000km, E5=41.988km; 1000/1200Hz and1418s clock skew;
+E4 gated for missing clock quality. No authenticated field-pair qualification.
+Previous1957PASS/28skip and StageA10000 metrics remain historical. The next
+session must establish its baseline before changing runtime code. Documentation
+checks and direct architecture checks are recorded with the delivery commit.
+
+Audited priorities: stale four-cycle/manual timing help, report consumption of
+stored text rather than structured location, a clearer physical-input/study
+flow, settings-dependent verdict provenance, and unverified joining availability
+claims. Original files, application data, algorithms, settings and previews are
+unchanged. No new chat is started automatically. No main merge/deployment or
+environment publication. Windows-only skill memory is unavailable in this
+cloud workspace; portable handoff pointers are stored in the repository instead.
+
+---
+
 ## 2026-10-24 - Noisy raw-waveform DSP and local DAT recovery
 
 Closure verified 2026-10-26. Public-parser timing/multiplier/sample-number defects

@@ -130,6 +130,10 @@ the recording-settings change in the brief's section 4.3.
 
 ## Install and run
 
+For the next authorized implementation session, read the
+[autonomous analyser goal and phased plan](project-docs/AUTONOMOUS_ANALYSER_GOAL_AND_PLAN_v1.md)
+and [new-chat start message](project-docs/NEW_CHAT_START.md).
+
 ### Local browser application
 
 **Codespaces / latest UI review:** switch to `codex/operator-ui-review`, then run
