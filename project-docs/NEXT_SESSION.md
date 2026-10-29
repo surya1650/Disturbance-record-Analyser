@@ -1,5 +1,12 @@
 # Next owner: start here
 
+2026-10-29 universal-input follow-up: CT and VT primary/secondary fields are visible
+by default and inherited automatically by each relevant missing-ratio channel.
+Per-channel overrides are opt-in and collapsed; changing a universal value preserves
+explicit overrides. Check/save/download all collect the same effective ratings.
+The user was running commands in the unrelated AHI Portal checkout; use the DR
+Analyser folder before fetching this branch or running start-local.cmd.
+
 2026-10-29 viewer regression fix: read VIEWER_REGRESSION_RESTORE_ACCEPTANCE_2026-10-29.md.
 Restored all analogs/no paging, side vectors, changed digitals below, exact native
 activity/time axes, bounded all-channel cursors and the e3a9db3 reviewed CT/VT-copy

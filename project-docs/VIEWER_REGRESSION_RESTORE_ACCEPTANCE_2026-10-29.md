@@ -85,3 +85,23 @@ Evidence is local and ignored under out/qa/viewer-regression-2026-10-29. It incl
 synthetic fixtures, logs, downloaded synthetic ZIP and screenshots. Private DR2
 screenshots/captures remain local; none are included in the commit. Existing local
 application data, user uploads and site files were not modified.
+
+
+## Universal-input follow-up
+
+After user feedback, universal CT/VT fields are the default visible inputs. Enter
+CT primary/secondary once for listed current channels and VT once for voltage
+channels; no fill button or per-channel typing is required. Existing valid CFG
+ratios remain unchanged. Optional individual exceptions use explicit checkboxes;
+changing a universal value preserves checked exceptions. Empty/invalid selected
+inputs refuse checking/saving, and disabled inherited fields stay disabled after
+an asynchronous check/download.
+
+The pure UI model and 28 focused review/API checks pass. Chromium exercised entering
+only the four universal values, captured the full six-channel review payload,
+verified override isolation and disabled-field restoration, downloaded the marked
+CFG/DAT ZIP and saved/reopened revision2 with unchanged original hashes and DAT.
+Evidence: out/qa/universal-ratios-2026-10-29. Backend/conformance math unchanged.
+
+Final follow-up gates:1843PASS/28private-corpus skips/one existing warning,116.22s;
+Stage-A10000PASS,clean p95 0.4361%; architecture self-test/guard and JS syntax PASS.

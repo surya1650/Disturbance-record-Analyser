@@ -70,7 +70,10 @@ digitals using the top Channels & colours disclosure. Shared cursor readouts rem
 exact; the horizontal axis uses recorded-trigger-relative milliseconds when known.
 
 For missing secondary CT/VT ratios, open **Inputs & help → Resolve missing CT / VT
-ratings**. Enter actual primary/secondary ratings, reviewer and evidence, then check
+ratings**. Enter universal CT primary/secondary ratings once and universal VT
+ratings once; they automatically apply to the listed missing current/voltage
+channels. Per-channel exceptions are optional and collapsed. Supply reviewer and
+evidence, then check
 or create a reviewed copy. Saving creates a new revision and selects the marked
 copy; original files are preserved. A reviewed ZIP can also be downloaded. Timing
 and other independent findings remain visible. See
