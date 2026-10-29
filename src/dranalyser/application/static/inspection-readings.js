@@ -28,21 +28,37 @@ const DRReadings=(()=>{
     }
     return {window,reference,channels,groups};
   }
+  function cursorView(result,reference=''){
+    const channels=new Map(),groups={voltage:[],current:[]},meta=Object.entries(result?.channels||{});
+    const ready=([,c])=>c.status==='observed'&&Number.isFinite(c.fundamental_rms)&&c.fundamental_rms>0&&Array.isArray(c.phasor)&&c.phasor.length===2&&c.phasor.every(Number.isFinite)&&c.phasor.some(v=>v!==0);
+    reference=reference||meta.find(entry=>/^V(?:\s|$)/.test(entry[1].units)&&ready(entry))?.[0]||meta.find(ready)?.[0]||meta[0]?.[0]||'';
+    const ref=result?.channels?.[reference],refOk=ref&&ready([reference,ref]);
+    for(const[id,c]of meta){
+      const valid=c.status==='observed'&&Number.isFinite(c.fundamental_rms)&&c.fundamental_rms>=0;
+      const reading={id,label:c.label,units:c.units,rms:valid?c.fundamental_rms:null,sample_rms:Number.isFinite(c.sample_rms)?c.sample_rms:Number.isFinite(c.total_rms)?c.total_rms:null,angle_deg:null,one_cycle:true,reason:c.reason||'',angle_reason:'A nonzero supported angle reference is required.',relative_residual:c.relative_residual,dc:c.dc,window:result.window};
+      if(valid&&refOk&&ready([id,c])){const degrees=(Math.atan2(c.phasor[1],c.phasor[0])-Math.atan2(ref.phasor[1],ref.phasor[0]))*180/Math.PI;reading.angle_deg=((degrees+540)%360)-180;reading.angle_reason='';}
+      channels.set(id,reading);const kind=/^V(?:\s|$)/.test(c.units)?'voltage':/^A(?:\s|$)/.test(c.units)?'current':null;
+      if(!kind)reading.vector_reason=id+': voltage/current vector needs engineering units; review CT/VT scaling ('+String(c.units||'unknown units')+').';
+      if(kind&&reading.angle_deg!==null)groups[kind].push(reading);
+    }
+    return {window:result?.window,reference,channels,groups,one_cycle:true,basis:result?.basis||'',reason:result?.reason||''};
+  }
   function readingMarkup(meta,point,reading,cursor){
     if(meta.kind==='digital')return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><p>State: ${point?.[2]===null||!point?'Unknown':esc(point[2])}</p></div>`;
     const shortUnit=units=>/^raw counts|^counts/i.test(units||'')?'counts':String(units||'').split(/[ (]/)[0]||'?';
     const sourceUnit=meta.units,analysisUnit=reading?.units||'Analysis pending',reason=reading?.reason||reading?.angle_reason||'';
     const summary=/assumed/i.test(analysisUnit)?'Assumed scaling · details':reason?'Why / units':'Units / fit details';
-    return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))} <span title="${esc(sourceUnit)}">${esc(shortUnit(sourceUnit))}</span></dd><dt>Fitted RMS</dt><dd>${num(reading?.rms)} <span title="${esc(analysisUnit)}">${reading?.rms===null||!reading?'':esc(shortUnit(analysisUnit))}</span></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl><details class="inspection-reading-details"><summary>${summary}</summary><small>Instantaneous: ${esc(sourceUnit)}. Analysis: ${esc(analysisUnit)}.</small>${reason?'<small>'+esc(reason)+'</small>':''}</details></div>`;
+    return `<div class="inspection-reading"><strong>${esc(meta.id+' '+meta.label)} · ${esc(cursor)}</strong><dl><dt>Instantaneous</dt><dd>${point?.[2]===null||!point?'Unknown':esc(num(point[2]))} <span title="${esc(sourceUnit)}">${esc(shortUnit(sourceUnit))}</span></dd>${reading?.one_cycle?`<dt>One-cycle RMS</dt><dd>${num(reading.sample_rms)} <span title="${esc(sourceUnit)}">${esc(shortUnit(sourceUnit))}</span></dd>`:''}<dt>${reading?.one_cycle?'Fundamental RMS':'Fitted RMS'}</dt><dd>${num(reading?.rms)} <span title="${esc(analysisUnit)}">${reading?.rms===null||!reading?'':esc(shortUnit(analysisUnit))}</span></dd><dt>Angle</dt><dd>${reading?.angle_deg===null||!reading?'Not available':num(reading.angle_deg)+'°'}</dd></dl><details class="inspection-reading-details"><summary>${summary}</summary><small>Instantaneous: ${esc(sourceUnit)}. Analysis: ${esc(analysisUnit)}.</small>${reason?'<small>'+esc(reason)+'</small>':''}${reading?.one_cycle?'<small>Trailing nominal cycle ending at the selected source sample; measured RMS includes DC/harmonics. Fundamental uses an actual-time Fourier projection. Relative residual: '+esc(num(reading.relative_residual))+'. DC: '+esc(num(reading.dc))+'. Display observation; not an operational fault-location phasor.</small>':''}</details></div>`;
   }
   function vectorMarkup(v,colors={}){
-    return ['voltage','current'].map(kind=>{
+    const reasons=v.one_cycle?[...new Set([v.reason,...[...v.channels.values()].flatMap(c=>[c.reason||c.angle_reason,c.vector_reason])].filter(Boolean))].slice(0,3):[];
+    return (reasons.length?'<p class="field-help">'+reasons.map(esc).join(' ')+'</p>':'')+(v.one_cycle&&v.window?`<p class="field-help">One trailing cycle · samples ${esc(v.window.start_index)}–${esc(v.window.stop_index-1)} · ends at ${esc(num(v.window.end_s))} local s. All vectors share this window.</p>`:'')+['voltage','current'].map(kind=>{
       const channels=v.groups[kind],scale=Math.max(...channels.map(c=>c.rms),0);
       const arrows=channels.map(c=>{const a=c.angle_deg*Math.PI/180,x=100+75*(c.rms/scale)*Math.cos(a),y=100-75*(c.rms/scale)*Math.sin(a),color=/^#[0-9a-f]{6}$/i.test(colors[c.id])?colors[c.id]:'#176d82';
         return `<line x1="100" y1="100" x2="${x}" y2="${y}" stroke="${color}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3" fill="${color}"/><text x="${x+3}" y="${y-3}">${esc(c.id)}</text>`;}).join('');
       return `<section><h4>${kind==='voltage'?'Voltage':'Current'} vectors</h4>${channels.length?`<svg viewBox="0 0 200 200" role="img" aria-label="${kind} relative source vectors"><circle cx="100" cy="100" r="75" fill="none" stroke="#dae3e9"/><path d="M15 100H185M100 15V185" stroke="#dae3e9"/>${arrows}</svg><small>Independent ${kind} scale · RMS magnitude</small>`:'<p>No supported nonzero '+kind+' vectors at this cursor.</p>'}</section>`;
-    }).join('')+`<p class="field-help">Angles relative to ${esc(v.reference||'unselected reference')} at a common fitted model centre. Source/assumed scaling and physical wiring remain unverified.</p>`;
+    }).join('')+`<p class="field-help">Angles relative to ${esc(v.reference||'unselected reference')} ${v.one_cycle?'over one common trailing nominal cycle ending at the selected sample':'at a common fitted model centre'}. Source/assumed scaling and physical wiring remain unverified.</p>`;
   }
-  return {esc,num,windowAt,view,readingMarkup,vectorMarkup};
+  return {esc,num,windowAt,view,cursorView,readingMarkup,vectorMarkup};
 })();
 if(typeof module!=='undefined')module.exports=DRReadings;

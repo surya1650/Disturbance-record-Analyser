@@ -8,7 +8,9 @@ from .source_jobs import SourceJobs
 
 
 def install_inspection(app, store, registry=None):
+    from .event_study import install_event_study
     from .instrument_review import install_instrument_review
+    install_event_study(app, store)
     install_instrument_review(app, store)
     jobs=SourceJobs(store.root,registry)
     app.state.source_jobs=jobs
@@ -58,12 +60,27 @@ def install_inspection(app, store, registry=None):
 
     @app.get('/api/incidents/{incident_id}/inspection/samples')
     def inspection_native(incident_id: str, record: str, channel_id: str, start_index: int, stop_index: int,
-                          revision: int = Query(..., ge=1)):
+                          revision: int = Query(..., ge=1), include_rms: bool = False):
         from ..workbench.source_inspection import inspection_samples
         row = store.get(incident_id, revision)
         if row is None:
             raise HTTPException(404, 'Revision not found.')
-        return inspection_samples(store.root, row, record, channel_id, start_index, stop_index)
+        return inspection_samples(store.root, row, record, channel_id, start_index, stop_index,
+                                  include_rms=include_rms)
+
+    @app.get('/api/incidents/{incident_id}/inspection/measurements')
+    def inspection_cursor_measurements(incident_id: str, record: str, index: int,
+                                       revision: int = Query(..., ge=1),
+                                       channel_ids: str = Query(..., max_length=4096)):
+        from ..workbench.source_inspection import inspection_measurements
+        row = store.get(incident_id, revision)
+        if row is None:
+            raise HTTPException(404, 'Revision not found.')
+        try:
+            channels = json.loads(channel_ids)
+        except ValueError as exc:
+            raise ValueError('Channel IDs must be a valid JSON list.') from exc
+        return inspection_measurements(store.root, row, record, channels, index)
 
 
     @app.get('/api/incidents/{incident_id}/inspection/points')

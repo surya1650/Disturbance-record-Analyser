@@ -8,6 +8,7 @@ from pathlib import Path
 from ..comtrade.source_observations import load_source
 from ..comtrade.source_header import header_information
 from .source_display import display_facts
+from .source_rms import cursor_measurements, sample_rms
 
 MAX_SAMPLES = 20000
 _CACHE = OrderedDict()
@@ -118,6 +119,10 @@ def inspection_record(root, revision, filename):
     with _LOCK:
         if '_viewer_display' not in source:
             source['_viewer_display'] = display_facts(source)
+        cached_rms = source.setdefault('_viewer_rms', {})
+        for c in source['channels']:
+            if c['key'] not in cached_rms:
+                cached_rms[c['key']] = sample_rms(source, c)
         display = deepcopy(source['_viewer_display'])
     channels = _channels(source)
     headers = {c['id']: c for c in source.get('header_inventory', [])}
@@ -129,6 +134,12 @@ def inspection_record(root, revision, filename):
         meta['trace'] = _trace(data.get('values', data.get('states', [])), times, budget)
         if meta['kind'] == 'digital':
             meta['activity'] = display['activities'][meta['id']]
+        else:
+            rms = source['_viewer_rms'][meta['id']]
+            # Separate bounded trend budget; never reuse envelope extrema as a
+            # cursor observation. The decoded-source LRU bounds retained arrays.
+            meta.update(rms_trace=_trace(rms['values'], times, budget),
+                        rms_window_s=rms['window_s'], rms_basis=rms['basis'], rms_reason=rms['reason'])
     missing = sum(v is None for c in source['channels']+source['digital'] for v in c.get('values', c.get('states', [])))
     issues = list(source['issues'])
     if missing:
@@ -142,6 +153,7 @@ def inspection_record(root, revision, filename):
                 recovery=source.get('recovery'),
                 time_range_s=[times[0], times[-1]] if times else None,
                 station=source.get('station', ''), device=source.get('device', ''),
+                nominal_frequency_hz=source.get('nominal_frequency_hz'),
                 recorded_times=source.get('recorded_times', {}),
                 timeline=display['timeline'],
                 break_indices=display['break_indices'], omitted_break_indices=display['omitted_break_indices'],
@@ -152,7 +164,16 @@ def inspection_record(root, revision, filename):
                 note='Display envelopes are not cursor samples. CFG scaling is unverified; no clock or location authority.')
 
 
-def inspection_samples(root, revision, filename, channel_id, start_index, stop_index):
+def inspection_measurements(root, revision, filename, channel_ids, index):
+    """One-cycle cursor observations; independent of operational eligibility."""
+    source, _ = _source(root, revision, filename)
+    measured = cursor_measurements(source, channel_ids, index)
+    return dict(measured, file=filename, revision=revision['number'],
+                source_sha256=source['source_sha256'], scaling_verified=False,
+                note='Trailing nominal-cycle source measurement; no clock alignment or location authority.')
+
+
+def inspection_samples(root, revision, filename, channel_id, start_index, stop_index, *, include_rms=False):
     if (type(start_index) is not int or type(stop_index) is not int or start_index < 0
             or stop_index < start_index or stop_index-start_index > MAX_SAMPLES):
         raise ValueError('Use a half-open interval of at most 20000 native samples.')
@@ -164,10 +185,20 @@ def inspection_samples(root, revision, filename, channel_id, start_index, stop_i
         raise ValueError('Channel identity is unavailable in this source.')
     times = source['axis'].get('elapsed_s', [])
     values = data.get('values', data.get('states', []))
-    return dict(file=filename, revision=revision['number'], channel_id=channel_id,
+    result = dict(file=filename, revision=revision['number'], channel_id=channel_id,
                 source_sha256=source['source_sha256'], time_basis=_axis(source), units=data.get('units', 'state'),
                 samples=[[i, times[i] if times else None, values[i]] for i in range(start_index, stop_index)],
                 note='Zero-based source indices; nearest actual sample, no interpolation. Unknown is null.')
+    if include_rms and 'values' in data:
+        with _LOCK:
+            cached = source.setdefault('_viewer_rms', {})
+            if channel_id not in cached:
+                cached[channel_id] = sample_rms(source, data)
+            rms = cached[channel_id]
+        result.update(rms_samples=[[i, times[i] if times else None, rms['values'][i]]
+                                   for i in range(start_index, stop_index)],
+                      rms_window_s=rms['window_s'], rms_basis=rms['basis'])
+    return result
 
 
 def inspection_points(root, revision, filename, channel_ids, indices):

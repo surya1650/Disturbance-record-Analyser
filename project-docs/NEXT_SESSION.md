@@ -1,5 +1,19 @@
 # Next owner: start here
 
+2026-10-29 one-cycle/event-report delivery: read EVENT_STUDY_ACCEPTANCE_2026-10-29.md
+and its plan. All analogs/changed digitals retain aligned plotting widths; shared
+cursor click/numeric/keyboard locking, explicit follow-hover, exact zoomed sample
+RMS and separate one-cycle Fourier vectors now work independently of four-cycle
+operational fits. Simple report compares explicit S/R phase voltages/currents,
+pre/fault/optional post RMS, digital brackets, existing eligible method-labelled
+distance and separately entered relay distance. Mappings/polarity carry through;
+source-bound inputs persist with concurrency checks. Technical source fits moved
+under Technical evidence. Full1921PASS/28private skips/one existing warning;
+Stage-A10000PASS clean p95 .4361%; architecture/self-test and changed lint/syntax
+pass. Local DR2 and synthetic S/R desktop/mobile browser checks pass. Artifacts
+out/qa/event-study-2026-10-29 ignored. Authorized review branch remains
+codex/operator-ui-review; no main merge or environment publication.
+
 2026-10-29 universal-input follow-up: CT and VT primary/secondary fields are visible
 by default and inherited automatically by each relevant missing-ratio channel.
 Per-channel overrides are opt-in and collapsed; changing a universal value preserves

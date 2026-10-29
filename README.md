@@ -149,6 +149,21 @@ persistent job queue, report history, late-record attachments, retries, a
 watched inbox and a shared intake API. It uses the existing numerical analyser.
 Records and results stay under `out/application`.
 
+In **Waveforms**, every analog channel remains visible, with changed digital
+signals below and values/vectors alongside. Select **One-cycle measured RMS**
+for a rolling sample-RMS trend (including DC and harmonics). Clicking a plot
+locks all readings to that sample; **Follow hover** resumes live tracking.
+The fundamental vector uses one complete trailing nominal cycle and explains
+incomplete support or missing samples. It does not replace the operational fit.
+
+In **Simple report**, choose the sending/receiving recordings and substation
+names, then select pre-fault, fault and optional post-fault intervals. Voltages
+are compared side by side above currents. The report shows RMS changes,
+recorded digital timing and an existing eligible method-labelled distance;
+an optional relay-reported distance is separate evidence. Universal CT/VT
+ratings and reviewed copies remain in **Inputs & help**. Successive captures
+from one relay belong in the joined viewer, rather than opposite ends.
+
 See [local application setup and integration contracts](project-docs/LOCAL_APPLICATION.md).
 The current app includes all-relay evidence, separate Main-1/Main-2 identity,
 trigger-relative digital intervals and windowed phase RMS/peak measurements.

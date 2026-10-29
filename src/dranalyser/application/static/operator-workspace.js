@@ -2,7 +2,7 @@
 const DROperatorWorkspace=(()=>{
   const preferences=new Map();
   const tabs=[['waveforms','Waveforms','Inspect analog and digital observations. Move a cursor for exact values; no line model is required.'],['report','Simple report','Read selected pre-fault, fault and post-fault values, distance availability and recorded indications.'],['inputs','Inputs & help','Choose only the inputs needed for the feature you want. Apply changed choices to update the report.'],['compare','Compare recordings','Compare the same quantities side by side. Visual comparison does not confirm common events or clocks.'],['evidence','Technical evidence','Inspect method availability, supported windows and source-quality evidence when you need detail.']];
-  function mount(section,{traces,row,data,signal}){
+  function mount(section,{traces,row,data,signal,workbench}){
     const root=document.createElement('div');root.className='operator-workspace';
     const key=row.incident_id+'/'+row.number,prefix='operator-'+String(row.incident_id).replace(/[^a-zA-Z0-9]/g,'')+'-'+row.number;
     root.innerHTML=`<div class="operator-tabs" role="tablist" aria-label="Recording tasks">${tabs.map(([id,title])=>`<button type="button" role="tab" id="${prefix}-${id}-tab" aria-controls="${prefix}-${id}" data-workspace-tab="${id}">${title}</button>`).join('')}</div>`+tabs.map(([id,title,help])=>`<section role="tabpanel" tabindex="0" id="${prefix}-${id}" aria-labelledby="${prefix}-${id}-tab" data-workspace-pane="${id}" hidden><div class="operator-task-heading"><h2>${title}</h2><p>${help}</p></div><div data-workspace-content="${id}"></div></section>`).join('');
@@ -24,9 +24,26 @@ const DROperatorWorkspace=(()=>{
       const destination=el.matches('.source-report-tools,.source-condition-tools,.source-condition-summary')?'report':el.matches('.source-line-summary,.source-technical,.source-evidence')?'evidence':el.matches('.source-compare')?'compare':'inputs';
       content(destination).append(el);
     }
+    if(typeof DREventStudy!=='undefined'){
+      const sourceDetails=document.createElement('details');sourceDetails.className='operator-source-details';
+      sourceDetails.innerHTML='<summary>Selected-record fit measurements and exports</summary>';
+      for(const el of [...content('report').children])sourceDetails.append(el);
+      content('evidence').append(sourceDetails);
+      const eventHost=document.createElement('div');eventHost.innerHTML=DREventStudy.panel(row);content('report').append(eventHost);
+      const eventStudy=DREventStudy.bind(row,eventHost,signal,{sourceChoices(record){
+        const chosen=sourceAnalysisPreferences.get(row.incident_id+'/'+row.number+'/'+record);
+        return chosen&&(Object.keys(chosen.mappings||{}).length||Object.keys(chosen.asserted_states||{}).length)?{mappings:chosen.mappings||{},asserted_states:chosen.asserted_states||{}}:undefined;
+      }});
+      eventHost.addEventListener('event-study-request-region',event=>{
+        const {record,kind}=event.detail||{},pins=workbench?.getPins();
+        if(record!==data.file||!pins){notice('Select '+String(record||'the requested recording')+' in Waveforms, place cursors A and B, then return here to apply that interval.');return;}
+        const lo=Math.min(pins.A,pins.B),hi=Math.max(pins.A,pins.B)+1;
+        if(eventStudy.applyRegion(record,[lo,hi],kind))notice('Applied samples '+lo+'–'+(hi-1)+' inclusive to the '+kind+' interval. Build the event report to update it.');
+      },{signal});
+    }
     if(!content('compare').children.length)content('compare').innerHTML='<p class="operator-empty">Attach another recording to this incident to compare channels. Keep matching CFG/DAT files together in distinct folders.</p>';
     const end=document.createElement('div');end.className='operator-next-actions';end.innerHTML='<button type="button" data-go-feature="inputs">Review inputs & explanations →</button><button type="button" data-go-feature="report">Read simple report →</button>';content('waveforms').append(end);
-    const reportHelp=document.createElement('details');reportHelp.className='operator-region-help';reportHelp.innerHTML='<summary>How to select pre-fault, fault and post-fault regions</summary><p>On Waveforms put A at fault start and B at the start of post-fault, then apply A–B below. Only complete supported fits inside each region contribute. Moving cursors does not change an already applied report.</p>';content('report').insertBefore(reportHelp,content('report').firstChild);
+    const reportHelp=document.createElement('details');reportHelp.className='operator-region-help';reportHelp.innerHTML='<summary>How to select pre-fault, fault and post-fault regions</summary><p>On Waveforms place A and B around the interval you want, then use the matching interval button in the event report. Both selected samples are included. At least one complete nominal cycle must fit inside each region. Moving cursors does not change an already built report.</p>';content('report').insertBefore(reportHelp,content('report').firstChild);
     const back=document.createElement('button');back.type='button';back.dataset.goFeature='waveforms';back.textContent='← Set A and B on waveforms';reportHelp.after(back);
     function select(id,focus=false){
       if(!tabs.some(t=>t[0]===id))id='waveforms';

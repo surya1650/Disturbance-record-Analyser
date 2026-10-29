@@ -3,3 +3,11 @@
 @media(min-width:1000px){.operator-workspace .inspection-display{grid-template-columns:minmax(0,1fr) 255px}.operator-workspace .inspection-display>.inspection-vector{position:sticky;top:16px;max-height:760px;overflow:auto}.operator-workspace .inspection-vector-charts{display:block}}
 @media(max-width:699px){.operator-workspace .inspection-trace-readings{grid-template-columns:minmax(0,1fr)}.inspection-time-axis{margin-right:10px;font-size:10px}.inspection-time-axis span:nth-child(even){display:none}.inspection-graph{grid-template-columns:58px minmax(0,1fr)}.operator-workspace .inspection-vector-charts{display:flex;flex-wrap:wrap;gap:12px}.operator-workspace .inspection-vector-charts section{width:calc(50% - 6px)}.operator-workspace .inspection-pane.analog{min-height:280px;height:440px}}
 .inspection-reading-details summary{font-size:11px;color:#526b79;cursor:pointer}.inspection-reading-details small{font-size:11px}.operator-workspace .inspection-reading dl{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px}.operator-workspace .inspection-reading dd{font-variant-numeric:tabular-nums}.operator-workspace .inspection-reading dd span{font-size:11px}
+/* One plotting column keeps analog and digital sample coordinates aligned. */
+.operator-workspace .inspection-display{row-gap:10px}
+@media(min-width:1000px){
+  .operator-workspace .inspection-display>.digital{grid-column:1;grid-row:2}
+  .operator-workspace .inspection-display>.inspection-vector{grid-column:2;grid-row:1 / span 2}
+}
+.inspection-pins button[aria-pressed="true"]{background:#e8f3fb;border-color:#2776a5;color:#15547b}
+@media(prefers-reduced-motion:reduce){.operator-workspace *{scroll-behavior:auto!important;transition:none!important}}
