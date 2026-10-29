@@ -35,7 +35,7 @@ Regression matrix to preserve:
 ## Phase status
 
 - P0 complete as above.
-- P1–P6 in progress; no completion or field-accuracy claim yet.
+- P1–P6 complete within the documented synthetic/software scope; no field-accuracy claim.
 
 Configuration application: selected analyser checkout was already provisioned;
 switched to requested review branch. Deselected AHI checkout had no uncommitted
@@ -137,3 +137,48 @@ honest-unavailability completion option is used; no export is claimed without
 source-compatible timestamp/state round-trip evidence. This preserves originals
 and avoids turning DR1/DR2 into S/R. Event-study Node assertions and the synthetic
 browser check verify the unavailable wording and absence of the old promise.
+
+
+## P6 — final qualification and delivery
+
+Final direct architecture self-tests and guard passed; exact intentional budgets
+preserve all unrelated ratchets. **2003 passed, 28 skipped, one inherited
+Starlette/httpx warning**, 87.78 s. Private-corpus skips remain unqualified.
+Stage-A **10,000 PASS**, clean p95 **0.4361%**, zero impossible m without caveat;
+full refusal/error results remain in the ignored final-stage-a log. Changed-file
+Ruff passes. Repository-wide Ruff is still red with **34 inherited errors**
+(down from the recorded 40); it is not represented as a passing release gate.
+Changed JavaScript syntax and `git diff --check` pass.
+
+On final code, Chromium desktop/mobile primary calculation with a positive-only
+model (no Z0 or source impedances) reproduces E5 **41.98828243177587 km**. Matching
+HTML/JSON explanations, full-line view, stored R–X navigation, report cursor,
+auto/manual timing, rapid record changes and route cancellation passed, without
+page errors or mobile document overflow. QA screenshots and browser harnesses
+are in `out/qa/autonomous-2026-10-30/` (ignored, synthetic only).
+
+Capacity observation: 64 analogs, 12 digitals, **20,000 samples / 1,520,000 source
+cells**, ASCII DAT 6,451,781 bytes. All 64 analog channels and at least four digital
+tracks rendered. Initial observed cold load was 8.47 s; the repeated browser
+validation was 2.80 s with about 6.81 MB JavaScript heap at the measurement point.
+These bounded local observations exclude server/native/browser total memory and
+background diagnostic completion; they do not prove maximum-limit, unbounded,
+production or multiuser capacity. Existing exact-batch/source-hash/cancellation
+tests also pass. Private field accuracy/calibrated uncertainty remains unproven.
+
+Application health returns `status=ok`, empty queue, on disposable port8130.
+An environment draft now saves the tested analyser install/start steps, replacing
+obsolete AHI instructions without changing repository selection. The installation
+steps were rerun successfully. Startup was restarted on final code and smoke-tested;
+configuration saving neither publishes the environment nor validates a new task.
+No main merge, environment publication or production deployment was performed.
+
+Phase ownership: root integrated calculation UI/revision guards, browser/runtime
+verification, docs/configuration and commits. readiness_ui owned capability/help
+and optional engineering-input adapters; location_backend owned structured evidence
+and per-terminal settings; report_observations owned shared explanation/navigation.
+All agents finished before final verification; no competing writer remains.
+
+Source delivery: review branch commits P0/P1/P2/P3/P4/P5 plus this P6 handoff; push
+and exact remote HEAD verification are recorded in the final delivery response.
+Old reports and originals remain immutable; no old result was silently recomputed.

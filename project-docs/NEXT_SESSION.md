@@ -1,3 +1,27 @@
+# Current autonomous analyser delivery — 2026-10-30
+
+P0–P6 are implemented on `codex/operator-ui-review`; read
+[AUTONOMOUS_ANALYSER_EXECUTION_2026-10-30.md](AUTONOMOUS_ANALYSER_EXECUTION_2026-10-30.md)
+for the phase commits, compatibility contracts and evidence. This supersedes the
+docs-only "implementation outstanding" entries below. Preserve the delivered work.
+
+Final qualification: architecture/self-tests pass; 2003 tests passed,28 private
+skips,one upstream warning; Stage-A10000PASS cleanp95 .4361%, no uncaveated impossible
+m. Changed-file Ruff passes; 34 inherited repository-wide errors remain explicit.
+Final desktop/mobile UI with no Z0/source inputs returns E5=41.988282km for known42km;
+HTML/JSON, R-X, source/cursor changes and bounded64-analog browser checks passed.
+No authenticated field pair/patrol truth, calibrated uncertainty or production-scale
+qualification is claimed. Same-relay joining/export remains honestly unavailable;
+inspect/compare separately. Do not treat same-relay DR1/DR2 as opposite ends.
+
+New service root/registry is under `out/qa/autonomous-2026-10-30/`, port8130,workers1.
+Use existing checkout; no extra worktree is needed. Saved environment instructions
+now target this repository; saved repository selection was left unchanged. Nothing
+was merged to main, published as an environment, or deployed to production.
+Historical Windows/private-data paths below are previous-session evidence only.
+
+---
+
 # Next owner: start here
 
 2026-10-30 NEW SESSION GOAL: read AUTONOMOUS_ANALYSER_GOAL_AND_PLAN_v1.md and

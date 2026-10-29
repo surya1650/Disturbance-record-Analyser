@@ -6,6 +6,15 @@ If a lesson generalises into a rule, move it to `CLAUDE.md` or a skill.
 
 ---
 
+### 2026-10-30 — Shared input schemas can obstruct eligible physics
+
+E5 uses positive-sequence terminal quantities but the registry required R0/X0,
+and absent source impedances became0j. Preserve missing engineering facts as
+None, demand compensation only in methods using it, and test both success and
+refusal through HTTP intake/Worker as well as the core engine. Terminal-specific
+settings also cannot be replaced by a shared project timer. Regression tests now
+cover positive-only E5, ground/E3 refusals and independently timed terminal settings.
+
 ### 2026-10-30 — Feature help can lag behind a working viewer
 
 The one-cycle viewer and automatic timing report work, but feature-guide.js still
