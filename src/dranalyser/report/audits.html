@@ -9,7 +9,7 @@
   <p>Advisory reference-pack evidence checks. A pass covers only the stated check.
     Gaps do not establish incorrect protection operation or TB 854 noncompliance.</p>
   {% for a in audits %}<details class="standards-audit-record">
-    <summary>End {{ a.end or 'unassigned' }} · {{ a.protection_system }} · {{ a.file }} —
+    <summary>{{ {'S':'Sending end (S)','R':'Receiving end (R)'}.get(a.end, 'End unassigned') }} · {{ a.protection_system }} · {{ a.file }} —
       {% if a.error %}Audit unavailable{% else %}Recording {{ a.recording_summary.status }} / Settings {{ a.settings_summary.status }}{% endif %}</summary>
     {% if a.error %}<p>{{ a.error }}</p>{% else %}
     <p>{{ a.scope }}</p>

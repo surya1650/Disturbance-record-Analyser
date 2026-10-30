@@ -3,7 +3,7 @@
   <p>Each record uses its own trigger at <b>0 ms</b>. These axes do not establish
     synchronization between relays. Detected fault inception is a separate marker.</p>
   <table><tr><th>Terminal</th><th>Records / analysed</th><th>Trip evidence in this capture</th></tr>
-    {% for t in terminals %}<tr><td>{{ t.end }}</td><td>{{ t.records }} / {{ t.analysed }}</td>
+    {% for t in terminals %}<tr><td>{{ {'S':'Sending end (S)','R':'Receiving end (R)'}.get(t.end, t.end) }}</td><td>{{ t.records }} / {{ t.analysed }}</td>
     <td>{{ t.summary }}</td></tr>{% endfor %}</table>
   {% if comparisons %}<h2>Same-terminal measurement comparisons</h2><ul>
     {% for message in comparisons %}<li>{{ message }}</li>{% endfor %}</ul>
@@ -38,7 +38,7 @@
   </details>{% endfor %}{% endif %}
   {% for rec in records %}
   <article class="relay-evidence-record">
-    <h2>End {{ rec.end or 'unassigned' }} · {{ rec.protection_system }} · {{ rec.file }}</h2>
+    <h2>{{ {'S':'Sending end (S)','R':'Receiving end (R)'}.get(rec.end, 'End unassigned') }} · {{ rec.protection_system }} · {{ rec.file }}</h2>
     {% if rec.channel_mapping %}<h3>Reviewed channel mapping applied</h3>
     <p>{{ rec.channel_mapping.reason }}<br>Original recording SHA-256 {{ rec.channel_mapping.record_hash }}.
       Values, ratios and polarity are unchanged; conformance was checked again.</p>
@@ -105,8 +105,8 @@
 {% for s in stage_locations %}<h3>{{ s.group }} · E5 · {{ s.status }}</h3>
 {% if s.status == 'located' %}<p>{{ s.km_from_S|number }} km from S; m={{ s.m }} (series reactance fraction).</p>{% endif %}
 <p>{{ s.reason }}</p>
-{% for end, w in s.windows.items() %}<p>End {{ end }}: {{ w.status }}; local {{ w.window_s }} s. {{ w.reason }}
+{% for end, w in s.windows.items() %}<p>{{ {'S':'Sending end (S)','R':'Receiving end (R)'}.get(end, 'End unassigned') }}: {{ w.status }}; local {{ w.window_s }} s. {{ w.reason }}
 Whole-record saturation {{ w.whole_record_saturation }}; local saturation {{ w.local_saturation }}.</p>{% endfor %}
-{% for end, r in s.sources.items() %}<p style="overflow-wrap:anywhere">End {{ end }}: {{ r.file }}; {{ r.stage_id }}.
+{% for end, r in s.sources.items() %}<p style="overflow-wrap:anywhere">{{ {'S':'Sending end (S)','R':'Receiving end (R)'}.get(end, 'End unassigned') }}: {{ r.file }}; {{ r.stage_id }}.
 Reviewer: {{ r.reviewer or 'unavailable' }}.<br>Record SHA-256 {{ r.record_hash }}.<br>Inventory SHA-256 {{ r.inventory_hash }}.</p>{% endfor %}
 {% endfor %}</section>{% endif %}

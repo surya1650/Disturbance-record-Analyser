@@ -90,7 +90,7 @@
 
   <h2>Operation evidence by terminal</h2>
   <table><tr><th>End</th><th>Records analysed</th><th>Trip observation in this capture</th></tr>
-    {% for t in terminal_evidence %}<tr><td>{{ t.end }}</td><td>{{ t.analysed }} / {{ t.records }}</td><td>{{ t.summary }}</td></tr>{% endfor %}
+    {% for t in terminal_evidence %}<tr><td>{{ {'S':'Sending end (S)','R':'Receiving end (R)'}.get(t.end, t.end) }}</td><td>{{ t.analysed }} / {{ t.records }}</td><td>{{ t.summary }}</td></tr>{% endfor %}
   </table>
   <p class="muted">Missing records or digital points do not establish failure to operate.
     Main-1/Main-2 evidence is retained in the annex; rule assessment above uses selected records.</p>

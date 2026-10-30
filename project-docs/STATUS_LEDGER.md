@@ -6,6 +6,17 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-10-30 — Comparison playback, digital tracks and parameter labels
+
+See COMPARISON_UI_FOLLOWUP_2026-10-30.md. Restored shared display playback,
+compact paired analog rows, changed-first digital tracks with source-local gaps,
+and safe lifecycle cleanup. Vectors use source/explicit parameter names while
+retaining IDs/provenance. S/R identifiers retained with consistent sending/
+receiving explanations. Browser desktop/mobile checks pass. IA/Ia already matches
+in synthetic decoded inventories; user will upload actual DRs for the specific
+remaining separation. No ambiguous phase/unit guards weakened. Final verification
+and review-branch delivery are recorded in the follow-up report.
+
 ## 2026-10-30 — Autonomous analyser phases implemented and qualified
 
 P0–P6 delivered on review branch `codex/operator-ui-review`; see

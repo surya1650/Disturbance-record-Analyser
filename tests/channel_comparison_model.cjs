@@ -126,3 +126,23 @@ for(const label of ['IL2','I2']){
   const paired=rows(model.plan(local,remote)).find(r=>r.left?.id==='A2');
   assert.equal(paired.meaning,'IB');assert.equal(paired.right?.id,'A7');
 }
+
+// Realistic CFG headers and casing differ across relay exports; they are still
+// display counterparts only when quantity, phase and waveform flavour agree.
+for(const label of ['Ia','iA','I_a','I a']){
+  for(const phase of ['','a','A','1']){
+    const primary=record([channel('CH1','IA','A','A')]);
+    const remote=record([channel('CH7',label,'a',phase)]);
+    remote.inventory=[{id:'CH7',phase,declared_units:'A'}];
+    const planned=rows(model.plan(primary,remote));
+    assert.equal(planned.length,1,label+' phase '+phase);
+    assert.equal(planned[0].left.id,'CH1');assert.equal(planned[0].right.id,'CH7');
+    assert.equal(planned[0].meaning,'IA');
+  }
+}
+const caseMismatch=rows(model.plan(record([channel('CH1','IA','A','A')]),record([channel('CH7','Ia','A','B')])));
+assert.equal(caseMismatch.length,2,'case normalization cannot override conflicting phase headers');
+assert.match(caseMismatch.find(row=>row.right).reason,/phase disagree/);
+const digitalLookalike=record([{id:'D1',label:'Ia',kind:'digital',units:'state'}]);
+assert.equal(rows(model.plan(record([channel('CH1','IA')]),digitalLookalike)).length,1);
+assert.equal(rows(model.plan(record([channel('CH1','IA')]),digitalLookalike))[0].right,null);

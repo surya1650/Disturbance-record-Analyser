@@ -2,6 +2,7 @@
 const DRReadings=(()=>{
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const num=v=>Number.isFinite(v)?v.toPrecision(6):'Not available';
+  const channelName=c=>{const label=String(c?.label||'').trim(),id=String(c?.id||''),meaning=String(c?.meaning||'').toUpperCase(),generic=!label||label===id||/^(?:CH(?:ANNEL)?[ _-]*\d+|[AD]\d+)$/i.test(label),known=/^(?:[VI][ABCN0]|[VI](?:AB|BC|CA)|3[VI]0)$/.test(meaning)&&(/^(?:3)?I/.test(meaning)?/^A(?:\s|$)/.test(c?.units):/^V(?:\s|$)/.test(c?.units)),name=generic&&known?meaning:label;return name&&name!==id?name+' ('+id+')':id||'Unselected reference';};
   function windowAt(result,index){
     if(!Number.isInteger(index))return null;
     return (result?.windows||[]).filter(w=>w.start_index<=index&&index<w.stop_index)
@@ -14,7 +15,7 @@ const DRReadings=(()=>{
     reference=reference||meta.find(c=>c.meaning==='VA'&&ready(c))?.id||meta.find(ready)?.id||meta[0]?.id||'';
     const ref=window?.channels[reference],refOk=phasor(ref)&&ref.rms>0&&ref.phasor.some(v=>v!==0);
     for(const c of meta){
-      const fit=window?.channels[c.id];let reading={id:c.id,label:c.label,units:c.units,rms:null,angle_deg:null,reason:fit?.reason||'No supported model window covers this cursor.'};
+      const fit=window?.channels[c.id];let reading={id:c.id,label:c.label,meaning:c.meaning,units:c.units,rms:null,angle_deg:null,reason:fit?.reason||'No supported model window covers this cursor.'};
       if(phasor(fit)){
         reading={...reading,rms:fit.rms,centre_s:fit.centre_s,reason:'',angle_reason:'A nonzero reference and matching model centre are required.'};
         if(refOk&&fit.rms>0&&fit.phasor.some(v=>v!==0)&&Math.abs(fit.centre_s-ref.centre_s)<=1e-12){
@@ -28,14 +29,14 @@ const DRReadings=(()=>{
     }
     return {window,reference,channels,groups};
   }
-  function cursorView(result,reference=''){
+  function cursorView(result,reference='',meanings={}){
     const channels=new Map(),groups={voltage:[],current:[]},meta=Object.entries(result?.channels||{});
     const ready=([,c])=>c.status==='observed'&&Number.isFinite(c.fundamental_rms)&&c.fundamental_rms>0&&Array.isArray(c.phasor)&&c.phasor.length===2&&c.phasor.every(Number.isFinite)&&c.phasor.some(v=>v!==0);
     reference=reference||meta.find(entry=>/^V(?:\s|$)/.test(entry[1].units)&&ready(entry))?.[0]||meta.find(ready)?.[0]||meta[0]?.[0]||'';
     const ref=result?.channels?.[reference],refOk=ref&&ready([reference,ref]);
     for(const[id,c]of meta){
       const valid=c.status==='observed'&&Number.isFinite(c.fundamental_rms)&&c.fundamental_rms>=0;
-      const reading={id,label:c.label,units:c.units,rms:valid?c.fundamental_rms:null,sample_rms:Number.isFinite(c.sample_rms)?c.sample_rms:Number.isFinite(c.total_rms)?c.total_rms:null,angle_deg:null,one_cycle:true,reason:c.reason||'',angle_reason:'A nonzero supported angle reference is required.',relative_residual:c.relative_residual,dc:c.dc,window:result.window};
+      const reading={id,label:c.label,meaning:Object.hasOwn(meanings,id)?meanings[id]:c.meaning,units:c.units,rms:valid?c.fundamental_rms:null,sample_rms:Number.isFinite(c.sample_rms)?c.sample_rms:Number.isFinite(c.total_rms)?c.total_rms:null,angle_deg:null,one_cycle:true,reason:c.reason||'',angle_reason:'A nonzero supported angle reference is required.',relative_residual:c.relative_residual,dc:c.dc,window:result.window};
       if(valid&&refOk&&ready([id,c])){const degrees=(Math.atan2(c.phasor[1],c.phasor[0])-Math.atan2(ref.phasor[1],ref.phasor[0]))*180/Math.PI;reading.angle_deg=((degrees+540)%360)-180;reading.angle_reason='';}
       channels.set(id,reading);const kind=/^V(?:\s|$)/.test(c.units)?'voltage':/^A(?:\s|$)/.test(c.units)?'current':null;
       if(!kind)reading.vector_reason=id+': voltage/current vector needs engineering units; review CT/VT scaling ('+String(c.units||'unknown units')+').';
@@ -55,9 +56,9 @@ const DRReadings=(()=>{
     return (reasons.length?'<p class="field-help">'+reasons.map(esc).join(' ')+'</p>':'')+(v.one_cycle&&v.window?`<p class="field-help">One trailing cycle · samples ${esc(v.window.start_index)}–${esc(v.window.stop_index-1)} · ends at ${esc(num(v.window.end_s))} local s. All vectors share this window.</p>`:'')+['voltage','current'].map(kind=>{
       const channels=v.groups[kind],scale=Math.max(...channels.map(c=>c.rms),0);
       const arrows=channels.map(c=>{const a=c.angle_deg*Math.PI/180,x=100+75*(c.rms/scale)*Math.cos(a),y=100-75*(c.rms/scale)*Math.sin(a),color=/^#[0-9a-f]{6}$/i.test(colors[c.id])?colors[c.id]:'#176d82';
-        return `<line x1="100" y1="100" x2="${x}" y2="${y}" stroke="${color}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3" fill="${color}"/><text x="${x+3}" y="${y-3}">${esc(c.id)}</text>`;}).join('');
+        return `<g><title>${esc(channelName(c)+' · original source label: '+String(c.label||'(not supplied)')+' · source ID: '+c.id)}</title><line x1="100" y1="100" x2="${x}" y2="${y}" stroke="${color}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="3" fill="${color}"/><text x="${x+3}" y="${y-3}">${esc(channelName(c))}</text></g>`;}).join('');
       return `<section><h4>${kind==='voltage'?'Voltage':'Current'} vectors</h4>${channels.length?`<svg viewBox="0 0 200 200" role="img" aria-label="${kind} relative source vectors"><circle cx="100" cy="100" r="75" fill="none" stroke="#dae3e9"/><path d="M15 100H185M100 15V185" stroke="#dae3e9"/>${arrows}</svg><small>Independent ${kind} scale · RMS magnitude</small>`:'<p>No supported nonzero '+kind+' vectors at this cursor.</p>'}</section>`;
-    }).join('')+`<p class="field-help">Angles relative to ${esc(v.reference||'unselected reference')} ${v.one_cycle?'over one common trailing nominal cycle ending at the selected sample':'at a common fitted model centre'}. Source/assumed scaling and physical wiring remain unverified.</p>`;
+    }).join('')+`<p class="field-help">Angles relative to ${esc(channelName(v.channels.get(v.reference)||{id:v.reference}))} ${v.one_cycle?'over one common trailing nominal cycle ending at the selected sample':'at a common fitted model centre'}. Source/assumed scaling and physical wiring remain unverified.</p>`;
   }
   return {esc,num,windowAt,view,cursorView,readingMarkup,vectorMarkup};
 })();
