@@ -6,6 +6,7 @@ const DROperatorWorkspace=(()=>{
     const root=document.createElement('div');root.className='operator-workspace';
     const key=row.incident_id+'/'+row.number,prefix='operator-'+String(row.incident_id).replace(/[^a-zA-Z0-9]/g,'')+'-'+row.number;
     root.innerHTML=`<div class="operator-tabs" role="tablist" aria-label="Recording tasks">${tabs.map(([id,title])=>`<button type="button" role="tab" id="${prefix}-${id}-tab" aria-controls="${prefix}-${id}" data-workspace-tab="${id}">${title}</button>`).join('')}</div>`+tabs.map(([id,title,help])=>`<section role="tabpanel" tabindex="0" id="${prefix}-${id}" aria-labelledby="${prefix}-${id}-tab" data-workspace-pane="${id}" hidden><div class="operator-task-heading"><h2>${title}</h2><p>${help}</p></div><div data-workspace-content="${id}"></div></section>`).join('');
+    root.insertAdjacentHTML('afterbegin',DRInputGuidance.workflowMarkup(row,data));
     section.append(root);
     const content=id=>root.querySelector(`[data-workspace-content="${id}"]`);
     const record=(row.bundle?.files||[]).find(f=>f.name===data.file)||{};

@@ -80,7 +80,7 @@
     "src/dranalyser/rules/evidence.py": 113,
     "src/dranalyser/rules/features.py": 383,
     "src/dranalyser/rules/operation_compare.py": 92,
-    "src/dranalyser/rules/signals.py": 271,
+    "src/dranalyser/rules/signals.py": 273,
     "src/dranalyser/rules/stages.py": 112,
     "src/dranalyser/signals.py": 162,
     "src/dranalyser/stagea.py": 341,

@@ -1,3 +1,14 @@
+# Latest source-first follow-up — 2026-10-30
+
+Read SOURCE_FIRST_WORKFLOW_2026-10-30.md. Private-upload end-to-end findings drove
+comparison phase/units fixes, a simple Inspect→Compare→Read report guide, optional
+physical inputs/display labels, and carrier/AR boundary corrections. Preserve
+source identities, ratios, clocks, reviewed meanings and engineering gates.
+Private QA is ignored; no real files enter Git. A physical distance still needs
+verified instrument/line/end facts. See the follow-up for exact tests and limits.
+
+---
+
 # Current autonomous analyser delivery — 2026-10-30
 
 P0–P6 are implemented on `codex/operator-ui-review`; read

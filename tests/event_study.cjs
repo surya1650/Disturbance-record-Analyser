@@ -16,7 +16,7 @@ assert.match(study.timingMarkup({status:'selected',intervals:{pre:{start_s:0,las
 assert.throws(()=>study.collect({...fields,'S.pre.0':'1.5'}),/integer start/);
 assert.throws(()=>study.collect({...fields,'S.pre.1':''}),/excluded end/);
 assert.throws(()=>study.collect({...fields,'S.fault.0':'100','S.fault.1':'100'}),/greater than/);
-assert.throws(()=>study.collect({...fields,'S.substation':''}),/substation name/);
+assert.equal(study.collect({...fields,'S.substation':''}).ends.S.substation,'sending.cfg','optional display label never guesses a physical substation');
 assert.throws(()=>study.collect({...fields,'S.fault.0':'30'}),/pre-fault samples must finish/);
 assert.throws(()=>study.collect({...fields,'S.post.0':'99'}),/post-fault samples must begin/);
 assert.throws(()=>study.collect({...fields,'R.record':'receiving.cfg','R.substation':'Beta'}),/Confirm/);

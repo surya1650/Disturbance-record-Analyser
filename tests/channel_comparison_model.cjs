@@ -146,3 +146,37 @@ assert.match(caseMismatch.find(row=>row.right).reason,/phase disagree/);
 const digitalLookalike=record([{id:'D1',label:'Ia',kind:'digital',units:'state'}]);
 assert.equal(rows(model.plan(record([channel('CH1','IA')]),digitalLookalike)).length,1);
 assert.equal(rows(model.plan(record([channel('CH1','IA')]),digitalLookalike))[0].right,null);
+
+// Anonymous reproduction: auxiliary phase-name suffixes must not poison a
+// complete A/B/C phase set or masquerade as duplicate primary waveforms.
+const unresolvedRatio=record([channel('A1','Ia','raw counts','a'),channel('A2','Ib','raw counts','b'),channel('A3','Ic','raw counts','c'),channel('A4','IaR','raw counts','a'),channel('A5','IbR','raw counts','b'),channel('A6','IcR','raw counts','c')]);
+unresolvedRatio.inventory=unresolvedRatio.channels.map(c=>({id:c.id,phase:c.phase,declared_units:'A'}));
+const engineering=record([channel('A7','IA'),channel('A8','IB'),channel('A9','IC')]);
+const anonymousBefore=JSON.stringify([unresolvedRatio,engineering]);
+const declaredRows=rows(model.plan(unresolvedRatio,engineering));
+for(const [meaning,local,remote]of [['IA','A1','A7'],['IB','A2','A8'],['IC','A3','A9']]){
+  const paired=declaredRows.find(row=>row.left?.id===local);
+  assert.equal(paired.meaning,meaning);assert.equal(paired.right?.id,remote);
+  assert.match(paired.reason,/display only/);assert.match(paired.reason,/Scaling is unverified/);
+  assert.equal(paired.left.units,'raw counts');
+}
+assert.ok(declaredRows.filter(row=>['A4','A5','A6'].includes(row.left?.id)).every(row=>!row.right&&!row.meaning),'unknown suffix is not a primary phase counterpart');
+assert.equal(JSON.stringify([unresolvedRatio,engineering]),anonymousBefore,'display pairing cannot alter values, source units or ratios');
+for(const change of ['no-declared-unit','no-phase','conflicting-phase','wrong-quantity','not-counts']){
+ const altered=structuredClone(unresolvedRatio);altered.channels=altered.channels.slice(0,1);altered.inventory=altered.inventory.slice(0,1);
+ if(change==='no-declared-unit')delete altered.inventory[0].declared_units;
+ if(change==='no-phase'){altered.channels[0].phase='';altered.inventory[0].phase='';}
+ if(change==='conflicting-phase')altered.inventory[0].phase=altered.channels[0].phase='b';
+ if(change==='wrong-quantity')altered.inventory[0].declared_units='V';
+ if(change==='not-counts')altered.channels[0].units='unknown';
+ assert.ok(!rows(model.plan(altered,engineering)).find(row=>row.left)?.right,change+' cannot establish an unreviewed declared-quantity pair');
+}
+const voltageCounts=record([channel('A1','Ua','raw counts','a')]);voltageCounts.inventory=[{id:'A1',phase:'a',declared_units:'V'}];
+assert.equal(rows(model.plan(voltageCounts,record([channel('A7','VA','V')])))[0].right.id,'A7');
+
+const scaledAux=structuredClone(unresolvedRatio);scaledAux.channels.forEach(c=>c.units='A');
+assert.equal(rows(model.plan(scaledAux,engineering)).filter(row=>row.left&&row.right).length,3,'physical-unit auxiliary suffixes remain distinct too');
+const mixedPairs=record([channel('A1','VR','V'),channel('A2','VAB','V')]);
+assert.ok(rows(model.plan(mixedPairs,record([channel('A7','VA','V')]))).filter(row=>row.left).every(row=>!row.right&&/Mixed/.test(row.reason)),'explicit R-phase and A/B pair conventions still conflict');
+const ryPairs=record([channel('A1','VRY','V'),channel('A2','VYB','V'),channel('A3','VBR','V')]);
+assert.equal(rows(model.plan(ryPairs,record([channel('A7','VAB','V'),channel('A8','VBC','V'),channel('A9','VCA','V')]))).filter(row=>row.left&&row.right).length,3,'explicit coherent line-line R/Y/B notation stays supported');

@@ -67,7 +67,9 @@ def prepare_inputs(root, revision, value):
                 or not all(type(t) in (int,float) and math.isfinite(t) for t in times)
                 or any(b<=a for a,b in zip(times,times[1:],strict=False))):
             raise ValueError(record+': known strictly increasing source times are required for event regions.')
-        inputs=dict(record=record, substation=_text(chosen.get('substation'), end+' substation',120))
+        label=chosen.get('substation')
+        label=record[:120] if label is None or isinstance(label,str) and not label.strip() else _text(label,end+' display label',120)
+        inputs=dict(record=record, substation=label)
         options=normalise_options(dict(voltage_kv=0,mappings=chosen.get('mappings',{}),
             asserted_states=chosen.get('asserted_states',{})),source)
         inputs.update(mappings=options['mappings'],asserted_states=options.get('asserted_states',{}))

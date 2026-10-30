@@ -6,6 +6,20 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-10-30 — Private recording verification and source-first simplification
+
+Read SOURCE_FIRST_WORKFLOW_2026-10-30.md. Actual private uploads reproduced and
+fixed auxiliary-label contamination of main comparison phases. Unambiguous raw
+counts can pair for display with original units/caveats, without physical conversion.
+Inspect→Compare→Read report guide and optional physical inputs reduce mandatory
+questions; observation labels optional with bounded filename fallback. Carrier/AR
+substring confusion fixed without bypassing reviewed meanings/polarity. Browser
+private upload/comparison/independent reports/exports desktop/mobile PASS. Full2036
+PASS/28private skips/one warning, final66affected PASS after long-label regression;
+architecture/self-tests/changed lint and StageA10000PASS .4361%. Originals hash
+preserved; private files/screenshots/guide remain ignored and absent from commits.
+No unverified physical pair/distance, main merge or environment publication.
+
 ## 2026-10-30 — Comparison playback, digital tracks and parameter labels
 
 See COMPARISON_UI_FOLLOWUP_2026-10-30.md. Restored shared display playback,

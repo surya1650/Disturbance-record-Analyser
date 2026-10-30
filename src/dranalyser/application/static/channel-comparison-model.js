@@ -28,12 +28,13 @@ const DRChannelComparison = (() => {
     let phase=match[2],kind=match[1]==='I'?'I':'V';
     const numeric=/^L?[123]$/.test(phase);
     phase=phase.replace(/L?1/g,'A').replace(/L?2/g,'B').replace(/L?3/g,'C');
-    if(!numeric&&(ryb||/[RY]/.test(phase)))phase=[...phase].map(p=>({R:'A',Y:'B',B:'C'})[p]||p).join('');
+    if(!numeric&&(ryb||phase.length===1&&/[RY]/.test(phase)))phase=[...phase].map(p=>({R:'A',Y:'B',B:'C'})[p]||p).join('');
     if(!['A','B','C','N','AB','BC','CA','BA','CB','AC'].includes(phase))return null;
     return {meaning:kind+phase,quantity:kind==='V'?'voltage':'current',phase};
   }
   function phaseMode(phases){
-    const valid=phases.filter(p=>alias('V'+p));
+    const singles=phases.filter(p=>/^[ABCNRY]$/.test(p));
+    const valid=singles.length&&!singles.some(p=>/[RY]/.test(p))?singles:phases.filter(p=>/^(?:[ABCNRY]|RY|YB|BR|YR|BY|RB|AB|BC|CA|BA|CB|AC)$/.test(p));
     const ryb=valid.some(p=>/[RY]/.test(p)),abc=valid.some(p=>/[AC]/.test(p));
     return ryb&&abc?'mixed':ryb?'ryb':'abc';
   }
@@ -74,9 +75,11 @@ const DRChannelComparison = (() => {
     const suggestions=words.map(t=>alias(t,ctx.labelModes[t.startsWith('I')||t.startsWith('3I')?'current':'voltage']==='ryb')).filter(Boolean);
     const unique=[...new Map(suggestions.map(v=>[v.meaning,v])).values()];
     const chosen=reviewed?alias(selected):unique.length===1?unique[0]:null;
+    const unresolvedSuffix=words.some(t=>/^(?:3)?[IVU][ABC0][A-Z0-9]+$/.test(t)&&!alias(t,ctx.labelModes[t.startsWith('I')||t.startsWith('3I')?'current':'voltage']==='ryb'));
     const raw=clean(channel.phase||header.phase);
     const quantity=physical||declaredQuantity||chosen?.quantity||'other';
     const headerMeaning=raw?alias((quantity==='current'?'I':'V')+raw,ctx.headerModes[quantity]==='ryb'):null;
+    const declaredDisplay=!physical&&/^raw counts(?:\s|$)|^counts(?:\s|$)/i.test(units)&&declaredQuantity&&chosen&&headerMeaning&&chosen.quantity===declaredQuantity&&chosen.phase===headerMeaning.phase;
     let identity=chosen,reason='';
     if(selected==='ignore'){identity=null;reason='Meaning ignored; observations retained.';}
     else if(reviewed&&!chosen){identity=null;reason='Selected meaning is not a supported display identity.';}
@@ -85,14 +88,15 @@ const DRChannelComparison = (() => {
     else if(!reviewed&&unique.length>1){identity=null;reason='Multiple quantity/phase tokens; review the channel meaning.';}
     else if(chosen&&headerMeaning&&chosen.phase!==headerMeaning.phase){identity=null;reason='Source meaning and declared phase disagree; review the channel meaning.';}
     else if(chosen&&((physical&&physical!==chosen.quantity)||(declaredQuantity&&declaredQuantity!==chosen.quantity)||nonElectricalUnit(units)||nonElectricalUnit(declared))){identity=null;reason='Channel meaning and declared units disagree; review the channel meaning.';}
-    else if(!physical&&!reviewed){identity=null;reason='Physical units are unresolved; review the channel meaning before pairing.';}
+    else if(!physical&&!reviewed&&!declaredDisplay){identity=null;reason='Physical units are unresolved; review the channel meaning before pairing.';}
+    else if(!identity&&!reviewed&&unresolvedSuffix){reason='Additional source-label suffix is unresolved; no automatic phase counterpart.';}
     else if(!identity&&!reviewed&&headerMeaning&&physical){identity=headerMeaning;}
     if(identity&&declaredQuantity&&declaredQuantity!==identity.quantity){identity=null;reason='Channel meaning and declared units disagree; review the channel meaning.';}
     if(!reason&&!identity)reason='Quantity/phase identity is unresolved; observations retained.';
     // A declared header phase cannot make an angle, RMS or DC trace an AC waveform.
     const key=identity?`${identity.meaning}/${flavour}`:null;
     return {quantity,meaning:identity?.meaning||null,phase:identity?.phase||'',flavour,key,
-      reviewed,reason,source:reviewed?'Source-analysis meaning choice':'Unverified source label/header'};
+      reviewed,reason,scale_unverified:!physical,source:reviewed?'Source-analysis meaning choice':'Unverified source label/header'};
   }
   function identify(channel,record,mappings={}){return identifyWith(channel,context(record),mappings);}
   function plan(left,right,mappingsLeft={},mappingsRight={}){
@@ -114,7 +118,7 @@ const DRChannelComparison = (() => {
       rows.push({key:partner?e.key:`${e.key||'unresolved'}/${e.side}/${e.channel.id}`,label,
         quantity:e.quantity,meaning:e.meaning,left:e.side==='left'?e.channel:partner?.channel||null,
         right:e.side==='right'?e.channel:partner?.channel||null,
-        reason:partner?'Quantity/phase match for display only; independent amplitude scales.':duplicate?
+        reason:partner?(e.scale_unverified||partner.scale_unverified?'Declared quantity/phase match for display only; raw counts retain their source units. Scaling is unverified; independent amplitude scales, no numeric conversion or physical comparison.':'Quantity/phase match for display only; independent amplitude scales.'):duplicate?
           'Duplicate quantity/phase identity; no counterpart is selected automatically.':e.reason||'No matching quantity/phase counterpart in the other recording.',
         _sort:[phases[e.phase]??99,e.meaning||'',e.flavour,clean(e.channel.label),e.side,e.channel.id]});
     }
