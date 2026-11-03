@@ -113,6 +113,14 @@ assert.match(detailed,/What the recordings show/);assert.match(detailed,/VA fell
 assert.match(detailed,/fault samples \[10, 20\)/);assert.match(detailed,/Not assessed against actual settings/);
 assert.match(detailed,/100 km/);assert.match(detailed,/12\.5 km · E5/);
 assert.match(detailed,/data-event-open-navigation/);
+const boundary=structuredClone(explained);
+boundary.navigation.zone_comparisons=[{record:'Alpha<test>.cfg',loop:'AG',status:'available',reasons:[]},{record:'Beta.cfg',loop:'BG',status:'not_evaluable',reasons:['Settings <missing>']}];
+const boundaryMarkup=study.markup(boundary);
+assert.match(boundaryMarkup,/Alpha&lt;test&gt;\.cfg · AG · available under reviewed inputs/);
+assert.match(boundaryMarkup,/Beta\.cfg · BG · not evaluable · Settings &lt;missing&gt;/);
+assert.match(boundaryMarkup,/fixed operational window and support counts/);
+assert.match(boundaryMarkup,/does not establish pickup or protection compliance/);
+assert.doesNotMatch(boundaryMarkup,/<test>|<missing>/);
 assert.match(detailed,/no tower chainage/i);
 const noLocation=structuredClone(explained);noLocation.distance.method=null;
 assert.doesNotMatch(study.lineView(noLocation),/<circle/,'no line location marker without a method');

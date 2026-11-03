@@ -70,9 +70,9 @@
     "src/dranalyser/registry/settings_io/__init__.py": 79,
     "src/dranalyser/registry/settings_io/rio.py": 226,
     "src/dranalyser/report/__init__.py": 4,
-    "src/dranalyser/report/evidence.py": 19,
+    "src/dranalyser/report/evidence.py": 21,
     "src/dranalyser/report/graphics.py": 349,
-    "src/dranalyser/report/navigation.py": 115,
+    "src/dranalyser/report/navigation.py": 117,
     "src/dranalyser/report/render.py": 230,
     "src/dranalyser/report/rx_context.py": 94,
     "src/dranalyser/rules/__init__.py": 0,
@@ -102,7 +102,7 @@
     "src/dranalyser/workbench/bundle.py": 374,
     "src/dranalyser/workbench/channel_mapping.py": 57,
     "src/dranalyser/workbench/corroborate.py": 178,
-    "src/dranalyser/workbench/incident.py": 219,
+    "src/dranalyser/workbench/incident.py": 220,
     "src/dranalyser/workbench/pages.py": 279,
     "src/dranalyser/workbench/resolve.py": 112,
     "src/dranalyser/workbench/rx_review.py": 43,
@@ -126,8 +126,9 @@
     "src/dranalyser/report/source_analysis.py": 32,
     "scripts/analyse_source_record.py": 42,
     "scripts/nonuniform_validation.py": 119,
-    "src/dranalyser/report/static_rx.py": 74,
-    "src/dranalyser/report/zone_comparison.py": 255
+    "src/dranalyser/report/static_rx.py": 79,
+    "src/dranalyser/report/zone_comparison.py": 255,
+    "src/dranalyser/report/zone_comparison_view.py": 49
   },
   "exceptions": {}
 }

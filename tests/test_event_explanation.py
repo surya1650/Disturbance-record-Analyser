@@ -1,11 +1,30 @@
 """Concise conclusions preserve sample/source provenance and abstentions."""
 import json
+import copy
 
 from dranalyser.workbench import event_study as study
 from tests import test_event_study as fixtures
+from dranalyser.workbench.event_explanation import visual_context
 
 inputs = fixtures.inputs
 model = fixtures.model
+
+
+def test_boundary_comparison_note_uses_only_matching_selected_record_evidence():
+    summary = dict(version=1, status='available', loop='AG', record_hash='a'*64,
+                   settings_hash='b'*64, reasons=[])
+    matching = dict(file='S/event.cfg', status='analysed', record_hash='a'*64, zone_comparison=summary)
+    result = dict(navigator_path='stored/navigator.json', relay_evidence=[matching,
+        dict(matching, file='R/event.cfg'),
+        dict(matching, file='S/stale.cfg', record_hash='c'*64),
+        dict(matching, file='S/legacy.cfg', zone_comparison=None)])
+    before = copy.deepcopy(result)
+    shown = visual_context({}, result, {'S': 'S/event.cfg'})['navigation']
+    assert shown['zone_comparisons'] == [dict(record='S/event.cfg', status='available', loop='AG',
+        record_hash='a'*64, settings_hash='b'*64, reasons=[])]
+    for name in ('S/stale.cfg', 'S/legacy.cfg'):
+        assert not visual_context({}, result, {'S': name})['navigation']['zone_comparisons']
+    assert result == before
 
 
 def test_observation_summary_has_changes_without_invented_fault_or_operation(model):

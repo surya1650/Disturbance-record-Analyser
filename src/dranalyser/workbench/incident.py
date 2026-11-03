@@ -130,6 +130,7 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
                     nav = navigation_record(an, res.relay_evidence[-1], by_record.get(f.name), bindings[f.name], f.rx_review)
                     navigation.append(nav)
                     res.relay_evidence[-1]['rx_context'] = nav.get('rx', {}).get('context')
+                    res.relay_evidence[-1]['zone_comparison'] = nav.get('rx', {}).get('zone_comparison')
                 except Exception as exc:
                     navigation.append({'file': f.name, 'status': 'unavailable', 'reason': str(exc)[:200]})
                 if pos == 0:

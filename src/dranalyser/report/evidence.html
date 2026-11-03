@@ -65,6 +65,7 @@
         primary ohm per secondary ohm {{ c.primary_ohm_per_secondary_ohm }}.</p>
       <p>{{ c.note }}</p>
     </details>{% endif %}
+    {{ render_zone_comparison(rec.zone_comparison, rec.record_hash)|safe }}
     <p><b>Trip evidence:</b> {{ rec.trip_state }}.
       <b>Operating interval:</b> {{ rec.operate_ms|number }} ms (detected inception to first eligible trip edge).</p>
     <p>Trigger timestamp: {{ rec.trigger_time or 'unavailable' }} · {{ rec.time_note }}.<br>

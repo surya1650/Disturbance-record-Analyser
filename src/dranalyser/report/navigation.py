@@ -7,6 +7,7 @@ from ..faultloc.estimators import loop_quantities
 from ..rules.evidence import point_observation
 from ..rules.signals import map_signals
 from .rx_context import display_context, zone_outlines
+from .zone_comparison import compare_zones
 
 MAX_BINS = 1200
 MAX_CHANNELS = 64
@@ -101,7 +102,8 @@ def navigation_record(an, evidence, settings=None, binding=None, review=None):
         context['ground_missing'].append(rx['reason'])
         context['zone_missing'].append(rx['reason'])
         context['k0'] = context['primary_ohm_per_secondary_ohm'] = None
-    rx.update(context=context, zones=zone_outlines(settings, context))
+    rx.update(context=context, zones=zone_outlines(settings, context),
+              zone_comparison=compare_zones(an, settings, binding, review))
     return {'file': evidence['file'], 'status': 'available',
             'capture_s': [float(rec.t[0]), float(rec.t[-1])], 'sample_count': rec.n,
             'analog': analog, 'digital': digital, 'rx': rx,

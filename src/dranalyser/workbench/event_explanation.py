@@ -62,9 +62,20 @@ def explain_event(ends, distance, *, fault_type=None):
 
 def visual_context(facts, result, selected):
     """Reuse frozen line and navigator availability; do not synthesize geometry."""
-    records = [item['file'] for item in result.get('relay_evidence', [])
+    matched = [item for item in result.get('relay_evidence', [])
                if item.get('status') == 'analysed' and item.get('file') in selected.values()]
+    records = [item['file'] for item in matched]
+    comparisons = []
+    for item in matched:
+        summary = item.get('zone_comparison')
+        if (not isinstance(summary, dict) or summary.get('version') != 1
+                or not item.get('record_hash') or summary.get('record_hash') != item['record_hash']
+                or summary.get('status') not in ('available', 'not_evaluable')):
+            continue
+        comparisons.append(dict(record=item['file'], status=summary['status'], loop=summary.get('loop'),
+            record_hash=summary['record_hash'], settings_hash=summary.get('settings_hash'),
+            reasons=summary.get('reasons', [])))
     return dict(
         line={key: facts.get(key) for key in ('id', 'name', 'length_km', 'terminals', 'sections', 'sha256', 'parameter_status', 'provenance')},
-        navigation=dict(available=bool(result.get('navigator_path') and records), records=records,
+        navigation=dict(available=bool(result.get('navigator_path') and records), records=records, zone_comparisons=comparisons,
             note='Stored operational source/R-X views retain their reviewed mappings and supported windows. Display choices do not recalculate them.'))

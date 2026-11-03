@@ -120,7 +120,9 @@ const DREventStudy=(()=>{
   }
   function navigationView(model){
     if(!model.navigation?.available)return '';
-    return `<details class="event-study-navigation"><summary>R–X and source-local event view</summary><p>${esc(model.navigation.note)} The report inspection cursor can follow the same selected source only; it never synchronizes ends.</p><button type="button" data-event-open-navigation>Open existing R–X view</button><div data-event-navigation-host></div></details>`;
+    const comparisons=arr(model.navigation.zone_comparisons);
+    const note=comparisons.length?'<p>Stored impedance comparisons against exported boundaries:</p>'+list(comparisons.map(c=>`${c.record} · ${c.loop||'loop unavailable'} · ${c.status==='available'?'available under reviewed inputs':'not evaluable'}${arr(c.reasons).length?' · '+arr(c.reasons).join('; '):''}`))+'<p>The R–X evidence contains the fixed operational window and support counts. Display intervals do not recompute this comparison; it does not establish pickup or protection compliance.</p>':'';
+    return `<details class="event-study-navigation"><summary>R–X and source-local event view</summary><p>${esc(model.navigation.note)} The report inspection cursor can follow the same selected source only; it never synchronizes ends.</p>${note}<button type="button" data-event-open-navigation>Open existing R–X view</button><div data-event-navigation-host></div></details>`;
   }
   function markup(model,mode='trace'){
     const space=coordinates(model),ends=model.ends||{};

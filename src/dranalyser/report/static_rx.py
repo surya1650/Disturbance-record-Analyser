@@ -5,6 +5,7 @@ from ..faultloc.estimators import GROUND_LOOP, PHASE_LOOP
 from . import graphics
 from .navigation import phase_loops
 from .rx_context import display_context, finite_number, zone_outlines
+from .zone_comparison_view import render_zone_comparison
 
 
 def rx_model(an, end, settings, evidence):
@@ -68,7 +69,11 @@ def rx_model(an, end, settings, evidence):
 def render_rx(an, end, settings, evidence):
     model = rx_model(an, end, settings, evidence)
     html = graphics.rx_diagram(model['zones'], model['trajectory'], model['line_angle_deg'], unit='primary ohm')
+    sources = [r for r in evidence if r.get('end') == end and r.get('role') == 'primary' and r.get('status') == 'analysed'
+               and r.get('record_hash') == an.record.content_hash]
+    comparison = sources[0].get('zone_comparison') if len(sources) == 1 else None
     reasons = ''.join('<li>'+graphics.esc(reason)+'</li>' for reason in model['reasons'])
     return ('<section data-rx-display-version="2"><p>Loop '+graphics.esc(model['loop'] or 'unavailable')+
             ' · primary ohm · six nominal cycles from detected inception.</p>'+html+
-            ('<ul>'+reasons+'</ul>' if reasons else '')+'</section>')
+            ('<ul>'+reasons+'</ul>' if reasons else '')+'</section>'+
+            render_zone_comparison(comparison, an.record.content_hash))

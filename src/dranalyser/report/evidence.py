@@ -5,10 +5,12 @@ from jinja2 import Environment, FileSystemLoader
 
 from ..rules.evidence import terminal_evidence
 from ..rules.operation_compare import compare_operations
+from .zone_comparison_view import render_zone_comparison
 
 
 def render_evidence(records, comparisons, operations=None, audits=None, sources=None, stage_locations=None):
     env = Environment(autoescape=True, loader=FileSystemLoader(Path(__file__).parent))
+    env.globals['render_zone_comparison'] = render_zone_comparison
     env.filters["number"] = lambda x: "unavailable" if x is None else format(x, ".3f")
     template = Path(__file__).with_name("evidence.html").read_text(encoding="utf-8")
     template += Path(__file__).with_name('audits.html').read_text(encoding='utf-8')
