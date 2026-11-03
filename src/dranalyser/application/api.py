@@ -86,6 +86,8 @@ def create_app(root="out/application", registry="data/registry", inbox=None, wor
     install_catalogue(app, store.root)
     from .inspection import install_inspection
     install_inspection(app, store, registry)
+    from .incident_report import install_incident_reports
+    install_incident_reports(app, store)
 
     @app.middleware('http')
     async def local_access(request, call_next):

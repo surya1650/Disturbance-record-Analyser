@@ -15,9 +15,9 @@ const DRFeatureGuide=(()=>{
       next:'Inspect RMS & vectors'},
     {id:'conditions',title:'Pre-fault, fault & post-fault',destination:'report',
       what:'Compare supported pre-fault, fault and optional post-fault values using automatic source-local timing suggestions or your manual refinement.',
-      inputs:['Choose a recording in Simple report. Automatic timings require supported changes or indications and sufficient source coverage.','Each reported region needs a complete nominal-cycle RMS support inside it. Missing pre-fault or post-fault values stay unavailable.'],
+      inputs:['Choose a recording. Automatic timings require supported changes or indications and sufficient source coverage.','Each reported region needs a complete nominal-cycle RMS support inside it. Missing pre-fault or post-fault values stay unavailable.'],
       optional:['Manual interval adjustment is optional. Waveform A–B cursors can refine a selected interval; they are not a prerequisite for automatic suggestions.','Source-local suggestions do not authenticate physical fault boundaries, pair opposite ends or synchronize clocks.'],
-      next:'Open simple report'},
+      next:'Open report'},
     {id:'compare',title:'Compare recordings',destination:'compare',
       what:'See every analog channel in matching voltage/current rows, with explicit missing counterparts.',
       inputs:['Two recordings with recoverable analog observations in this incident.','Choose the second recording.'],
@@ -42,7 +42,7 @@ const DRFeatureGuide=(()=>{
     const states={
       waveforms:samples?['available','Source observations are available. Source scaling and timing limitations remain visible.']:['missing','No recoverable source samples are available. Check the matching data file and the decode reason.'],
       'rms-vectors':!samples?['missing','Open a recording with recoverable samples first.']:!cursorFacts?['limited','One-cycle measurements need recoverable analog samples, actual source times and a valid declared nominal frequency. Inspect the cursor reason; raw observations remain available.']:['limited','One-cycle cursor measurements are available where a complete trailing cycle is supported. Each cursor/channel and angle reference still has its own eligibility; four-cycle model fits are not required.'],
-      conditions:!samples?['missing','Choose a recording with recoverable samples in Simple report.']:['limited','Automatic timing suggestions are evaluated from the chosen recording. Review their evidence and refine manually only if needed; short, ongoing or incomplete events may leave some regions unavailable.'],
+      conditions:!samples?['missing','Choose a recording with recoverable samples.']:['limited','Automatic timing suggestions are evaluated from the chosen recording. Review their evidence and refine manually only if needed; short, ongoing or incomplete events may leave some regions unavailable.'],
       compare:!yes('hasSecondRecord')?['missing','Add another recording to this incident to compare sources.']:!samples?['limited','A second recording exists, but this source has no recoverable samples. Inspect the decode reason.']:['available','Choose a second recording. Its recoverable channels determine which counterparts can be shown.'],
       study:yes('hasOperationalResult')?['available','An operational study result is stored. Read its method, exclusions and data-quality caveats.']:['missing','Confirm the line/end assignments and method-specific inputs in the operational study. Raw inspection and the simple report remain usable.']
     };

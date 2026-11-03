@@ -1,0 +1,58 @@
+'use strict';
+const assert=require('node:assert/strict');
+const report=require('../src/dranalyser/application/static/incident-report.js');
+const row={incident_id:'example/incident',number:3};
+function fixture(request){
+  const nodes=new Map(),node=key=>{if(!nodes.has(key))nodes.set(key,{hidden:true,disabled:false,textContent:'',handlers:{},addEventListener(type,fn){this.handlers[type]=fn;}});return nodes.get(key);};
+  const host={isConnected:true,innerHTML:'',querySelector:node},controller=new AbortController();
+  const handle=report.mount(host,row,{signal:controller.signal,request});
+  return {host,node,controller,handle};
+}
+(async()=>{
+  const calls=[],f=fixture(async(path,options)=>{calls.push({path,options});return options.method?{revision:3,report_id:'saved-1',model:{}}:{revision:3,report:null};});
+  assert.equal(calls.length,0,'opening Analyse must not generate or fetch a report');
+  await f.handle.activate();
+  assert.equal(calls.length,1);assert.match(calls[0].path,/example%2Fincident\/incident-report\?revision=3$/);
+  assert.match(f.node('[data-incident-report-status]').textContent,/No report has been generated/);
+  await f.node('[data-incident-generate]').handlers.click();
+  assert.equal(calls.length,2);assert.equal(calls[1].options.method,'POST');assert.deepEqual(JSON.parse(calls[1].options.body),{revision:3},'source inspection must not create inferred end/line or timing declarations');
+  assert.equal(f.node('iframe').src,'/api/incidents/example%2Fincident/incident-report/saved-1/html');
+  assert.equal(f.node('[data-incident-data]').href,'/api/incidents/example%2Fincident/incident-report/saved-1/data?download=true');
+  assert.equal(f.node('[data-incident-pdf]').disabled,true,'printing waits until the immutable preview loads');
+  f.node('iframe').onload();assert.equal(f.node('[data-incident-pdf]').disabled,false);
+  let printed=0;f.node('iframe').contentWindow={focus(){},print(){printed++;}};f.node('[data-incident-pdf]').handlers.click();assert.equal(printed,1);
+  assert.match(f.host.innerHTML,/Print \/ Save PDF/);assert.match(f.host.innerHTML,/browser’s print dialog/);
+  assert.ok(!f.host.innerHTML.includes('event-study'),'only the canonical incident report is the primary report view');
+  await f.handle.activate();assert.equal(calls.length,3,'reopening Report checks whether saved inputs changed, without creating a generation');
+  const outdated=fixture(async()=>({revision:3,report_id:'preserved',is_current:false,model:{}}));await outdated.handle.activate();
+  assert.match(outdated.node('[data-incident-report-status]').textContent,/Inputs changed; generate/);assert.match(outdated.node('iframe').src,/preserved\/html$/);
+  let generation=0;const history=fixture(async(path,options)=>{
+    if(!options.method)return {revision:3,report:null};
+    generation++;const entries=Array.from({length:generation},(_,i)=>({report_id:'generation-'+(generation-i),created_at:'2026-11-03T01:00:00+05:30',urls:{html:'javascript:alert(1)',data:'https://untrusted/data'}}));
+    return {revision:3,report_id:entries[0].report_id,model:{},history:entries};
+  });
+  await history.handle.activate();await history.node('[data-incident-generate]').handlers.click();
+  const originalPath='/api/incidents/example%2Fincident/incident-report/generation-1/html';
+  assert.ok(history.node('[data-incident-saved-reports]').innerHTML.includes(originalPath));
+  await history.node('[data-incident-generate]').handlers.click();
+  const entries=history.node('[data-incident-saved-reports]').innerHTML;
+  assert.equal((entries.match(/<li>/g)||[]).length,2);assert.ok(entries.includes(originalPath),'the first immutable generation stays discoverable after generating the second');
+  assert.ok(entries.indexOf('generation-2/html')<entries.indexOf('generation-1/html'),'the backend latest-first history order is preserved');
+  assert.equal(history.node('.incident-report-history').hidden,false);assert.ok(!history.host.innerHTML.includes('<details class="incident-report-history" open'),'saved generations remain a compact collapsed list');
+  assert.ok(!entries.includes('javascript:')&&!entries.includes('https://untrusted'),'history URLs are built from the canonical incident/report identity');
+  const hostile=report.historyMarkup([{report_id:'<img src=x>"',created_at:'<script>date</script>',urls:{html:'javascript:bad'}}],row);
+  assert.ok(!hostile.includes('<img')&&!hostile.includes('<script>')&&!hostile.includes('javascript:'));assert.match(hostile,/&lt;img/);assert.match(hostile,/Creation time unavailable/);
+  assert.equal(report.historyMarkup([{report_id:null}],row),'');
+  const mismatch=fixture(async()=>({revision:2,report_id:'old',model:{}}));await mismatch.handle.activate();
+  assert.match(mismatch.node('[data-incident-report-status]').textContent,/revision changed/);assert.equal(mismatch.node('iframe').src,undefined);
+  assert.throws(()=>report.checked({revision:3,report_id:'id'},row),/incomplete/);
+  const safe=report.checked({revision:3,report_id:'https://untrusted/<img>',model:{},urls:{html:'javascript:alert(1)'}},row);
+  assert.equal(safe.html,'/api/incidents/example%2Fincident/incident-report/https%3A%2F%2Funtrusted%2F%3Cimg%3E/html','export paths remain on the canonical source-bound backend, ignoring supplied URLs');
+  let resolve;const stale=fixture(()=>new Promise(done=>{resolve=done;}));const pending=stale.handle.activate();
+  const oldStatus=stale.node('[data-incident-report-status]').textContent;stale.controller.abort();stale.host.isConnected=false;
+  resolve({revision:3,report_id:'late',model:{}});await pending;
+  assert.equal(stale.node('iframe').src,undefined);assert.equal(stale.node('[data-incident-report-status]').textContent,oldStatus,'an aborted recording/revision cannot overwrite the next report view');
+  const failed=fixture(async()=>{throw new Error('Required data unavailable');});await failed.handle.activate();
+  assert.match(failed.node('[data-incident-report-status]').textContent,/Required data unavailable/);assert.equal(failed.node('[data-incident-generate]').disabled,false);
+  console.log('Canonical report view: lazy loading, immutable generation, exact revision, local exports, native PDF printing and cancellation passed');
+})().catch(error=>{console.error(error);process.exitCode=1;});

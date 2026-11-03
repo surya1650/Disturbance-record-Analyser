@@ -78,3 +78,13 @@ including source-local SVG gaps, explicit units, separate RMS bases and native
 Print/Save PDF. Final model+renderer30PASS; HTML escaping and raw-count/zero
 preservation covered.13-case final physical PDF sweep is still in P4 progress;
 prior BC/BG footer overlap was corrected, not accepted as a passing layout.
+
+P3 milestone: Upload/parse→Analyse→Compare(optional)→Report primary portal is
+implemented. Required inputs/technical evidence remain contextual and closed.
+New API persists immutable model JSON/HTML and20-entry generation history,
+with token/source/revision/race checks and digest-verified artifacts.13API
+testsPASS including real single/paired generation;5focused UI wrappersPASS.
+Actual initial portal browser flow/history/exports/native-print/mobile/source
+switches/late revisionPASS, E5exact41.98828243177587km; final-source rerun pending.
+First whole suite2238PASS/28private skips/one inherited warning (95.33s) preceded
+the last canonical-label correction; authoritative final frozen-source run next.

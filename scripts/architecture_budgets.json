@@ -16,7 +16,7 @@
     "src/dranalyser/__init__.py": 0,
     "src/dranalyser/application/__init__.py": 1,
     "src/dranalyser/application/__main__.py": 39,
-    "src/dranalyser/application/api.py": 238,
+    "src/dranalyser/application/api.py": 240,
     "src/dranalyser/application/catalogue.py": 50,
     "src/dranalyser/application/intake.py": 198,
     "src/dranalyser/application/store.py": 193,
@@ -130,7 +130,8 @@
     "src/dranalyser/report/zone_comparison.py": 258,
     "src/dranalyser/report/zone_comparison_view.py": 49,
     "src/dranalyser/workbench/incident_report.py": 471,
-    "src/dranalyser/report/incident_summary.py": 314
+    "src/dranalyser/report/incident_summary.py": 314,
+    "src/dranalyser/application/incident_report.py": 179
   },
   "exceptions": {}
 }

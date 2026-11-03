@@ -3,7 +3,7 @@ function inspectionPanel(row) {
   const records = row.bundle?.files.filter(f => f.kind === 'comtrade') || [];
   if (!records.length) return '';
   const preferred=DRInputGuidance.preferredRecording(row,records);
-  return `<section id="source-inspection" class="panel detail-section"><h2>Source waveform inspection</h2><p>Open recorded observations before assignment. Source scaling and timing do not establish physical, clock or fault-location authority.</p><label>Recording <select id="inspection-record">${records.map(f=>`<option value="${escapeHtml(f.name)}" ${f.name===preferred?'selected':''}>${escapeHtml(f.name)}</option>`).join('')}</select></label><div id="inspection-workspace" aria-live="polite"></div></section>`;
+  return `<section id="source-inspection" class="panel detail-section"><h2>Incident recordings</h2><p>Choose a recording to inspect. Changing this view does not change a saved incident report.</p><label>Recording <select id="inspection-record">${records.map(f=>`<option value="${escapeHtml(f.name)}" ${f.name===preferred?'selected':''}>${escapeHtml(f.name)}</option>`).join('')}</select></label><div id="inspection-workspace" aria-live="polite"></div></section>`;
 }
 let inspectionController;
 function mountInspection(row) {
@@ -21,7 +21,7 @@ function mountInspection(row) {
       const data=await response.json();
       if (!response.ok) throw new Error(data.detail || 'Source inspection unavailable.');
       if (controller.signal.aborted || !host.isConnected) return;
-      host.innerHTML=`<p><strong>${escapeHtml({observed:'Waveforms decoded',partial:'Partial observations',sample_only:'Samples available; timing needs review',cfg_only:'Header available; data missing',unsupported:'Sample decoding unavailable'}[data.status]||data.status)}</strong> · Operational state: ${escapeHtml(labels[data.operational_eligibility.state]||data.operational_eligibility.state)}</p><p>${escapeHtml(data.issues.join(' '))}</p><details><summary>Input and timing details</summary><p>${data.sample_count} source samples · ${escapeHtml(data.time_basis.basis || data.time_basis.reason)}</p></details><div class="inspection-traces"></div>`;
+      host.innerHTML=`<p><strong>${escapeHtml({observed:'Waveforms decoded',partial:'Partial observations',sample_only:'Samples available; timing needs review',cfg_only:'Header available; data missing',unsupported:'Sample decoding unavailable'}[data.status]||data.status)}</strong></p>${data.issues.length?`<p>${escapeHtml(data.issues.join(' '))}</p>`:''}<details><summary>File checks and timing</summary><p>${data.sample_count} source samples · ${escapeHtml(data.time_basis.basis || data.time_basis.reason)}</p><p>Physical calculation state: ${escapeHtml(labels[data.operational_eligibility.state]||data.operational_eligibility.state)}</p></details><div class="inspection-traces"></div>`;
       if (typeof renderInspectionWorkbench === 'function') {
         const workbench=renderInspectionWorkbench(host,data,row,controller);
         mountSourceAnalysis(host,data,row,controller,workbench);

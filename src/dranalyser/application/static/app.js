@@ -5,7 +5,7 @@ const labels = {queued:'Queued',running:'Processing',needs_review:'Needs review'
 const badge = state => `<span class="badge ${escapeHtml(state)}">${escapeHtml(labels[state] || state)}</span>`;
 const date = stamp => new Date(stamp * 1000).toLocaleString(undefined, {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 const size = bytes => bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${(bytes / 1024).toFixed(1)} KB`;
-let config, selected = [], page = 0, lastItems = [], current = null, polling = false, busyUpload = false;
+let config, selected = [], page = 0, lastItems = [], current = null, polling = false, busyUpload = false, requestedPortalTask='waveforms';
 
 function notice(message = '') { $('notice').textContent = message; $('notice').hidden = !message; }
 async function api(path, options = {}) {
@@ -28,7 +28,7 @@ async function overview() {
     ['In progress', (counts.queued || 0) + (counts.running || 0), 'Queued and processing'],
     ['Completed', counts.completed || 0, 'Analysis reports available']
   ].map(([title,value,hint], i) => `<div class="metric ${i===3?'accent':''}"><div class="metric-label">${title}<span>${['▤','◷','↻','✓'][i]}</span></div><div class="metric-number">${value}</div><small>${hint}</small></div>`).join('');
-  $('incident-list').innerHTML = result.items.length ? `<table><thead><tr><th>Incident</th><th>Source</th><th>Status</th><th>Updated</th><th></th></tr></thead><tbody>${result.items.map(row => `<tr><td><a href="#incident/${row.id}"><strong>${escapeHtml(row.name)}</strong></a><small>${escapeHtml(row.line_id || 'Line pending')} · Revision ${row.number}</small></td><td>${escapeHtml(row.source)}</td><td>${badge(row.state)}</td><td>${date(row.updated)}</td><td><a href="#incident/${row.id}" aria-label="Open ${escapeHtml(row.name)}">View →</a></td></tr>`).join('')}</tbody></table>` : `<div class="empty"><strong>${total?'No matching incidents':'Your workspace is ready'}</strong>${total?'Try another name or status filter.':'Upload your first set of relay records, or connect a collector to get started.'}</div>`;
+  $('incident-list').innerHTML = result.items.length ? `<table><thead><tr><th>Incident</th><th>Source</th><th>Status</th><th>Updated</th><th></th></tr></thead><tbody>${result.items.map(row => `<tr><td><a href="#incident/${row.id}/${row.number}/${requestedPortalTask}"><strong>${escapeHtml(row.name)}</strong></a><small>Revision ${row.number}</small></td><td>${escapeHtml(row.source)}</td><td>${badge(row.state)}</td><td>${date(row.updated)}</td><td><a href="#incident/${row.id}/${row.number}/${requestedPortalTask}" aria-label="Open ${escapeHtml(row.name)}">Open →</a></td></tr>`).join('')}</tbody></table>` : `<div class="empty"><strong>${total?'No matching incidents':'Your workspace is ready'}</strong>${total?'Try another name or status filter.':'Upload the relay records for one incident to start.'}</div>`;
   $('prev').disabled = page === 0;
   $('next').disabled = result.items.length < 20;
   $('page-label').textContent = `Page ${page+1}`;
@@ -103,35 +103,36 @@ async function detail(id, revision = '', generation=routeGeneration) {
   await loadStageReviewSource(row);
   if(generation!==routeGeneration)return;
   const result = row.result;
-  let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${escapeHtml(row.source)} intake · ${date(row.created)} · ${row.files.length} files</p></div><div class="detail-actions"><a class="button" href="#upload/${id}">＋ Attach late records</a>${result?.report_path?`<a class="button primary" href="/api/incidents/${id}/report?revision=${row.number}&download=true">Download report</a>`:''}</div></div>`;
+  let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${date(row.created)} · ${row.files.length} files · originals retained</p></div><div class="detail-actions"><a class="button" href="#upload/${id}">＋ Add records</a></div></div>`;
   if (row.error) body += `<div class="hint">${escapeHtml(row.error)}</div>`;
   if (['queued','running'].includes(row.state)) body += '<div class="panel busy"><span class="spinner"></span><h2>Processing this incident</h2><p>You can leave this page. The job and its results stay in the workspace.</p></div>';
   body += inspectionPanel(row);
-  body += '<details class="panel detail-section incident-more"><summary>More tools · operational study, saved report and history</summary><p class="field-help">Use these tools when you need reviewed physical assignments, the stored incident report or original evidence. Source waveforms and the simple report are available above.</p>';
+  body += '<details class="panel detail-section incident-more"><summary>Engineering evidence and optional calculations</summary><p class="field-help">Review method-specific assignments and supporting evidence here when a calculation needs them. The incident report is in Report above.</p>';
   if (row.state==='needs_review') body += `<details class="panel detail-section"><summary>Optional operational study · assignments and input review</summary><p>Independent source analysis and reports are available above. Use this section for an operational study with its additional method inputs.</p>${assignmentForm(row)}</details>`;
   if (row.state==='failed') body += '<div class="panel detail-section"><h2>Processing could not finish</h2><p>The files are retained. Review the error above, then retry the job.</p><button id="retry-job" class="button">Retry processing</button></div>';
   if (result) {
     body += navigationPanel(result);
     body += relayEvidencePanel(result);
     body += stageLocationsPanel(result.stage_locations);
-    body += standardsAuditsPanel(result);
     const operationReview = result.operation_comparisons?.some(p => p.status === 'review differences');
     if (operationReview) body += '<div class="hint"><h2>Review relay differences</h2><p>Records contain different fault or operation observations. The selected-record rule assessment below does not resolve these differences.</p></div>';
     body += `<div class="panel result-banner"><span class="icon-box">${result.verdict === 'Correct operation' && !operationReview ? '✓' : '!'}</span><div><div class="eyebrow">SELECTED-RECORD RULE FINDINGS</div><h2>${escapeHtml(result.verdict)}</h2><p>${escapeHtml(result.location_text)}</p><p class="field-help">Line parameters: ${escapeHtml(result.parameter_status)}. Review all data-quality caveats in the report. Protection compliance is not assessed by this rule summary.</p></div></div>`;
     if (result.excluded?.length) body += `<details class="panel detail-section"><summary>Records not driving the estimate (${result.excluded.length})</summary><ul>${result.excluded.map(v=>`<li class="field-help">${escapeHtml(v)}</li>`).join('')}</ul></details>`;
-    if (result.report_path) body += `<div class="panel"><div class="panel-heading"><h2>Incident report</h2><a href="/api/incidents/${id}/report?revision=${row.number}" target="_blank" rel="noopener">Open full report ↗</a></div><iframe class="report-frame" title="Incident analysis report" sandbox="allow-same-origin" src="/api/incidents/${id}/report?revision=${row.number}"></iframe></div>`;
+    if (result.report_path) body += `<p><a href="/api/incidents/${id}/report?revision=${row.number}&download=true">Download legacy technical evidence HTML</a></p>`;
   }
+  body += '</details><details class="panel detail-section incident-history"><summary>Revision history and original files</summary>';
   body += `<details class="panel detail-section"><summary>Original file inventory (${row.files.length})</summary><table class="inventory"><tbody>${row.files.map(f=>`<tr><td>${escapeHtml(f.name)}</td><td>${size(f.size)}</td><td><code>${f.sha256.slice(0,16)}…</code></td></tr>`).join('')}</tbody></table></details>`;
   body += `<div class="bottom-grid"><div class="panel detail-section"><h2>Report revisions</h2><ul class="activity">${row.revisions.map(r=>`<li><a href="#incident/${id}/${r.number}">Revision ${r.number}</a> ${badge(r.state)}<small>${date(r.created)}</small></li>`).join('')}</ul></div><div class="panel detail-section"><h2>Activity</h2><ul class="activity">${row.activity.map(a=>`<li>${escapeHtml(a.message)}<small>${date(a.at)} · Revision ${a.revision}</small></li>`).join('')}</ul></div></div>`;
   body += '</details>';
   $('detail-content').innerHTML=body;
+  const inspectionHost=$('inspection-workspace');if(inspectionHost)inspectionHost.dataset.requestedTask=(location.hash.split('/')[3]||requestedPortalTask);
   mountInspection(row);
   document.querySelectorAll('[data-review-record-inputs]').forEach(button=>button.onclick=()=>DRInputGuidance.openInputs(button.dataset.reviewRecordInputs));
   if (result) bindNavigation(row);
   if (['completed','attention','failed'].includes(row.state)) {
     const button=document.createElement('button');
     button.className='button';button.textContent='Review & rerun';
-    document.querySelector('.detail-actions').append(button);
+    document.querySelector('.incident-more').append(button);
     button.onclick=async()=>{
       try{await api(`/api/incidents/${id}/reanalyse?revision=${row.number}`,{method:'POST'});location.hash=`incident/${id}`;await detail(id);}
       catch(error){notice(error.message);}
@@ -195,15 +196,27 @@ async function integrations() {
   $('token-path').textContent=`${config.data_directory}/api-token.txt`;
   $('receipts').innerHTML=result.receipts.length?`<table><thead><tr><th>Source item</th><th>Receipt</th><th>Details</th><th>Updated</th></tr></thead><tbody>${result.receipts.map(r=>`<tr><td>${escapeHtml(r.path)}</td><td>${escapeHtml(r.state)}</td><td>${escapeHtml(r.message)}</td><td>${date(r.updated)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty"><strong>No collector deliveries yet</strong>Place a completed event and its ready marker in the inbox to start.</div>';
 }
+function setPortalTask(task,row) {
+  requestedPortalTask=task==='analyse'?'waveforms':task;
+  const label={waveforms:'Analyse',compare:'Compare',report:'Report'}[requestedPortalTask]||'Analyse';
+  $('breadcrumb').textContent='Incident / '+label;
+  for(const link of document.querySelectorAll('[data-nav]')){
+    const target=link.dataset.nav==='analyse'?'waveforms':link.dataset.nav;
+    link.classList.toggle('active',target===requestedPortalTask);
+    if(['waveforms','compare','report'].includes(target))link.href='#incident/'+row.incident_id+'/'+row.number+'/'+target;
+  }
+  history.replaceState(null,'','#incident/'+row.incident_id+'/'+row.number+'/'+requestedPortalTask);
+}
 async function route() {
   if (!config) return;
   const generation=++routeGeneration;inspectionController?.abort();
   notice(); current=null;
-  const [view,id,revision]=(location.hash.slice(1)||'overview').split('/');
+  const [view,id,revision,task]=(location.hash.slice(1)||'overview').split('/');
+  requestedPortalTask=view==='incident'?(task||'waveforms'):['compare','report'].includes(view)?view:'waveforms';
   const name=view==='incident'?'detail':['overview','upload','integrations','catalogue'].includes(view)?view:'overview';
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==name);
-  document.querySelectorAll('[data-nav]').forEach(v=>v.classList.toggle('active',v.dataset.nav===(name==='detail'?'overview':name)));
-  $('breadcrumb').textContent=`Workspace / ${name==='detail'?'Incident':name[0].toUpperCase()+name.slice(1)}`;
+  document.querySelectorAll('[data-nav]').forEach(v=>{v.classList.toggle('active',v.dataset.nav===(name==='upload'?'upload':requestedPortalTask==='waveforms'?'analyse':requestedPortalTask));if(name!=='detail')v.href='#'+v.dataset.nav;});
+  $('breadcrumb').textContent=name==='overview'?'Choose an incident / '+({waveforms:'Analyse',compare:'Compare',report:'Report'}[requestedPortalTask]):`Workspace / ${name==='detail'?'Incident':name[0].toUpperCase()+name.slice(1)}`;
   try {
     if(name==='overview') await overview();
     if(name==='upload') await uploadView(id);
@@ -228,13 +241,14 @@ $('state-filter').onchange=()=>{page=0;overview().catch(e=>notice(e.message));};
 $('prev').onclick=()=>{page=Math.max(0,page-1);overview().catch(e=>notice(e.message));};
 $('next').onclick=()=>{page++;overview().catch(e=>notice(e.message));};
 $('scan-inbox').onclick=async()=>{try{await api('/api/integrations/scan',{method:'POST'});await integrations();}catch(e){notice(e.message);}};
+document.querySelectorAll('[data-nav]').forEach(link=>link.addEventListener('click',event=>{const task=link.dataset.nav==='analyse'?'waveforms':link.dataset.nav,tab=current&&document.querySelector(`[data-workspace-tab="${task}"]`);if(tab){event.preventDefault();tab.click();}}));
 window.addEventListener('hashchange',route);
 setInterval(async()=>{
   if(polling||!config||document.hidden) return;
   polling=true;
   try{
     const [view,id,revision]=(location.hash.slice(1)||'overview').split('/');
-    if(view==='overview') await overview();
+    if(['overview','analyse','compare','report'].includes(view)) await overview();
     else if(view==='incident' && current && ['queued','running'].includes(current.state)) await detail(id,revision);
     else if(view==='integrations') await integrations();
   }catch(e){notice(e.message);}finally{polling=false;}

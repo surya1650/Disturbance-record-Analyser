@@ -1,88 +1,97 @@
 'use strict';
 const DROperatorWorkspace=(()=>{
   const preferences=new Map();
-  const tabs=[['waveforms','Waveforms','Inspect analog and digital observations. Move a cursor for exact values; no line model is required.'],['report','Simple report','Read selected pre-fault, fault and post-fault values, distance availability and recorded indications.'],['inputs','Inputs & help','Choose only the inputs needed for the feature you want. Apply changed choices to update the report.'],['compare','Compare recordings','Compare the same quantities side by side. Visual comparison does not confirm common events or clocks.'],['evidence','Technical evidence','Inspect method availability, supported windows and source-quality evidence when you need detail.']];
+  const tabs=[['waveforms','Analyse','Inspect the waveforms, move cursors for exact values, and review RMS values and vectors.'],['compare','Compare','Choose another recording to compare the recorded quantities side by side. This step is optional.'],['report','Report','Generate a short incident report with the findings, supporting observations and any missing information.']];
   function mount(section,{traces,row,data,signal,workbench}){
     const root=document.createElement('div');root.className='operator-workspace';
     const key=row.incident_id+'/'+row.number,prefix='operator-'+String(row.incident_id).replace(/[^a-zA-Z0-9]/g,'')+'-'+row.number;
-    root.innerHTML=`<div class="operator-tabs" role="tablist" aria-label="Recording tasks">${tabs.map(([id,title])=>`<button type="button" role="tab" id="${prefix}-${id}-tab" aria-controls="${prefix}-${id}" data-workspace-tab="${id}">${title}</button>`).join('')}</div>`+tabs.map(([id,title,help])=>`<section role="tabpanel" tabindex="0" id="${prefix}-${id}" aria-labelledby="${prefix}-${id}-tab" data-workspace-pane="${id}" hidden><div class="operator-task-heading"><h2>${title}</h2><p>${help}</p></div><div data-workspace-content="${id}"></div></section>`).join('');
-    root.insertAdjacentHTML('afterbegin',DRInputGuidance.workflowMarkup(row,data));
+    root.innerHTML=DRInputGuidance.workflowMarkup(row,data)+`<div class="operator-tabs" role="tablist" aria-label="Incident tasks">${tabs.map(([id,title])=>`<button type="button" role="tab" id="${prefix}-${id}-tab" aria-controls="${prefix}-${id}" data-workspace-tab="${id}">${title}</button>`).join('')}</div>`+tabs.map(([id,title,help])=>`<section role="tabpanel" tabindex="0" id="${prefix}-${id}" aria-labelledby="${prefix}-${id}-tab" data-workspace-pane="${id}" hidden><div class="operator-task-heading"><h2>${title}</h2><p>${help}</p></div><div data-workspace-content="${id}"></div></section>`).join('');
     section.append(root);
     const content=id=>root.querySelector(`[data-workspace-content="${id}"]`);
     const record=(row.bundle?.files||[]).find(f=>f.name===data.file)||{};
     const noticePanel=document.createElement('div');noticePanel.innerHTML=DRInputGuidance.markup(record);content('waveforms').append(noticePanel);
     if(traces)content('waveforms').append(traces);
-    const reviewInputs=document.createElement('div');reviewInputs.innerHTML=instrumentReviewEditor(row,data.file);content('inputs').append(reviewInputs);
+    const inputs=document.createElement('details');inputs.className='operator-inputs';inputs.innerHTML='<summary>Review analysis inputs if needed</summary><p class="field-help">Waveforms and an observation report do not need a line model. Change a meaning or supply an actual instrument rating only when the affected finding needs it.</p>';
+    const reviewInputs=document.createElement('div');reviewInputs.innerHTML=instrumentReviewEditor(row,data.file);inputs.append(reviewInputs);
     bindInstrumentReview(row,reviewInputs,{signal,onSuccess:async(updated,result)=>{
       history.replaceState(null,'','#incident/'+row.incident_id);await detail(row.incident_id);
       const select=document.getElementById('inspection-record');if(select&&[...select.options].some(o=>o.value===result.reviewed_record)){select.value=result.reviewed_record;select.dispatchEvent(new Event('change'));}
-      notice('Reviewed CFG copy created in revision '+updated.number+'. Original files are preserved; inspect the rechecked copy before operational assignment.');
+      notice('Reviewed copy created in revision '+updated.number+'. Original files are preserved.');
     }});
-    const guide=document.createElement('section');guide.className='operator-feature-guide';content('inputs').append(guide);
+    const technical=document.createElement('details');technical.className='operator-source-details';technical.innerHTML='<summary>Supporting measurements and technical exports</summary><p class="field-help">Detailed source fits and method evidence are available here when a finding needs closer review.</p>';
     const original=[...section.children].filter(el=>el!==root);
     for(const el of original){
       if(el.matches('.source-job-status')){root.insertBefore(el,root.querySelector('[role=tabpanel]'));continue;}
-      const destination=el.matches('.source-report-tools,.source-condition-tools,.source-condition-summary')?'report':el.matches('.source-line-summary,.source-technical,.source-evidence')?'evidence':el.matches('.source-compare')?'compare':'inputs';
-      content(destination).append(el);
+      if(el.matches('.source-compare')){content('compare').append(el);continue;}
+      if(el.matches('.source-line-summary,.source-technical,.source-evidence,.source-report-tools,.source-condition-tools,.source-condition-summary')){technical.append(el);continue;}
+      if(el.matches('h2,p')){el.remove();continue;}
+      inputs.append(el);
+    }
+    const run=inputs.querySelector('.source-run');
+    if(run){run.classList.add('operator-primary-action');run.textContent='Update analysis';run.setAttribute('type','button');content('waveforms').append(run);}
+    content('waveforms').append(inputs,technical);
+    const guide=document.createElement('section');guide.className='operator-feature-guide';
+    const help=document.createElement('details');help.innerHTML='<summary>Help for the current analysis</summary>';help.append(guide);inputs.append(help);
+    if(typeof DRFaultCalculation!=='undefined'){
+      const calculation=document.createElement('section');calculation.innerHTML=DRFaultCalculation.panel(row,config);inputs.append(calculation);
+      DRFaultCalculation.bind(row,calculation,signal,{onQueued:async()=>detail(row.incident_id)});
     }
     if(typeof DREventStudy!=='undefined'){
-      const sourceDetails=document.createElement('details');sourceDetails.className='operator-source-details';
-      sourceDetails.innerHTML='<summary>Selected-record fit measurements and exports</summary>';
-      for(const el of [...content('report').children])sourceDetails.append(el);
-      content('evidence').append(sourceDetails);
-      const eventHost=document.createElement('div');eventHost.innerHTML=DREventStudy.panel(row);content('report').append(eventHost);
-      const eventStudy=DREventStudy.bind(row,eventHost,signal,{sourceChoices(record){
-        const chosen=sourceAnalysisPreferences.get(row.incident_id+'/'+row.number+'/'+record);
+      const refinement=document.createElement('details');refinement.className='operator-region-help';refinement.innerHTML='<summary>Advanced: source timings and opposite-end study</summary><p>Saved, source-matched time ranges are reused by Generate report. This optional engineering study has its own opposite-end and same-event checks. Use the Report tab for the four-page summary.</p>';
+      const eventHost=document.createElement('div');eventHost.innerHTML=DREventStudy.panel(row);refinement.append(eventHost);inputs.append(refinement);
+      const eventStudy=DREventStudy.bind(row,eventHost,signal,{sourceChoices(file){
+        const chosen=sourceAnalysisPreferences.get(row.incident_id+'/'+row.number+'/'+file);
         return chosen&&(Object.keys(chosen.mappings||{}).length||Object.keys(chosen.asserted_states||{}).length)?{mappings:chosen.mappings||{},asserted_states:chosen.asserted_states||{}}:undefined;
       }});
       eventHost.addEventListener('event-study-request-region',event=>{
-        const {record,kind}=event.detail||{},pins=workbench?.getPins();
-        if(record!==data.file||!pins){notice('Select '+String(record||'the requested recording')+' in Waveforms, place cursors A and B, then return here to apply that interval.');return;}
+        const {record:file,kind}=event.detail||{},pins=workbench?.getPins();
+        if(file!==data.file||!pins){notice('Select '+String(file||'the requested recording')+' in Analyse, place cursors A and B, then apply the interval.');return;}
         const lo=Math.min(pins.A,pins.B),hi=Math.max(pins.A,pins.B)+1;
-        if(eventStudy.applyRegion(record,[lo,hi],kind))notice('Applied samples '+lo+'–'+(hi-1)+' inclusive to the '+kind+' interval. Build the event report to update it.');
+        if(eventStudy.applyRegion(file,[lo,hi],kind))notice('Applied samples '+lo+'–'+(hi-1)+' inclusive. Generate the report to update it.');
       },{signal});
     }
-    if(typeof DRFaultCalculation!=='undefined'){
-      const calculation=document.createElement('section');calculation.className='panel';calculation.innerHTML=DRFaultCalculation.panel(row,config);content('report').insertBefore(calculation,content('report').firstChild);
-      DRFaultCalculation.bind(row,calculation,signal,{onQueued:async()=>detail(row.incident_id)});
-    }
-    if(!content('compare').children.length)content('compare').innerHTML='<p class="operator-empty">Attach another recording to this incident to compare channels. Keep matching CFG/DAT files together in distinct folders.</p>';
-    const end=document.createElement('div');end.className='operator-next-actions';end.innerHTML='<button type="button" data-go-feature="inputs">Review inputs & explanations →</button><button type="button" data-go-feature="report">Read simple report →</button>';content('waveforms').append(end);
-    const reportHelp=document.createElement('details');reportHelp.className='operator-region-help';reportHelp.innerHTML='<summary>Optional: refine automatic event timings</summary><p>Simple report suggests source-local timings from supported changes and recorded indications. Review its timing evidence first. If refinement is needed, select Manual adjustment, place waveform A and B around the interval, then use the matching interval button. Both selected samples are included; at least one complete nominal cycle must fit inside each reported region. Moving cursors does not change an already built report.</p>';content('report').insertBefore(reportHelp,content('report').firstChild);
-    const back=document.createElement('button');back.type='button';back.dataset.goFeature='waveforms';back.textContent='Open waveforms to refine A–B';reportHelp.append(back);
+    if(!content('compare').children.length)content('compare').innerHTML='<div class="operator-empty"><h3>One recording is available</h3><p>You can analyse it and generate a report now. Add another capture to compare recorded quantities.</p><a href="#upload/'+encodeURIComponent(row.incident_id)+'">Attach another recording →</a></div>';
+    const reportHost=document.createElement('div');content('report').append(reportHost);
+    const report=typeof DRIncidentReport!=='undefined'?DRIncidentReport.mount(reportHost,row,{signal}):null;
+    if(!report)reportHost.textContent='The report view is unavailable. Reload the application to load it.';
+    const end=document.createElement('div');end.className='operator-next-actions';end.innerHTML='<button type="button" data-go-feature="compare">Compare recordings →</button><button type="button" data-go-feature="report">Generate report →</button>';content('waveforms').append(end);
     function select(id,focus=false){
+      const openInputs=id==='inputs',openTechnical=id==='evidence';
+      if(openInputs||openTechnical||id==='analyse')id='waveforms';
       if(!tabs.some(t=>t[0]===id))id='waveforms';
       preferences.set(key,id);if(preferences.size>12)preferences.delete(preferences.keys().next().value);
       for(const button of root.querySelectorAll('[role=tab]')){const active=button.dataset.workspaceTab===id;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;}
       for(const pane of root.querySelectorAll('[role=tabpanel]'))pane.hidden=pane.dataset.workspacePane!==id;
+      for(const step of root.querySelectorAll('.operator-workflow [data-go-feature]')){if(step.dataset.goFeature===id)step.setAttribute('aria-current','step');else step.removeAttribute('aria-current');}
+      if(openInputs)inputs.open=true;if(openTechnical)technical.open=true;
+      if(typeof setPortalTask==='function')setPortalTask(id,row);
+      if(id==='report')report?.activate();
       if(focus)root.querySelector(`[data-workspace-tab="${id}"]`).focus();
     }
-    root.addEventListener('click',e=>{
-      const tab=e.target.closest('[data-workspace-tab]');if(tab){select(tab.dataset.workspaceTab);return;}
-      const go=e.target.closest('[data-go-feature]');if(!go)return;
+    root.addEventListener('click',event=>{
+      const tab=event.target.closest('[data-workspace-tab]');if(tab){select(tab.dataset.workspaceTab);return;}
+      const go=event.target.closest('[data-go-feature]');if(!go)return;
       if(go.dataset.goFeature==='study'){
-        const more=document.querySelector('.incident-more');if(more){more.open=true;const study=more.querySelector('details');if(study)study.open=true;more.scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}return;
+        const more=document.querySelector('.incident-more');if(more){more.open=true;const study=more.querySelector('details');if(study)study.open=true;more.scrollIntoView({block:'start'});}return;
       }
       select(go.dataset.goFeature,true);
-      if(go.closest('[data-guide-feature]')?.dataset.guideFeature==='projection'){const line=section.querySelector('.source-line-inputs');if(line){line.open=true;line.scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});line.querySelector('select')?.focus({preventScroll:true});}}
-    });
-    root.querySelector('[role=tablist]').addEventListener('keydown',e=>{
-      const button=e.target.closest('[role=tab]');if(!button||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;
-      e.preventDefault();const current=tabs.findIndex(t=>t[0]===button.dataset.workspaceTab),index=e.key==='Home'?0:e.key==='End'?tabs.length-1:(current+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;select(tabs[index][0],true);
-    });
+      if(go.dataset.goFeature==='inputs')inputs.scrollIntoView({block:'start'});
+      if(go.closest('[data-guide-feature]')?.dataset.guideFeature==='projection'){const line=section.querySelector('.source-line-inputs');if(line){line.open=true;line.scrollIntoView({block:'start'});line.querySelector('select')?.focus({preventScroll:true});}}
+    },{signal});
+    root.querySelector('[role=tablist]').addEventListener('keydown',event=>{
+      const button=event.target.closest('[role=tab]');if(!button||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+      event.preventDefault();const current=tabs.findIndex(t=>t[0]===button.dataset.workspaceTab),index=event.key==='Home'?0:event.key==='End'?tabs.length-1:(current+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;select(tabs[index][0],true);
+    },{signal});
     function update(result){
       const chosenLoop=section.querySelector('.source-fault-loop')?.value;
       guide.innerHTML=DRFeatureGuide.markup({hasSamples:data.sample_count>0,hasSecondRecord:(row.bundle?.files||[]).filter(f=>f.kind==='comtrade').length>1,hasAnalogSamples:data.channels.some(c=>c.kind==='analog'),hasSourceTimes:Array.isArray(data.time_range_s)&&data.time_range_s.length===2&&data.time_range_s.every(Number.isFinite)&&data.time_range_s[1]>data.time_range_s[0],hasNominalFrequency:Number.isFinite(data.nominal_frequency_hz)&&data.nominal_frequency_hz>=40&&data.nominal_frequency_hz<=70,analysisReady:Boolean(result),hasSupportedFits:(result?.fit_coverage?.model_consistent||0)>0,hasRegions:Boolean(result?.operator_conditions?.selection),hasLine:Boolean(result?.snapshot?.line?.length_km>0),hasLoop:Boolean(chosenLoop),faultLoop:chosenLoop,hasWindow:Number.isInteger(result?.options?.projection_window),hasOperationalResult:Boolean(row.result)});
-      const run=section.querySelector('.source-run');if(run){run.classList.add('operator-primary-action');run.textContent='Apply inputs & update report';}
-      const report=section.querySelector('.source-condition-summary');if(!result&&report&&!report.innerHTML)report.innerHTML='<div class="operator-empty"><h3>Report waiting for analysis</h3><p>Read the analysis status above. Exact waveform inspection remains available. Open Inputs & help to review changed or missing inputs; unavailable calculations keep their explanation.</p></div>';
     }
-    const inputHeading=content('inputs').querySelector('h2');if(inputHeading)inputHeading.textContent='Analysis input choices';
-    const apply=section.querySelector('.source-use-region');if(apply)apply.setAttribute('aria-label','Apply A–B as the fault interval');
-    const scalingHelp=document.createElement('p');scalingHelp.className='field-help';scalingHelp.textContent='Voltage-level choice is optional. Leave it unspecified for raw inspection. The 132 kV and 220 kV options apply assumption-labelled missing CT defaults of 600/1 and 800/1 only to otherwise-known secondary-current channels. Valid supplied ratios remain; this does not verify CT/VT wiring.';
+    const scalingHelp=document.createElement('p');scalingHelp.className='field-help';scalingHelp.textContent='Leave the voltage-level choice unspecified to retain unresolved ratios. The optional 132/220 kV choices apply labelled missing-CT assumptions only to otherwise-known secondary-current channels; actual supplied ratios remain unchanged.';
     section.querySelector('.source-voltage')?.closest('.inspection-toolbar')?.after(scalingHelp);
-    const inspectionHost=document.getElementById('inspection-workspace'),requested=inspectionHost?.dataset.requestedRecord===data.file?inspectionHost.dataset.requestedTask:null;
+    const inspectionHost=document.getElementById('inspection-workspace'),requested=inspectionHost?.dataset.requestedTask;
     select(requested||preferences.get(key)||'waveforms');if(requested){delete inspectionHost.dataset.requestedRecord;delete inspectionHost.dataset.requestedTask;}update(null);
     return {select,update};
   }
-  return {mount};
+  return {mount,tasks:()=>tabs.map(([id,title])=>({id,title}))};
 })();
+if(typeof module!=='undefined')module.exports=DROperatorWorkspace;
