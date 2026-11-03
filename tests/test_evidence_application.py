@@ -161,7 +161,7 @@ def test_different_relay_observations_are_warned_above_selected_record_verdict(e
     result = client.get(f'/api/incidents/{identity}').json()['result']
     assert result['operation_comparisons'][0]['status'] == 'review differences'
     html = client.get(f'/api/incidents/{identity}/report').text
-    assert html.index('Review relay differences') < html.index('Selected-record rule assessment')
+    assert html.index('Review relay differences') < html.index('Selected-record rule findings')
 
 
 def test_corroborating_analysis_failure_keeps_actual_reason(environment, monkeypatch):
