@@ -72,3 +72,9 @@ P1 milestone: source-bound model complete. Frozen471line adapter reuses existing
 source parsing, one-cycle RMS, operational evidence and location eligibility. No
 DSP/estimator/region policy changed. Stage-A10000PASS (33.8s, cleanp95 .4361%,
 zero impossible distances without caveat). Final model+renderer30PASS.
+
+P2 implementation milestone: self-contained four-sheet A4 renderer frozen,
+including source-local SVG gaps, explicit units, separate RMS bases and native
+Print/Save PDF. Final model+renderer30PASS; HTML escaping and raw-count/zero
+preservation covered.13-case final physical PDF sweep is still in P4 progress;
+prior BC/BG footer overlap was corrected, not accepted as a passing layout.

@@ -129,7 +129,8 @@
     "src/dranalyser/report/static_rx.py": 79,
     "src/dranalyser/report/zone_comparison.py": 258,
     "src/dranalyser/report/zone_comparison_view.py": 49,
-    "src/dranalyser/workbench/incident_report.py": 471
+    "src/dranalyser/workbench/incident_report.py": 471,
+    "src/dranalyser/report/incident_summary.py": 314
   },
   "exceptions": {}
 }
