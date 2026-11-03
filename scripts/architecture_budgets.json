@@ -126,7 +126,8 @@
     "src/dranalyser/report/source_analysis.py": 32,
     "scripts/analyse_source_record.py": 42,
     "scripts/nonuniform_validation.py": 119,
-    "src/dranalyser/report/static_rx.py": 74
+    "src/dranalyser/report/static_rx.py": 74,
+    "src/dranalyser/report/zone_comparison.py": 255
   },
   "exceptions": {}
 }
