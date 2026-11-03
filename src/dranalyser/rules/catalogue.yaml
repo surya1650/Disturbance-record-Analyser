@@ -5,8 +5,9 @@
 # walker (see engine.py), so this file cannot execute code.
 #
 # severity:  info | investigate | critical
-#            critical  -> verdict "Incorrect operation"
-#            investigate -> verdict "Correct but investigate"
+#            critical  -> "Critical findings require review"
+#            investigate -> "Findings require review"
+#            no adverse finding is not proof of correct protection operation.
 #
 # requires:  features that MUST be present and true for the rule to be judged
 #            at all. If any is missing the rule is reported NOT EVALUABLE with
@@ -15,6 +16,8 @@
 #
 # needs_location: true means the rule is skipped when no fault location was
 #            produced, rather than evaluating against a missing distance.
+# unavailable_reason: an explicit unsupported evidence contract. The rule is
+#            reported NOT EVALUABLE; its condition is not evaluated.
 #
 # Times are milliseconds from fault inception at that terminal. S_ and R_
 # prefixes are the two line ends.
@@ -72,15 +75,17 @@
 # Breaker performance
 # ===========================================================================
 - id: CB-01
-  title: Breaker operating time out of specification
+  title: Trip-to-current-zero interval exceeds project timing screen
   severity: investigate
   when: "S_breaker_ms > 60 or R_breaker_ms > 60"
   message: >-
-    Trip contact to current zero measured {S_breaker_ms:.0f} ms at end S and
-    {R_breaker_ms:.0f} ms at end R, against a typical 40-50 ms specification.
+    Trip indication to inferred current zero measured {S_breaker_ms:.0f} ms at
+    end S and {R_breaker_ms:.0f} ms at end R, exceeding the project's 60 ms
+    screening threshold. This is not a comparison with the breaker's actual
+    specification or proof of physical pole opening.
   action: >-
-    Feed the measured time to breaker maintenance. This is an objective
-    measurement of the operating mechanism under real fault duty.
+    Review the signal meanings, analog interruption support and applicable
+    breaker specification before judging the operating mechanism.
   evidence: [S_breaker_ms, R_breaker_ms, S_trip_ms, S_open_ms]
 
 - id: CB-02
@@ -109,48 +114,54 @@
   evidence: [S_restrike, R_restrike, S_open_ms]
 
 - id: CB-04
-  title: Fault not cleared within backup time
+  title: Inferred clearing interval exceeds project timing screen
   severity: critical
   when: "slowest_clear_ms > 500"
   message: >-
-    The fault was on the system for {slowest_clear_ms:.0f} ms. That is beyond
-    normal backup clearance.
-  action: Check for breaker failure operation and review the whole clearing chain.
+    The inferred fault-to-current-zero interval was {slowest_clear_ms:.0f} ms,
+    exceeding the project's 500 ms screening threshold. This is not a comparison
+    with actual backup settings or proof of physical breaker failure.
+  action: Review the timing evidence, actual backup settings and whole clearing chain.
   evidence: [S_clear_ms, R_clear_ms]
 
 # ===========================================================================
 # Auto-reclose
 # ===========================================================================
 - id: AR-02
-  title: Auto-reclose dead time away from setting
+  title: Open-to-close-indication interval outside project timing screen
   severity: investigate
   when: "S_dead_time_ms > 1200 or (defined(S_dead_time_ms) and S_dead_time_ms < 200)"
-  message: Measured auto-reclose dead time was {S_dead_time_ms:.0f} ms.
-  action: Compare against the configured dead time and the scheme design.
+  message: >-
+    The inferred open-to-close-indication interval was {S_dead_time_ms:.0f} ms,
+    outside the project's 200 to 1200 ms screening band. This is not a comparison
+    with actual auto-reclose settings or proof of successful physical reclosure.
+  action: Review opening support, close-command meaning, actual dead time and scheme design.
   evidence: [S_dead_time_ms, S_open_ms, S_ar_close_ms]
 
 - id: AR-03
-  title: Auto-reclose locked out
+  title: Auto-reclose lockout or definitive-trip indication
   severity: investigate
   when: "S_ar_lockout or R_ar_lockout or S_definitive_trip or R_definitive_trip"
   message: >-
-    Auto-reclose went to lockout or a definitive three-phase trip was issued.
-    The line stayed out.
+    A lockout or definitive-trip indication was recorded. This does not establish
+    physical pole state, successful reclosure or whether the line remained out.
   action: >-
     Confirm the line was patrolled before re-energising, and record the cause
     against this incident.
   evidence: [S_ar_lockout, S_definitive_trip, S_lockout_86]
 
 - id: AR-04
-  title: Evolving fault during the reclose sequence
+  title: Definitive-trip and reclose-in-progress indications recorded
   severity: critical
   when: "(S_definitive_trip or R_definitive_trip) and (S_ar_in_progress or R_ar_in_progress)"
   message: >-
-    A single-pole trip was followed by a three-phase definitive trip while the
-    reclose was in progress. The fault did not clear or it evolved.
+    Definitive-trip and reclose-in-progress indications occurred in this capture.
+    Their presence alone does not establish the operation sequence, physical
+    reclosure, a permanent fault or fault evolution.
   action: >-
-    Treat as a permanent fault. Patrol before re-energising, and look for a
-    second phase involved at the same tower.
+    Review the source-local indication sequence, pole feedback and analog fault
+    evidence before concluding permanence or evolution; follow the site's
+    re-energisation procedure.
   evidence: [S_ar_in_progress, S_definitive_trip, S_lockout_86]
 
 # ===========================================================================
@@ -264,10 +275,13 @@
   title: Zone 1 operated beyond its reach
   severity: critical
   needs_location: true
-  when: "S_zone_operated == 'Z1_OR_AIDED' and not S_carrier_recv and m > 0.85"
+  unavailable_reason: >-
+    Actual applicable zone settings/reaches, fault-loop/compensation support and reviewed
+    scheme/carrier evidence are required. A generic line fraction cannot establish
+    Zone 1 overreach; this compliance assessment is not supported.
+  when: "False"
   message: >-
-    An unaided fast trip was issued for a fault computed at {m:.3f} per unit,
-    beyond a typical 80 percent Zone 1 reach.
+    Zone 1 reach compliance needs an applicable settings and scheme review.
   action: >-
     Check the Zone 1 reach setting, the k0 setting and the CT/VT ratios at that
     terminal. Zone 1 overreach trips for out-of-section faults.
@@ -277,10 +291,13 @@
   title: In-zone fault cleared in Zone 2 time
   severity: critical
   needs_location: true
-  when: "S_zone_operated == 'Z2' and m < 0.75"
+  unavailable_reason: >-
+    Actual applicable zone settings/reaches, fault-loop/compensation support and reviewed
+    scheme evidence are required. A recorded Zone 2 trip and line fraction alone
+    cannot establish Zone 1 underreach; this compliance assessment is not supported.
+  when: "False"
   message: >-
-    The fault was computed at {m:.3f} per unit, well inside Zone 1, but end S
-    cleared in Zone 2 time ({S_operate_ms:.0f} ms).
+    Zone 1 underreach compliance needs an applicable settings and scheme review.
   action: >-
     Suspect Zone 1 underreach or failed teleprotection. Cross-check CR-01 and
     the k0 setting; a VT that cannot pass zero sequence causes exactly this.
@@ -289,10 +306,14 @@
 - id: FL-03
   title: Computed zone disagrees with the zone that operated
   severity: investigate
-  when: "defined(S_zone_expected) and defined(S_zone_operated) and S_zone_expected != 'beyond_all_zones' and S_zone_operated == 'Z2' and S_zone_expected == 'Z1'"
+  unavailable_reason: >-
+    The associated settings export has unconfirmed event-time applicability, and
+    the legacy expected-zone projection lacks reviewed fault-loop/compensation
+    support. Review those settings and physical facts before judging a zone decision;
+    this compliance assessment is not supported.
+  when: "False"
   message: >-
-    The measured apparent impedance sits inside {S_zone_expected} but the relay
-    cleared in {S_zone_operated} time.
+    Zone-decision compliance needs an applicable settings and fault-loop review.
   action: >-
     Compare the relay settings against the measured impedance. This is the
     zone-decision cross-check and needs no line constants.
@@ -371,14 +392,14 @@
   evidence: [S_oc_stage_disabled, S_ef_stage_disabled, S_oc_setting_a, S_ef_setting_a]
 
 - id: BU-04
-  title: Backup picked up and correctly reset
+  title: Backup pickup without recorded backup-trip indication
   severity: info
   when: "S_backup_picked_up and not S_backup_operated"
   message: >-
-    A backup element picked up at {S_ef_pickup_ms:.0f} ms and reset without
-    tripping, because the distance protection cleared the fault first at
-    {S_open_ms:.0f} ms. Grading held.
-  action: No action. This is evidence that the backup grading is correct.
+    A backup pickup indication was recorded, with no mapped backup-trip assertion
+    observed in this capture. This does not establish reset, successful distance
+    clearing or correct grading; later operation may lie outside the capture.
+  action: Review pickup/reset/trip coverage and applicable settings before judging backup grading.
   evidence: [S_ef_pickup_ms, S_oc_pickup_ms, S_open_ms, S_trip_ms]
 
 - id: BU-05

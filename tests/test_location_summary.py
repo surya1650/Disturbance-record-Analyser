@@ -31,6 +31,9 @@ def test_synthetic_location_persists_engine_e5_with_exact_revision_sources(envir
     row = app.state.store.get(identity)
     assert row['state'] == 'completed', row['error']
     summary = row['result']['location_summary']
+    assert row['result']['rule_assessment_version'] == 2
+    assert row['result']['verdict'] not in ('Correct operation', 'Correct but investigate', 'Incorrect operation')
+    assert b'data-rule-assessment-version="2"' in client.get(f'/api/incidents/{identity}/report?revision=1').content
     assert summary['version'] == 1 and summary['status'] == 'accepted' and summary['accepted']
     assert summary['method'] == 'E5' and summary['mode'] == 'two-ended' and summary['fault_type'] == 'AG'
     assert summary['km_from_S'] == pytest.approx(41.988, abs=.001)

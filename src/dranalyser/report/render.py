@@ -24,7 +24,7 @@ from ..dsp.pipeline import Analysed
 from ..faultloc.ensemble import LocationResult
 from ..registry.model import Line
 from ..registry.settings import ProtectionSettings
-from ..rules.engine import RuleResult
+from ..rules.engine import RULE_ASSESSMENT_VERSION, RuleResult
 from ..rules.signals import map_signals
 from ..rules.evidence import relay_evidence, terminal_evidence
 from ..rules.operation_compare import compare_operations
@@ -37,6 +37,9 @@ VERDICT_CLASS = {
     "Correct operation": "ok",
     "Correct but investigate": "warn",
     "Incorrect operation": "bad",
+    "No adverse finding in available evidence": "warn",
+    "Findings require review": "warn",
+    "Critical findings require review": "bad",
 }
 
 # Signals worth a row on the digital timeline, in the order an engineer reads
@@ -259,6 +262,7 @@ def render(rep: IncidentReport) -> str:
     rep.html = tpl.render(
         r=rep, f=f, line=line, ends=ends, svg=svg, caveats=caveats,
         verdict=rep.rules.verdict, vclass=VERDICT_CLASS.get(rep.rules.verdict, "warn"),
+        rule_assessment_version=RULE_ASSESSMENT_VERSION,
         findings=rep.rules.top(3), all_findings=rep.rules.findings,
         skipped=rep.rules.skipped, loc=rep.location, fmt=_fmt,
         terminal_evidence=terminal_evidence(rep.relay_evidence),

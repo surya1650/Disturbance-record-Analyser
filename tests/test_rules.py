@@ -8,7 +8,7 @@ import os
 
 import pytest
 
-from dranalyser.rules.engine import (CATALOGUE, Rule, RuleError, apply_rules,
+from dranalyser.rules.engine import (Rule, RuleError, apply_rules,
                                      evaluate, load_rules)
 from dranalyser.rules.signals import infer_zone_operated, map_signals
 
@@ -71,7 +71,6 @@ def test_catalogue_loads_and_every_rule_parses():
 
 def test_every_catalogue_condition_evaluates_against_a_full_feature_set():
     """Guards against a rule referring to a feature that does not exist."""
-    from dranalyser.rules.features import incident_features
     from tests.helpers import synthetic_incident            # noqa: F401
 
     feats = synthetic_incident()
@@ -98,7 +97,7 @@ def test_missing_required_feature_is_reported_not_passed():
     assert not res.findings
     assert len(res.skipped) == 1
     assert "not a healthy result" in res.skipped[0].reason
-    assert res.verdict == "Correct operation"      # but the skip is visible
+    assert res.verdict == "No adverse finding in available evidence"      # absence is not a protection pass
 
 
 def test_location_rules_are_skipped_when_no_location_exists():
@@ -110,11 +109,12 @@ def test_location_rules_are_skipped_when_no_location_exists():
 
 
 def test_verdict_rolls_up_by_worst_severity():
-    mk = lambda i, s: Rule(id=i, title=i, severity=s, when="True", action="a")
-    assert apply_rules({}, [mk("A", "info")]).verdict == "Correct operation"
-    assert apply_rules({}, [mk("B", "investigate")]).verdict == "Correct but investigate"
+    def mk(i, s):
+        return Rule(id=i, title=i, severity=s, when="True", action="a")
+    assert apply_rules({}, [mk("A", "info")]).verdict == "No adverse finding in available evidence"
+    assert apply_rules({}, [mk("B", "investigate")]).verdict == "Findings require review"
     assert apply_rules({}, [mk("C", "critical"), mk("D", "info")]).verdict == \
-        "Incorrect operation"
+        "Critical findings require review"
 
 
 def test_message_renders_even_when_half_the_values_are_missing():
@@ -184,11 +184,11 @@ def test_carrier_rule_is_not_evaluable_on_a_relay_with_no_send_channel():
 
 
 @needs_corpus
-def test_main_1_verdict_is_incorrect_operation_because_of_the_vt():
+def test_main_1_vt_finding_requires_review_without_claiming_settings_compliance():
     from tests.helpers import real_incident
 
     res = apply_rules(real_incident(M1), load_rules())
-    assert res.verdict == "Incorrect operation"
+    assert res.verdict == "Critical findings require review"
     assert any(f.rule_id == "MS-04" for f in res.findings)
 
 
@@ -236,7 +236,7 @@ def test_backup_clearing_the_fault_is_a_critical_finding():
              "S_oc_setting_time_s": 0.8}
     res = apply_rules(feats, rules)
     assert any(f.rule_id == "BU-01" for f in res.findings)
-    assert res.verdict == "Incorrect operation"
+    assert res.verdict == "Critical findings require review"
 
 
 def test_backup_racing_the_distance_element_is_flagged():

@@ -33,7 +33,10 @@ from typing import Any, Dict, List, Optional, Sequence
 import yaml
 
 SEVERITIES = ("info", "investigate", "critical")
-VERDICTS = ("Correct operation", "Correct but investigate", "Incorrect operation")
+RULE_ASSESSMENT_VERSION = 2
+# A rule rollup describes the available evidence, not settings/scheme compliance.
+# Historical report strings stay stored verbatim; new revisions use these labels.
+VERDICTS = ("No adverse finding in available evidence", "Findings require review", "Critical findings require review")
 
 CATALOGUE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "catalogue.yaml")
 
@@ -138,7 +141,7 @@ class _Eval(ast.NodeVisitor):
 
     def visit_Compare(self, node):
         left = self.visit(node.left)
-        for op, comp in zip(node.ops, node.comparators):
+        for op, comp in zip(node.ops, node.comparators, strict=True):
             right = self.visit(comp)
             if isinstance(op, ast.Is):
                 ok = left is right
@@ -204,6 +207,7 @@ class Rule:
     evidence: List[str] = field(default_factory=list)
     needs_location: bool = False
     enabled: bool = True
+    unavailable_reason: str = ""
 
     def __post_init__(self):
         if self.severity not in SEVERITIES:
@@ -322,6 +326,9 @@ def apply_rules(features: Dict[str, Any], rules: Optional[Sequence[Rule]] = None
     res = RuleResult()
     for r in rules:
         if not r.enabled:
+            continue
+        if r.unavailable_reason:
+            res.skipped.append(NotEvaluable(r.id, r.title, r.title + " could not be judged: " + r.unavailable_reason))
             continue
         missing = [k for k in r.requires
                    if k not in features or features.get(k) in (None, False)]

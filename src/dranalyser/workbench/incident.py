@@ -21,7 +21,7 @@ from ..faultloc.ensemble import TerminalInput, locate
 from ..registry.loader import load_line
 from ..report import build, render, write
 from ..report.navigation import navigation_record
-from ..rules.engine import apply_rules, load_rules
+from ..rules.engine import RULE_ASSESSMENT_VERSION, apply_rules, load_rules
 from ..rules.features import incident_features
 from ..rules.evidence import relay_evidence, terminal_evidence
 from ..rules.operation_compare import compare_operations
@@ -41,6 +41,7 @@ class IncidentResult:
 
     incident_id: str = ""
     verdict: str = ""
+    rule_assessment_version: int = RULE_ASSESSMENT_VERSION
     report_path: str = ""
     location_text: str = "not computed - no line definition supplied"
     used: Dict[str, str] = field(default_factory=dict)      # end -> file name

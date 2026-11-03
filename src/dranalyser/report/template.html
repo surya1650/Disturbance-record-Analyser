@@ -79,12 +79,13 @@
   <div class="verdict warn"><div class="v">Review relay differences</div>
     <div class="s">Records contain different fault or operation observations. The selected-record rule assessment below does not resolve these differences.</div></div>
   {% endif %}
-  <div class="verdict {{ vclass }}">
-    <div class="s">Selected-record rule assessment</div>
+  <div class="verdict {{ vclass }}" data-rule-assessment-version="{{ rule_assessment_version }}">
+    <div class="s">Selected-record rule findings</div>
     <div class="v">{{ verdict }}</div>
     <div class="s">
       {% if findings %}{{ findings[0].message }}
       {% else %}No adverse finding. {{ skipped|length }} rule(s) could not be judged.{% endif %}
+      Protection compliance is not assessed by this rule summary.
     </div>
   </div>
 
