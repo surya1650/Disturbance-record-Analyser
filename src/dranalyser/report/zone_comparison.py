@@ -134,6 +134,9 @@ def _supports(an, out):
                          half_cycle=bool(ps.half_cycle))
     if rec.blocked() or an.saturation.detected or an.clipping:
         raise ValueError('Blocked acquisition, detected saturation or clipping withholds the boundary comparison.')
+    if not finite_number(rec.fs) or not finite_number(an.freq) or not 0 < an.freq < rec.fs/2:
+        raise ValueError('A positive finite model frequency strictly below the sampling Nyquist limit is required; '
+                         'frequency at or above half the sample rate is unsupported.')
     if (not finite_number(rec.fs) or rec.fs <= 0 or not finite_number(an.freq) or an.freq <= 0
             or ps.fs != rec.fs or ps.freq != an.freq or rec.nrates != 1 or rec.n < 2
             or len(ps.t) != rec.n or not np.array_equal(ps.t, rec.t)

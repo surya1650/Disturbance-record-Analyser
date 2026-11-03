@@ -294,3 +294,42 @@ def test_generated_fault_window_uses_supported_native_models_without_moving_loca
     after = locate(line, terms)
     assert before.ok and after.ok and before.method == after.method == 'E5'
     assert after.km_from_S == before.km_from_S
+
+
+def test_actual_aliased_source_passes_existing_pipeline_but_cannot_support_zone_comparison():
+    from dranalyser.comtrade.conformance import check
+    old, settings, binding, review = circuit('AB')
+    rec = old.record
+    rec.fs = 80.
+    rec.t = np.arange(160)/rec.fs
+    rec.analog = {}
+    for phase, angle in zip('ABC', (0, -2*np.pi/3, 2*np.pi/3), strict=True):
+        wave = np.cos(2*np.pi*50*rec.t+angle)
+        rec.analog['I'+phase] = np.where(rec.t < .5, 10., 500.)*wave
+        rec.analog['V'+phase] = 100*wave
+    check(rec)
+    an = analyse(rec)
+    assert not rec.blocked() and an.fault_type == 'AB'
+    assert an.freq == 50 and an.ps.n_window == 2 and len(an.indices()) == 117
+    result = compare_zones(an, settings, binding, review)
+    assert result['status'] == 'not_evaluable'
+    assert any('nyquist' in reason.lower() for reason in result['reasons'])
+    assert not any(row['evaluated_count'] for row in result['zones'])
+
+
+def test_exact_nyquist_frequency_is_refused_without_changing_the_supplied_model():
+    args = circuit('AB')
+    an = args[0]
+    an.record.fs = an.ps.fs = 100.
+    an.record.t = an.ps.t = np.arange(an.record.n)/an.record.fs
+    an.ps.n_window, an.ps.valid_from = 2, 1
+    for name in an.ps.phasors:
+        an.record.analog[name] = np.sqrt(2)*np.real(an.ps.phasors[name]*np.exp(2j*np.pi*50*an.record.t))
+    before = copy.deepcopy(an.ps.phasors)
+    assert an.freq == an.record.fs/2 and len(an.indices()) > 0
+    result = compare_zones(*args)
+    assert result['status'] == 'not_evaluable'
+    assert any('nyquist' in reason.lower() for reason in result['reasons'])
+    assert not any(row['evaluated_count'] for row in result['zones'])
+    for name in before:
+        np.testing.assert_equal(an.ps.phasors[name], before[name])
