@@ -6,17 +6,27 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
-## 2026-11-03 — Reviewed zone-boundary comparison started
+## 2026-11-03 — Reviewed zone-boundary comparison completed
 
 User requested the next task and then CONTINUE. Next bounded feature is the
 source/settings-reviewed geometric comparison in ZONE_BOUNDARY_COMPARISON_PLAN_v1.md,
-starting b91e65a on the authorized review branch. Reuse existing R-X declarations
-and exact operational phasors/native characteristic containment; report fixed
-window/support counts, not a protection verdict. No line/remote/GPS prerequisites
-are added. Baseline2094PASS/28private skips and Stage-A qualification are from
-the preceding unchanged runtime; direct architecture/self-tests pass at start.
-Implementation is in progress with separate numerical, integration and UI/QA
-agent ownership; old stored reports remain unchanged.
+starting b91e65a on the authorized review branch. P1b9300a1 preserves original RIO
+byte hashes/parsed values across line endings; P1d9ddce1 adds version1 exact
+operational-loop/native-boundary counts; P2d83359a integrates the same source-bound
+object into current R-X/navigator/technical views and short Simple report notes.
+Existing review form is reused; no new line/remote/GPS input is required solely
+for geometry. Final review caught an aliased80Hz/50Hz source; P3d6af8a8 adds the
+necessary Nyquist gate with two RED→GREEN regressions. No numerical location
+equation or source byte is changed; old stored reports remain unchanged.
+Final2192PASS/28private skips/one inherited warning107.21s; direct architecture/
+self-tests/changed lint/JSsyntax/diff PASS. Stage-A10000PASS cleanp95 .4361%, zero
+impossible distances without caveats; full Ruff remains26 inherited findings.
+Desktop/mobile21-support inside/outside/AGwrong-kind, source isolation, stale
+settings/history/exports/cancellation and unchanged E5=41.988282km pass. Independent
+plan review PASS after the concrete sampling finding was closed. See
+ZONE_BOUNDARY_COMPARISON_ACCEPTANCE_2026-11-03.md for exact scope, bounds and commits.
+All agents finished. Final docs and authorized review-branch push/remote check
+follow; full settings/scheme compliance and field accuracy remain unqualified.
 
 ## 2026-11-03 — Autonomous plan continuation and fresh qualification
 

@@ -1,3 +1,24 @@
+# Latest reviewed zone-boundary delivery — 2026-11-03
+
+Read [zone-boundary comparison acceptance](ZONE_BOUNDARY_COMPARISON_ACCEPTANCE_2026-11-03.md)
+and its linked plan. Source `d6af8a8` adds per-record exact exported-boundary
+comparison from complete operational phasor supports, using existing R-X review
+inputs. Navigator/technical evidence show inside/outside/mixed or named refusal;
+Simple report has a short source-matched note. Display cursors/zoom/loops do not
+change the model. This is conditional geometry, not pickup/timing/compliance;
+zone_expected/FL-01–03 remain unassessed. Original bytes and old reports remain.
+
+Final2192PASS/28private skips/one inherited warning,107.21s; architecture/self-tests,
+changed Python lint/Node syntax/diff PASS; Stage-A10000PASS cleanp95 .4361%, zero
+impossible distance without caveat. Full Ruff remains26 inherited findings in
+untouched files. Final desktop/mobile21-support AG comparisons and E5=41.988282km
+for known42km pass; stale/ambiguous settings, isolation, exports/history/cancellation
+also pass. Bounds4096supports/32zones are software limits, not accuracy claims.
+Actual settings applicability/field truth remain external. Review branch only;
+no main merge, environment publication or production deployment authorized.
+
+---
+
 # Latest autonomous continuation — 2026-11-03
 
 Read [the fresh phase verification](AUTONOMOUS_ANALYSER_REQUALIFICATION_2026-11-03.md).

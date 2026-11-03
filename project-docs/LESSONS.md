@@ -6,6 +6,16 @@ If a lesson generalises into a rule, move it to `CLAUDE.md` or a skill.
 
 ---
 
+### 2026-11-03 — Text import and model eligibility need their own evidence
+
+RIO universal-newline reading changed the provenance hash of Windows exports,
+so valid raw-byte-bound reviews could be refused. Preserve original text bytes
+for hashing and normalize line endings only for parsing; LF/CRLF/CR/mixed and
+Latin-1 regression fixtures now check both identity and parsed values. Separately,
+an actual80Hz/50Hz waveform passed the existing conformance/DSP path but cannot
+support a fundamental zone comparison. New comparison support explicitly checks
+Nyquist; source inspection and existing estimator behavior remain separate.
+
 ### 2026-11-03 — Findings and exported boundaries are not protection compliance
 
 The technical report retained generic reach/timeout assumptions and a separate
