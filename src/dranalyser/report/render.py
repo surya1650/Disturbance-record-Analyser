@@ -30,6 +30,7 @@ from ..rules.evidence import relay_evidence, terminal_evidence
 from ..rules.operation_compare import compare_operations
 from . import graphics as g
 from .evidence import render_evidence
+from .static_rx import render_rx
 
 TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "template.html")
 
@@ -91,45 +92,6 @@ def _spans(rec, channels: Sequence[str], t0: float) -> List[Tuple[float, float]]
     return out
 
 
-def _trajectory(an: Analysed, settings: Optional[ProtectionSettings], ct: float, vt: float,
-                fault: str) -> List[complex]:
-    """Apparent loop impedance per sample, in secondary ohm."""
-    if settings is None:
-        return []
-    from ..faultloc.estimators import loop_quantities
-
-    k0 = settings.k0() or 0j
-    sec = 1.0 / settings.secondary_to_primary(ct, vt)
-    out: List[complex] = []
-    t0 = float(an.notes.get("inception_t", 0.0))
-    lo = int(np.searchsorted(an.ps.t, t0))
-    hi = min(an.ps.t.size, lo + int(6 * an.ps.fs / an.freq))
-    for i in range(max(lo, an.ps.valid_from), hi):
-        vph = {p: an.phasor("V" + p, i) for p in "ABC"}
-        iph = {p: an.phasor("I" + p, i) for p in "ABC"}
-        try:
-            vl, il, _ = loop_quantities(vph, iph, an.phasor("I0", i), k0, fault)
-        except (ValueError, KeyError):
-            return []
-        if abs(il) < 1e-9:
-            continue
-        z = (vl / il) * sec
-        if math.isfinite(z.real) and math.isfinite(z.imag):
-            out.append(z)
-    return out
-
-
-def _zone_polygons(settings: Optional[ProtectionSettings], ground: bool) -> List[Dict[str, object]]:
-    if settings is None:
-        return []
-    out = []
-    for z in settings.zones:
-        c = z.characteristic(ground)
-        if c and len(c.vertices) >= 3:
-            out.append({"name": z.name, "vertices": c.vertices})
-    return out
-
-
 @dataclass
 class IncidentReport:
     incident_id: str
@@ -181,7 +143,6 @@ def render(rep: IncidentReport) -> str:
         rep.relay_evidence = [relay_evidence(a, end=e, role="primary") for e, a in rep.analysed.items()]
     rep.operation_comparisons = rep.operation_comparisons or compare_operations(rep.relay_evidence)
     line = rep.line
-    ground = bool(f.get("is_ground_fault"))
 
     panels, rows = [], []
     tmin, tmax = -40.0, 140.0
@@ -221,17 +182,6 @@ def render(rep: IncidentReport) -> str:
 
     s_end = ends[0]
     an0 = rep.analysed[s_end]
-    st = rep.settings.get(s_end)
-    ct = line.terminals[s_end].it.ct_ratio if line else 1.0
-    vt = line.terminals[s_end].it.vt_ratio if line else 1.0
-    traj = _trajectory(an0, st, ct, vt, an0.fault_type)
-    reach = []
-    if st is not None:
-        for z in st.forward_zones:
-            c = z.characteristic(ground)
-            if c:
-                reach.append((z.name, c.reach_at_angle(st.line_angle_deg)))
-
     idx = an0.indices()
     ph = {}
     if idx.size:
@@ -243,8 +193,7 @@ def render(rep: IncidentReport) -> str:
     svg = {
         "oscillogram": g.oscillogram(panels),
         "timeline": g.digital_timeline(rows, tmin, tmax),
-        "rx": g.rx_diagram(_zone_polygons(st, ground), traj,
-                           st.line_angle_deg if st else 80.0, reach),
+        "rx": render_rx(an0, s_end, rep.settings.get(s_end), rep.relay_evidence),
         "phasors": g.phasor_diagram(ph, "Sequence phasors, end " + s_end),
         "qr": g.qr_svg(rep.ground_truth_url),
     }

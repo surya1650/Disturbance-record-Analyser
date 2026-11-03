@@ -151,8 +151,8 @@
 
   <h2>Clearing performance</h2>
   <table>
-    <tr><th>End</th><th class="n">Relay operate</th><th class="n">Breaker</th>
-        <th class="n">Total clear</th><th>Zone operated</th><th>Zone computed</th>
+    <tr><th>End</th><th class="n">Trip indication</th><th class="n">Trip-to-current-zero</th>
+        <th class="n">Inferred clearing</th><th>Zone indication</th><th>Zone assessment</th>
         <th>Carrier send</th><th>Carrier recv</th></tr>
     {% for e in ends %}
     <tr>
@@ -161,7 +161,7 @@
       <td class="n">{{ fmt(f.get(e ~ '_breaker_ms'), '.1f') }} ms</td>
       <td class="n">{{ fmt(f.get(e ~ '_clear_ms'), '.1f') }} ms</td>
       <td>{{ fmt(f.get(e ~ '_zone_operated')) }}</td>
-      <td>{{ fmt(f.get(e ~ '_zone_expected')) }}</td>
+      <td>{{ fmt(f.get(e ~ '_zone_expected')) if f.get(e ~ '_zone_expected') is not none else 'Not assessed' }}{% if f.get(e ~ '_zone_expected_reason') %}<small>{{ f.get(e ~ '_zone_expected_reason')|e }}</small>{% endif %}</td>
       <td>{% if not f.get(e ~ '_carrier_send_mapped') %}<span class="muted">not recorded</span>
           {% else %}{{ fmt(f.get(e ~ '_carrier_send_ms'), '.1f') }} ms{% endif %}</td>
       <td>{% if not f.get(e ~ '_carrier_recv_mapped') %}<span class="muted">not recorded</span>
@@ -238,8 +238,8 @@
     <div style="flex:1 1 55%;">
       <h2>Impedance against the relay characteristic</h2>
       {{ svg.rx }}
-      <div class="muted">Secondary ohm, from the relay's own settings export.
-        Zones are the actual polygons, not an idealised circle.</div>
+      <div class="muted">Primary ohm from declared source scaling. Exported zone boundaries
+        require source-bound settings identity, event-time and scaling review; they do not prove operation.</div>
     </div>
     <div style="flex:1 1 35%;">
       <h2>Phasors at the analysis instant</h2>

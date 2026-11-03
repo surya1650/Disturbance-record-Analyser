@@ -175,7 +175,7 @@ def test_write_produces_a_self_contained_file(tmp_path):
 
 # --------------------------------------------------------------------------
 @needs_corpus
-def test_real_record_report_includes_the_relay_characteristic():
+def test_real_record_report_withholds_characteristic_without_input_review():
     line = load_line(LINE)
     rec = read_comtrade(M2, terminal_end="S")
     check(rec, nominal_kv=line.kv)
@@ -189,9 +189,10 @@ def test_real_record_report_includes_the_relay_characteristic():
     rr = apply_rules(feats, load_rules())
     rep = build({"S": an}, feats, rr, location=loc, line=line, settings={"S": st})
     render(rep)
-    # six zone polygons from the real settings export, plus the trajectory
-    assert rep.html.count("<polygon") == 6
-    assert "Z1" in rep.html and "Z1B" in rep.html
-    assert "measured" in rep.html
+    # An imported export alone cannot authenticate relay identity, event-time
+    # applicability, ground compensation or the settings impedance conversion.
+    assert rep.html.count("<polygon") == 0
+    assert "No per-record R-X input review supplied." in rep.html
+    assert 'data-rx-display-version="2"' in rep.html
     # the backup findings from this record reach page 1 or the full list
     assert "BU-03" in rep.html and "BU-04" in rep.html

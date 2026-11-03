@@ -140,6 +140,7 @@ def test_zero_compensation_is_valid_but_direct_complex_entry_is_unsupported():
 
 
 @pytest.mark.parametrize('change', [{'ct_ratio': 0}, {'vt_ratio': float('nan')}, {'ct_ratio': True},
+                                    {'ct_ratio': 10**1000}, {'vt_ratio': 10**1000},
                                     {'phase_scaling_polarity': 'true'}, {'reviewer': ''}, {'settings_hash': 'bad'},
                                     {'k0': .8}, {'reason': 'x'*1001}])
 def test_invalid_review_metadata_is_rejected_at_intake(change):

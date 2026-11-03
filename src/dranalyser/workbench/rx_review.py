@@ -33,7 +33,11 @@ def clean_rx_review(raw):
         result[key] = value
     for key in ('ct_ratio', 'vt_ratio'):
         value = raw.get(key)
-        if value is not None and (type(value) not in (int, float) or not math.isfinite(value) or value <= 0):
+        try:
+            valid = value is None or (type(value) in (int, float) and math.isfinite(value) and value > 0)
+        except OverflowError:
+            valid = False
+        if not valid:
             raise ValueError('R-X settings CT/VT ratios must be finite and positive, or absent.')
         result[key] = value
     return result

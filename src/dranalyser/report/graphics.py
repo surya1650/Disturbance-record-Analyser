@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Dict, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -55,7 +55,7 @@ class Frame:
 
     def path(self, xs: Sequence[float], ys: Sequence[float]) -> str:
         pts = []
-        for x, y in zip(xs, ys):
+        for x, y in zip(xs, ys, strict=False):
             if not (math.isfinite(x) and math.isfinite(y)):
                 continue
             pts.append(format(self.px(x), ".1f") + "," + format(self.py(y), ".1f"))
@@ -209,22 +209,29 @@ def digital_timeline(
 
 
 def rx_diagram(
-    zones: Sequence[Dict[str, object]], trajectory: Sequence[complex],
-    line_angle_deg: float, reach_points: Sequence[Tuple[str, complex]] = (),
-    width: int = 420, height: int = 380,
+    zones: Sequence[Dict[str, object]], trajectory: Sequence[Optional[complex]],
+    line_angle_deg: Optional[float], reach_points: Sequence[Tuple[str, complex]] = (),
+    width: int = 420, height: int = 380, unit: str = "secondary ohm",
 ) -> str:
     """Apparent impedance against the relay's actual characteristic.
 
-    Everything is in SECONDARY ohm, which is what the relay settings are in;
-    converting the trajectory to primary and the polygons to secondary is the
-    classic way to draw a picture that looks right and is wrong by the ratio.
+    All inputs use the declared common unit; secondary ohm remains the legacy
+    default. Missing points split trajectories and never become connecting lines.
     """
-    pts = [z for z in trajectory if z is not None and math.isfinite(z.real)]
+    segments, segment = [], []
+    for z in trajectory:
+        if z is not None and math.isfinite(z.real) and math.isfinite(z.imag):
+            segment.append(z)
+        elif segment:
+            segments.append(segment)
+            segment = []
+    if segment:
+        segments.append(segment)
+    pts = [z for part in segments for z in part]
     if not pts and not zones:
         # Nothing to draw. An empty set of axes looks like a measurement that
         # sat at the origin, which is a different and much worse claim.
-        return ('<p class="muted">No impedance trajectory available: this needs a '
-                'relay settings export next to the record.</p>')
+        return '<p class="muted">No impedance trajectory available under the supported display inputs.</p>'
     xs = [z.real for z in pts] + [0.0]
     ys = [z.imag for z in pts] + [0.0]
     for zn in zones:
@@ -242,15 +249,16 @@ def rx_diagram(
     f = Frame(46, 14, width - 60, height - 52, -lim, lim, -lim, lim)
     out = ['<svg viewBox="0 0 %d %d" width="100%%" xmlns="http://www.w3.org/2000/svg" '
            'font-family="Segoe UI,Helvetica,Arial,sans-serif">' % (width, height)]
-    out.append(_axes(f, "R, secondary ohm", "X, secondary ohm", nx=4, ny=4))
+    out.append(_axes(f, "R, " + unit, "X, " + unit, nx=4, ny=4))
     out.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
                'stroke-width="0.9"/>' % (f.px(-lim), f.py(0), f.px(lim), f.py(0), AXIS))
     out.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
                'stroke-width="0.9"/>' % (f.px(0), f.py(-lim), f.px(0), f.py(lim), AXIS))
-    a = math.radians(line_angle_deg)
-    out.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
-               'stroke-width="0.8" stroke-dasharray="4,3"/>'
-               % (f.px(0), f.py(0), f.px(lim * math.cos(a)), f.py(lim * math.sin(a)), MUTED))
+    if line_angle_deg is not None:
+        a = math.radians(line_angle_deg)
+        out.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" '
+                   'stroke-width="0.8" stroke-dasharray="4,3"/>'
+                   % (f.px(0), f.py(0), f.px(lim * math.cos(a)), f.py(lim * math.sin(a)), MUTED))
     palette = ["#1f6feb", "#2e7d32", "#b7950b", "#8e44ad", "#7a8894", "#c0392b"]
     for i, zn in enumerate(zones):
         col = palette[i % len(palette)]
@@ -261,9 +269,11 @@ def rx_diagram(
         vr, vx = zn["vertices"][len(zn["vertices"]) // 2]
         out.append('<text x="%.1f" y="%.1f" font-size="8" fill="%s">%s</text>'
                    % (f.px(vr) + 3, f.py(vx) - 3, col, esc(zn["name"])))
-    if pts:
+    for part in segments:
         out.append('<polyline points="%s" fill="none" stroke="#111" stroke-width="1.4"/>'
-                   % f.path([z.real for z in pts], [z.imag for z in pts]))
+                   % f.path([z.real for z in part], [z.imag for z in part]))
+    if (trajectory and trajectory[-1] is not None
+            and math.isfinite(trajectory[-1].real) and math.isfinite(trajectory[-1].imag)):
         last = pts[-1]
         out.append('<circle cx="%.1f" cy="%.1f" r="3.2" fill="#111"/>'
                    % (f.px(last.real), f.py(last.imag)))

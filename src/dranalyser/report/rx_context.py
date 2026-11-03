@@ -2,9 +2,16 @@
 import math
 
 
+def finite_number(value):
+    try:
+        return type(value) in (int, float) and math.isfinite(value)
+    except OverflowError:
+        return False
+
+
 def _declared(value):
     """Keep invalid native values visible without emitting non-standard JSON."""
-    return str(value) if isinstance(value, float) and not math.isfinite(value) else value
+    return str(value) if type(value) in (int, float) and not finite_number(value) else value
 
 
 def display_context(an, settings=None, binding=None, review=None):
@@ -44,7 +51,7 @@ def display_context(an, settings=None, binding=None, review=None):
                 ground.append('Native compensation cannot be derived as a finite value.')
     scale = None
     ratios = [review.get('ct_ratio'), review.get('vt_ratio')]
-    if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in ratios):
+    if any(not finite_number(v) or v <= 0 for v in ratios):
         zones.append('Reviewed CT and VT ratios for the settings secondary-ohm base are required.')
     elif settings is not None:
         scale = settings.secondary_to_primary(*ratios)
