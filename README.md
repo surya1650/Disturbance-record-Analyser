@@ -44,7 +44,7 @@ not authorize synchronization, and noisy-input readiness remains unestablished.
 | Conclusions engine, 25 rules, 21 needing no fault location | working |
 | FOLD/APTRANSCO standards audit (recording, zones, RLD calculation) | working |
 | Zone-decision back-test over an archive | working |
-| Two-page incident report | working |
+| Four-page incident reader report; legacy technical report | working |
 | Ground-truth capture: store, form, accuracy dashboard | working |
 | Stage-A acceptance sweep | working |
 | Local application, manual upload, durable jobs and report revisions | working |
@@ -147,28 +147,33 @@ On Windows, double-click **`start-local.cmd`**, then open
 dependencies on first use. For an existing environment, run
 `powershell -ExecutionPolicy Bypass -File .\start-local.ps1 -Install` once.
 
-Upload matching CFG/DAT files, a CFF, a ZIP, or an entire event folder. Confirm
-the line and terminal assignments, then analyse. The application includes a
+The primary flow is **Upload & parse → Analyse → Compare (optional) → Report**.
+Upload matching CFG/DAT files, a CFF, a ZIP, or an entire event folder. Inspect
+the parsed sources and select **Report → Generate report** for a four-page
+summary with per-phase currents/voltages, waveforms, recorded signals and next
+steps. One recording is enough. A physical distance requires the actual
+method-specific engineering inputs; missing facts produce a named refusal.
+Open the saved report, print/save PDF, or download its HTML/JSON. Earlier
+generations remain in **Saved reports**. The application includes a
 persistent job queue, report history, late-record attachments, retries, a
 watched inbox and a shared intake API. It uses the existing numerical analyser.
 Records and results stay under `out/application`.
 
-In **Waveforms**, every analog channel remains visible, with changed digital
+In **Analyse**, every analog channel remains visible, with changed digital
 signals below and values/vectors alongside. Select **One-cycle measured RMS**
 for a rolling sample-RMS trend (including DC and harmonics). Clicking a plot
 locks all readings to that sample; **Follow hover** resumes live tracking.
 The fundamental vector uses one complete trailing nominal cycle and explains
 incomplete support or missing samples. It does not replace the operational fit.
 
-In **Simple report**, choose the recordings to inspect. Display labels are
-optional and otherwise use the recording filename. Pre-fault, fault and available post-fault intervals are selected
-automatically from supported source changes. A concise timing summary shows the
-reference and missing coverage; **Manual adjustment** and waveform cursors remain
-available. Voltages
-are compared side by side above currents. The report shows RMS changes,
-recorded digital timing and an existing eligible method-labelled distance;
-an optional relay-reported distance is separate evidence. Universal CT/VT
-ratings and reviewed copies remain in **Inputs & help**. Inspect or compare
+The report uses supported automatic before/during/after observation intervals;
+missing support stays unknown. Complete one-cycle RMS medians are distinguished
+from stored fault-window sample RMS. Raw counts remain counts; supported physical
+units use readable A/kA or V/kV labels. Each recording retains its own clock.
+**Review analysis inputs if needed** holds channel/instrument review and an
+optional advanced source-timing/opposite-end study. Saved source-matched timing
+choices can inform the next generation. Technical exports and the old report
+remain under secondary engineering evidence. Inspect or compare
 successive captures from one relay separately; joining and joined COMTRADE export
 are unavailable. They cannot serve as opposite physical ends for location.
 At least four digital tracks are initially selected when available, with changed
@@ -176,6 +181,9 @@ signals first. Channel notation such as `Ia`, `IA`, `I_A`, `Ua` and `U_A` is
 normalized for display/report roles; original labels and separate channel IDs
 remain intact. Ambiguous duplicates, derived quantities and conflicting phase
 identities need explicit review.
+
+See [incident report acceptance](project-docs/INCIDENT_REPORT_PORTAL_ACCEPTANCE_2026-11-04.md)
+for the four-page contract, preservation checks, synthetic qualification and limits.
 
 See [local application setup and integration contracts](project-docs/LOCAL_APPLICATION.md).
 The current app includes all-relay evidence, separate Main-1/Main-2 identity,

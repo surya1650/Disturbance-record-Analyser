@@ -1,13 +1,16 @@
-# Active primary goal — clear report and simple portal
+# Primary goal complete — clear report and simple portal
 
-Read [INCIDENT_REPORT_PORTAL_GOAL_v1.md](INCIDENT_REPORT_PORTAL_GOAL_v1.md) and
-[INCIDENT_REPORT_PORTAL_CHECKPOINT.md](INCIDENT_REPORT_PORTAL_CHECKPOINT.md).
-The user now prioritizes a clear3–4 page incident report and a simple
-Upload/parse→Analyse→Compare(optional)→Report portal. This supersedes the old
-two-page primary report and five-tab technical workspace. Implementation is
-authorized; preserve numerical gates, originals and report/revision history.
-The checkpoint owns current phase status and overnight continuation. Do not
-restart closed zone-boundary phases or create a competing writer.
+[Goal](INCIDENT_REPORT_PORTAL_GOAL_v1.md),
+[checkpoint](INCIDENT_REPORT_PORTAL_CHECKPOINT.md),
+[acceptance](INCIDENT_REPORT_PORTAL_ACCEPTANCE_2026-11-04.md).
+Implementation/qualification COMPLETE at runtime dcab1ec: four-page report and
+Upload/parse→Analyse→Compare(optional)→Report.2239PASS/28private skips;18actual
+PDFs each4A4pages with no clipping;Stage-A10000PASS .4361% cleanp95.
+Originals, history and numerical engines preserved. Owned continuation paused;
+no engineering work remains. **PUSH_PENDING_AUTH**: local phase commits have not
+been published; remote remains52256d1. Only an actual explicit publication answer
+can unblock the named public review-branch push. Read the checkpoint and stop;
+do not repeat closed phases or bypass the publishing restriction.
 
 ---
 

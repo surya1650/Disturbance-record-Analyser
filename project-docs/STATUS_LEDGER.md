@@ -6,6 +6,23 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-04 — Clear report and simple portal complete locally
+
+P0 5ab8595 / P1 141bbc7 / P2 c497cd7 / P3 a65d856 / P4 dcab1ec implement
+and qualify the new four-page reader report and Upload→Analyse→Compare(optional)
+→Report portal. See INCIDENT_REPORT_PORTAL_ACCEPTANCE_2026-11-04.md and compact
+source-hashed evidence.2239PASS/28private skips/one inherited warning89.97s;
+architecture/selftests/changedlint/JSsyntax/diffPASS. Stage-A10000PASS cleanp95
+.4361%, zero uncaveated impossible m; full Ruff26inherited issues remain explicit.
+13fixture+5actualAPI PDFs each4A4pages (72pages), no clipping/overflow;9ptminimum
+visible print text/10pttables. Desktop/mobile/history/source/revision/cancellation
+and independent wording/visual reviewPASS;E5known42exact41.98828243177587km.
+43runtime hashes match qualified dcab1ec. Source bytes/engines/results/old reports
+preserved. QAservers stopped; owned continuation paused. Engineering COMPLETE,
+but **PUSH_PENDING_AUTH**: auto-review requires an explicit user publication
+answer; local commits are preserved, remote HEAD52256d1verified. No push, merge,
+deployment or environment publication in this continuation.
+
 ## 2026-11-03 — Clear incident report and portal goal active
 
 User explicitly requests a layperson-readable3–4 page report with actual supported

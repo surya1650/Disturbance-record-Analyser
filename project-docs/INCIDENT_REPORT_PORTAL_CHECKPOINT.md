@@ -1,95 +1,85 @@
 # Incident report portal checkpoint
 
 Goal: [INCIDENT_REPORT_PORTAL_GOAL_v1.md](INCIDENT_REPORT_PORTAL_GOAL_v1.md).
-Branch: `codex/operator-ui-review`. Starting HEAD: `52256d1`.
-State: **IN PROGRESS**, resumed main writer on2026-11-03 at23:29UTC.
-Fetched review branch HEAD52256d1; goal/checkpoint exist only in preserved local
-commit5ab8595 and working tree. Expired local lease reclaimed; no other writer active.
-Remote state: **PUSH_PENDING_AUTH**. Automatic approval review twice rejected
-publishing the P0 checkpoint to the public remote; the main chat has asked the
-user explicitly whether code/tests/checkpoints may be pushed to this named
-review branch. Do not bypass this rejection or infer an answer from elapsed
-time. Local implementation, checks and commits continue. Resume the pending
-push only after actual user permission is available.
-Owned continuation title: **Continue incident report goal**; two follow-up runs
-are scheduled five hours apart. They inherit this thread's environment selection.
-Do not expose or commit native automation/connection identifiers.
+Branch: `codex/operator-ui-review`. Starting remote HEAD: `52256d1`.
+State: **COMPLETE — implementation and qualification** (2026-11-04 Asia/Calcutta).
+Publication: **PUSH_PENDING_AUTH**. No autonomous engineering work remains.
 
-## Completed
+## Resume first
 
-- User goal recorded: clear3–4 page report and Upload/parse→Analyse→Compare→Report.
-- Existing qualified source preserved; P0 committed locally as5ab8595. Runtime work is preserved, not yet committed.
-- P1 model frozen:20 final model tests; original56 model/event-study/location passes,
-  then90 broader dependency passes; exact known42 E5 remains41.98828243177587km.
-- P2 renderer/API/UI implemented.13fixture PDFs each have4A4 pages; latest
-  review found page4 footer overlap in BC/BG, so final print freeze is pending.
-- Immutable API mocked integration11PASS, wider application/event group33PASS;
-  actual model+renderer API integration is now being checked.
-- Direct application→report dependency replaced by workbench render facade;
-  intentional new-module/API growth budgets seeded without changing guard rules.
-- Numerical/model, report design, UI flow, browser/PDF qualification and
-  independent plain-language review have separate agent ownership.
-- Initial evidence audit identifies missing-current global summary, unsupported
-  inferred pole counts, jargon/speculation and unbounded technical annex as
-  primary-report defects. New report will not reuse those claims unqualified.
-- Frozen baseline prints five A4 pages and overflows mobile width. Synthetic
-  fixtures/PDF harness are saved under the goal's ignored work directory.
-- UI flow implementation is frozen for browser testing; API/generation tests
-  are being implemented. Model and printable renderer remain active work.
+Read [acceptance](INCIDENT_REPORT_PORTAL_ACCEPTANCE_2026-11-04.md) and
+[compact evidence](INCIDENT_REPORT_PORTAL_EVIDENCE_2026-11-04.json), then stop.
+Do not restart closed phases or create a feature backlog. Preserve local commits
+and working files; the remote does not yet include this completed goal.
+The active-writer lease is completed. All QA servers have been stopped.
+Owned continuation **Continue incident report goal** is paused (disabled state
+verified); do not resume it for a goal that has no unfinished engineering work.
+Native automation/connection identifiers are deliberately not committed.
 
-## Active work
+## Publishing constraint
 
-- P1 complete/frozen: source-bound model and20 measurement/evidence tests.
-  Quantified plain observations, real canonical digital labels and workbench
-  presentation facade are included; final model+renderer group30PASS.
-- print_report: four-page self-contained printable HTML/SVG renderer.
-- readiness_audit: simple portal/task flow and report-generation UI.
-- browser_qualification: synthetic fixtures, desktop/mobile and actual PDF proof.
-- plain_language_review: evidence-safe wording and independent review.
-- root: API/immutable generation history, integration, continuity and release.
+Automatic approval review twice rejected publication to this public repository;
+an explicit user answer permitting code/tests/checkpoints to be pushed to
+`surya1650/Disturbance-record-Analyser`, branch `codex/operator-ui-review`, remains
+pending. Do not bypass through another tool/path or infer consent from elapsed
+time or a preselected answer. The resumed task explicitly preserves this rule.
+No push was attempted here. A read-only remote HEAD check returned
+`52256d102269e6929d69a07081cd828f038688a6` after implementation was complete.
+Once an actual explicit answer arrives, push the preserved local commits to this
+review branch only and read back remote HEAD. Never merge main or deploy.
 
-The first model/design workers did not initialize; they were interrupted and
-replaced with concise cold-start handoffs to the owners above. Do not resume
-the old `engine_report_audit`/`report_designer` tasks concurrently.
+## Delivered locally
 
-## Next action
+- P0 `5ab8595`: durable goal, ownership and continuation protection.
+- P1 `141bbc7`: version1 canonical, source-bound reader model, complete one-cycle
+  per-phase RMS, distinct native sample RMS, source-local gap/digital evidence,
+  reviewed-copy deduplication and existing structured location eligibility.
+- P2 `c497cd7`: self-contained four-page A4 HTML/SVG report. Named unknowns,
+  readable physical prefixes, no inferred poles/clock alignment/accuracy claims.
+- P3 `a65d856`: Upload/parse→Analyse→Compare(optional)→Report primary flow;
+  contextual inputs/secondary engineering evidence; immutable JSON/HTML
+  generations, history, preview/open/native Print/Save PDF/downloads.
+- P4 `dcab1ec`: final actual-print correction. Qualified runtime full hash:
+  `dcab1ecd8f7b6e888720ac476770ff96099426fc`. Final handoff adds documentation
+  and compact evidence only, with no further runtime change.
 
-Finish page4/footer and evidence-language corrections, then freeze and verify actual
-portal/PDF flow. Run full gates and locally commit P1/P2/P3, save final acceptance.
-No public push until the recorded explicit-permission condition is satisfied. Do not resume
-closed zone-boundary work or invent unrelated features. Use synthetic inputs if
-private source files are unavailable. Keep all scratch/fixtures under `work/`.
+Existing numerical engines, source bytes, results, old technical endpoints and
+historical reports are preserved. Intentional adapter/API file-growth budgets
+were set to exact counts; architecture guard rules were not weakened.
 
-## Resume rules
+## Final evidence
 
-Fetch/read the latest review branch and this checkpoint before editing. Inspect
-working-tree changes and the local active lease; a fresh writer means do not
-start a second writer. Never reset/discard existing work. Checkpoint code, exact
-tests and source hashes at milestones. Old report files remain immutable.
-When COMPLETE, pause this goal's owned continuation and do not restart it.
+- Direct architecture self-test and guard PASS. Changed Python Ruff (9files),
+  Node syntax (11files) and diff PASS. Whole Ruff retains26 inherited findings
+  in untouched files; it is not claimed clean.
+- Full pytest: **2239PASS,28private-data skips,1 inherited warning**,89.97s.
+  Final model/renderer/API/UI focused integration:48PASS,4.47s.
+- Stage-A10000: **PASS**, cleanp95 **.4361%**, zero impossible distances without
+  caveat,33.8s. Known42 E5 exactly **41.98828243177587km**.
+- **18actual Chromium PDFs/72A4 pages**:13fixture matrix plus5actual API
+  generations, each exactly4pages; no sheet/footer/scroll/text clipping or
+  desktop/mobile horizontal overflow. Minimum visible print font9pt; tables10pt.
+- Full desktop/mobile upload→analysis→optionalcomparison→report PASS; original
+  hashes/legacy reports/generations preserved across late revision2. Missing
+  line/ratings, raw counts, source switches, manual-input stale warning,
+  wrong-revision response and delayed response after route departure PASS;
+  no page errors. Native printing and HTML/JSON byte identity verified.
+- Independent final wording/visual review PASS, including prior short-fault
+  footer defect and plain zone/polarity/gap labels.43runtime hashes unchanged.
 
-P1 milestone: source-bound model complete. Frozen471line adapter reuses existing
-source parsing, one-cycle RMS, operational evidence and location eligibility. No
-DSP/estimator/region policy changed. Stage-A10000PASS (33.8s, cleanp95 .4361%,
-zero impossible distances without caveat). Final model+renderer30PASS.
+Scratch evidence lives under `work/qa-incident-report-night-2026-11-03/`:
+`qualified-print.log`, `qualified-api-print.log`, `qualified-portal*.log`,
+`qualified-runtime-manifest.json`, `frozen-pytest.log`, `final-stage-a.log`,
+`QUALIFICATION_RESULTS.md`. Intermediate `final-print-qa.log` is superseded.
+Synthetic standalone example PDF/HTML is in `deliverables/` there. No private
+records/settings/screenshots or native automation identifiers were committed.
 
-P2 implementation milestone: self-contained four-sheet A4 renderer frozen,
-including source-local SVG gaps, explicit units, separate RMS bases and native
-Print/Save PDF. Final model+renderer30PASS; HTML escaping and raw-count/zero
-preservation covered.13-case final physical PDF sweep is still in P4 progress;
-prior BC/BG footer overlap was corrected, not accepted as a passing layout.
+## Limits
 
-P3 milestone: Upload/parse→Analyse→Compare(optional)→Report primary portal is
-implemented. Required inputs/technical evidence remain contextual and closed.
-New API persists immutable model JSON/HTML and20-entry generation history,
-with token/source/revision/race checks and digest-verified artifacts.13API
-testsPASS including real single/paired generation;5focused UI wrappersPASS.
-Actual initial portal browser flow/history/exports/native-print/mobile/source
-switches/late revisionPASS, E5exact41.98828243177587km; final-source rerun pending.
-First whole suite2238PASS/28private skips/one inherited warning (95.33s) preceded
-the last canonical-label correction; authoritative final frozen-source run next.
-
-P4 print refinement: actual final sweep found short-fault p2/p3 footer overlap.
-Reduced panel spacing and shortened the RMS note without dropping its caveats or
-reducing font/plot sizes. Final model/renderer/API/UI integration48PASS (4.47s).
-Authoritative13fixture PDF sweep and full suite remain running.
+Native browser printing supplies PDF; no server PDF engine is promised. At most
+2representative captures,4digital changes/source and bounded text/plots appear
+in four pages; omissions and full retained report evidence remain explicit in
+JSON and backend originals. History shows latest20generations; all remain stored.
+Private corpus/patrol truth were unavailable; no field-accuracy/calibrated
+confidence or full protection compliance is claimed. No main merge, production
+deployment or environment publication occurred.
