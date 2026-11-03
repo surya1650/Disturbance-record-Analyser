@@ -6,6 +6,18 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-03 — Clear incident report and portal goal active
+
+User explicitly requests a layperson-readable3–4 page report with actual supported
+currents/voltages/waveforms/signals/location and plain analysis, plus a primary
+Upload/parse→Analyse→Compare→Report flow with unnecessary options removed.
+INCIDENT_REPORT_PORTAL_GOAL_v1.md is the new work contract; checkpoint records
+resume/ownership. Two owned continuation runs are scheduled five hours apart,
+with no competing writer and stop-on-complete rules. Existing qualified baseline
+is52256d1; legacy synthetic export prints5pages and mobileoverflows. Separate
+model/renderer/UI/PDF/evidence review owners are active. No numerical estimator,
+original or historical report is being replaced by a fabricated result.
+
 ## 2026-11-03 — Reviewed zone-boundary comparison completed
 
 User requested the next task and then CONTINUE. Next bounded feature is the

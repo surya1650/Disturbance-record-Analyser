@@ -1,3 +1,16 @@
+# Active primary goal — clear report and simple portal
+
+Read [INCIDENT_REPORT_PORTAL_GOAL_v1.md](INCIDENT_REPORT_PORTAL_GOAL_v1.md) and
+[INCIDENT_REPORT_PORTAL_CHECKPOINT.md](INCIDENT_REPORT_PORTAL_CHECKPOINT.md).
+The user now prioritizes a clear3–4 page incident report and a simple
+Upload/parse→Analyse→Compare(optional)→Report portal. This supersedes the old
+two-page primary report and five-tab technical workspace. Implementation is
+authorized; preserve numerical gates, originals and report/revision history.
+The checkpoint owns current phase status and overnight continuation. Do not
+restart closed zone-boundary phases or create a competing writer.
+
+---
+
 # Latest reviewed zone-boundary delivery — 2026-11-03
 
 Read [zone-boundary comparison acceptance](ZONE_BOUNDARY_COMPARISON_ACCEPTANCE_2026-11-03.md)
