@@ -84,7 +84,7 @@ def confidence(text: str, path: str = "") -> float:
 
 
 def parse_rio(text: str, source_path: str = "") -> ProtectionSettings:
-    raw_text = text.replace("\x00", "").replace("\r", "")
+    raw_text = text.replace("\x00", "").replace("\r\n", "\n").replace("\r", "\n")
     lines = [ln.rstrip() for ln in raw_text.splitlines()]
     s = ProtectionSettings(
         vendor="Siemens", model="SIPROTEC",
@@ -218,7 +218,7 @@ def parse_rio(text: str, source_path: str = "") -> ProtectionSettings:
 
 
 def read_rio(path: str) -> ProtectionSettings:
-    with open(path, "r", encoding="latin-1") as fh:
+    with open(path, "r", encoding="latin-1", newline="") as fh:
         return parse_rio(fh.read(), source_path=path)
 
 
