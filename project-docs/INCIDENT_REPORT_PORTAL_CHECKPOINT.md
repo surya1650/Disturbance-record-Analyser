@@ -88,3 +88,8 @@ Actual initial portal browser flow/history/exports/native-print/mobile/source
 switches/late revisionPASS, E5exact41.98828243177587km; final-source rerun pending.
 First whole suite2238PASS/28private skips/one inherited warning (95.33s) preceded
 the last canonical-label correction; authoritative final frozen-source run next.
+
+P4 print refinement: actual final sweep found short-fault p2/p3 footer overlap.
+Reduced panel spacing and shortened the RMS note without dropping its caveats or
+reducing font/plot sizes. Final model/renderer/API/UI integration48PASS (4.47s).
+Authoritative13fixture PDF sweep and full suite remain running.
