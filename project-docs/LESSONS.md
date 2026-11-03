@@ -6,6 +6,17 @@ If a lesson generalises into a rule, move it to `CLAUDE.md` or a skill.
 
 ---
 
+### 2026-11-03 — Findings and exported boundaries are not protection compliance
+
+The technical report retained generic reach/timeout assumptions and a separate
+VA-only R–X path after the simple report gained stricter evidence gates. An
+explicit Z2 indication could therefore produce an invented Zone1-underreach
+finding with no applicable settings; absent ground compensation also became
+zero and a phase boundary could substitute for earth. Keep rule summaries
+neutral, expose named unsupported assessments, and reuse source-bound navigation
+context for technical plots. Synthetic absence/staleness/phase-kind/Mho/gap
+regressions now exercise both report paths. Old reports remain immutable.
+
 ### 2026-10-30 — Shared input schemas can obstruct eligible physics
 
 E5 uses positive-sequence terminal quantities but the registry required R0/X0,

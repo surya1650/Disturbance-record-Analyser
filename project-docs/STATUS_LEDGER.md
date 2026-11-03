@@ -6,6 +6,30 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-03 — Autonomous plan continuation and fresh qualification
+
+Requested branch already contains P0–P6 and source-first follow-ups through
+084ede6. Fresh baseline: direct architecture/self-tests PASS; 2037 tests PASS,
+28 private-data skips, one inherited warning; Stage-A10000 PASS, clean p95
+.4361%, zero uncaveated impossible distances. Repository-wide Ruff retains
+34 inherited findings. P1 guidance audit passed31 focused tests; README's joined
+viewer promise and required display labels corrected in867211a, and startup
+handoff now points to completed phase status. P3 fixes f970ea6/9cb2314 version
+new rule findings and withhold unsupported zone-compliance projections with
+named reasons. P4eb6ae38 reuses source/settings-bound R-X review, exact phase/
+earth outlines, primary units and gap-safe paths. Old reports remain immutable.
+Final source9520795 (test-heading follow-up; runtimeeb6ae38): **2094PASS/28private
+skips/one inherited warning**,77.55s; architecture/self-tests/changed lint/Node
+syntax/diff checks PASS. Stage-A10000PASS cleanp95 .4361%, zero impossible
+distances without caveats. Full Ruff remains red with26 inherited findings in
+untouched files. Frozen desktop/mobile UI E5=41.988282km for known42km without
+Z0/source impedances; report/exports/R-X, CT/VT copies, timing/playback/cancellation
+and revision preservation pass. See AUTONOMOUS_ANALYSER_REQUALIFICATION_2026-11-03.md
+for exact commits, bounded capacity and risks. P0–P6 continuation complete within
+software/synthetic scope; same-relay joining/export and zone compliance remain
+explicitly unavailable. Authorized review-branch push follows final P6 docs;
+no private field pair/truth, deployment, environment publication or main merge.
+
 ## 2026-10-30 — Private recording verification and source-first simplification
 
 Read SOURCE_FIRST_WORKFLOW_2026-10-30.md. Actual private uploads reproduced and

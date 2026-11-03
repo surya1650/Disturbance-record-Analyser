@@ -16,6 +16,8 @@ dr/
 drs */
 standard docs/
 out/
+# Local scratch, QA harnesses and disposable app data.
+work/
 tmp/pdfs/
 *.zip
 *.ZIP

@@ -1,3 +1,25 @@
+# Latest autonomous continuation — 2026-11-03
+
+Read [the fresh phase verification](AUTONOMOUS_ANALYSER_REQUALIFICATION_2026-11-03.md).
+The requested branch already contained P0–P6 through084ede6; preserve that work.
+This continuation corrects stale capability/handoff text and demonstrated P3/P4
+evidence gaps. New rule summaries are version2 findings requiring review, not
+protection pass/fail. Unqualified expected-zone/reach compliance is explicitly
+not assessed; supported recorded indications and fault-location outputs remain.
+Technical R–X must use the same source/settings/review checks as navigation,
+with explicit units and missing-point breaks. Old stored reports are immutable.
+
+Final2094PASS/28private skips/one inherited warning; architecture/self-tests and
+changed lint/JSsyntax PASS. Stage-A10000PASS cleanp95 .4361%; frozen desktop/mobile
+E5=41.988282km for known42km with no Z0/source impedances. Full-repository Ruff
+still has26 inherited findings in untouched files. Runtimeeb6ae38; source/test
+9520795. Final-code evidence and remaining limits are in the linked verification note.
+Use synthetic fixtures when private records are absent. Joining/export remains
+unavailable; same-relay successive captures cannot become opposite ends. No
+main merge, environment publication or production deployment is authorized.
+
+---
+
 # Latest source-first follow-up — 2026-10-30
 
 Read SOURCE_FIRST_WORKFLOW_2026-10-30.md. Private-upload end-to-end findings drove
