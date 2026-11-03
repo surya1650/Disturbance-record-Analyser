@@ -89,3 +89,37 @@ def test_command_and_pickup_indications_do_not_prove_physical_outcomes_or_compli
     message = result.findings[0].message.lower()
     assert 'indication' in message and 'does not establish' in message
     assert 'grading' in message or 'physical' in message
+
+
+@pytest.mark.parametrize(('fault', 'compensation'), [('AG', True), ('BG', True), ('AB', True), ('AG', False)])
+def test_legacy_expected_zone_is_withheld_for_unreviewed_fault_loop_and_settings(fault, compensation):
+    from dranalyser.registry.settings import PolygonChar, ProtectionSettings, Zone
+    from dranalyser.rules.features import terminal_features
+    analysis = analyse(generate(SynthSpec(fault=fault)).records['S'])
+    # A generous declaration makes the old VA-only projection look eligible even
+    # for BG/phase faults or an absent ground compensation. It is not a review.
+    characteristic = PolygonChar(vertices=[(-1e6, -1e6), (1e6, -1e6), (1e6, 1e6), (-1e6, 1e6)])
+    settings = ProtectionSettings(zones=[Zone('Z1', phase=characteristic, earth=characteristic)])
+    if compensation:
+        settings.k0_convention = 'impedances'
+        settings.k0_params = dict(r1=1., x1=10., r0=3., x0=30.)
+    assert analysis.indices().size and analysis.fault_type == fault
+    values = terminal_features(analysis, 'S', settings).values
+    assert values['zone_expected'] is None
+    assert values['z_app_r_sec'] is None and values['z_app_x_sec'] is None
+    assert 'not assessed' in values['zone_expected_reason'].lower()
+    assert 'fault-loop' in values['zone_expected_reason'].lower()
+    assert 'settings' in values['zone_expected_reason'].lower()
+
+
+def test_cli_rule_findings_explain_withheld_zone_assessment(tmp_path, capsys):
+    from types import SimpleNamespace
+    from dranalyser.cli.commands import cmd_verdict
+    from scripts.create_demo import create_demo
+    source = create_demo(tmp_path / 'synthetic')
+    assert cmd_verdict(SimpleNamespace(S=str(source / 'S/event.cfg'), R=None,
+                                     line=str(source / 'synthetic-line.yaml'), rio=None, rules=None)) == 0
+    output = capsys.readouterr().out
+    assert 'S zone assessment: Not assessed' in output
+    assert 'applicable settings' in output and 'fault-loop/compensation' in output
+    assert 'Correct operation' not in output and 'Incorrect operation' not in output

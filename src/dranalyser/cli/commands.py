@@ -229,7 +229,7 @@ def cmd_selftest(args) -> int:
 
 
 def cmd_verdict(args) -> int:
-    """Protection-performance verdict. Needs no line constants and no far end."""
+    """Rule findings and timing screens, without a protection-compliance verdict."""
     from ..registry.settings_io import load_settings
     from ..rules.engine import apply_rules, load_rules
     from ..rules.features import incident_features
@@ -270,7 +270,7 @@ def cmd_verdict(args) -> int:
                  for e, a in ans.items()}
         res = locate(line, terms)
 
-    # Relay-dependent verdicts use the actual applicable settings at each end.
+    # Associated settings exports do not establish event-time applicability.
     feats = incident_features(ans, location=res, line=line, settings=settings)
 
     print(BAR)
@@ -291,6 +291,8 @@ def cmd_verdict(args) -> int:
             return format("-" if x is None else
                           (("%12.3f" % x) if isinstance(x, float) else str(x)), ">12")
         print("    " + format(k, "<18") + f2(sv) + f2(rv))
+    for end in sorted(ans):
+        print("    " + end + " zone assessment: " + feats[end + "_zone_expected_reason"])
 
     print(BAR)
     print(apply_rules(feats, load_rules(args.rules) if args.rules else None).report())

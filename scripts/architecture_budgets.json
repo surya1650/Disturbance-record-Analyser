@@ -27,7 +27,7 @@
     "src/dranalyser/cli/__main__.py": 9,
     "src/dranalyser/cli/acceptance.py": 28,
     "src/dranalyser/cli/catalogue.py": 50,
-    "src/dranalyser/cli/commands.py": 562,
+    "src/dranalyser/cli/commands.py": 564,
     "src/dranalyser/cli/wb.py": 92,
     "src/dranalyser/comtrade/__init__.py": 0,
     "src/dranalyser/comtrade/channel_review.py": 49,

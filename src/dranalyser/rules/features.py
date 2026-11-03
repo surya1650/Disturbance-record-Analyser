@@ -122,6 +122,12 @@ def terminal_features(
     an: Analysed, end: str, settings: Optional[ProtectionSettings] = None,
     ct_ratio: float = 1.0, vt_ratio: float = 1.0, z2_time_s: float = 0.35,
 ) -> TerminalFeatures:
+    """Observed features; legacy expected-zone projection remains unsupported.
+
+    Preserve its public keys as unavailable until applicable settings and a
+    reviewed fault loop/compensation are established; a VA-only projection or
+    absent ground compensation must not become a computed zone for other faults.
+    """
     rec = an.record
     sm = map_signals(list(rec.digital), rec.notes.get('digital_overrides'))
     t0 = float(an.notes.get("inception_t", 0.0))
@@ -182,17 +188,6 @@ def terminal_features(
     dead = None
     if ar_close is not None and t_open is not None and ar_close > t_open:
         dead = (ar_close - t_open) * MS
-
-    zapp = None
-    if settings is not None and an.indices().size:
-        i = int(an.indices()[an.indices().size // 2])
-        k0 = settings.k0() or 0j
-        va = an.phasor("VA", i)
-        ia = an.phasor("IA", i)
-        i0 = an.phasor("I0", i)
-        loop = ia + k0 * 3.0 * i0
-        if abs(loop) > 1e-9:
-            zapp = (va / loop) * settings.secondary_to_primary(ct_ratio, vt_ratio) ** -1
 
     v: Dict[str, Any] = {
         "available": True,
@@ -302,13 +297,10 @@ def terminal_features(
     v["z_app_r_sec"] = None
     v["z_app_x_sec"] = None
     v["zone_expected"] = None
-    if zapp is not None:
-        v["z_app_r_sec"] = zapp.real
-        v["z_app_x_sec"] = zapp.imag
-        if settings is not None:
-            ground = an.fault_type in ("AG", "BG", "CG")
-            z = settings.which_zone(zapp, ground=ground)
-            v["zone_expected"] = z.name if z else "beyond_all_zones"
+    v["zone_expected_reason"] = (
+        "Not assessed: applicable settings and reviewed fault-loop/compensation support "
+        "are not established. The legacy expected-zone projection is withheld; "
+        "recorded zone-trip indications remain observations.")
     return TerminalFeatures(end=end, signals=sm, values=v)
 
 
