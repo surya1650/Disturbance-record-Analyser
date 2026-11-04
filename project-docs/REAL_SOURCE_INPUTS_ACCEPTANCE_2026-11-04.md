@@ -108,7 +108,8 @@ is claimed. All owned real/synthetic QA servers are stopped.
 - P0 `c951672`: plan/checkpoint and protected real-source scope.
 - P1 `15057bf`: source-bound same-record input persistence and domain/API tests.
 - P2 `b1376b1`: automatic names, same-record editor and contextual line form.
-- P3: final sanitized qualification/handoff; runtime remains unchanged.
+- P3 `bca3acf`: final sanitized qualification/handoff; runtime remains unchanged.
+- P4: preserved local publication blocker; no push occurred.
 
 Engineering answers for the real physical calculation are still pending. The user
 was asked for actual missing instrument ratings, line constants/units, physical
@@ -122,3 +123,12 @@ is covered; explicit corrected-file export retains the existing offline contract
 No unsupported field-replay claim is made. No private files or real settings are
 published, no main merge/deployment/environment publication occurs, and prior
 completed goal continuations remain paused. Publication status is in the checkpoint.
+
+
+**PUSH_PENDING_AUTH:** automatic approval review rejected publication because the
+previous explicit approval covered the earlier line-diagram payload, not this
+broader workflow. An explicit question now names this code/tests/sanitized-docs
+payload, public repository and review branch; it is unanswered. No alternate path
+was attempted. Remote remains read-backe76bd6e. All local commits and private real
+reports are preserved. Publication consent is separate from the missing actual
+engineering facts; neither is inferred from elapsed time or a preselected choice.

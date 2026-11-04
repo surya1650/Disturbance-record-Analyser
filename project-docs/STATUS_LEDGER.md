@@ -6,6 +6,18 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-04 — Qualified workflow publication blocked
+
+Localbca3acf contains qualified P1/P2 code and sanitized proof. Automatic approval
+review rejected the public push, stating prior approval only covered the earlier
+line-diagram payload and explicit authorization is required for this broader
+workflow. No rejected command executed/no alternate path. The user has been asked
+for named public-repository/review-branch publication of code/tests/sanitized docs
+only; actual answer pending. Remote read backe76bd6e. No private DRs/settings/
+source hashes/reports in public payload. Local code/private PDFs preserved,
+all QAservers stopped. Actual engineering facts also remain unanswered; do not
+confuse publication permission with missing physical inputs.
+
 ## 2026-11-04 — Real-source input workflow qualified locally
 
 P0c951672/P115057bf/P2b1376b1 deliver same-record source-bound ratings,

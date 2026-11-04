@@ -1,7 +1,7 @@
 {
   "version": 1,
   "qualified_runtime_commit": "b1376b1184ee80eb8324c8b4384f7cc6ea0bbbb5",
-  "publication": "READY_TO_PUSH",
+  "publication": "PUSH_PENDING_AUTH",
   "data_scope": "Two user-uploaded real captures validated privately; no private names, source hashes, settings, samples, measurements or PDFs are included in this public evidence.",
   "tests": {
     "passed": 2345,
@@ -145,5 +145,8 @@
     "src/dranalyser/workbench/source_models.py": "61e9804da2bbc4851f966b87e25f82d046049398f867ede1a250b6280a6d4e80",
     "src/dranalyser/workbench/source_snapshot.py": "424541585ae2d420c6582d47c9089ac2bdf5146026e03eb065ff4a55f012b384",
     "src/dranalyser/workbench/stage_review.py": "460fa15d0f5b0ce74217a97f9b91890ba5fdb40394c60f45784167eed8149b01"
-  }
+  },
+  "implementation_qualification_commit": "bca3acf",
+  "remote_verified_head": "e76bd6e2a04831106c0262cf1fea0df6c3d7f45c",
+  "publication_block": "Automatic approval review requires explicit approval for this broader workflow payload; a named public-repository/review-branch code-only question is pending. No private data is part of the payload."
 }
