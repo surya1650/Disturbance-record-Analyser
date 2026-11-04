@@ -6,9 +6,10 @@
 Qualifiedruntime b1376b1: same-record rating edits, editable auto names and
 incident-local line drafts/calculation.2345PASS/28private skips, two actual private
 four-page reports, real browser PASS, synthetic input/edit/Calculate10/10PASS,
-Stage-A10000PASS .4361% cleanp95.35runtime hashes unchanged. **PUSH_PENDING_AUTH**: auto-review requires a fresh explicit answer for this
-broader code/tests/sanitized-docs payload; question pending. Do not retry/bypass.
-Verify delivery only after actual approval per checkpoint. Actual missing physical facts remain unanswered;
+Stage-A10000PASS .4361% cleanp95.35runtime hashes unchanged. **PUBLISHED** after the actual submitted answer “Yes, publish code and sanitized
+documents only”. Delivery2acd72a pushed to the review branch and remote HEAD
+verified; documentation closure follows with unchanged runtime. Do not ask for
+that publication permission again. Actual missing physical facts remain unanswered;
 keep real unknowns/counts/refusals explicit and never fabricate a distance.
 Originals/history preserved; prior continuation stays paused. No new features.
 

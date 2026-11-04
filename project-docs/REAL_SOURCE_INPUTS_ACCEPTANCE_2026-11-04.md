@@ -109,7 +109,8 @@ is claimed. All owned real/synthetic QA servers are stopped.
 - P1 `15057bf`: source-bound same-record input persistence and domain/API tests.
 - P2 `b1376b1`: automatic names, same-record editor and contextual line form.
 - P3 `bca3acf`: final sanitized qualification/handoff; runtime remains unchanged.
-- P4: preserved local publication blocker; no push occurred.
+- P4 `2acd72a`: publication-block checkpoint, subsequently published with the
+ qualified workflow after explicit approval; remote HEAD verified.
 
 Engineering answers for the real physical calculation are still pending. The user
 was asked for actual missing instrument ratings, line constants/units, physical
@@ -125,10 +126,12 @@ published, no main merge/deployment/environment publication occurs, and prior
 completed goal continuations remain paused. Publication status is in the checkpoint.
 
 
-**PUSH_PENDING_AUTH:** automatic approval review rejected publication because the
-previous explicit approval covered the earlier line-diagram payload, not this
-broader workflow. An explicit question now names this code/tests/sanitized-docs
-payload, public repository and review branch; it is unanswered. No alternate path
-was attempted. Remote remains read-backe76bd6e. All local commits and private real
-reports are preserved. Publication consent is separate from the missing actual
-engineering facts; neither is inferred from elapsed time or a preselected choice.
+**PUBLISHED:** the user submitted **“Yes, publish code and sanitized documents
+only”** to the exact workflow/checkpoint, named public repository and review-branch
+question, resolving the prior automatic-review rejection. A normal fast-forward
+push published delivery `2acd72af1955db10f3766ef894c2d9f4ce99a08d`; read-only remote HEAD
+verification returned the exact SHA. This documentation closure follows with
+unchanged runtime. No real DRs, settings, original source hashes, private reports
+or measurements were published. No alternate path or force push was used.
+Publication permission remains separate from the still-missing actual physical
+facts; no ratio, line setting, current polarity or real fault distance was inferred.

@@ -6,6 +6,20 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-04 — Same-record workflow published; actual facts pending
+
+The user submitted “Yes, publish code and sanitized documents only” to the exact
+workflow/checkpoint and named public repository/review-branch question, resolving
+automatic review's earlier rejection. Normal fast-forward push delivered
+2acd72af1955db10f3766ef894c2d9f4ce99a08d and remote HEAD read back exactly.
+All35runtime hashes still match qualifiedb1376b1. Closure changes documentation/
+metadata only. No private DRs/settings/original hashes/reports/measurements were
+published. Software delivery complete, real physical answers remain pending;
+publication approval did not supply engineering facts or authorize invented
+location. Earlier block entries below are historical/resolved. No force push,
+alternate route, main merge, deployment or environment publication; prior
+continuation remains paused. Wait only for the actual missing facts.
+
 ## 2026-11-04 — Qualified workflow publication blocked
 
 Localbca3acf contains qualified P1/P2 code and sanitized proof. Automatic approval

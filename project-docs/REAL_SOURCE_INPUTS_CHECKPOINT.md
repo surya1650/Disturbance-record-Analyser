@@ -3,12 +3,15 @@
 Plan: [REAL_SOURCE_INPUTS_PLAN_v1.md](REAL_SOURCE_INPUTS_PLAN_v1.md).
 Branch `codex/operator-ui-review`; baseline `e76bd6e`.
 State: **SOFTWARE COMPLETE AND QUALIFIED — REAL PHYSICAL INPUTS PENDING**.
-Publication: **PUSH_PENDING_AUTH**.
+Publication: **PUBLISHED**.
+The user submitted “Yes, publish code and sanitized documents only” to the exact
+public repository/review-branch/payload question. Delivery `2acd72af1955db10f3766ef894c2d9f4ce99a08d`
+was pushed and remote HEAD read back exactly; documentation closure follows.
 Implementation/qualification commit: `bca3acf`; runtime remains `b1376b1`. Read
 [acceptance](REAL_SOURCE_INPUTS_ACCEPTANCE_2026-11-04.md) and
 [sanitized evidence](REAL_SOURCE_INPUTS_EVIDENCE_2026-11-04.json).
 
-## Delivered locally
+## Delivered to the review branch
 
 P0 c951672 / P1 15057bf / P2 b1376b1 implement source-bound same-record CT/VT
 answers, editable auto names, per-incident line drafts/calculations and input-aware
@@ -57,25 +60,26 @@ Do not copy private details into public docs/tests. Standalone field-manifest
 acceptance replay does not consume the new app review metadata; native replay
 and optional corrected-file export remain the supported paths.
 
-## Publication blocked — explicit answer pending
+## Publication resolved; engineering facts remain pending
 
-Automatic approval review rejected publication of this broader P1–P3 workflow
-update on2026-11-04. Its stated reason is: “This publishes the current broader
-P1–P3 code and documentation to a public repository; the only explicit approval
-shown covers the earlier line-diagram update, while the checkpoint requires fresh
-authorization for this exact publication payload.” The rejected command did not
-execute; no push or alternate publishing path was used.
+Automatic approval review previously rejected this broader workflow publication.
+The user then submitted **“Yes, publish code and sanitized documents only”** to
+the explicit question naming the same-record CT/VT, automatic-name and incident
+line-input code/tests/sanitized verification plus checkpoint, public repository
+`surya1650/Disturbance-record-Analyser`, only `codex/operator-ui-review`.
+This actual submitted answer resolved the publishing requirement; do not ask for
+the same publication permission again.
 
-The user has been asked to explicitly allow this same-record CT/VT, auto-name and
-incident-line-input code/tests/sanitized evidence (bca3acf plus checkpoint) to
-public `surya1650/Disturbance-record-Analyser`, only `codex/operator-ui-review`.
-No actual answer yet. A preselected answer or elapsed time is not consent. Keep
-all private DRs/settings/source hashes/reports local. Do not retry or use another
-path before that answer. Last read-back remote HEAD is
-`e76bd6e2a04831106c0262cf1fea0df6c3d7f45c`.
+A normal fast-forward push delivered `2acd72af1955db10f3766ef894c2d9f4ce99a08d`,
+and `git ls-remote origin refs/heads/codex/operator-ui-review` returned the exact
+same SHA. Previous remote was e76bd6e2a04831106c0262cf1fea0df6c3d7f45c. No force
+push or alternate publishing path was used. No real DRs, settings, original-source
+hashes, private reports or source measurements entered the public payload.
+All35runtime file hashes still match qualifiedb1376b1; this closure is docs/metadata.
 
-Once approved, push preserved local commits without force and verify remote HEAD;
-update this checkpoint. No engineering implementation remains. Actual physical
-calculation still waits for the earlier factual answers; do not infer them from
-publication approval. No main merge, production deployment or environment
-publication. Prior completed goal continuations remain paused.
+No implementation/publication work remains. Actual physical calculation still
+waits for the earlier factual answers; this approval does not supply CT/VT ratios,
+line facts or association/polarity evidence. Keep private records and reports local.
+After facts arrive, use the same saved private incident and reviewed input flow.
+No main merge, production deployment or environment publication. Prior completed
+goal continuations remain paused; do not create an unrelated feature backlog.
