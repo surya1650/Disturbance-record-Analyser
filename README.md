@@ -44,7 +44,7 @@ not authorize synchronization, and noisy-input readiness remains unestablished.
 | Conclusions engine, 25 rules, 21 needing no fault location | working |
 | FOLD/APTRANSCO standards audit (recording, zones, RLD calculation) | working |
 | Zone-decision back-test over an archive | working |
-| Four-page incident reader report; legacy technical report | working |
+| Four-page incident reader report with line/CB diagram; legacy technical report | working |
 | Ground-truth capture: store, form, accuracy dashboard | working |
 | Stage-A acceptance sweep | working |
 | Local application, manual upload, durable jobs and report revisions | working |
@@ -150,8 +150,8 @@ dependencies on first use. For an existing environment, run
 The primary flow is **Upload & parse → Analyse → Compare (optional) → Report**.
 Upload matching CFG/DAT files, a CFF, a ZIP, or an entire event folder. Inspect
 the parsed sources and select **Report → Generate report** for a four-page
-summary with per-phase currents/voltages, waveforms, recorded signals and next
-steps. One recording is enough. A physical distance requires the actual
+summary with a line/CB diagram, supported full length and fault distances,
+per-phase currents/voltages, waveforms, recorded signals and next steps. One recording is enough. A physical distance requires the actual
 method-specific engineering inputs; missing facts produce a named refusal.
 Open the saved report, print/save PDF, or download its HTML/JSON. Earlier
 generations remain in **Saved reports**. The application includes a
@@ -184,6 +184,8 @@ identities need explicit review.
 
 See [incident report acceptance](project-docs/INCIDENT_REPORT_PORTAL_ACCEPTANCE_2026-11-04.md)
 for the four-page contract, preservation checks, synthetic qualification and limits.
+The [line-diagram follow-up](project-docs/INCIDENT_LINE_DIAGRAM_ACCEPTANCE_2026-11-04.md)
+adds named terminal CBs and fault distances; generate a new report to include it.
 
 See [local application setup and integration contracts](project-docs/LOCAL_APPLICATION.md).
 The current app includes all-relay evidence, separate Main-1/Main-2 identity,

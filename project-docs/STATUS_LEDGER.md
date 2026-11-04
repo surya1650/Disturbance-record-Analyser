@@ -6,6 +6,21 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-04 — Incident line diagram qualified
+
+P0 72f260f / P1 7ce9ce9 / P2 119d3dc add frozen line/terminal/CB observation
+model and clear inlineSVG in reportpage1. Full length/voltage, named S/R,
+eligible physical-km fault point, CBunknowns and unsupported otherconnections are
+explicit; numerical engines/originals/results/oldreports preserved.2279PASS/
+28private skips/1 inherited warning98.29s; focused88PASS; architecture/selftest/
+changedlint/JSsyntax/diffPASS. FullRuff26inherited findings remain. StageA10000
+PASS .4361% cleanp95; E5known42 exact41.98828243177587km.24actual PDFs each4A4
+(96pages), no clipping/overflow;6geometrycases, fullportal/oldgenerationimmutability,
+source/revision/stale/cancellation PASS.45runtime hashes match119d3dc. A browser
+worker hit a usage limit at handoff; root resumed on user continuation and verified
+completed actual outputs. QAservers stopped, oldcontinuationpaused. Publication
+ready to the already-authorized review branch; no new engineering work remains.
+
 ## 2026-11-04 — Report line-diagram follow-up active
 
 The user requests terminal CBs, connecting circuit, full line length and calculated

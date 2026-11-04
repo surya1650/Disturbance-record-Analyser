@@ -1,0 +1,413 @@
+{
+  "version": 1,
+  "qualified_runtime_commit": "119d3dc96523139c61455293946accfc8466c65a",
+  "data_scope": "Synthetic sources only; six geometry cases exercise presentation of supplied values, not new estimator outputs.",
+  "publication": "READY_TO_PUSH",
+  "tests": {
+    "passed": 2279,
+    "private_data_skips": 28,
+    "inherited_warnings": 1,
+    "seconds": 98.29,
+    "focused_passed": 88,
+    "focused_seconds": 8.93,
+    "architecture_self_test": "PASS",
+    "architecture_guard": "PASS",
+    "changed_python_ruff": "PASS",
+    "node_syntax": "PASS",
+    "diff_check": "PASS",
+    "repository_ruff": "26 inherited findings in untouched files"
+  },
+  "stage_a": {
+    "cases": 10000,
+    "clean_p95_percent": 0.4361,
+    "impossible_without_caveat": 0,
+    "seconds": 34.6,
+    "result": "PASS"
+  },
+  "pdf_matrix": [
+    {
+      "group": "matrix",
+      "case": "ct-saturation",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "fault-ABCG",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "fault-BC",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "fault-BG",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "many-records-long-labels",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "missing-ratios",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "no-signal-data",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "one-cycle-short-fault",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "one-source-current-unavailable",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "paired-known42km",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "sample-gaps",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "single-end",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "matrix",
+      "case": "unknown-signals",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "geometry",
+      "case": "long-labels",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "geometry",
+      "case": "missing-length",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "geometry",
+      "case": "physical-km-not-reactance",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "geometry",
+      "case": "refused-location",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "geometry",
+      "case": "remote-endpoint",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "geometry",
+      "case": "zero-endpoint",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "portal",
+      "case": "before-calculation",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "portal",
+      "case": "missing-ratios",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "portal",
+      "case": "paired-known42km",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "portal",
+      "case": "reversed-source-order",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "group": "portal",
+      "case": "single-end",
+      "pages": 4,
+      "pdf_text_outside": 0,
+      "footer_overlap": false,
+      "sheet_overflow": false,
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    }
+  ],
+  "geometry_checks": {
+    "zero-endpoint": {
+      "marker_count": 1,
+      "position_fraction": 0.0,
+      "km_from_S": 0.0,
+      "km_from_R": 100.0,
+      "svg_fault_x": 136.0,
+      "desktop_minimum_effective_svg_font_px": 13.749406645569621,
+      "mobile_minimum_effective_svg_font_px": 12.922863924050633
+    },
+    "remote-endpoint": {
+      "marker_count": 1,
+      "position_fraction": 1.0,
+      "km_from_S": 100.0,
+      "km_from_R": 0.0,
+      "svg_fault_x": 544.0,
+      "desktop_minimum_effective_svg_font_px": 13.749406645569621,
+      "mobile_minimum_effective_svg_font_px": 12.922863924050633
+    },
+    "physical-km-not-reactance": {
+      "marker_count": 1,
+      "position_fraction": 0.6,
+      "km_from_S": 60.0,
+      "km_from_R": 40.0,
+      "svg_fault_x": 380.8,
+      "desktop_minimum_effective_svg_font_px": 13.749406645569621,
+      "mobile_minimum_effective_svg_font_px": 12.922863924050633
+    },
+    "missing-length": {
+      "marker_count": 0,
+      "desktop_minimum_effective_svg_font_px": 13.749406645569621,
+      "mobile_minimum_effective_svg_font_px": 12.922863924050633
+    },
+    "refused-location": {
+      "marker_count": 0,
+      "desktop_minimum_effective_svg_font_px": 13.749406645569621,
+      "mobile_minimum_effective_svg_font_px": 12.922863924050633
+    },
+    "long-labels": {
+      "marker_count": 1,
+      "position_fraction": 0.419882824317759,
+      "km_from_S": 41.9882824317759,
+      "km_from_R": 58.0117175682241,
+      "svg_fault_x": 307.3122,
+      "desktop_minimum_effective_svg_font_px": 13.749406645569621,
+      "mobile_minimum_effective_svg_font_px": 12.922863924050633
+    }
+  },
+  "portal": {
+    "E5_km": 41.98828243177587,
+    "old_reports_immutable": true,
+    "old_legacy_immutable": true,
+    "late_revision": 2,
+    "source_order_reference_preserved": true,
+    "mobile_no_overflow": true,
+    "native_print_dispatch": true,
+    "page_errors": []
+  },
+  "portal_guards": {
+    "manual_input_stale_warning": true,
+    "wrong_revision_response_refused": true,
+    "late_generation_after_route_departure_ignored": true,
+    "page_errors": []
+  },
+  "pre_feature_generation": {
+    "pre_feature_html_has_no_diagram": true,
+    "old_artifacts_byte_identical": true,
+    "original_qa_root_unchanged": true,
+    "sha256": {
+      "html": "7b931122e95c130dcde003aaa55a2b654e6b15bffbb715be864090c9c6a804d7",
+      "data": "1c69de58d74ac92d7715438f10d058f73cc2f07b3b8b02ccf33a02532f6e5882"
+    }
+  },
+  "runtime_sha256": {
+    "src/dranalyser/application/api.py": "30e36e8353ecd1988230a77a5da93325b7fb91749628e710025af019445b6482",
+    "src/dranalyser/application/incident_report.py": "fb283c984c80f5ac7f2ca94e8a0142b17c65c1b0033c2de080edb6e091b7cfe7",
+    "src/dranalyser/application/static/app.js": "5a43a7370e59bf4f3402857c9a16245d88441bf53749f76bf3d22830164ec74b",
+    "src/dranalyser/application/static/audits.js": "551588b68442dca37396e2af44d0040e7d4c2af9ec6594adbe62b41e1505f781",
+    "src/dranalyser/application/static/catalogue.js": "9262971725221b7943b2a13f6a108103b9a55258a7dadc127443e2fb20c85169",
+    "src/dranalyser/application/static/channel-comparison-model.js": "4b2e4e55e3ba85bfb39b6c63a404b485c81a0799225f5ed293b22468489587cb",
+    "src/dranalyser/application/static/channel-comparison-view.js": "8616d1ca5869477b1f88d3be554c619e4826d7b13ae7526892cf6242bddc6acf",
+    "src/dranalyser/application/static/channel-comparison.css": "05b8b9680b21ab41ed93091cf473654973c58ad4b9e99a72d10b858581fc18b1",
+    "src/dranalyser/application/static/event-study.css": "697f0187fb0f0e9ddc23888a4705f3d8d122b674fb2a7b351a7e3ba777c32435",
+    "src/dranalyser/application/static/event-study.js": "888164b7d57c259cb578f9a7ff7705dd601b3f326e0066627e118eb596ab5bed",
+    "src/dranalyser/application/static/evidence.js": "412ddfcb7dd0607aa75ea482b28caad2264fbfbf7a7b25daf96aeee1a5ea2b29",
+    "src/dranalyser/application/static/fault-calculation.css": "48b3395f8fbfa6caace80fe6273834423ba684fbd5092fea9211c03a0d3fd728",
+    "src/dranalyser/application/static/fault-calculation.js": "56d8511510ee05b18b0d5558e7cc538f138ade1d73953f97ae7f0ed217ddbaf4",
+    "src/dranalyser/application/static/feature-guide.js": "74ba90641000fcdce14d9da6954ab1a1531f11a4078d968bae3f3a0784714066",
+    "src/dranalyser/application/static/incident-report.js": "351e554142cc6900a15194bb5f40e7f2f3bfae2779ce4dcc6928f52e38c70c82",
+    "src/dranalyser/application/static/index.html": "b9f89f8697a2ac4e6fa2e28bfc82e031461828bb419227d5e785e51e8cf5a8f5",
+    "src/dranalyser/application/static/input-guidance.js": "5e51dcc313c1d74257bd6447352886cc27324bc205c41dcb580a42251b5cfdb8",
+    "src/dranalyser/application/static/inspection-analysis.js": "aa7b376164763edd05698dca2a090e88ade879e951b43108d85d2cd33c3fe493",
+    "src/dranalyser/application/static/inspection-conditions.js": "a5dcf17f369d3247f57dda9b40109defc0364854a5d11f7b86df49280e917fc6",
+    "src/dranalyser/application/static/inspection-inputs.js": "50ac52218988b52a127b2b14cebbe78cd6492417e2590bdf2192b62aa82e52e4",
+    "src/dranalyser/application/static/inspection-layout.css": "92b0d663de21214a8cbac85db25026d9d9c87d3bc448f67711feea5ce63445e1",
+    "src/dranalyser/application/static/inspection-model.js": "61b54a90881e4d340af158214812ac2931938cf0374c9ce939a8fdcd5c883f1a",
+    "src/dranalyser/application/static/inspection-readings.js": "f1a766d26b9b2b652b94e930d93b687b9abbe2309cd0ba4a6ada226dfd353deb",
+    "src/dranalyser/application/static/inspection-report.js": "d10e89cd9a87535c2d8a00cd958291a62695128aaf783f99359a1eeda8c4d41e",
+    "src/dranalyser/application/static/inspection-workbench.js": "b7f11ac87e06bd7d8a9e3845c18950f862ecb8bf0377d4235bc11dbf8f32a814",
+    "src/dranalyser/application/static/inspection.js": "77290945ff1f24fce757b393b0b8b6be4f630526f352bab0b118b6347d794a57",
+    "src/dranalyser/application/static/instrument-review.css": "147ae2d10953fbef73b3207fa5d635ed11d7ea4e84d3fc23b7a814d262427b8c",
+    "src/dranalyser/application/static/instrument-review.js": "83e7d9cf3af3892369e06ecdfdb4b652e34a3c403e6d675942d2adeb9a26180b",
+    "src/dranalyser/application/static/mapping.js": "141b5a318b9478423f664ff6b3195370fd61b399f5cd055518dcf8d26dc37b0f",
+    "src/dranalyser/application/static/navigation-model.js": "3afdbf6309ca86449908702a90d3df2184662f659bfcf248c850425bf16a395f",
+    "src/dranalyser/application/static/navigation.js": "a99bc39ae70112d9e67309167a8cd2b12fc012ec010cad060883ad2122553ccb",
+    "src/dranalyser/application/static/operator-ui.css": "2bad6df9b34b2a32efbb1321484876e9b727d2fe29c61d833925479e5cf741ea",
+    "src/dranalyser/application/static/operator-workspace.js": "d1da1088c737d32563d5d49be6760aa4550e70cad5f96b23556013a9ab2194df",
+    "src/dranalyser/application/static/resolution.js": "057c822918c27bc81a10cc89b6f0074d54419fb2e376739fba81ef4c2e051640",
+    "src/dranalyser/application/static/rx-review.js": "a34ef8b3a34a8019bd9e54cca618ad0aff5aedafecb5ffb6cd5a1e72d932f3fc",
+    "src/dranalyser/application/static/simple-report.js": "cdff5ea126bae0f41f40b2b2342e6dc81ef804a0c92e351e0f39f4d84aefb200",
+    "src/dranalyser/application/static/stage-review.js": "f944fcba3461b8f51634af5ab9f0423d585bc3d822c8fdc7a0d1a183923e50d1",
+    "src/dranalyser/application/static/stages.js": "3ab0e27ae9a94f7c06963b052d141525f30de63b4b926a5401f05473b74c9cf5",
+    "src/dranalyser/application/static/style.css": "016e458ff45562cc0acb010b495b362be15036bc868d283a0dee2f87a08578b3",
+    "src/dranalyser/application/static/zone-comparison.js": "941ad1b64059ed0af1ba0d9cad83709f3e37bfbf6b3a04ea996f19163d288725",
+    "src/dranalyser/report/incident_line.py": "0fed367eb1221c112eeb0cc876c749f4029d496289cb485c353ed6c09396014d",
+    "src/dranalyser/report/incident_summary.html": "0d551227be3e8e31250de0a9657dc3e4fc2c50cf36f72a5ba84c3fa8f0f46eda",
+    "src/dranalyser/report/incident_summary.py": "8d18201bcc425524eefd7f13ca29890ea6d3e80824b5dafedbe86f5c17d41375",
+    "src/dranalyser/workbench/incident_line.py": "1549adfeba42c33b3719a021752bf90aad99f2398999150e176c715832453465",
+    "src/dranalyser/workbench/incident_report.py": "da26bf4eb1ce7a879aed33a80cdc66df8f1ef29f7ed33f860e01d59e8bae7394"
+  }
+}

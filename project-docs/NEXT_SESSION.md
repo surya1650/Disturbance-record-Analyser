@@ -1,12 +1,14 @@
-# Active follow-up — incident line diagram
+# Incident line diagram complete — publication ready
 
-Read [line-diagram plan](INCIDENT_LINE_DIAGRAM_PLAN_v1.md) and
-[checkpoint](INCIDENT_LINE_DIAGRAM_CHECKPOINT.md). The user requests a report
-schematic with terminal CBs, connecting line, full length and eligible calculated
-fault distances. This is new authorized work after the completed report goal
-below. Preserve that runtime and all historical artifacts. Check the new lease
-before writing. Existing review-branch publication permission remains valid;
-keep the earlier completed goal's continuation paused.
+[Plan](INCIDENT_LINE_DIAGRAM_PLAN_v1.md),
+[checkpoint](INCIDENT_LINE_DIAGRAM_CHECKPOINT.md),
+[acceptance](INCIDENT_LINE_DIAGRAM_ACCEPTANCE_2026-11-04.md).
+New four-page report includes named terminal CBs, connected circuit, declared
+full length/voltage and existing eligible method-labelled fault distances.
+Qualified119d3dc:2279PASS/28private skips,24actual four-page PDFs without clipping,
+Stage-A10000PASS .4361% cleanp95.45runtime hashes unchanged. Only authorized
+review-branch push/remote verification remains; no new engineering work. Preserve
+all commits/work, keep previous continuation paused and stop after delivery.
 
 ---
 
