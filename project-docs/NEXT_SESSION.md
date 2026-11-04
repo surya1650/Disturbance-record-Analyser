@@ -1,3 +1,14 @@
+# Parse setup and report clarity — active new request
+
+[Plan](PARSE_REPORT_CLARITY_PLAN_v1.md),
+[checkpoint](PARSE_REPORT_CLARITY_CHECKPOINT.md). Baseline1123cb4; preserve work and
+coordinate the active writer. Ratios/line facts move to parsing Setup; main flow
+loses duplicate expert inputs; report gets faithful hover/event detail/scales.
+No new private physical facts or shortened DSP windows. New qualification pending;
+earlier closed-goal evidence below is historical. Publication not attempted.
+
+---
+
 # Automatic windows and explicit line references — complete and published
 
 [Plan](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md),
