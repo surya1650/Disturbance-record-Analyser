@@ -8,6 +8,13 @@ assert.equal(options.line_model.x0_ohm_per_km,null);assert.equal(options.project
 assert.equal(options.mappings.D1,undefined);assert.equal(options.line_id,undefined);
 const unknown=m.options({voltageKv:'0',mappings:{},assertedStates:{},lineMode:'__custom__',model:{length_km:'',x1_ohm_per_km:''},faultLoop:'',projectionWindow:''});
 assert.equal(unknown.line_model.length_km,null);assert.equal(unknown.line_model.x1_ohm_per_km,null);assert.equal(unknown.fault_loop,undefined);
+assert.ok(!Object.hasOwn(unknown,'projection_window'));
+for(const projectionWindow of ['',null,undefined]){
+  const automatic=m.options({voltageKv:'132',mappings:{A1:'VA'},lineMode:'PUBLIC',faultLoop:'AB',projectionWindow});
+  assert.ok(!Object.hasOwn(automatic,'projection_window'));
+  assert.equal(automatic.fault_loop,'AB');
+}
+for(const projectionWindow of ['-1','1.5','512','not numeric'])assert.throws(()=>m.options({projectionWindow}),/source window/);
 assert.throws(()=>m.options({voltageKv:'0',mappings:{},assertedStates:{},lineMode:'__custom__',model:{length_km:'not numeric'}}));
 console.log('Source input choices preserve unknowns, explicit state0 and stable identities');
 assert.throws(()=>m.catalogue({detail:'Line registry budget exceeded'},false),/budget exceeded/);
@@ -23,3 +30,28 @@ assert.ok(html.includes('value="0.3"'));
 assert.ok(html.includes('value="1.2"'));
 assert.ok(!html.includes('<unsafe>'));
 assert.ok(html.includes('&lt;unsafe&gt;'));
+assert.ok(html.includes('<details class="source-window-override">'));
+assert.ok(!html.includes('<details class="source-window-override" open'));
+assert.ok(html.includes('<summary>Advanced: manual source-window override</summary>'));
+assert.ok(html.includes('<select class="source-projection-window"><option value="">Automatic · detected fault interval</option>'));
+assert.ok(!html.includes('Saved manual window'));
+const saved=m.markup({projection_window:0});
+assert.ok(saved.includes('<option value="0">Saved manual window 0</option>'));
+
+assert.equal(m.projectionStatus(null),'Automatic source-window selection will run with analysis.');
+const automatic=m.projectionStatus({status:'Conditional model projection',window_index:2,support_s:[.1875,.3125],
+  window_selection:{mode:'automatic',status:'selected',reason:'Existing eligible support inside the detected fault interval.',warning:''}});
+assert.match(automatic,/Automatic source window 2/);
+assert.match(automatic,/0\.187500–0\.312500 local s/);
+assert.match(automatic,/inside the detected fault interval/);
+const unavailable=m.projectionStatus({status:'Not available',distance_km:null,
+  window_selection:{mode:'automatic',status:'unavailable',reason:'No complete evaluated source-model window lies inside the detected interval.',warning:''}});
+assert.match(unavailable,/Automatic source window: Not available/);
+assert.match(unavailable,/No complete evaluated source-model window/);
+assert.doesNotMatch(unavailable,/manual|choose.*window/i);
+const manual=m.projectionStatus({status:'Not available',window_index:0,support_s:[0,.08],reason:'Selected loop has no supported source fit.',
+  window_selection:{mode:'manual',status:'selected',reason:'Advanced manual source-window override.',warning:'Manual support is outside the detected fault interval.'}});
+assert.match(manual,/Manual override 0/);
+assert.match(manual,/Manual support is outside the detected fault interval/);
+assert.match(manual,/Projection unavailable: Selected loop has no supported source fit/);
+console.log('Source projection defaults to automatic support; manual overrides and refusals keep their reasons');

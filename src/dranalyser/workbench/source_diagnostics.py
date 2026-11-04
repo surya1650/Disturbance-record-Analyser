@@ -14,6 +14,7 @@ from .source_inspection import _source, _axis
 from .source_events import digital_evidence, trip_ar
 from .source_snapshot import compose_snapshot
 from .source_quantities import compose_source_quantities
+from .source_projection_window import select_projection_window
 from .source_lines import normalise_model, resolve_line
 
 
@@ -215,8 +216,7 @@ def diagnose_source(root,revision,filename,options=None, *, registry=None, model
         reason=f'{sequences} corresponding window/quantity sets. Requires unique phase meanings, V/A source scaling and corresponding supported fits; phase wiring and physical scaling remain unverified.')
     result['methods']['rx']=dict(status='Conditional source quantities' if loops else 'Not available',
         reason=f'{loops} phase-phase loop windows. Corresponding supported voltage/current fits and non-cancelled loops only; no ground compensation, physical fault or location is inferred.')
-    selected=next((w for w in result['derived_quantities']['windows'] if w['index']==options.get('projection_window')),None)
-    result['selected_projection']=dict(selected['projection'],window_index=selected['index'],support_s=selected['support_s']) if selected else dict(status='Not available',reason='Choose a supported source window for the selected line/fault-loop model.',distance_km=None,eligible_overlay=False,authorizes_location=False)
+    result['selected_projection']=select_projection_window(source,item,options,derived)
     result['methods']['location']=dict(status=result['selected_projection']['status'],reason=result['selected_projection'].get('reason') or result['selected_projection'].get('basis',''))
     result['snapshot']=compose_snapshot(root,revision,filename,result,registry=registry,resolved_line=line)
     return result

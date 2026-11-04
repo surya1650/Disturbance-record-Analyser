@@ -145,7 +145,8 @@
     "src/dranalyser/workbench/source_diagnostics.py": 222,
     "src/dranalyser/workbench/source_inspection.py": 234,
     "src/dranalyser/workbench/source_models.py": 33,
-    "src/dranalyser/workbench/source_snapshot.py": 122
+    "src/dranalyser/workbench/source_snapshot.py": 122,
+    "src/dranalyser/workbench/source_projection_window.py": 118
   },
   "exceptions": {}
 }
