@@ -6,9 +6,11 @@
 Engineering COMPLETE at8c3909c: automatic source support, optional reviewed132kV
 reference/manual fallback, frozen provenance and original gates.2403PASS/28private
 skips,Stage-A10000PASS .4361%p95,browser10/10PASS,3PDFs each4A4/no clipping.
-16runtime hashes unchanged; owned servers stopped. Next: review-branch delivery
-and remote verification; publication not attempted for this new payload. Honor
-any PUSH_PENDING_AUTH checkpoint. Real facts still unanswered; old goals paused.
+16runtime hashes unchanged; owned servers stopped. **PUSH_PENDING_AUTH**: automatic
+approval review rejected publication of this new payload because the prior Yes
+covered the earlier workflow. Local delivery0a5d916 is preserved; remote still
+c1b2a88. Wait for an actual explicit Yes to the named public code/docs-only push
+question; do not retry or use another path. Real facts unanswered; old goals paused.
 
 ---
 
