@@ -2,7 +2,7 @@
 
 Plan: [AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md).
 Branch `codex/operator-ui-review`, baseline `c1b2a88`.
-State: **IMPLEMENTED — FINAL QUALIFICATION ACTIVE**.
+State: **IMPLEMENTED — FULL TESTS PASSED, BROWSER/PDF QUALIFICATION ACTIVE**.
 Publication: **NOT ATTEMPTED** for this new payload.
 
 Existing completed goals/publication remain preserved. Old writer leases are
@@ -56,10 +56,17 @@ operational applicability gate was already enforced. Historical manual behavior
 without a reference stays supported.74focused tests PASS,1.44s. Independent
 re-review reports no outstanding actionable findings.
 
-The earlier full run2402PASS/28skips/1warning,120.94s predates these final corrections;
-the final full run is in progress. Stage-A10000PASS,cleanp95 .4361%,77.7s; native
+Final runtime `8c3909c`: **2403PASS/28private-data skips/1inherited warning,92.71s**.
+The earlier2402 run is superseded. Stage-A10000PASS,cleanp95 .4361%,77.7s; native
 DSP/estimator/synthetic files remain unchanged. Browser/PDF checks are still
 active; actual page counts and final-runtime evidence must be recorded later.
+Direct guard/self-test, changed16Python Ruff/9JS syntax/diff PASS. Full Ruff
+retains26 inherited findings in untouched files. All16 runtime-file hashes match
+the frozen implementation. Browser has confirmed automatic contained native80ms
+support, short/no-event refusal, manual outside-interval warning, unchanged
+known42E5=41.98828243177587km, explicit Apply/unit guards and unreviewed physical/
+advanced projection refusals. Remaining: reviewed-reference save/calculation,
+report source note, actual four-page PDF clipping and private read-only check.
 
 Earlier workers hit a platform usage limit; the user's continuation resumed their
 preserved local edits. Work during the limit is not claimed. Required real CT/VT,
