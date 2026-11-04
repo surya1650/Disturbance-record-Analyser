@@ -18,6 +18,7 @@ def _finite(value):
 
 def _declared_inputs(revision, out):
     from .incident_inputs import validate_incident_line
+    from .line_reference_review import reference_provenance
     try:
         entry = validate_incident_line(revision)
     except ValueError:
@@ -26,6 +27,9 @@ def _declared_inputs(revision, out):
     if not entry:
         return out
     review = entry['review']
+    reference = reference_provenance(review)
+    if reference:
+        out['line_reference'] = reference
     labels = {end: (review['ends'].get(end) or {}).get('name') or 'Not available' for end in ('S', 'R')}
     out.update(id=entry['line_id'], name=' — '.join(v for v in labels.values() if v != 'Not available') or 'Saved incident line inputs',
         length_km=review.get('length_km'), kv=review.get('kv'), terminals=labels,
@@ -71,6 +75,10 @@ def line_facts(root,revision):
             kv=_finite(data.get('kv')),sha256=hashlib.sha256(raw).hexdigest(),
             parameter_status=result.get('parameter_status') or 'unverified',
             provenance='Frozen revision line.yaml; declared values, not independent physical verification.')
+        review_provenance = data.get('review_provenance')
+        reference = review_provenance.get('line_reference') if isinstance(review_provenance, dict) else None
+        if isinstance(reference, dict) and reference:
+            out['line_reference'] = copy.deepcopy(reference)
         for end in ('S','R'):
             entry=terminals.get(end) or {}
             out['terminals'][end]=str(entry.get('substation') or 'Not available')

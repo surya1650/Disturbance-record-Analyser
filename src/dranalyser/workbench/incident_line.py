@@ -64,6 +64,8 @@ def build_line_diagram(revision, facts, sources, location):
     line = dict(id=_name(facts.get('id')), name=_name(facts.get('name')),
         kv=_finite(facts.get('kv')), length_km=length, sha256=facts.get('sha256'),
         parameter_status=facts.get('parameter_status'), provenance=facts.get('provenance'))
+    if facts.get('line_reference'):
+        line['line_reference'] = copy.deepcopy(facts['line_reference'])
     terminals = {}
     for end in ('S', 'R'):
         source = _source_at_end(revision, facts, sources, end)

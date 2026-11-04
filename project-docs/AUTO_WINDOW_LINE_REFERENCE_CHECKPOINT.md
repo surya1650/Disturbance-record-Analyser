@@ -2,7 +2,7 @@
 
 Plan: [AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md).
 Branch `codex/operator-ui-review`, baseline `c1b2a88`.
-State: **IMPLEMENTING — window selection frozen, reference integration active**.
+State: **IMPLEMENTED — FINAL QUALIFICATION ACTIVE**.
 Publication: **NOT ATTEMPTED** for this new payload.
 
 Existing completed goals/publication remain preserved. Old writer leases are
@@ -25,6 +25,25 @@ R1=.1622, X1=.3861 ohm/phase/km. Exact tower geometry/temperature/frequency are
 not given. Earlier table differs; no universal standard is claimed. Five catalogue
 tests and changed-file lint passed. Explicit draft/review UI/backend/report
 integration and final checks are next. No private physical facts have been filled.
+
+## Implementation milestone
+
+P1 `47fcced`: automatic source-projection support and secondary manual override.
+P2 implementation is frozen locally: explicit source-labelled reference draft UI,
+strict matching constants and applicability gate, frozen report provenance and
+manual fallback. Legacy independent projection controls now live under collapsed
+technical details; the primary physical calculation explains automatic detection.
+Existing manual review shapes and frozen historical provenance remain unchanged.
+
+Focused integration96PASS,2.64s,1 inherited warning. Reference applied to mismatched
+synthetic220kV captures correctly stays blocked by native conformance despite user
+applicability review; no gate is weakened to produce a number. Source/report
+focused59PASS; catalogue5PASS. Changed15Python/9JS lint/syntax and direct guard/
+self-test/diff PASS. Only changed/new Python growth budgets updated exactly.
+
+Full pytest, Stage-A10000 and actual browser/PDF checks are running. No final
+counts, PDF page counts or completed qualification are claimed yet. Final source
+commit/checkpoint, sanitized evidence and publication decision follow those checks.
 
 Earlier workers hit a platform usage limit; the user's continuation resumed their
 preserved local edits. Work during the limit is not claimed. Required real CT/VT,

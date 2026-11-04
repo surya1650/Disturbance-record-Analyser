@@ -9,6 +9,7 @@ from pathlib import Path, PurePosixPath
 import yaml
 
 from ..registry.loader import line_from_dict
+from .line_reference_review import clean_reference_review, reference_provenance
 from .source_lines import normalise_model
 
 NUMBERS = ('length_km', 'kv', 'r1', 'x1', 'r0', 'x0')
@@ -30,7 +31,8 @@ def _text(value, field, limit):
 
 
 def clean_line_review(raw):
-    allowed = {*NUMBERS, *CONFIRMATIONS, 'basis', 'sections', 'ends', 'reviewer', 'evidence'}
+    allowed = {*NUMBERS, *CONFIRMATIONS, 'basis', 'sections', 'ends', 'reviewer', 'evidence',
+               'reference_id', 'reference_reviewed'}
     if not isinstance(raw, dict) or set(raw)-allowed:
         raise ValueError('Line inputs accept declared length/impedances, named ends and review facts only.')
     out = {}
@@ -82,6 +84,7 @@ def clean_line_review(raw):
     records = [value['record'] for value in out['ends'].values()]
     if len(set(records)) != len(records):
         raise ValueError('One recording cannot represent both physical ends.')
+    out.update(clean_reference_review(raw, out))
     return out
 
 
@@ -118,6 +121,8 @@ def incident_line_missing(entry):
     if not entry:
         return ['Supply incident line facts only when a physical distance is requested.']
     review, missing = entry['review'], []
+    if review.get('reference_id') and not review.get('reference_reviewed'):
+        missing.append('Review the published reference applicability to this actual conductor and circuit; it is not measured line data.')
     for key, label in (('length_km', 'line length in km'), ('kv', 'nominal line voltage in kV')):
         if review[key] is None:
             missing.append('Supply '+label+'.')
@@ -225,6 +230,9 @@ def incident_line_model(metadata, bundle=None):
         review_provenance=dict(reviewer=review['reviewer'], evidence=review['evidence'],
             model_applicability='User confirmed an applicable uncompensated single-circuit model.',
             instruments='Ratios follow source declarations/reviews; not independent field verification.'))
+    reference = reference_provenance(review)
+    if reference:
+        model['review_provenance']['line_reference'] = reference
     line_from_dict(model)
     return model
 

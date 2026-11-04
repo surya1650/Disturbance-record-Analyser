@@ -110,12 +110,21 @@ def line_diagram_view(value):
                         if line.get(k) and str(line[k]) != 'Not available')
     if _finite(line.get('kv')) and line['kv'] > 0:
         identity += (' · ' if identity else '')+_km(line['kv'])+' kV'
+    provenance = ('Declared line model ('+_text(line.get('parameter_status') or 'unverified', 35)+').'
+        if line.get('sha256') else 'Generic schematic; line model not supplied.')
+    reference = line.get('line_reference')
+    if isinstance(reference, dict) and reference:
+        source = reference.get('source') if isinstance(reference.get('source'), dict) else {}
+        review = 'applicability reviewed by user' if reference.get('applicability_reviewed') is True else 'applicability unreviewed'
+        citation = _text(source.get('locator') or source.get('title') or 'Published source', 120)
+        if not source.get('locator') and source.get('printed_page'):
+            citation += ', printed p. '+_text(source['printed_page'], 12)
+        provenance += ' Published reference impedance (positive sequence); '+review+'; not measured for this line. Source: '+citation+'.'
     return dict(svg=svg, identity=identity or 'Circuit identity not supplied', terminals=terminals,
         has_fault=has_fault, method=_text(fault.get('method'), 60) if has_fault else '',
         length=_km(length), reason=_text(fault.get('reason'), 400) if not has_fault else '',
         observations=observations,
-        provenance_note=('Declared line model ('+_text(line.get('parameter_status') or 'unverified', 35)+').'
-            if line.get('sha256') else 'Generic schematic; line model not supplied.'),
+        provenance_note=provenance,
         state_note='CB (circuit breaker) can disconnect the line; open/closed state unknown. Bay layout unverified.',
         connections_note=_text((value.get('connections') or {}).get('note') or
             'Only this two-terminal circuit is shown; other connected lines are not supplied.', 220))

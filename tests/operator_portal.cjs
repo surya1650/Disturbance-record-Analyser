@@ -42,6 +42,8 @@ assert.ok(!input.open&&!technical.open,'engineering inputs and technical panels 
 assert.equal(originals.traces.closest('[data-workspace-content]').dataset.workspaceContent,'waveforms');
 assert.equal(originals.comparison.closest('[data-workspace-content]').dataset.workspaceContent,'compare');
 assert.equal(originals.mapping.closest('.operator-inputs'),input);assert.equal(originals.evidence.closest('.operator-source-details'),technical);
+assert.equal(root.querySelector('.source-line-inputs').closest('.operator-source-details'),technical,'the nested legacy projection panel is secondary');
+assert.equal(root.querySelector('.source-line-inputs').closest('.operator-inputs'),null);
 assert.equal(originals.run.closest('[data-workspace-content]').dataset.workspaceContent,'waveforms','the primary analysis action remains outside collapsed inputs');
 assert.equal(activated,0,'starting the waveform viewer never generates a report');
 workspace.select('inputs');assert.equal(input.open,true);assert.equal(activeTasks.at(-1),'waveforms','legacy required-input links open the contextual Analyse inputs');

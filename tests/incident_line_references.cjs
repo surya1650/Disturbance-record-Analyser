@@ -1,0 +1,100 @@
+'use strict';
+const assert=require('node:assert/strict');
+const inputs=require('../src/dranalyser/application/static/incident-line-inputs.js');
+const reference={id:'erpc-2015-powergrid-panther-132-sc',label:'132 kV Single Panther, single circuit',kv:132,conductor:'Single Panther',circuit_configuration:'single-circuit',basis:'per-km',units:'ohm/phase/km (primary)',parameters:{r1:.1622,x1:.3861,r0:.4056,x0:1.622},source:{url:'https://erpc.gov.in/reference.pdf#page=39',printed_page:36,pdf_page:39},limitations:['Temperature and geometry are not stated.']};
+const config={line_references:{version:1,references:[reference]}};
+const row={incident_id:'line-reference-incident',number:2,state:'needs_review',metadata:{},bundle:{files:[{name:'north.cfg',kind:'comtrade'},{name:'south.cfg',kind:'comtrade'}]}};
+const original={length_km:'73.2',kv:'220',basis:'total',r1:'2',x1:'20',r0:'7',x0:'60',reviewer:'Engineer',evidence:'Approved line schedule',confirmed_line:true,uniform_line:true,confirmed_same_event:true,ends:{S:{record:'north.cfg',name:'North',current_direction:'bus-to-line',vt_type:'CVT',vt_location:'line'},R:{record:'south.cfg',name:'South',current_direction:'line-to-bus',vt_type:'VT',vt_location:'bus'}}};
+const markup=inputs.markup(row,config);
+assert.match(markup,/Manual entry · no reference/);
+assert.match(markup,/data-apply-line-reference disabled/,'a reference is never selected or applied automatically');
+assert.ok(!markup.includes('value="'+reference.id+'" selected'));
+assert.ok(!markup.includes('value="0.1622"'),'catalogue presence never fills an electrical input');
+assert.match(markup,/name="reference_id" type="hidden" value=""/);
+const manual=inputs.payload(row,original).review;
+assert.equal(Object.hasOwn(manual,'reference_id'),false);
+assert.equal(Object.hasOwn(manual,'reference_reviewed'),false,'manual payload retains the legacy metadata shape');
+const saved={...row,metadata:{incident_line:{review:{...manual,kv:132,basis:'per-km',r1:.1622,x1:.3861,reference_id:reference.id,reference_reviewed:true}}}};
+const reopened=inputs.markup(saved,config);
+assert.ok(reopened.includes('value="'+reference.id+'" selected'));
+assert.match(reopened,/name="reference_reviewed" type="checkbox" checked/);
+assert.match(reopened,/printed page 36 · PDF page 39/);
+assert.match(reopened,/not measured or approved constants for this incident line/);
+assert.match(reopened,/Temperature and geometry are not stated/);
+assert.match(inputs.markup(saved),/Saved reference unavailable/,'saved reference identity remains visible without a catalogue');
+const hostile=inputs.markup(saved,{line_references:{items:[{...reference,label:'<script>bad</script>',source:{url:'javascript:alert(1)'},limitations:['<img src=x>']}]}});
+assert.ok(!hostile.includes('<script>')&&!hostile.includes('<img')&&!hostile.includes('href="javascript:'));
+assert.match(hostile,/&lt;script&gt;/);
+
+function node(initial={}){
+  return Object.assign({handlers:{},disabled:false,addEventListener(type,handler){(this.handlers[type]??=[]).push(handler);},emit(type,event={}){return (this.handlers[type]||[]).map(handler=>handler(event));}},initial);
+}
+function fixture(initial=original){
+  const fields={};
+  for(const key of ['length_km','kv','basis','r1','x1','r0','x0','reviewer','evidence','reference_id'])fields[key]=node({name:key,value:String(initial[key]??'')});
+  fields.reference_choice=node({name:'reference_choice',value:initial.reference_id||''});
+  for(const key of ['confirmed_line','uniform_line','confirmed_same_event','reference_reviewed'])fields[key]=node({name:key,checked:initial[key]===true,disabled:key==='reference_reviewed'&&!initial.reference_id});
+  for(const end of ['S','R'])for(const key of ['record','name','current_direction','vt_type','vt_location'])fields[end+'.'+key]=node({name:end+'.'+key,value:initial.ends?.[end]?.[key]||(['current_direction','vt_type','vt_location'].includes(key)?'unknown':'')});
+  const apply=node(),submit=node(),status={textContent:''},referenceStatus={textContent:''},details={innerHTML:''},units=[{textContent:''},{textContent:''}];
+  const controls=[...Object.values(fields),apply,submit];
+  const form=node({dataset:{},elements:{namedItem:key=>fields[key]},querySelectorAll:()=>controls});
+  const elements={'[data-line-input-form]':form,'[data-line-input-status]':status,'[data-apply-line-reference]':apply,'[data-line-reference-status]':referenceStatus,'[data-line-reference-details]':details};
+  const root={isConnected:true,matches:()=>true,querySelector:selector=>elements[selector]||null,querySelectorAll:()=>units};
+  const emit=(key,next,type='change')=>{const target=fields[key];if(typeof next==='boolean')target.checked=next;else target.value=next;target.emit(type,{target});form.emit(type,{target});};
+  return {root,form,fields,apply,status,referenceStatus,details,units,emit,applyDraft:()=>apply.emit('click'),submit:()=>Promise.all(form.emit('submit',{preventDefault(){}}))};
+}
+const draft=fixture();inputs.bind(row,draft.root,undefined,{config});
+draft.emit('reference_choice',reference.id);
+assert.equal(draft.fields.kv.value,'220','previewing a reference does not apply it');
+assert.equal(draft.fields.reference_id.value,'');
+assert.equal(draft.fields.reference_reviewed.disabled,true);
+assert.match(draft.details.innerHTML,/href="https:\/\/erpc.gov.in/);
+draft.fields.confirmed_line.checked=true;
+draft.applyDraft();
+for(const [key,expected] of Object.entries({kv:'132',basis:'per-km',r1:'0.1622',x1:'0.3861',reference_id:reference.id}))assert.equal(draft.fields[key].value,expected);
+assert.equal(draft.fields.confirmed_line.checked,false);
+assert.equal(draft.fields.uniform_line.checked,false);
+assert.equal(draft.fields.reference_reviewed.checked,false);
+assert.equal(draft.fields.reference_reviewed.disabled,false);
+assert.equal(draft.fields.confirmed_same_event.checked,true,'reference constants do not alter explicit event association');
+for(const key of ['length_km','r0','x0','reviewer','evidence'])assert.equal(draft.fields[key].value,original[key],key+' is retained');
+for(const end of ['S','R'])for(const key of ['record','name','current_direction','vt_type','vt_location'])assert.equal(draft.fields[end+'.'+key].value,original.ends[end][key]);
+assert.ok(draft.units.every(unit=>unit.textContent==='Ω/km'));
+draft.emit('reference_reviewed',true);
+assert.match(draft.referenceStatus.textContent,/marked reviewed/);
+draft.emit('length_km','74');assert.equal(draft.fields.reference_id.value,reference.id,'editing an actual line fact retains explicit reference provenance');
+for(const key of ['kv','basis','r1','x1']){
+  draft.emit('reference_choice',reference.id);draft.applyDraft();draft.emit('reference_reviewed',true);
+  draft.fields.confirmed_line.checked=true;
+  draft.emit(key,key==='basis'?'total':'5','input');
+  assert.equal(draft.fields.reference_id.value,'',key+' manual input removes published provenance immediately');
+  assert.equal(draft.fields.reference_reviewed.checked,false);assert.equal(draft.fields.reference_reviewed.disabled,true);
+  assert.equal(draft.fields.reference_choice.value,'');
+  assert.equal(draft.fields.confirmed_line.checked,false,'manual electrical edits immediately invalidate line confirmation');
+}
+draft.emit('reference_choice',reference.id);draft.applyDraft();
+const retained=Object.fromEntries(['kv','basis','r1','x1','length_km','r0','x0'].map(key=>[key,draft.fields[key].value]));
+draft.emit('reference_choice','');
+for(const [key,expected] of Object.entries(retained))assert.equal(draft.fields[key].value,expected,'switching to manual retains '+key);
+assert.equal(draft.fields.reference_id.value,'');
+const sections={...saved,metadata:{incident_line:{review:{...saved.metadata.incident_line.review,sections:[{from_km:0,to_km:73.2,r1_ohm_per_km:.03,x1_ohm_per_km:.3}]}}}};
+assert.match(inputs.markup(sections,config),/data-apply-line-reference disabled/);
+const sectionDraft=fixture();inputs.bind(sections,sectionDraft.root,undefined,{config});
+sectionDraft.emit('reference_choice',reference.id);sectionDraft.applyDraft();
+assert.equal(sectionDraft.fields.kv.value,'220','applying cannot silently replace an authoritative section table');
+const stale=fixture();inputs.bind(row,stale.root,undefined,{config});stale.emit('reference_choice',reference.id);stale.root.isConnected=false;stale.applyDraft();
+assert.equal(stale.fields.kv.value,'220','a detached revision cannot receive an applied draft');
+
+(async()=>{
+  let body;
+  const unreviewed=fixture({length_km:'73.2',ends:{}});
+  inputs.bind(row,unreviewed.root,undefined,{config,request:async(path,options)=>{body=JSON.parse(options.body);return {incident_id:row.incident_id,revision:3,missing:['Published reference applicability review']};}});
+  unreviewed.emit('reference_choice',reference.id);unreviewed.applyDraft();await unreviewed.submit();
+  assert.equal(body.review.reference_id,reference.id);assert.equal(body.review.reference_reviewed,false,'an unreviewed reference draft can be saved explicitly');
+  assert.equal(body.review.length_km,73.2);assert.deepEqual(body.review.ends,{});assert.equal(body.review.r0,null);assert.equal(body.review.x0,null);
+  assert.match(unreviewed.status.textContent,/applicability review/);
+  unreviewed.emit('reference_reviewed',true);await unreviewed.submit();assert.equal(body.review.reference_reviewed,true);
+  unreviewed.emit('x1','0.4');await unreviewed.submit();
+  assert.equal(Object.hasOwn(body.review,'reference_id'),false);assert.equal(Object.hasOwn(body.review,'reference_reviewed'),false);
+  console.log('Incident line references: explicit preview/apply, manual fallback, applicability, source display, saved identity, partial drafts and preserved physical facts passed');
+})().catch(error=>{console.error(error);process.exitCode=1;});

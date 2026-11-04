@@ -124,9 +124,11 @@ def create_app(root="out/application", registry="data/registry", inbox=None, wor
     @app.get('/api/config')
     def config():
         from ..workbench.channel_mapping import ANALOG_TARGETS, CANONICAL
+        from ..workbench.line_references import line_reference_catalogue
         return {'token': token, 'inbox': str(watcher.inbox), 'data_directory': str(store.root),
                 'registry_directory': str(registry), 'workers': workers, 'max_upload_mb': 400,
                 'lines': registry_entries(registry), 'mapping_targets': {'analog': ANALOG_TARGETS, 'digital': CANONICAL},
+                'line_references': line_reference_catalogue(),
                 'native_sample_inspection': True, 'rx_input_review': True, 'stage_input_review': True,
                 'stage_location': True}
 

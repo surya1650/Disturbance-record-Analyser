@@ -25,7 +25,7 @@ const DRFeatureGuide=(()=>{
       next:'Compare recordings'},
     {id:'projection',title:'R–X & approximate distance',destination:'inputs',
       what:'Use supported phase-loop impedance and supplied line facts for a conditional model projection.',
-      inputs:['Known voltage/current meanings and suitable scaled, supported source fits.','A supplied line model with length, positive-sequence X1 sections and provenance.','An explicit AB, BC or CA loop and an eligible selected source window.'],
+      inputs:['Known voltage/current meanings and suitable scaled, supported source fits.','A supplied line model with length, positive-sequence X1 sections and provenance.','An explicit AB, BC or CA loop; analysis selects a supported window inside the detected fault interval automatically.'],
       optional:['The source projection does not support ground loops without a separate compensation contract.','R–X uses the supported impedance points; missing line facts can still prevent distance calculation.','A conditional projection is not a verified fault location. Outside-line results remain explicit.'],
       next:'Review distance inputs'},
     {id:'study',title:'Operational incident study',destination:'study',
@@ -53,8 +53,8 @@ const DRFeatureGuide=(()=>{
     if(!fits)absent.push('supported voltage/current fits');
     if(!yes('hasLine'))absent.push('a supplied line model');
     if(!loop)absent.push('an explicit phase-phase loop');
-    if(!yes('hasWindow'))absent.push('an eligible selected window');
-    states.projection=ground?['limited','Ground-loop projection is unavailable here: a separate compensation contract is required. Choose AB, BC or CA only when that is the intended fault-loop assumption.']:absent.length?['missing','For approximate distance, provide '+absent.join(', ')+'.']:['limited','Inputs are selected; calculation eligibility still depends on valid line constants and the selected fit. Any distance remains an assumption-dependent projection.'];
+
+    states.projection=ground?['limited','Ground-loop projection is unavailable here: a separate compensation contract is required. Choose AB, BC or CA only when that is the intended fault-loop assumption.']:absent.length?['missing','For approximate distance, provide '+absent.join(', ')+'.']:!yes('hasWindow')?['limited','Automatic fault-window selection is not yet available. Run analysis and read the source-window reason; short or unsuitable support remains unavailable.']:['limited','Inputs are selected; calculation eligibility still depends on valid line constants and the selected fit. Any distance remains an assumption-dependent projection.'];
     return definitions.map(feature=>({...feature,inputs:[...feature.inputs],optional:[...feature.optional],availability:states[feature.id][0],reason:states[feature.id][1]}));
   }
   function markup(contextOrRows={}){

@@ -23,10 +23,11 @@ const DROperatorWorkspace=(()=>{
     for(const el of original){
       if(el.matches('.source-job-status')){root.insertBefore(el,root.querySelector('[role=tabpanel]'));continue;}
       if(el.matches('.source-compare')){content('compare').append(el);continue;}
-      if(el.matches('.source-line-summary,.source-technical,.source-evidence,.source-report-tools,.source-condition-tools,.source-condition-summary')){technical.append(el);continue;}
+      if(el.matches('.source-line-inputs,.source-line-summary,.source-technical,.source-evidence,.source-report-tools,.source-condition-tools,.source-condition-summary')){technical.append(el);continue;}
       if(el.matches('h2,p')){el.remove();continue;}
       inputs.append(el);
     }
+    const projection=inputs.querySelector('.source-line-inputs');if(projection)technical.append(projection);
     const run=inputs.querySelector('.source-run');
     if(run){run.classList.add('operator-primary-action');run.textContent='Update analysis';run.setAttribute('type','button');content('waveforms').append(run);}
     content('waveforms').append(inputs,technical);
@@ -34,7 +35,7 @@ const DROperatorWorkspace=(()=>{
     const help=document.createElement('details');help.innerHTML='<summary>Help for the current analysis</summary>';help.append(guide);inputs.append(help);
     if(typeof DRFaultCalculation!=='undefined'){
       const calculation=document.createElement('section');calculation.innerHTML=DRFaultCalculation.panel(row,config);inputs.append(calculation);
-      DRFaultCalculation.bind(row,calculation,signal,{onQueued:async()=>detail(row.incident_id)});
+      DRFaultCalculation.bind(row,calculation,signal,{config,onQueued:async()=>detail(row.incident_id)});
     }
     if(typeof DREventStudy!=='undefined'){
       const refinement=document.createElement('details');refinement.className='operator-region-help';refinement.innerHTML='<summary>Advanced: source timings and opposite-end study</summary><p>Saved, source-matched time ranges are reused by Generate report. This optional engineering study has its own opposite-end and same-event checks. Use the Report tab for the four-page summary.</p>';
@@ -76,7 +77,7 @@ const DROperatorWorkspace=(()=>{
       }
       select(go.dataset.goFeature,true);
       if(go.dataset.goFeature==='inputs')inputs.scrollIntoView({block:'start'});
-      if(go.closest('[data-guide-feature]')?.dataset.guideFeature==='projection'){const line=section.querySelector('.source-line-inputs');if(line){line.open=true;line.scrollIntoView({block:'start'});line.querySelector('select')?.focus({preventScroll:true});}}
+      if(go.closest('[data-guide-feature]')?.dataset.guideFeature==='projection'){const line=section.querySelector('.source-line-inputs');if(line){technical.open=true;line.open=true;line.scrollIntoView({block:'start'});line.querySelector('select')?.focus({preventScroll:true});}}
     },{signal});
     root.querySelector('[role=tablist]').addEventListener('keydown',event=>{
       const button=event.target.closest('[role=tab]');if(!button||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
@@ -84,7 +85,7 @@ const DROperatorWorkspace=(()=>{
     },{signal});
     function update(result){
       const chosenLoop=section.querySelector('.source-fault-loop')?.value;
-      guide.innerHTML=DRFeatureGuide.markup({hasSamples:data.sample_count>0,hasSecondRecord:(row.bundle?.files||[]).filter(f=>f.kind==='comtrade').length>1,hasAnalogSamples:data.channels.some(c=>c.kind==='analog'),hasSourceTimes:Array.isArray(data.time_range_s)&&data.time_range_s.length===2&&data.time_range_s.every(Number.isFinite)&&data.time_range_s[1]>data.time_range_s[0],hasNominalFrequency:Number.isFinite(data.nominal_frequency_hz)&&data.nominal_frequency_hz>=40&&data.nominal_frequency_hz<=70,analysisReady:Boolean(result),hasSupportedFits:(result?.fit_coverage?.model_consistent||0)>0,hasRegions:Boolean(result?.operator_conditions?.selection),hasLine:Boolean(result?.snapshot?.line?.length_km>0),hasLoop:Boolean(chosenLoop),faultLoop:chosenLoop,hasWindow:Number.isInteger(result?.options?.projection_window),hasOperationalResult:Boolean(row.result)});
+      guide.innerHTML=DRFeatureGuide.markup({hasSamples:data.sample_count>0,hasSecondRecord:(row.bundle?.files||[]).filter(f=>f.kind==='comtrade').length>1,hasAnalogSamples:data.channels.some(c=>c.kind==='analog'),hasSourceTimes:Array.isArray(data.time_range_s)&&data.time_range_s.length===2&&data.time_range_s.every(Number.isFinite)&&data.time_range_s[1]>data.time_range_s[0],hasNominalFrequency:Number.isFinite(data.nominal_frequency_hz)&&data.nominal_frequency_hz>=40&&data.nominal_frequency_hz<=70,analysisReady:Boolean(result),hasSupportedFits:(result?.fit_coverage?.model_consistent||0)>0,hasRegions:Boolean(result?.operator_conditions?.selection),hasLine:Boolean(result?.snapshot?.line?.length_km>0),hasLoop:Boolean(chosenLoop),faultLoop:chosenLoop,hasWindow:result?.selected_projection?.window_selection?.status==='selected',hasOperationalResult:Boolean(row.result)});
     }
     const scalingHelp=document.createElement('p');scalingHelp.className='field-help';scalingHelp.textContent='Leave the voltage-level choice unspecified to retain unresolved ratios. The optional 132/220 kV choices apply labelled missing-CT assumptions only to otherwise-known secondary-current channels; actual supplied ratios remain unchanged.';
     section.querySelector('.source-voltage')?.closest('.inspection-toolbar')?.after(scalingHelp);
