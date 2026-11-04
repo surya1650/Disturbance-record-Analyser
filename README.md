@@ -170,8 +170,12 @@ The report uses supported automatic before/during/after observation intervals;
 missing support stays unknown. Complete one-cycle RMS medians are distinguished
 from stored fault-window sample RMS. Raw counts remain counts; supported physical
 units use readable A/kA or V/kV labels. Each recording retains its own clock.
-**Review analysis inputs if needed** holds channel/instrument review and an
-optional advanced source-timing/opposite-end study. Saved source-matched timing
+**Review analysis inputs if needed** saves actual missing CT/VT ratings on the
+same recording and filename. Reopen and edit saved answers; earlier revisions
+and original bytes remain intact. Names default from the DR filenames and stay
+editable. The physical-calculation panel accepts line facts for this incident,
+including partial drafts, without requiring a global registry entry. It also
+holds the optional advanced source-timing/opposite-end study. Saved source-matched timing
 choices can inform the next generation. Technical exports and the old report
 remain under secondary engineering evidence. Inspect or compare
 successive captures from one relay separately; joining and joined COMTRADE export
@@ -186,6 +190,8 @@ See [incident report acceptance](project-docs/INCIDENT_REPORT_PORTAL_ACCEPTANCE_
 for the four-page contract, preservation checks, synthetic qualification and limits.
 The [line-diagram follow-up](project-docs/INCIDENT_LINE_DIAGRAM_ACCEPTANCE_2026-11-04.md)
 adds named terminal CBs and fault distances; generate a new report to include it.
+See [real-source input acceptance](project-docs/REAL_SOURCE_INPUTS_ACCEPTANCE_2026-11-04.md)
+for same-record ratings, editable names, contextual line facts and verified limits.
 
 See [local application setup and integration contracts](project-docs/LOCAL_APPLICATION.md).
 The current app includes all-relay evidence, separate Main-1/Main-2 identity,

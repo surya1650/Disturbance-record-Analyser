@@ -1,11 +1,15 @@
-# Active goal — real-source inputs and names
+# Real-source input workflow qualified — actual facts pending
 
-Read [plan](REAL_SOURCE_INPUTS_PLAN_v1.md) and
-[checkpoint](REAL_SOURCE_INPUTS_CHECKPOINT.md). User supplied real captures and
-requests persistent same-record ratio answers, automatic editable DR/end names,
-and contextual missing line facts. Preserve prior completed/published report
-and diagram. Use private files only under ignored work; no real data in Git.
-Check active lease before writing. Prior goal continuation remains paused.
+[Plan](REAL_SOURCE_INPUTS_PLAN_v1.md),
+[checkpoint](REAL_SOURCE_INPUTS_CHECKPOINT.md),
+[acceptance](REAL_SOURCE_INPUTS_ACCEPTANCE_2026-11-04.md).
+Qualifiedruntime b1376b1: same-record rating edits, editable auto names and
+incident-local line drafts/calculation.2345PASS/28private skips, two actual private
+four-page reports, real browser PASS, synthetic input/edit/Calculate10/10PASS,
+Stage-A10000PASS .4361% cleanp95.35runtime hashes unchanged. Publication ready;
+verify delivery per checkpoint. Actual missing physical facts remain unanswered;
+keep real unknowns/counts/refusals explicit and never fabricate a distance.
+Originals/history preserved; prior continuation stays paused. No new features.
 
 ---
 

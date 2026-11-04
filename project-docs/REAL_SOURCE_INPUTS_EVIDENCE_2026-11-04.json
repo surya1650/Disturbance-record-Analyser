@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "qualified_runtime_commit": "b1376b1184ee80eb8324c8b4384f7cc6ea0bbbb5",
+  "publication": "READY_TO_PUSH",
+  "data_scope": "Two user-uploaded real captures validated privately; no private names, source hashes, settings, samples, measurements or PDFs are included in this public evidence.",
+  "tests": {
+    "passed": 2345,
+    "private_corpus_skips": 28,
+    "inherited_warnings": 1,
+    "seconds": 97.97,
+    "architecture_self_test": "PASS",
+    "architecture_guard": "PASS",
+    "changed_ruff": "PASS",
+    "javascript_syntax": "PASS",
+    "diff_check": "PASS",
+    "full_ruff": "26 inherited findings in untouched files"
+  },
+  "stage_a": {
+    "cases": 10000,
+    "result": "PASS",
+    "clean_p95_percent": 0.4361,
+    "impossible_without_caveat": 0,
+    "seconds": 32.5
+  },
+  "real_workflow": {
+    "invented_engineering_inputs": false,
+    "primary_not_multiplied_again": true,
+    "sources_unchanged": true,
+    "no_extra_capture": true,
+    "no_auto_end_assignment": true,
+    "old_generation_immutable": true,
+    "native_print_dispatch": true,
+    "mobile_no_overflow": true,
+    "page_errors": []
+  },
+  "real_requirements": {
+    "secondary_source_main_phase_ratio_fields": 6,
+    "unused_auxiliary_ratings_required": false,
+    "existing_primary_source_ratios_requested_again": false,
+    "physical_location": "withheld_pending_verified_facts",
+    "real_engineering_answers_received": false
+  },
+  "real_pdf": [
+    {
+      "case": "real-pair",
+      "pages": 4,
+      "issues": [],
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    },
+    {
+      "case": "real-single",
+      "pages": 4,
+      "issues": [],
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_print_font_px": 12
+    }
+  ],
+  "synthetic_browser": {
+    "checks": [
+      {
+        "check": "uploaded pair with six phase ratio rows and empty registry",
+        "pass": true
+      },
+      {
+        "check": "actual browser ratio Save creates revision2 on same incident and filenames",
+        "pass": true
+      },
+      {
+        "check": "saved ratings reopen populated and require fresh confirmation",
+        "pass": true
+      },
+      {
+        "check": "editing saved ratings creates revision3 without duplicate capture",
+        "pass": true
+      },
+      {
+        "check": "edited current scale doubles once and previous revision/cache/report remain unchanged",
+        "pass": true
+      },
+      {
+        "check": "partial incident line facts save as draft and retain ratios",
+        "pass": true
+      },
+      {
+        "check": "draft remains reportable and actual Chromium PDF has four pages",
+        "pass": true
+      },
+      {
+        "check": "complete synthetic line model available with no registry entry and locked reviewed ends",
+        "pass": true
+      },
+      {
+        "check": "actual Calculate submits reviewed incident model and returns E5 on same captures",
+        "pass": true
+      },
+      {
+        "check": "original upload bytes and earlier reports immutable with zero page errors",
+        "pass": true
+      }
+    ],
+    "page_errors": [],
+    "runtime_matches_head": true,
+    "incident_local_model_without_registry": true,
+    "method": "E5",
+    "known42_km": 41.98828243177587,
+    "final_input_revision": 6,
+    "server_stopped": true
+  },
+  "runtime_sha256": {
+    "src/dranalyser/application/api.py": "c553aaf8af869e428d1aba927458d50216a463c35184a864df02a838c5bbb649",
+    "src/dranalyser/application/incident_inputs.py": "178c30437a91ee86cf2ba7167026330998aa502857a563e7fe75a3e072008f9f",
+    "src/dranalyser/application/instrument_review.py": "b1db128b9e1c3d7c626bbe25b90db73622ebc6392a34bfe6cbcdbbf8fce1fbc6",
+    "src/dranalyser/application/intake.py": "037a66d1b3a041bdb75c85f3caae882a31c3979eba41fed5b1e860b064c52a6a",
+    "src/dranalyser/application/static/app.js": "b044bfef60fe1bb86dad136835807f917f3a74f0ec5455dc0a663d07642d39dd",
+    "src/dranalyser/application/static/fault-calculation.js": "16b4c639eb82def8380bd26d1ca5c0c5f77d8dfa06759362b12914f54555a440",
+    "src/dranalyser/application/static/incident-line-inputs.js": "6905baeb7eb653ee0fd38b746204629af7a73b7517276ea70b8d4a10d4195bbc",
+    "src/dranalyser/application/static/index.html": "25532ee1387197c839d62ef5bb5e840a35248088c140c31c7c365dcbeced9723",
+    "src/dranalyser/application/static/instrument-review.js": "5cccf5f3a71108362d9d5dc245bd3b0199174846828d71ea9ffda5861c952fc7",
+    "src/dranalyser/application/static/operator-workspace.js": "e6650866a010a1169e17b33ed9e1e50fbdf9bbc6049664ebbca9734c7b0ce8de",
+    "src/dranalyser/application/static/rx-review.js": "f064378bbba5f898677258a83cd306b5540bc132c292749c37eec1ae49f0655f",
+    "src/dranalyser/application/worker.py": "f14ffc20b58b72eb0b40e4e615a7b51b759f3a53ff9462e1f998bd1cc7d0f568",
+    "src/dranalyser/comtrade/instrument_review.py": "89de2aea6826ef56f4a0f371145e30ad61ab5bd27d04c2d372d10325e14fb7c9",
+    "src/dranalyser/comtrade/parser.py": "a1feb43fc12d74c68d99ac0a07d8ef83ca341d55f0916bcb00165e408c076dc7",
+    "src/dranalyser/comtrade/source_container.py": "a65079e3fe40170c739114dceb14e34462dc43953ba81bd892c4561222980ad5",
+    "src/dranalyser/comtrade/source_decode.py": "2857c1cf12a7190670f7979f86743120b50f9d329503a1e6833c29b819afa8ed",
+    "src/dranalyser/comtrade/source_observations.py": "3aef62162431a1686753b0d4a627cfa7a9a4e45ba266305b94bd978b3417ef89",
+    "src/dranalyser/report/incident_summary.html": "b1728599496a97df84878be3bce3b27cdf4377a2faa40edc1274e913a71b60a4",
+    "src/dranalyser/report/rx_context.py": "19b5af49a4cba0217fa10502d05ab186e9060d22297072aba91277bdf29f4864",
+    "src/dranalyser/report/zone_comparison.py": "64568eaab0b86b324c29ac5e734d1ab7cc2bed5687b36d301b5d3c608b08cd29",
+    "src/dranalyser/workbench/audits.py": "1e91fab62e01dbd504631beb35fc126d7473f00ca28ce96dd154ce03b114bbb8",
+    "src/dranalyser/workbench/bundle.py": "ffbdd888011eeaa76d86927d069953f18b24068dc065dc7cabd503bb3658bec1",
+    "src/dranalyser/workbench/channel_mapping.py": "be3324c1b8e83b9022355ec9b32a63ed41e9ff39cea9e99069ddf79c503ebaea",
+    "src/dranalyser/workbench/incident.py": "a91c3a5876519ac5932356b1698e6896520155abe351d3a6c0ffbe19580021af",
+    "src/dranalyser/workbench/incident_inputs.py": "2bf82eda07e9753120018c9e6a5a6645b19a7a62156a4ab74264a45faabfff63",
+    "src/dranalyser/workbench/incident_report.py": "c63a7f3452b70810280642decb72e53b1ea7911ae18796a439a77bd9a0328858",
+    "src/dranalyser/workbench/ratio_inputs.py": "b3b60f1d8ba17640e3917307e2b7c33c154d57d66838d53866aab95cc1b9e897",
+    "src/dranalyser/workbench/record_names.py": "81efeb342e5bb20fef1abdabe9f7f7787cb302f4ab4bd9dfea201ac0b7154355",
+    "src/dranalyser/workbench/rx_review.py": "5002d15b15dab1400b1045fb7fd517e907e1d3f137d27ea7bae4302f45bb215b",
+    "src/dranalyser/workbench/samples.py": "9eeade31300ba6be87a9ba62787684f368c76abdf88893d795db2e90955e09f2",
+    "src/dranalyser/workbench/source_diagnostics.py": "069926c191141130e5fdeb220a8d757655e1d15f5f93a17b8b59aaa30b37ee31",
+    "src/dranalyser/workbench/source_inspection.py": "24c78e9da4ced4b12a020f5f40001a1985f79037e0fa0659e72ecb9c7a1ee85a",
+    "src/dranalyser/workbench/source_models.py": "61e9804da2bbc4851f966b87e25f82d046049398f867ede1a250b6280a6d4e80",
+    "src/dranalyser/workbench/source_snapshot.py": "424541585ae2d420c6582d47c9089ac2bdf5146026e03eb065ff4a55f012b384",
+    "src/dranalyser/workbench/stage_review.py": "460fa15d0f5b0ce74217a97f9b91890ba5fdb40394c60f45784167eed8149b01"
+  }
+}

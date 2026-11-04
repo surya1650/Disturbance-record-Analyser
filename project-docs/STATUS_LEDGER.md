@@ -6,6 +6,21 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-04 — Real-source input workflow qualified locally
+
+P0c951672/P115057bf/P2b1376b1 deliver same-record source-bound ratings,
+review-aware caches/RX/zone/stage bindings, editable auto names and per-incident
+line drafts/models without global registry requirement. Original file bytes,
+filenames/counts and incident/report history preserved.2345PASS/28private skips/
+1 inherited warning97.97s; architecture/selftest/changedlint/JSsyntax/diffPASS;
+fullRuff26inherited issues remain. StageA10000PASS .4361%cleanp95, zero uncaveated
+impossible m,32.5s. Actual private real-pair browser and two4A4 PDFs PASS, no fake
+settings or physical distance. Separate synthetic browser10/10 saves/edits/draft/
+emptyregistryCalculateE5exact41.98828243177587km PASS.35runtime hashes unchanged,
+QAservers stopped. Actual real engineering answers remain pending; rawreports
+usable. Sanitized evidence only; no real filenames/settings/data/hashes committed.
+Publication ready; no new engineering implementation remains. Priorautomationpaused.
+
 ## 2026-11-04 — Real-source workflow goal active
 
 User provides real captures and requests same-logical-record ratio answers,
