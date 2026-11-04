@@ -6,6 +6,18 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-04 — Real-source workflow goal active
+
+User provides real captures and requests same-logical-record ratio answers,
+automatic editable names and contextual line/impedance inputs. New plan/checkpoint
+REAL_SOURCE_INPUTS_* govern this follow-up from e76bd6e. Independent private audit
+confirms both decode, one needs missing secondary scaling and one already declares
+primary values/ratings. No private filenames/data/settings enter Git. Raw reports
+remain available; actual missing physical facts were requested asynchronously.
+Backend/source-bound reviews, frontend names/ratio editing, incident-line inputs
+and private browser qualification have separate ownership. Prior completed
+continuation stays paused; originals/numerical gates/history are preserved.
+
 ## 2026-11-04 — Line-diagram update published and verified
 
 The user submitted “Yes, publish this line-diagram update” to the explicit named

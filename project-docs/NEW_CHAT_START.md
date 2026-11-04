@@ -1,5 +1,9 @@
 # Continue the autonomous analyser work
 
+Active goal: [real-source inputs](REAL_SOURCE_INPUTS_PLAN_v1.md) and
+[checkpoint](REAL_SOURCE_INPUTS_CHECKPOINT.md). Check this before older completed
+report goals. Private uploads remain local; preserve the active writer and work.
+
 Latest requested follow-up: [incident line diagram](INCIDENT_LINE_DIAGRAM_PLAN_v1.md)
 and [its checkpoint](INCIDENT_LINE_DIAGRAM_CHECKPOINT.md). Check that status before
 stopping at the completed earlier report goal below.

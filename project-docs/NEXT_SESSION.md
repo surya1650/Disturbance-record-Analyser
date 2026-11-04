@@ -1,3 +1,14 @@
+# Active goal — real-source inputs and names
+
+Read [plan](REAL_SOURCE_INPUTS_PLAN_v1.md) and
+[checkpoint](REAL_SOURCE_INPUTS_CHECKPOINT.md). User supplied real captures and
+requests persistent same-record ratio answers, automatic editable DR/end names,
+and contextual missing line facts. Preserve prior completed/published report
+and diagram. Use private files only under ignored work; no real data in Git.
+Check active lease before writing. Prior goal continuation remains paused.
+
+---
+
 # Incident line diagram complete and published
 
 [Plan](INCIDENT_LINE_DIAGRAM_PLAN_v1.md),
