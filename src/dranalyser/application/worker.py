@@ -35,8 +35,13 @@ def validate_assignments(bundle, raw, registry):
     from ..workbench.channel_mapping import prepare_mappings
     meta = metadata_value(raw)
     prepare_mappings(bundle, meta['assignments'])
+    inline = meta.get('incident_line')
+    inline_selected = bool(inline and meta['line_id'] == inline['line_id'])
     paths = [x["path"] for x in registry_entries(registry) if x["id"] == meta["line_id"]]
-    if meta["line_id"] and len(paths) != 1:
+    if inline_selected:
+        from ..workbench.incident_inputs import incident_line_model
+        incident_line_model(meta, bundle)
+    elif meta["line_id"] and len(paths) != 1:
         raise ValueError("Selected line must resolve to exactly one registry definition.")
     choices = {n: (v["end"], v["role"]) for n, v in meta["assignments"].items()}
     refusals = assign(bundle, choices, line_id=meta["line_id"])
@@ -101,7 +106,9 @@ class Worker:
         beat.start()
         try:
             run, records = Intake(self.store).materialize(job)
-            bundle = open_bundle(str(records), bundle_id=job["incident_id"])
+            instruments = {name: item['instrument_review'] for name, item in job['metadata'].get('assignments', {}).items()
+                           if item.get('instrument_review')}
+            bundle = open_bundle(str(records), bundle_id=job["incident_id"], instrument_reviews=instruments)
             suggest(bundle, str(self.registry))
             _, bindings, _ = settings_by_record(bundle, [f.name for f in bundle.records()])
             for f in bundle.records():
@@ -119,15 +126,22 @@ class Worker:
                     record.assignment_source = 'collector manifest' if job['stage'] == 'inspect' else 'operator'
             # Freeze the exact registry definition used by this attempt.
             line_path = bundle.line_path
-            if line_path:
+            inline = job['metadata'].get('incident_line')
+            inline_selected = bool(inline and job['metadata'].get('line_id') == inline['line_id'])
+            if inline_selected:
+                from ..workbench.incident_inputs import validate_incident_line, freeze_incident_line
+                validate_incident_line(job)
+                line_path = freeze_incident_line(job['metadata'], run, bundle)
+            elif line_path:
                 snapshot = run / "line.yaml"
                 snapshot.write_bytes(Path(line_path).read_bytes())
                 line_path = str(snapshot)
             res = analyse_bundle(bundle, line_path=line_path, out_dir=str(run / "report"))
             result = finite(dataclasses.asdict(res))
             result["line_snapshot"] = line_path
-            result["parameter_status"] = next((x["parameter_status"] for x in registry_entries(self.registry)
-                                                if x["id"] == bundle.line_id), "not supplied")
+            result["parameter_status"] = ('user-declared' if inline_selected else
+                next((x["parameter_status"] for x in registry_entries(self.registry)
+                      if x["id"] == bundle.line_id), "not supplied"))
             result["location_summary"] = bind_summary(res.location_summary, job, result["parameter_status"])
             self.store.finish(job, "completed" if res.report_path and not res.errors else "attention",
                               bundle=dataclasses.asdict(bundle), result=result,

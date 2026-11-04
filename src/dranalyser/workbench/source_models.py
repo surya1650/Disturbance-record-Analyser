@@ -22,6 +22,8 @@ class SourceModelCache:
     def analyse(self,source,voltage_kv):
         key=(tuple(sorted(source['source_sha256'].items())),voltage_kv,
             tuple((c['key'],c.get('meaning'),c['units'],c['frequency_reference'],c['current_reference']) for c in source['channels']))
+        if source.get('instrument_review_sha256'):
+            key += (source['instrument_review_sha256'],)
         with self.lock:
             if key not in self.entries:
                 self.entries[key]=analyse_models(source)

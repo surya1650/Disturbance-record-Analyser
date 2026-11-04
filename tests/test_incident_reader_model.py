@@ -62,7 +62,7 @@ def test_sample_values_use_complete_region_rms_independently_and_keep_zeros(capt
     captures['one.cfg']['channels'][3]['values'] = [None] * 240
     original = copy.deepcopy(captures)
     report = build_incident_report('.', revision(), event_inputs=saved_inputs(captures))
-    assert [row['display_label'] for row in report['sources']] == ['Recording 1', 'Recording 2']
+    assert [row['display_label'] for row in report['sources']] == ['one', 'two']
     one, two = [{row['meaning']: row for row in item['phase_values']} for item in report['sources']]
     assert one['VA']['pre_rms'] == one['VA']['fault_rms'] == 0
     assert one['IA']['fault_rms'] is None
@@ -195,7 +195,7 @@ def test_used_primary_precedes_attachments_and_keeps_single_end_single(captures)
     row['result'] = dict(used={'R': 'two.cfg'})
     report = build_incident_report('.', row, event_inputs=saved_inputs(captures))
     assert [item['record'] for item in report['sources']] == ['two.cfg']
-    assert report['sources'][0]['display_label'] == 'Recording 1'
+    assert report['sources'][0]['display_label'] == 'two'
     assert report['attachments'][0]['status'] == 'attached; not plotted'
 
 
@@ -350,3 +350,12 @@ def test_supporting_attachments_remain_visible_without_counting_dat_as_capture(c
     assert attachments['settings.rio']['status'] == 'supporting attachment; not plotted'
     assert attachments['event.pdf']['source_sha256'] == 'hash-event.pdf'
     assert len(model['sources']) == 1
+
+
+
+def test_saved_observation_display_name_is_not_overwritten(captures):
+    saved = saved_inputs(captures)
+    saved['inputs']['ends']['S']['substation'] = 'Reviewed observation station'
+    report = build_incident_report('.', revision(), event_inputs=saved)
+    assert report['sources'][0]['display_label'] == 'Reviewed observation station'
+    assert report['sources'][1]['display_label'] == 'two'

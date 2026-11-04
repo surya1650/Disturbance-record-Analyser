@@ -23,8 +23,9 @@ def display_context(an, settings=None, binding=None, review=None):
         common.append('No per-record R-X input review supplied.')
     elif (review.get('record_hash') != an.record.content_hash
           or not binding.get('sha256') or review.get('settings_hash') != binding['sha256']
-          or review.get('channel_mapping', {}) != an.record.notes.get('channel_mapping', {})):
-        common.append('Review is stale: recording, settings or channel mapping differs.')
+          or review.get('channel_mapping', {}) != an.record.notes.get('channel_mapping', {})
+          or review.get('instrument_review_sha256') != an.record.notes.get('instrument_review_sha256')):
+        common.append('Review is stale: recording, settings, channel mapping or instrument inputs differ.')
     for key, label in [('settings_identity', 'Settings belong to this relay'),
                        ('effective_at_event', 'Settings were effective at the fault time'),
                        ('phase_scaling_polarity', 'Phase identities, primary scaling and bus-to-line current polarity')]:

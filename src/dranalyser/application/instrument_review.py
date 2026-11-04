@@ -1,12 +1,16 @@
-"""Reviewed CT/VT ratings create traceable copies; originals remain immutable."""
+"""Save source-bound instrument inputs on the same recording; keep originals immutable."""
+import copy
+import hashlib
 import io
+import json
 import zipfile
 
 from fastapi import HTTPException, Query
 from fastapi.responses import Response
 
+from .store import Conflict
 from .intake import Intake
-from ..workbench.ratio_inputs import prepare_ratio_copy, required_ratios
+from ..workbench.ratio_inputs import prepare_ratio_copy, prepare_ratio_update, required_ratios
 from ..workbench.source_inspection import _source
 
 
@@ -20,13 +24,17 @@ def install_instrument_review(app, store):
         return row
 
     def prepare(incident_id, body, *, saving_allowed=True):
-        allowed = {'record', 'revision', 'review', 'save'} if saving_allowed else {'record', 'revision', 'review'}
+        allowed = {'record', 'revision', 'review', 'save', 'mode'} if saving_allowed else {'record', 'revision', 'review', 'mode'}
         if not isinstance(body, dict) or set(body)-allowed:
             raise ValueError('Unsupported instrument-review request field.')
         if not isinstance(body.get('record'), str) or type(body.get('save', False)) is not bool:
             raise ValueError('Supply a recording and explicit save choice.')
         row = revision_row(incident_id, body.get('revision'))
-        prepared = prepare_ratio_copy(store.root, row, body['record'], body.get('review'))
+        mode = body.get('mode', 'same-record')
+        if mode not in ('same-record', 'copy'):
+            raise ValueError('Choose same-record instrument inputs or an explicit reviewed copy.')
+        builder = prepare_ratio_copy if not saving_allowed or mode == 'copy' else prepare_ratio_update
+        prepared = builder(store.root, row, body['record'], body.get('review'))
         return row, prepared
 
     @app.get('/api/incidents/{incident_id}/instrument-review')
@@ -36,7 +44,9 @@ def install_instrument_review(app, store):
         source, item = _source(store.root, row, record)
         return dict(record=record, revision=revision, record_hash=item.get('content_hash'),
                     source_sha256=source['source_sha256'],
-                    required_ratios=required_ratios(source),
+                    required_ratios=required_ratios(source, item=item),
+                    reviewable_ratios=required_ratios(dict(source, header_inventory=source.get('recorded_header_inventory', source.get('header_inventory', []))), item=item),
+                    applied_review=copy.deepcopy(source.get('instrument_review') or {}),
                     blocking_findings=[f for f in item.get('flags', []) if f.startswith('[BLOCK ')],
                     source_samples=source['sample_count'],
                     note='Enter verified primary/secondary ratings in A for currents or V for voltages. '
@@ -45,9 +55,27 @@ def install_instrument_review(app, store):
     @app.post('/api/incidents/{incident_id}/instrument-review')
     def instrument_review(incident_id: str, body: dict):
         row, prepared = prepare(incident_id, body)
+        mode = body.get('mode', 'same-record')
         result = {key: prepared[key] for key in ('flags', 'blocked', 'reviewed_record')}
-        result['note'] = 'All conformance checks were rerun on a marked reviewed copy; originals are unchanged.'
-        if body.get('save', False):
+        result.update(record=body['record'], save_mode=mode, applied_review=prepared['review'])
+        result['note'] = ('All conformance checks were rerun using source-bound inputs on this recording; original files are unchanged.'
+                          if mode == 'same-record' else 'Conformance was rerun on an explicitly requested reviewed copy; originals are unchanged.')
+        if body.get('save', False) and mode == 'same-record':
+            if store.get(incident_id)['number'] != row['number']:
+                raise Conflict('This incident changed. Refresh before updating instrument inputs.')
+            metadata = copy.deepcopy(row['metadata'])
+            assignments = metadata.setdefault('assignments', {})
+            assignment = assignments.setdefault(body['record'], dict(end='', role='excluded'))
+            if assignment.get('instrument_review') == prepared['review']:
+                return dict(result, incident_id=incident_id, revision=row['number'], duplicate=True)
+            assignment['instrument_review'] = prepared['review']
+            fingerprint = hashlib.sha256(json.dumps(dict(kind='same-record-instrument-inputs',
+                target=incident_id, parent_revision=row['number'], files=row['files'], metadata=metadata),
+                sort_keys=True, allow_nan=False).encode()).hexdigest()
+            job, duplicate = store.submit(name=row['name'], source='instrument-inputs', files=row['files'],
+                metadata=metadata, fingerprint=fingerprint, incident_id=incident_id, expected=row['number'])
+            result.update(incident_id=incident_id, revision=job['number'], duplicate=duplicate)
+        elif body.get('save', False):
             streams = [(name, io.BytesIO(content)) for name, content in prepared['files'].items()]
             original_assignment = dict(row['metadata'].get('assignments', {}).get(body['record'], {}))
             original_assignment.update(end='', role='excluded')

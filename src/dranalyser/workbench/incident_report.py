@@ -16,6 +16,7 @@ from . import event_study
 from .location_summary import public
 from .source_diagnostics import _prepared
 from .source_snapshot import line_facts
+from .record_names import saved_display_name
 from .incident_line import build_line_diagram
 from ..rules.signals import CANONICAL, map_signals
 
@@ -194,13 +195,16 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
     source, item = event_study._source(root, revision, record)
     saved, note = _saved_choice(event_inputs, record, source)
     choice = saved or dict(record=record, timing_mode='auto')
-    choice['substation'] = 'Recording ' + str(index)
+    choice['substation'] = saved_display_name(revision, record, station=source.get('station', ''),
+        explicit=choice.get('substation', ''))[:120]
     base = dict(record=record, display_label=choice['substation'], substation=choice['substation'],
         selection_reason=selection_reason, station=source.get('station', ''), device=source.get('device', ''),
         recorded_times=source.get('recorded_times', {}), source_sha256=source.get('source_sha256', {}),
         sample_count=source.get('sample_count', 0), nominal_frequency_hz=source.get('nominal_frequency_hz'),
         status='available', reason='', issues=list(source.get('issues', [])),
-        observation_inputs_note=note, rms_basis=RMS_BASIS)
+        observation_inputs_note=note, rms_basis=RMS_BASIS,
+        instrument_review=copy.deepcopy(source.get('instrument_review') or {}),
+        instrument_review_sha256=source.get('instrument_review_sha256'))
     try:
         # One source is intentionally prepared at a time. This internal slot is
         # never a physical-end declaration and permits same-relay comparisons.
@@ -224,7 +228,9 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
         row['phase'] = {'A': 'R', 'B': 'Y', 'C': 'B'}.get(row['meaning'][-1], '')
         row['missing_reasons'] = {kind: _missing_reason(source, chosen, row, kind) for kind in ('pre', 'fault', 'post')}
         row['rms_basis'] = RMS_BASIS
-        row['scaling_note'] = ('CFG-declared primary scale; instrument/wiring accuracy is not independently verified.'
+        row['scaling_note'] = ('Primary scale from saved user-declared instrument ratings; original file bytes unchanged, physical accuracy unverified.'
+            if row.get('id') in (base['instrument_review'].get('ratios') or {})
+            else 'CFG-declared primary scale; instrument/wiring accuracy is not independently verified.'
             if row['units'].startswith(('A', 'V')) else 'Physical scaling is unavailable; values remain in recorded counts.')
     # Include phases that are absent or withheld so no source can silently lose
     # one phase. Missing values always have a named reason.

@@ -62,7 +62,7 @@ def test_ground_loops_match_independent_self_mutual_circuit_and_ignore_neutral_c
     json.dumps(result, allow_nan=False)
 
 
-@pytest.mark.parametrize('key', ['record_hash', 'settings_hash', 'channel_mapping'])
+@pytest.mark.parametrize('key', ['record_hash', 'settings_hash', 'channel_mapping', 'instrument_review_sha256'])
 def test_review_cannot_survive_source_or_mapping_change(key):
     args = inputs()
     args[3][key] = {'record_hash': 'c'*64, 'reason': 'different mapping'} if key == 'channel_mapping' else 'c'*64
@@ -70,6 +70,19 @@ def test_review_cannot_survive_source_or_mapping_change(key):
     assert set(result['loops']) == {'AB', 'BC', 'CA'}
     assert not result['zones']['phase'] and not result['zones']['earth']
     assert any('stale' in v for v in result['context']['ground_missing'])
+
+
+def test_scaling_confirmation_is_bound_to_the_applied_instrument_inputs():
+    an, settings, binding, review = inputs()
+    an.record.notes['instrument_review_sha256'] = 'c'*64
+    assert 'AG' not in nav(an, settings, binding, review)['loops']
+    review = clean_rx_review(dict(review, instrument_review_sha256='c'*64))
+    reviewed = nav(an, settings, binding, review)
+    assert 'AG' in reviewed['loops'] and reviewed['zones']['phase']
+    an.record.notes['instrument_review_sha256'] = 'd'*64
+    changed = nav(an, settings, binding, review)
+    assert 'AG' not in changed['loops'] and not changed['zones']['phase']
+    assert any('instrument inputs' in reason for reason in changed['context']['ground_missing'])
 
 
 @pytest.mark.parametrize('key', CONFIRMATIONS)

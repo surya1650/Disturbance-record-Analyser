@@ -27,13 +27,14 @@ def sample_interval(root, revision, filename, channel, lo, hi):
     if not folder.is_relative_to(allowed) or not path.is_relative_to(folder) or not path.is_file():
         raise ValueError('Revision recording path is unavailable.')
     mapping = item.get('channel_mapping') or {}
+    instrument = (revision.get('metadata', {}).get('assignments', {}).get(filename) or {}).get('instrument_review')
     if filename.lower().endswith('.cff'):
-        rec = read_cff(str(path), channel_mapping=mapping)
+        rec = read_cff(str(path), channel_mapping=mapping, instrument_review=instrument)
     else:
         dat = (folder/item['data_file']).resolve()
         if not dat.is_relative_to(folder) or not dat.is_file():
             raise ValueError('Revision DAT path is unavailable.')
-        rec = read_comtrade(str(path), str(dat), channel_mapping=mapping)
+        rec = read_comtrade(str(path), str(dat), channel_mapping=mapping, instrument_review=instrument)
     if rec.content_hash != evidence['record_hash'] or rec.content_hash != item['content_hash']:
         raise ValueError('Stored recording checksum differs from the analysed revision.')
     current = next((c for c in rec.notes['channel_inventory']

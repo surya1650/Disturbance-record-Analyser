@@ -1,6 +1,7 @@
 """Validate and recheck per-record mapping declarations; never alter source files."""
 import re
 
+from ..comtrade.instrument_review import clean_instrument_review
 from ..comtrade.conformance import check
 from ..comtrade.parser import read_cff, read_comtrade
 from ..rules.signals import CANONICAL, map_signals
@@ -43,14 +44,17 @@ def inventory_for(rec):
 def prepare_mappings(bundle, assignments):
     for f in bundle.records():
         f.channel_mapping = clean_mapping(assignments.get(f.name, {}).get('channel_mapping'))
-        if not f.channel_mapping:
+        f.instrument_review = clean_instrument_review(assignments.get(f.name, {}).get('instrument_review', f.instrument_review))
+        if not f.channel_mapping and not f.instrument_review:
             continue
         if not f.ok or f.duplicate_of:
             raise ValueError(f.name+': unreadable or byte-duplicate record cannot be remapped.')
         path = bundle.root+'/'+f.name
         reader = read_cff if f.name.lower().endswith('.cff') else read_comtrade
-        rec = reader(path, channel_mapping=f.channel_mapping)
-        f.mapping_original_flags = list(f.flags)
+        rec = reader(path, channel_mapping=f.channel_mapping, instrument_review=f.instrument_review)
+        f.instrument_review_sha256 = rec.notes.get('instrument_review_sha256', '')
+        if f.channel_mapping:
+            f.mapping_original_flags = list(f.flags)
         check(rec)
         f.flags, f.blocked = [str(flag) for flag in rec.flags], rec.blocked()
         f.channel_inventory = inventory_for(rec)

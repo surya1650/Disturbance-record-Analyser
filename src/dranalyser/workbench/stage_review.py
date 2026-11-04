@@ -3,6 +3,8 @@ import hashlib
 import json
 import re
 
+from ..comtrade.instrument_review import review_digest
+
 CONFIRMATIONS = ('same_incident', 'same_circuit', 'stage_identity')
 
 
@@ -48,6 +50,8 @@ def apply_stage_review(evidence, raw=None, line_id='', incident_id=''):
                 'protection_system': evidence['protection_system'], 'line_id': line_id, 'incident_id': incident_id,
                 'channel_mapping': evidence.get('channel_mapping', {}),
                 'stages': {k: v for k, v in stages.items() if k not in ('inventory_hash', 'review', 'review_status', 'reviewed_groups')}}
+    if evidence.get('instrument_review'):
+        snapshot['instrument_review_sha256'] = review_digest(evidence['instrument_review'])
     digest = hashlib.sha256(json.dumps(snapshot, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
     stages.update(inventory_hash=digest, review={}, review_status='not reviewed', reviewed_groups={})
     if not raw:
@@ -55,7 +59,7 @@ def apply_stage_review(evidence, raw=None, line_id='', incident_id=''):
     review = clean_stage_review(raw)
     stages['review'] = review
     if digest != review['inventory_hash']:
-        stages['review_status'] = 'stale review; record, mapping, identity or stage inventory changed'
+        stages['review_status'] = 'stale review; record, mapping, instrument inputs, identity or stage inventory changed'
     elif not evidence['record_hash'] or stages['status'] != 'observed':
         stages['review_status'] = 'stage source or quality prerequisites unavailable'
     elif not all(review[k] for k in CONFIRMATIONS):

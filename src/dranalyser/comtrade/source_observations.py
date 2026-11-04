@@ -13,7 +13,7 @@ def _read(path, limit):
     return raw
 
 
-def load_source(cfg_path, dat_path=None):
+def load_source(cfg_path, dat_path=None, *, instrument_review=None):
     path=Path(cfg_path)
     out=dict(status='unsupported',issues=[],channels=[],digital=[],sample_count=0,
         axis=dict(status='withheld',elapsed_s=[],reason='Source decode unavailable.'),
@@ -21,7 +21,7 @@ def load_source(cfg_path, dat_path=None):
     try:
         if path.suffix.lower()=='.cff':
             from .source_container import decode_cff
-            return decode_cff(_read(path,65*1024*1024),path.name)
+            return decode_cff(_read(path,65*1024*1024),path.name,instrument_review=instrument_review)
         if path.suffix.lower()!='.cfg':
             raise ValueError('Unsupported source container; explicit CFG/DAT required.')
         cfg=_read(path,1048576)
@@ -34,7 +34,7 @@ def load_source(cfg_path, dat_path=None):
             path.with_suffix('.dat'))
         if not data.is_file():
             return out
-        return decode_source(cfg,_read(data,64*1024*1024),cfg_name=path.name,dat_name=data.resolve().name)
+        return decode_source(cfg,_read(data,64*1024*1024),cfg_name=path.name,dat_name=data.resolve().name,instrument_review=instrument_review)
     except (ValueError,OSError) as exc:
         out.update(status='unsupported',channels=[],digital=[],sample_count=0,
             axis=dict(status='withheld',elapsed_s=[],reason='Source decode unavailable.'))

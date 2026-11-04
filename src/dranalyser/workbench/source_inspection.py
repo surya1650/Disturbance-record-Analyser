@@ -46,13 +46,17 @@ def _source(root, revision, filename):
     if item.get('data_file'):
         dat, dat_hash = _file(folder, item['data_file'], inventory)
         hashes[dat.name] = dat_hash
-    key = (str(cfg), str(dat), tuple(hashes.items()))
+    from ..comtrade.instrument_review import clean_instrument_review, review_digest
+    instrument = clean_instrument_review((revision.get('metadata', {}).get('assignments', {}).get(filename) or {}).get('instrument_review'))
+    key = (str(cfg), str(dat), tuple(hashes.items()), review_digest(instrument))
     # At most two decoded sources, with bounded strict-loader budgets. Hashes are
     # checked on every request, even a cache hit; revision bytes remain immutable.
     with _LOCK:
         if key not in _CACHE:
             # Explicit nonexistent DAT prevents implicit discovery outside inventory.
-            source = load_source(cfg, dat if dat else folder/'__unpaired_dat_not_in_inventory__')
+            source = load_source(cfg, dat if dat else folder/'__unpaired_dat_not_in_inventory__', instrument_review=instrument)
+            if instrument and source.get('instrument_review') != instrument:
+                raise ValueError('Saved instrument inputs could not be applied to this source: '+ '; '.join(source.get('issues', [])))
             decoded_hashes=source.get('source_sha256', {})
             if any(hashes.get(name)!=value for name,value in decoded_hashes.items()):
                 raise ValueError('Source checksum changed during decode.')
@@ -155,6 +159,8 @@ def inspection_record(root, revision, filename):
                 station=source.get('station', ''), device=source.get('device', ''),
                 nominal_frequency_hz=source.get('nominal_frequency_hz'),
                 recorded_times=source.get('recorded_times', {}),
+                instrument_review=source.get('instrument_review', {}),
+                instrument_review_sha256=source.get('instrument_review_sha256'),
                 timeline=display['timeline'],
                 break_indices=display['break_indices'], omitted_break_indices=display['omitted_break_indices'],
                 inventory=source.get('header_inventory', []),

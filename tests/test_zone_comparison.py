@@ -74,6 +74,21 @@ def test_independent_network_geometry_uses_exact_loop_kind_and_settings_base(fau
         np.testing.assert_equal(args[0].ps.phasors[name], before[name])
 
 
+def test_zone_counts_require_the_current_instrument_input_confirmation():
+    an, settings, binding, review = circuit()
+    an.record.notes['instrument_review_sha256'] = 'c'*64
+    assert compare_zones(an, settings, binding, review)['status'] == 'not_evaluable'
+    review['instrument_review_sha256'] = 'c'*64
+    current = compare_zones(an, settings, binding, review)
+    assert current['status'] == 'available', current['reasons']
+    assert current['binding']['instrument_review_sha256'] == 'c'*64
+    assert current['zones'][0]['inside_count'] == len(an.indices())
+    an.record.notes['instrument_review_sha256'] = 'd'*64
+    changed = compare_zones(an, settings, binding, review)
+    assert changed['status'] == 'not_evaluable'
+    assert any('instrument inputs' in reason for reason in changed['reasons'])
+
+
 def test_exact_native_mho_not_its_display_polygon_decides_membership():
     an, settings, binding, review = circuit('AB', scale=1.)
     # Circle centre (5,0), radius5. At angle pi/48 it is inside the circle but

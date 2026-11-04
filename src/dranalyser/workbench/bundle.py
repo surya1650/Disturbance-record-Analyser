@@ -79,6 +79,9 @@ class BundleFile:
     recording_profile: str = "unconfirmed"  # declared reference-table applicability
     channel_inventory: List[dict] = field(default_factory=list)
     channel_mapping: dict = field(default_factory=dict)
+    instrument_review: dict = field(default_factory=dict)
+    instrument_review_sha256: str = ""
+    instrument_original_flags: List[str] = field(default_factory=list)
     mapping_original_flags: List[str] = field(default_factory=list)
     rx_review: dict = field(default_factory=dict)
     stage_review: dict = field(default_factory=dict)
@@ -202,7 +205,7 @@ def _instrument_facts(rec) -> Tuple[float, float, float]:
 
 
 def open_bundle(path: str, workdir: Optional[str] = None,
-                bundle_id: str = "") -> Bundle:
+                bundle_id: str = "", *, instrument_reviews=None) -> Bundle:
     """Resolve a folder or a zip into a bundle.
 
     `workdir` is where a zip is unpacked; it defaults to a sibling of the
@@ -229,6 +232,7 @@ def open_bundle(path: str, workdir: Optional[str] = None,
     bundle = Bundle(bundle_id=bid, root=root, source=src,
                     created_at=_dt.datetime.now().isoformat(timespec="seconds"))
 
+    instrument_reviews = instrument_reviews or {}
     names = _walk(root)
     if os.path.isfile(src) and not src.lower().endswith(".zip"):
         keep = os.path.relpath(src, root).replace("\\", "/")
@@ -247,7 +251,7 @@ def open_bundle(path: str, workdir: Optional[str] = None,
         if ext not in COMTRADE_CFG + COMTRADE_CFF:
             continue                        # not ours; the zip may hold anything
 
-        bf = BundleFile(name=rel, kind="comtrade")
+        bf = BundleFile(name=rel, kind="comtrade", instrument_review=instrument_reviews.get(rel, {}))
         full = os.path.join(root, rel.replace("/", os.sep))
         if ext in COMTRADE_CFG:
             bf.data_file = _partner_dat(root, rel, names)
@@ -256,7 +260,8 @@ def open_bundle(path: str, workdir: Optional[str] = None,
                 bundle.files.append(bf)
                 continue
         try:
-            rec = (read_cff(full) if ext in COMTRADE_CFF else read_comtrade(full))
+            rec = (read_cff(full, instrument_review=bf.instrument_review) if ext in COMTRADE_CFF
+                   else read_comtrade(full, instrument_review=bf.instrument_review))
             check(rec)
         except Exception as exc:            # noqa: BLE001 - reported, not raised
             bf.error = type(exc).__name__ + ": " + str(exc)[:200]
@@ -272,6 +277,7 @@ def open_bundle(path: str, workdir: Optional[str] = None,
         bf.start_time = str(rec.start_time or "")
         bf.trigger_time = str(rec.trigger_time or "")
         bf.content_hash = rec.content_hash
+        bf.instrument_review_sha256 = rec.notes.get('instrument_review_sha256', '')
         from .channel_mapping import inventory_for
         bf.channel_inventory = inventory_for(rec)
         bf.flags = [str(f) for f in rec.flags]

@@ -63,8 +63,8 @@ class IncidentResult:
 
 def _read(bundle: Bundle, bf: BundleFile, end: str):
     full = os.path.join(bundle.root, bf.name.replace("/", os.sep))
-    rec = (read_cff(full, terminal_end=end, channel_mapping=bf.channel_mapping) if full.lower().endswith(".cff")
-           else read_comtrade(full, terminal_end=end, channel_mapping=bf.channel_mapping))
+    rec = (read_cff(full, terminal_end=end, channel_mapping=bf.channel_mapping, instrument_review=bf.instrument_review) if full.lower().endswith(".cff")
+           else read_comtrade(full, terminal_end=end, channel_mapping=bf.channel_mapping, instrument_review=bf.instrument_review))
     return rec
 
 
@@ -124,6 +124,7 @@ def analyse_bundle(bundle: Bundle, line_path: str = "", out_dir: str = "",
                 res.relay_evidence.append(relay_evidence(an, f.name, end, f.role, f.relay_id,
                                                         getattr(f, "protection_system", "unknown")))
                 res.relay_evidence[-1]['mapping_original_flags'] = f.mapping_original_flags
+                res.relay_evidence[-1]['instrument_review'] = f.instrument_review
                 apply_stage_review(res.relay_evidence[-1], f.stage_review, bundle.line_id, bundle.bundle_id)
                 profiles[f.name] = onset_profile(an)
                 try:

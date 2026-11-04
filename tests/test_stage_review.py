@@ -31,7 +31,7 @@ def test_review_can_resolve_repeated_patterns_without_sync_or_window_authorizati
     assert all(not r['clock_quality']['alignment_eligible'] for r in rows)
 
 
-@pytest.mark.parametrize('change', ['record', 'mapping', 'bounds', 'terminal', 'system', 'line', 'policy', 'incident'])
+@pytest.mark.parametrize('change', ['record', 'mapping', 'instruments', 'bounds', 'terminal', 'system', 'line', 'policy', 'incident'])
 def test_changes_invalidate_prior_review(change):
     row = clean_pair()[0]
     review = review_for(row)
@@ -39,6 +39,8 @@ def test_changes_invalidate_prior_review(change):
         row['record_hash'] = 'c'*64
     elif change == 'mapping':
         row['channel_mapping'] = {'reason': 'corrected mapping'}
+    elif change == 'instruments':
+        row['instrument_review'] = {'record_hash': row['record_hash'], 'ratios': {'A1': {'primary': 1000, 'secondary': 1}}}
     elif change == 'bounds':
         row['stages']['intervals'][0]['start_s'] += .01
     elif change == 'terminal':

@@ -341,7 +341,7 @@ def _derive_time(cfg: Cfg, ts_col: np.ndarray, n: int) -> Tuple[np.ndarray, floa
 
 
 def read_comtrade(
-    cfg_path: str, dat_path: Optional[str] = None, terminal_end: str = "", *, channel_mapping=None
+    cfg_path: str, dat_path: Optional[str] = None, terminal_end: str = "", *, channel_mapping=None, instrument_review=None
 ) -> Record:
     """Read a four-file-form COMTRADE record into a canonical Record."""
     with open(cfg_path, "r", encoding="latin-1") as fh:
@@ -354,10 +354,10 @@ def read_comtrade(
                 break
     if dat_path is None or not os.path.exists(dat_path):
         raise ComtradeError("no DAT file found next to " + cfg_path)
-    return _assemble(cfg, open(dat_path, "rb").read(), cfg_path, dat_path, terminal_end, channel_mapping)
+    return _assemble(cfg, open(dat_path, "rb").read(), cfg_path, dat_path, terminal_end, channel_mapping, instrument_review)
 
 
-def read_cff(path: str, terminal_end: str = "", *, channel_mapping=None) -> Record:
+def read_cff(path: str, terminal_end: str = "", *, channel_mapping=None, instrument_review=None) -> Record:
     """Read the 2013 single-file .CFF form."""
     raw = open(path, "rb").read()
     text = raw.decode("latin-1")
@@ -376,14 +376,22 @@ def read_cff(path: str, terminal_end: str = "", *, channel_mapping=None) -> Reco
     else:
         cfg.file_type = "ASCII"
     payload = raw[d.end() :] if cfg.file_type != "ASCII" else text[d.end() :].encode("latin-1")
-    return _assemble(cfg, payload, path, path, terminal_end, channel_mapping)
+    return _assemble(cfg, payload, path, path, terminal_end, channel_mapping, instrument_review)
 
 
 def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
-              terminal_end: str, channel_mapping=None) -> Record:
+              terminal_end: str, channel_mapping=None, instrument_review=None) -> Record:
     from .channel_review import channel_plan
     from .timestamps import recover_time, sample_numbers_valid
     review = channel_mapping or {}
+    h = hashlib.sha256()
+    h.update(open(cfg_path, "rb").read())
+    if dat_path != cfg_path:
+        h.update(dat_bytes)
+    digest = h.hexdigest()
+    from .instrument_review import apply_instrument_review, reviewed_inventory, review_digest
+    original_ratings = {f'A{i+1}': (c.primary, c.secondary) for i, c in enumerate(cfg.analogs)}
+    cfg, instrument = apply_instrument_review(cfg, instrument_review, digest)
     na, nd = cfg.n_analog, cfg.n_digital
     ftype = cfg.file_type.strip().upper()
     if ftype.startswith("ASCII"):
@@ -435,14 +443,15 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
     for k, name in enumerate(digital_keys):
         digital[name] = cols[:, na + k].astype(np.int8)
 
-    h = hashlib.sha256()
-    h.update(open(cfg_path, "rb").read())
-    if dat_path != cfg_path:
-        h.update(dat_bytes)
-    digest = h.hexdigest()
     if review and review.get('record_hash') != digest:
         raise ValueError('Reviewed channel mapping belongs to a different recording hash; review it again.')
 
+    if instrument and any(not np.all(np.isfinite(values)) for values in analog.values()):
+        raise ValueError('Instrument inputs produce nonfinite primary samples; source samples are not repaired.')
+    inventory = reviewed_inventory(inventory, instrument)
+    for item in inventory:
+        if item.get('instrument_reviewed'):
+            item['recorded_primary'], item['recorded_secondary'] = original_ratings[item['id']]
     rec = Record(
         record_id=os.path.splitext(os.path.basename(cfg_path))[0],
         station=cfg.station, device_id=cfg.device_id, rev_year=cfg.rev_year_raw,
@@ -458,6 +467,10 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
                "timestamp_recovery": timing, "declared_endsamp": cfg.total_samples, 'channel_inventory': inventory,
                'channel_mapping': review, 'digital_overrides': digital_overrides},
     )
+    if instrument:
+        rec.notes.update(instrument_review=instrument, instrument_review_sha256=review_digest(instrument))
+        rec.add_flag('RATIO-REVIEW', 'flag', 'User-declared instrument ratings applied to original recording '+digest+
+                     '; '+instrument['evidence']+'; original bytes/gains unchanged.')
     if timing['status'] == 'invalid':
         rec.add_flag('TIME-DAT', 'block', timing['reason'])
     if not sample_numbers_valid(smp):

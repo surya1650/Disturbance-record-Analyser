@@ -11,7 +11,7 @@ def clean_rx_review(raw):
     if raw is None or raw == {}:
         return {}
     allowed = {'record_hash', 'settings_hash', 'channel_mapping', 'reviewer', 'reason', 'ct_ratio', 'vt_ratio',
-               *CONFIRMATIONS}
+               'instrument_review_sha256', *CONFIRMATIONS}
     if not isinstance(raw, dict) or set(raw) - allowed:
         raise ValueError('Invalid R-X review fields.')
     result = {}
@@ -20,6 +20,11 @@ def clean_rx_review(raw):
         if not isinstance(value, str) or not re.fullmatch('[0-9a-f]{64}', value):
             raise ValueError('R-X review requires exact recording and settings hashes.')
         result[key] = value
+    if 'instrument_review_sha256' in raw:
+        value = raw['instrument_review_sha256']
+        if not isinstance(value, str) or not re.fullmatch('[0-9a-f]{64}', value):
+            raise ValueError('R-X review requires the exact applied instrument-input digest.')
+        result['instrument_review_sha256'] = value
     for key, limit in (('reviewer', 200), ('reason', 1000)):
         value = raw.get(key)
         if not isinstance(value, str) or not value.strip() or len(value) > limit:

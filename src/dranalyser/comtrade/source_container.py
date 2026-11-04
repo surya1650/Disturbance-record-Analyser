@@ -32,7 +32,7 @@ def _framed(raw):
     return cfg,marker
 
 
-def decode_cff(raw,name):
+def decode_cff(raw,name, *, instrument_review=None):
     identity=hashlib.sha256(raw).hexdigest()
     out=dict(status='unsupported',issues=[],channels=[],digital=[],sample_count=0,
         axis=dict(status='withheld',elapsed_s=[],reason='Source container decode unavailable.'),
@@ -77,7 +77,8 @@ def decode_cff(raw,name):
             if len(payload)>boundary:
                 _tail(payload[boundary:])
                 payload=payload[:boundary]
-        out=decode_source(cfg,payload,cfg_name='container.cfg',dat_name='container.dat')
+        out=decode_source(cfg,payload,cfg_name='container.cfg',dat_name='container.dat',
+                          instrument_review=instrument_review,_review_identity=identity)
         return out
     except (ValueError,IndexError,UnicodeError) as exc:
         out.update(status='unsupported',channels=[],digital=[],sample_count=0,

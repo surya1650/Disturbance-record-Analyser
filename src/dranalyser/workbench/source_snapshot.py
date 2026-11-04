@@ -1,6 +1,7 @@
 """Source snapshot and declared line facts; missing fields never get defaults."""
 import copy
 import hashlib
+import json
 import math
 import re
 from pathlib import Path
@@ -15,6 +16,33 @@ def _finite(value):
     return float(value) if type(value) in (int,float) and math.isfinite(value) else None
 
 
+def _declared_inputs(revision, out):
+    from .incident_inputs import validate_incident_line
+    try:
+        entry = validate_incident_line(revision)
+    except ValueError:
+        out['provenance'] = 'Saved line inputs are stale or need physical-end review; no model or distance is released.'
+        return out
+    if not entry:
+        return out
+    review = entry['review']
+    labels = {end: (review['ends'].get(end) or {}).get('name') or 'Not available' for end in ('S', 'R')}
+    out.update(id=entry['line_id'], name=' — '.join(v for v in labels.values() if v != 'Not available') or 'Saved incident line inputs',
+        length_km=review.get('length_km'), kv=review.get('kv'), terminals=labels,
+        parameter_status='draft; user supplied, unverified',
+        sha256=hashlib.sha256(json.dumps(entry, sort_keys=True, allow_nan=False).encode()).hexdigest(),
+        provenance='Saved source-bound incident input revision; declared facts, not a frozen operational estimate.')
+    out['sections'] = copy.deepcopy(review.get('sections') or [])
+    if not out['sections'] and review.get('length_km'):
+        divisor = review['length_km'] if review.get('basis') == 'total' else 1 if review.get('basis') == 'per-km' else None
+        out['sections'] = [dict(from_km=0., to_km=review['length_km'], **{
+            key+'_ohm_per_km': _finite(review[key]/divisor) if review.get(key) is not None and divisor else None
+            for key in ('r1', 'x1', 'r0', 'x0')})]
+    out['location'].update(text='Saved line facts are available; an eligible operational fault-distance result has not been calculated.',
+                           overlay_eligible=False)
+    return out
+
+
 def line_facts(root,revision):
     result=revision.get('result') or {}
     out=dict(id='Not available',name='Not available',length_km=None,kv=None,
@@ -23,6 +51,8 @@ def line_facts(root,revision):
         location=dict(status='Not available',text='Line/model and eligible location evidence are not supplied.',km_from_S=None))
     saved=result.get('line_snapshot')
     if not saved:
+        if not result.get('location_summary') and (revision.get('metadata') or {}).get('incident_line'):
+            return _declared_inputs(revision, out)
         if 'location_summary' in result:
             out['location']=snapshot_location(result['location_summary'],revision,None,None,False,result.get('location_text',''))
         return out

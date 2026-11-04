@@ -11,6 +11,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 from .store import Conflict, Store
+from ..workbench.ratio_inputs import clean_ratio_review
 from ..workbench.channel_mapping import clean_mapping
 from ..workbench.rx_review import clean_rx_review
 from ..workbench.stage_review import clean_stage_review
@@ -39,8 +40,8 @@ def digest(path):
 
 
 def metadata_value(raw):
-    if not isinstance(raw, dict) or set(raw) - {"line_id", "assignments", "auto_analyse", "incident_id"}:
-        raise ValueError("Metadata accepts line_id, assignments, auto_analyse and incident_id only.")
+    if not isinstance(raw, dict) or set(raw) - {"line_id", "assignments", "auto_analyse", "incident_id", "incident_line"}:
+        raise ValueError("Metadata accepts line_id, assignments, auto_analyse, incident_id and incident_line only.")
     line_id = raw.get("line_id", "")
     choices = raw.get("assignments", {})
     if not isinstance(line_id, str) or len(line_id) > 200 or not isinstance(choices, dict):
@@ -48,7 +49,7 @@ def metadata_value(raw):
     cleaned = {}
     for name, value in choices.items():
         name = safe_name(name)
-        if not isinstance(value, dict) or set(value) - {"end", "role", "protection_system", "recording_profile", "channel_mapping", "rx_review", "stage_review"}:
+        if not isinstance(value, dict) or set(value) - {"end", "role", "protection_system", "recording_profile", "channel_mapping", "rx_review", "stage_review", "instrument_review"}:
             raise ValueError(f"Invalid assignment: {name}")
         end, role = value.get("end", ""), value.get("role", "excluded")
         if end not in ("", "S", "R") or role not in ("primary", "corroborating", "excluded"):
@@ -72,6 +73,9 @@ def metadata_value(raw):
         review = clean_rx_review(value.get('rx_review'))
         if review:
             cleaned[name]['rx_review'] = review
+        instrument_review = clean_ratio_review(value.get('instrument_review'))
+        if instrument_review:
+            cleaned[name]['instrument_review'] = instrument_review
         stage_review = clean_stage_review(value.get('stage_review'))
         if stage_review:
             cleaned[name]['stage_review'] = stage_review
@@ -79,7 +83,11 @@ def metadata_value(raw):
     target = raw.get("incident_id")
     if not isinstance(auto, bool) or (target is not None and not re.fullmatch(r"[0-9a-f]{32}", str(target))):
         raise ValueError("Invalid auto_analyse or incident_id.")
-    return {"line_id": line_id, "assignments": cleaned, "auto_analyse": auto, "incident_id": target}
+    out = {"line_id": line_id, "assignments": cleaned, "auto_analyse": auto, "incident_id": target}
+    if raw.get('incident_line'):
+        from ..workbench.incident_inputs import clean_incident_line
+        out['incident_line'] = clean_incident_line(raw['incident_line'])
+    return out
 
 
 class Intake:
@@ -167,7 +175,12 @@ class Intake:
             if previous:
                 old = previous["metadata"]
                 meta["line_id"] = meta["line_id"] or old.get("line_id", "")
-                meta["assignments"] = {**old.get("assignments", {}), **meta["assignments"]}
+                prior_assignments = old.get("assignments", {})
+                meta["assignments"] = {**prior_assignments, **{
+                    key: {**prior_assignments.get(key, {}), **value}
+                    for key, value in meta["assignments"].items()}}
+                if old.get('incident_line') and 'incident_line' not in meta:
+                    meta['incident_line'] = old['incident_line']
             fingerprint = hashlib.sha256(json.dumps(
                 {"target": target_id, "files": sorted(files.values(), key=lambda f: f["name"]), "metadata": meta},
                 sort_keys=True).encode()).hexdigest()

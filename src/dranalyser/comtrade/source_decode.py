@@ -24,7 +24,7 @@ def _list(values):
     return [float(v) if np.isfinite(v) else None for v in values]
 
 
-def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None):
+def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None, instrument_review=None, _review_identity=None):
     out=dict(status='unsupported',issues=[],channels=[],digital=[],sample_count=0,
              axis=dict(status='withheld',elapsed_s=[],reason='Source format not supported.'),
              content_hash='',authorizes_location=False,alignment_eligible=False)
@@ -61,6 +61,12 @@ def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None):
             return out
         out['content_hash']=hashlib.sha256(cfg_bytes+dat_bytes).hexdigest()
         out['source_sha256'][dat_name]=hashlib.sha256(dat_bytes).hexdigest()
+        from .instrument_review import apply_instrument_review, reviewed_inventory, review_digest
+        cfg, instrument = apply_instrument_review(cfg, instrument_review, _review_identity or out['content_hash'])
+        if instrument:
+            out['recorded_header_inventory'] = [dict(row) for row in out['header_inventory']]
+            out['header_inventory'] = reviewed_inventory(out['header_inventory'], instrument)
+            out.update(instrument_review=instrument, instrument_review_sha256=review_digest(instrument))
         if cfg.file_type=='ASCII':
             rows=[row.split(',') for row in dat_bytes.decode('latin1').replace(DOS_EOF,'').splitlines() if row.strip()]
             if not 1<=len(rows)<=200000 or len(rows)*(2+na+nd)>4000000:
@@ -129,6 +135,8 @@ def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None):
             fields+=['']*max(0,13-len(fields))
             a,b,skew,primary,secondary=map(_number,[fields[k] for k in (5,6,7,10,11)])
             unit=fields[4].upper()
+            if instrument and 'A'+str(i+1) in instrument['ratios']:
+                primary, secondary = cfg.analogs[i].primary, cfg.analogs[i].secondary
             gain=1000 if unit in ('KV','KA') else 1
             valid=a is not None and b is not None and unit in ('V','A','KV','KA') and fields[12].upper() in ('P','S')
             ratio=1
@@ -150,7 +158,7 @@ def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None):
                 if valid:
                     vals=converted
             out['channels'].append(dict(key=f'A{i+1}',label=fields[1],
-                units=(('V' if unit.endswith('V') else 'A')+' (CFG-declared, unverified)') if valid else 'raw counts',
+                units=(('V' if unit.endswith('V') else 'A')+(' (reviewed ratings, unverified)' if instrument and 'A'+str(i+1) in instrument['ratios'] else ' (CFG-declared, unverified)')) if valid else 'raw counts',
                 values=_list(vals),frequency_reference=map_channel(fields[1],unit,fields[2],naming) in ('VA','VB','VC'),skew_us=skew,
                 current_reference=map_channel(fields[1],unit,fields[2],naming) in ('IA','IB','IC'),
                 scaling_verified=False))

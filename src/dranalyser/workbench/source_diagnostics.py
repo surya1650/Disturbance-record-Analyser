@@ -79,6 +79,8 @@ def diagnostic_identity(root, revision, filename, options=None, *, registry=None
     context_hash=hashlib.sha256(json.dumps(context,sort_keys=True).encode()).hexdigest()
     identity=dict(incident_id=revision['incident_id'],revision=revision['number'],file=filename,
                   source_sha256=source['source_sha256'],options=options,revision_context_sha256=context_hash,line_sha256=(resolved_line if resolved_line is not None else resolve_line(root,revision,options,registry))['sha256'])
+    if source.get('instrument_review_sha256'):
+        identity['instrument_review_sha256']=source['instrument_review_sha256']
     identity['job_id']=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()
     return identity
 

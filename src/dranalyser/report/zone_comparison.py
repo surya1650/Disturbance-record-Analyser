@@ -51,7 +51,8 @@ def _mapping(value):
 
 def _review(value):
     """Match intake's declared review contract; maths remains in shared modules."""
-    fields = {'record_hash', 'settings_hash', 'channel_mapping', 'reviewer', 'reason', 'ct_ratio', 'vt_ratio', *_CONFIRMATIONS}
+    fields = {'record_hash', 'settings_hash', 'channel_mapping', 'reviewer', 'reason', 'ct_ratio', 'vt_ratio',
+              'instrument_review_sha256', *_CONFIRMATIONS}
     if not isinstance(value, dict) or not value or set(value) - fields:
         raise ValueError('A current per-record R-X input review is required; malformed/extra fields are refused.')
     out = {}
@@ -59,6 +60,10 @@ def _review(value):
         if not _hash(value.get(key)):
             raise ValueError('R-X input review needs exact recording and settings hashes.')
         out[key] = value[key]
+    if 'instrument_review_sha256' in value:
+        if not _hash(value['instrument_review_sha256']):
+            raise ValueError('R-X input review needs the exact applied instrument-input digest.')
+        out['instrument_review_sha256'] = value['instrument_review_sha256']
     for key, limit in (('reviewer', 200), ('reason', 1000)):
         if not isinstance(value.get(key), str) or not value[key].strip() or len(value[key]) > limit:
             raise ValueError('R-X input review needs reviewer and supporting evidence within its length limits.')
@@ -203,6 +208,8 @@ def compare_zones(an, settings=None, binding=None, review=None):
         saved_binding = {k: binding[k] for k in ('status', 'file', 'sha256') if isinstance(binding.get(k), str)}
         out['binding'] = dict(record_hash=source, settings_hash=settings_hash, channel_mapping=current_mapping,
                               review=checked_review, settings_source=saved_binding)
+        if an.record.notes.get('instrument_review_sha256'):
+            out['binding']['instrument_review_sha256'] = an.record.notes['instrument_review_sha256']
         if not source or not settings_hash or binding.get('sha256') != settings_hash:
             raise ValueError('Exact recording and actual-settings hashes must match the associated source inputs.')
         if checked_review['record_hash'] != source or checked_review['settings_hash'] != settings_hash or checked_review['channel_mapping'] != current_mapping:

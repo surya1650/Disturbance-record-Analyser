@@ -88,6 +88,8 @@ def create_app(root="out/application", registry="data/registry", inbox=None, wor
     install_inspection(app, store, registry)
     from .incident_report import install_incident_reports
     install_incident_reports(app, store)
+    from .incident_inputs import install_incident_inputs
+    install_incident_inputs(app, store)
 
     @app.middleware('http')
     async def local_access(request, call_next):
@@ -155,6 +157,10 @@ def create_app(root="out/application", registry="data/registry", inbox=None, wor
         if not row:
             raise KeyError(incident_id)
         row.update(store.history(incident_id))
+        from ..workbench.record_names import saved_display_name
+        for item in (row.get('bundle') or {}).get('files', []):
+            if item.get('kind') == 'comtrade':
+                item['display_name'] = saved_display_name(row, item['name'], station=item.get('station', ''))
         return row
 
     @app.post('/api/incidents/{incident_id}/review', status_code=202)
@@ -167,8 +173,17 @@ def create_app(root="out/application", registry="data/registry", inbox=None, wor
         raw = row['bundle']
         bundle = Bundle(**{k: v for k, v in raw.items() if k != 'files'},
                         files=[BundleFile(**v) for v in raw['files']])
-        meta = validate_assignments(bundle, {'line_id': body.line_id, 'assignments': body.assignments,
-                                             'auto_analyse': True}, registry)
+        # Instrument inputs belong to a capture, independently of an end/line
+        # choice. Omitted source reviews survive changing these assignments.
+        assignments = {name: dict(value) for name, value in body.assignments.items()}
+        for name, prior in row['metadata'].get('assignments', {}).items():
+            if prior.get('instrument_review'):
+                assignments.setdefault(name, dict(end='', role='excluded')).setdefault(
+                    'instrument_review', prior['instrument_review'])
+        inputs = dict(line_id=body.line_id, assignments=assignments, auto_analyse=True)
+        if row['metadata'].get('incident_line'):
+            inputs['incident_line'] = row['metadata']['incident_line']
+        meta = validate_assignments(bundle, inputs, registry)
         meta.pop('incident_id', None)
         store.review(incident_id, body.revision, meta)
         return {'state': 'queued'}

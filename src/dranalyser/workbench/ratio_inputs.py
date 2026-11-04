@@ -1,63 +1,82 @@
-"""Explicit instrument-rating review produces a traceable copy, never edits originals."""
+"""Source-bound instrument inputs and optional exports preserve original bytes."""
 import hashlib
 import json
 import math
-import re
 import tempfile
 from pathlib import Path
 
 import numpy as np
 
 from ..comtrade.conformance import check
+from ..comtrade.instrument_review import clean_instrument_review
 from ..comtrade.parser import read_cff, read_comtrade
 from ..comtrade.source_container import _framed
 from .source_inspection import _source
 
 
-def required_ratios(source):
+def clean_ratio_review(raw):
+    """Validate persisted source-bound inputs at the workbench service boundary."""
+    return clean_instrument_review(raw)
+
+
+def required_ratios(source, *, item=None, include_auxiliary=False):
     def positive(value):
         try:
             return math.isfinite(float(value)) and float(value) > 0
         except (ValueError, TypeError):
             return False
+    needed = set()
+    if not include_auxiliary:
+        from ..comtrade.source_identity import source_meanings
+        meanings = source_meanings(source)
+        for row in (item or {}).get('channel_inventory', []):
+            if row.get('kind') == 'analog' and row.get('selected'):
+                meanings[row['id']] = row['selected']
+        meanings.update(((item or {}).get('channel_mapping') or {}).get('analog', {}))
+        needed = {key for key, value in meanings.items() if value in ('IA', 'IB', 'IC', 'VA', 'VB', 'VC')}
+        needed.update((source.get('instrument_review') or {}).get('ratios', {}))
     return [h for h in source.get('header_inventory', []) if h['kind'] == 'analog'
+            and (include_auxiliary or h['id'] in needed)
             and h.get('primary_secondary', '').strip().upper() == 'S'
             and h.get('declared_units', '').strip().upper() in ('A', 'KA', 'V', 'KV')
-            and not (positive(h.get('primary')) and positive(h.get('secondary')))]
+            and not (positive(h.get('primary')) and positive(h.get('secondary'))
+                     and float(h['primary']) != float(h['secondary']))]
+
+
+def prepare_ratio_update(root, row, filename, review):
+    """Recheck declared inputs on the same capture, without creating source files."""
+    source, item = _source(root, row, filename)
+    if source.get('join') or Path(filename).suffix.lower() not in ('.cfg', '.cff'):
+        raise ValueError('Review an original CFG/DAT or CFF capture, not a joined timeline.')
+    clean = clean_instrument_review(review)
+    if not clean or clean['record_hash'] != item.get('content_hash'):
+        raise ValueError('Instrument inputs belong to a different original recording. Reopen this capture.')
+    path = Path(row['bundle']['root']) / filename
+    mapping = item.get('channel_mapping') or {}
+    rec = (read_cff(str(path), channel_mapping=mapping, instrument_review=clean)
+           if filename.lower().endswith('.cff') else
+           read_comtrade(str(path), channel_mapping=mapping, instrument_review=clean))
+    if any(not np.all(np.isfinite(values)) for values in rec.analog.values()):
+        raise ValueError('Instrument inputs produce nonfinite primary values; source samples are not repaired.')
+    check(rec)
+    return dict(record=filename, reviewed_record=filename, save_mode='same-record',
+                review=clean, flags=[str(flag) for flag in rec.flags], blocked=rec.blocked())
 
 
 def prepare_ratio_copy(root, row, filename, review):
     source, item = _source(root, row, filename)
     if source.get('join') or Path(filename).suffix.lower() not in ('.cfg', '.cff'):
         raise ValueError('Review an original CFG/DAT or CFF capture, not a joined timeline.')
-    if not isinstance(review, dict) or set(review)-{'record_hash', 'reviewer', 'evidence', 'confirmed_secondary', 'ratios'}:
-        raise ValueError('Provide the recording hash, reviewer, evidence, secondary confirmation and channel ratios.')
-    if review.get('record_hash') != item.get('content_hash') or not re.fullmatch('[0-9a-f]{64}', str(review.get('record_hash', ''))):
+    clean = clean_instrument_review(review)
+    if not clean or clean['record_hash'] != item.get('content_hash'):
         raise ValueError('Ratio review belongs to a different recording. Reopen this capture.')
-    for field, limit in (('reviewer', 120), ('evidence', 2000)):
-        if not isinstance(review.get(field), str) or not review[field].strip() or len(review[field]) > limit:
-            raise ValueError('Supply '+field+' for the actual CT/VT ratings; defaults are not accepted.')
-    if review.get('confirmed_secondary') is not True:
-        raise ValueError('Confirm that the CFG-declared secondary quantities and their a/b gains are appropriate for these ratings.')
-    required = required_ratios(source)
-    ratios = review.get('ratios')
-    if not required:
+    recorded = dict(source, header_inventory=source.get('recorded_header_inventory', source.get('header_inventory', [])))
+    eligible = {h['id']: h for h in required_ratios(recorded, include_auxiliary=True)}
+    if not eligible:
         raise ValueError('This capture has no missing secondary instrument ratios to review.')
-    if not isinstance(ratios, dict) or set(ratios) != {h['id'] for h in required}:
-        raise ValueError('Provide primary and secondary ratings for every listed missing-ratio channel, and no other channels.')
-    clean = dict(record_hash=review['record_hash'], reviewer=review['reviewer'].strip(),
-                 evidence=review['evidence'].strip(), confirmed_secondary=True, ratios={})
-    for h in required:
-        values = ratios[h['id']]
-        if not isinstance(values, dict) or set(values) != {'primary', 'secondary'}:
-            raise ValueError(h['id']+': enter both primary and secondary ratings.')
-        for value in values.values():
-            if type(value) not in (float, int) or not math.isfinite(value) or not 1e-9 <= value <= 1e12:
-                raise ValueError(h['id']+': ratings must be finite positive numbers, not zero or a guessed default.')
-        factor = values['primary']/values['secondary']
-        if not 1e-12 <= factor <= 1e12:
-            raise ValueError(h['id']+': the primary/secondary factor exceeds the supported numerical range.')
-        clean['ratios'][h['id']] = dict(values)
+    if set(clean['ratios']) - set(eligible):
+        raise ValueError('Instrument inputs may only name original missing secondary-ratio channels.')
+    required = [eligible[key] for key in clean['ratios']]
     folder = Path(row['bundle']['root'])
     inventory = {f['name']: f for f in row['files']}
 
@@ -100,7 +119,7 @@ def prepare_ratio_copy(root, row, filename, review):
             raise ValueError('A matching original DAT is required for the conformance recheck.')
         payloads.update({'reviewed.cfg': revised, 'reviewed.dat': original(item['data_file'])})
     manifest = dict(original_file=filename, original_sha256=source['source_sha256'], review=clean,
-                    original_channel_inventory=source.get('header_inventory', []),
+                    original_channel_inventory=recorded.get('header_inventory', []),
                     input_units='Current ratings in A; voltage ratings in V. Both sides use the same unit.',
                     original_files_unchanged=True, samples_changed=False, clock_changed=False,
                     note='User-declared instrument ratings with reviewer/evidence; not independent physical authentication.')

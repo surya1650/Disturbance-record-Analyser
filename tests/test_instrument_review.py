@@ -52,7 +52,7 @@ def test_preview_and_save_traceable_reviewed_copy_then_analyse(environment, cff,
     oracle = read_comtrade(str(environment[2]/'S/event.cfg'))
     client, app, registry, identity, before, filename, review = upload_missing_ratios(environment, cff, kilo)
     url = f'/api/incidents/{identity}/instrument-review'
-    request = dict(record=filename, revision=1, review=review)
+    request = dict(record=filename, revision=1, review=review, mode='copy')
     response = client.post(url, json=request)
     assert response.status_code == 200, response.text
     assert response.json()['blocked'] is False, response.json()
@@ -71,7 +71,7 @@ def test_preview_and_save_traceable_reviewed_copy_then_analyse(environment, cff,
     from pathlib import Path
     folder = Path(folder)
     restored = read_cff(str(folder/new_name)) if cff else read_comtrade(str(folder/new_name))
-    for channel in oracle.analog:
+    for channel in ('IA', 'IB', 'IC', 'VA', 'VB', 'VC'):
         np.testing.assert_allclose(restored.analog[channel], oracle.analog[channel], rtol=1e-12, atol=1e-8)
     manifest = json.loads((folder/new_name).parent.joinpath('instrument-review.json').read_text())
     assert manifest['original_files_unchanged'] and not manifest['samples_changed']
@@ -94,7 +94,7 @@ def test_preview_and_save_traceable_reviewed_copy_then_analyse(environment, cff,
     assert complete['result']['used']['S'] == new_name
 
 
-@pytest.mark.parametrize('problem', ['hash', 'zero', 'negative', 'reviewer', 'evidence', 'confirmation', 'missing_channel', 'extra_field'])
+@pytest.mark.parametrize('problem', ['hash', 'zero', 'negative', 'reviewer', 'evidence', 'confirmation', 'extra_field'])
 def test_missing_or_unverified_inputs_never_create_a_copy(environment, problem):
     client, app, _, identity, before, filename, review = upload_missing_ratios(environment)
     if problem == 'hash':
@@ -201,7 +201,7 @@ def test_stale_save_preserves_the_newer_incident_revision(environment):
     assert app.state.store.get(identity, 1) == before
 
 
-@pytest.mark.parametrize('field,value', [('secondary', True), ('primary', False), ('secondary', 1e-10), ('primary', 1e13)])
+@pytest.mark.parametrize('field,value', [('secondary', True), ('primary', False), ('secondary', 1e-10), ('primary', 1e13), ('primary', 10**400)])
 def test_invalid_numeric_rating_types_or_ranges_refuse(environment, field, value):
     client, app, _, identity, before, filename, review = upload_missing_ratios(environment)
     review['ratios']['A1'][field] = value

@@ -11,8 +11,8 @@ def audit_bundle(bundle, records, settings, bindings):
         try:
             if rec is None and f.ok:
                 path = bundle.root + '/' + f.name
-                rec = (read_cff(path, channel_mapping=f.channel_mapping) if f.name.lower().endswith('.cff')
-                       else read_comtrade(path, channel_mapping=f.channel_mapping))
+                rec = (read_cff(path, channel_mapping=f.channel_mapping, instrument_review=f.instrument_review) if f.name.lower().endswith('.cff')
+                       else read_comtrade(path, channel_mapping=f.channel_mapping, instrument_review=f.instrument_review))
             row = relay_checklist(rec, settings.get(f.name), bindings[f.name],
                                   getattr(f, 'recording_profile', 'unconfirmed'), reason)
         except Exception as exc:
