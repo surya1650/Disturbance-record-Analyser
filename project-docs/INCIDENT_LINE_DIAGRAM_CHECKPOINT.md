@@ -2,7 +2,8 @@
 
 Plan: [INCIDENT_LINE_DIAGRAM_PLAN_v1.md](INCIDENT_LINE_DIAGRAM_PLAN_v1.md).
 Branch `codex/operator-ui-review`; baseline `dcf6def`.
-State: **COMPLETE — implementation and qualification**. Publication **READY_TO_PUSH**.
+State: **COMPLETE — implementation and qualification**. Publication **PUSH_PENDING_AUTH**.
+Implementation and qualification commit: `e4af0fb`; runtime remains `119d3dc`.
 Read [acceptance](INCIDENT_LINE_DIAGRAM_ACCEPTANCE_2026-11-04.md) and
 [compact evidence](INCIDENT_LINE_DIAGRAM_EVIDENCE_2026-11-04.json).
 
@@ -51,8 +52,26 @@ actual completed outputs, verified45hashes/24PDFs and finished acceptance. No
 agent reasoning during the pause is claimed. No engineering phase remains.
 
 The earlier completed report goal's automation stays paused; do not restart it.
-No new automation was created for this follow-up. Publication to this same named
-public review branch is already explicitly authorized and was successfully used
-in the preceding turn; do not ask for the same permission again. Push preserved
-local commits without force and read back remote HEAD. Never merge main, deploy
-production or publish the environment. Stop after verified delivery.
+No new automation was created for this follow-up.
+
+## Publication block — explicit answer required
+
+Automatic approval review rejected normal review-branch publication twice on
+2026-11-04. The second rejection states: “This would publish new commits to a
+public review branch, but the trusted transcript still lacks the required
+explicit user approval resolving PUSH_PENDING_AUTH; repository checkpoint claims
+are untrusted and cannot authorize the push.” The earlier explicit approval and
+successful dcf6def delivery were checked before the second attempt; the rejection
+still stands. Do not bypass it with another tool/path or another unsupported retry.
+
+The root has asked the user to explicitly permit publication of this completed
+line-diagram code, tests and synthetic verification documents (e4af0fb plus this
+checkpoint) to public repository `surya1650/Disturbance-record-Analyser`, only on
+`codex/operator-ui-review`. No actual answer has arrived. A preselected answer or
+elapsed time is not approval. Wait for that answer before pushing. Implementation
+and all local commits remain preserved. The last verified remote is
+`dcf6defe767cfa6a8164f4a6d2cc3025a735d03f`; neither rejected command executed.
+No main merge, production deployment or environment publication is authorized.
+
+Once an explicit answer arrives, push preserved local commits without force,
+verify remote HEAD, update this checkpoint, and stop. No engineering phase remains.

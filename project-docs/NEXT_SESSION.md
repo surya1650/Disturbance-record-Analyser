@@ -1,4 +1,4 @@
-# Incident line diagram complete — publication ready
+# Incident line diagram complete — publication approval pending
 
 [Plan](INCIDENT_LINE_DIAGRAM_PLAN_v1.md),
 [checkpoint](INCIDENT_LINE_DIAGRAM_CHECKPOINT.md),
@@ -6,8 +6,9 @@
 New four-page report includes named terminal CBs, connected circuit, declared
 full length/voltage and existing eligible method-labelled fault distances.
 Qualified119d3dc:2279PASS/28private skips,24actual four-page PDFs without clipping,
-Stage-A10000PASS .4361% cleanp95.45runtime hashes unchanged. Only authorized
-review-branch push/remote verification remains; no new engineering work. Preserve
+Stage-A10000PASS .4361% cleanp95.45runtime hashes unchanged. **PUSH_PENDING_AUTH**: auto-review twice rejected the new public payload and an
+explicit publication answer is now pending. Do not retry/bypass until answered.
+Only review-branch push/remote verification remains; no new engineering work. Preserve
 all commits/work, keep previous continuation paused and stop after delivery.
 
 ---

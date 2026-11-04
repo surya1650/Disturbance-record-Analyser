@@ -2,7 +2,7 @@
   "version": 1,
   "qualified_runtime_commit": "119d3dc96523139c61455293946accfc8466c65a",
   "data_scope": "Synthetic sources only; six geometry cases exercise presentation of supplied values, not new estimator outputs.",
-  "publication": "READY_TO_PUSH",
+  "publication": "PUSH_PENDING_AUTH",
   "tests": {
     "passed": 2279,
     "private_data_skips": 28,
@@ -409,5 +409,8 @@
     "src/dranalyser/report/incident_summary.py": "8d18201bcc425524eefd7f13ca29890ea6d3e80824b5dafedbe86f5c17d41375",
     "src/dranalyser/workbench/incident_line.py": "1549adfeba42c33b3719a021752bf90aad99f2398999150e176c715832453465",
     "src/dranalyser/workbench/incident_report.py": "da26bf4eb1ce7a879aed33a80cdc66df8f1ef29f7ed33f860e01d59e8bae7394"
-  }
+  },
+  "implementation_qualification_commit": "e4af0fb",
+  "remote_verified_head": "dcf6defe767cfa6a8164f4a6d2cc3025a735d03f",
+  "publication_block": "Automatic approval review rejected this public review-branch push twice; explicit user answer for the line-diagram payload has been requested and remains pending."
 }

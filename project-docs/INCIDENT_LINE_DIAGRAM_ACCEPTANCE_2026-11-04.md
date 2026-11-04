@@ -76,13 +76,13 @@ private corpus/patrol truth is unavailable. No new field-accuracy claim is made.
 - P0 `72f260f`: bounded plan/checkpoint and ownership.
 - P1 `7ce9ce9`: frozen line/terminal/observation/location model and tests.
 - P2 `119d3dc`: diagram SVG, compact page1, API/UI integration and renderer tests.
-- P3: complete qualification/evidence and synthetic sample export; publication ready.
-- Final publication checkpoint follows the authorized push and remote HEAD readback.
+- P3 `e4af0fb`: complete qualification/evidence and synthetic sample export.
+- P4: local publication-block checkpoint; no push occurred.
 
 All runtime gates above and source hashes are satisfied. Full repository lint
 still has26 inherited findings; it is not claimed clean.
-Review-branch publication is already authorized; the prior completed goal's
-continuation stays paused. No main merge, deployment or environment publication.
+The prior completed goal's continuation stays paused. No main merge, deployment
+or environment publication. Public publication is blocked as recorded below.
 
 
 The24actual PDFs comprise13source fixtures,6provided-model geometry stress cases
@@ -110,3 +110,10 @@ checks completed; after the user's explicit continuation, root verified the
 actual logs/artifacts and45runtime hashes. No continued agent reasoning during
 the pause is claimed. All owned QA servers are stopped, and the earlier goal's
 continuation remains paused. Review-branch publication is the only remaining step.
+
+**PUSH_PENDING_AUTH**: automatic approval review twice rejected publishing this
+new payload despite the earlier approval/published delivery record. It requires
+an explicit current answer permitting this line-diagram code/tests/synthetic docs
+to the named public repository and review branch. That question is pending; no
+push ran and no alternate path was used. All implementation/qualification commits
+remain local; last verified remote HEAD is dcf6defe767cfa6a8164f4a6d2cc3025a735d03f.

@@ -6,6 +6,18 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-04 — Line-diagram public push blocked after qualification
+
+Implementation/qualification e4af0fb is complete locally, runtime119d3dc unchanged.
+Automatic approval review rejected the normal public review-branch push twice,
+including after verification of prior explicit approval/dcf6def delivery. Its
+stated reason requires a fresh explicit answer resolving PUSH_PENDING_AUTH for
+this payload; repository approval records were not accepted as authorization.
+The user has been asked to approve this code/tests/synthetic evidence/checkpoint
+to the named public repository/review branch. No answer yet; no alternate path
+or actual push. Remote remains last-verifieddcf6def. Local commits/samplePDF
+preserved, QAserversstopped, priorautomationpaused. No engineering work remains.
+
 ## 2026-11-04 — Incident line diagram qualified
 
 P0 72f260f / P1 7ce9ce9 / P2 119d3dc add frozen line/terminal/CB observation

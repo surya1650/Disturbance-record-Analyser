@@ -55,3 +55,10 @@ Root owns integration checks, budgets, documentation and publication. No real
 substation data or native automation/connection identifiers enter the public repo.
 The prior publishing permission was explicitly granted and successfully used;
 do not request it again for this authorized follow-up on the same review branch.
+
+
+Publication review update2026-11-04: the earlier permission remains part of the
+user's task context, but automatic approval review has rejected this new public
+payload twice. The checkpoint's PUSH_PENDING_AUTH block now governs publication;
+a fresh explicit answer for the completed line-diagram payload is required before
+any push. Implementation/verification are complete and preserved locally.
