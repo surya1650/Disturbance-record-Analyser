@@ -1,5 +1,9 @@
 # Continue the autonomous analyser work
 
+Latest requested follow-up: [incident line diagram](INCIDENT_LINE_DIAGRAM_PLAN_v1.md)
+and [its checkpoint](INCIDENT_LINE_DIAGRAM_CHECKPOINT.md). Check that status before
+stopping at the completed earlier report goal below.
+
 The current primary goal is the [clear incident report and simple portal](INCIDENT_REPORT_PORTAL_GOAL_v1.md).
 Read its [checkpoint](INCIDENT_REPORT_PORTAL_CHECKPOINT.md) first, including the
 active-writer lease and recorded publication state. The user explicitly approved

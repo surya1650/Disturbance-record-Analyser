@@ -1,3 +1,15 @@
+# Active follow-up — incident line diagram
+
+Read [line-diagram plan](INCIDENT_LINE_DIAGRAM_PLAN_v1.md) and
+[checkpoint](INCIDENT_LINE_DIAGRAM_CHECKPOINT.md). The user requests a report
+schematic with terminal CBs, connecting line, full length and eligible calculated
+fault distances. This is new authorized work after the completed report goal
+below. Preserve that runtime and all historical artifacts. Check the new lease
+before writing. Existing review-branch publication permission remains valid;
+keep the earlier completed goal's continuation paused.
+
+---
+
 # Primary goal complete — clear report and simple portal
 
 [Goal](INCIDENT_REPORT_PORTAL_GOAL_v1.md),

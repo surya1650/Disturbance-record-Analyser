@@ -6,6 +6,16 @@ big fix). State plainly what was done, what was run, and what is outstanding. "B
 
 ---
 
+## 2026-11-04 — Report line-diagram follow-up active
+
+The user requests terminal CBs, connecting circuit, full line length and calculated
+fault distances in the four-page incident report. INCIDENT_LINE_DIAGRAM_PLAN_v1.md
+and its checkpoint track this bounded follow-up from dcf6def. Frozen source/line
+facts and existing location gates are reused; missing breaker/network states stay
+unknown. Model/SVG and actual PDF qualification have separate owners. Existing
+publication permission remains valid. The previous completed goal's continuation
+stays paused; no numerical engine or original/history mutation is planned.
+
 ## 2026-11-04 — Incident-report review branch published and verified
 
 The user answered “continue go ahead” to the explicit public review-branch push
