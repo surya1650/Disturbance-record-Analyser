@@ -1,10 +1,14 @@
-# Automatic windows and explicit line references — active
+# Automatic windows and explicit line references — qualified
 
 [Plan](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md),
-[checkpoint](AUTO_WINDOW_LINE_REFERENCE_CHECKPOINT.md). Continue this bounded user
-request before older closed goals. Preserve uncommitted work, coordinate the
-active writer and retain all numerical/input gates. Publication for this new
-payload has not been attempted. Real private facts are still unanswered.
+[checkpoint](AUTO_WINDOW_LINE_REFERENCE_CHECKPOINT.md),
+[acceptance](AUTO_WINDOW_LINE_REFERENCE_ACCEPTANCE_2026-11-04.md).
+Engineering COMPLETE at8c3909c: automatic source support, optional reviewed132kV
+reference/manual fallback, frozen provenance and original gates.2403PASS/28private
+skips,Stage-A10000PASS .4361%p95,browser10/10PASS,3PDFs each4A4/no clipping.
+16runtime hashes unchanged; owned servers stopped. Next: review-branch delivery
+and remote verification; publication not attempted for this new payload. Honor
+any PUSH_PENDING_AUTH checkpoint. Real facts still unanswered; old goals paused.
 
 ---
 

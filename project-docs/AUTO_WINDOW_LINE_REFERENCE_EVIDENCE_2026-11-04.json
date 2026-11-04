@@ -1,0 +1,92 @@
+{
+  "qualified_runtime": "8c3909c0d81b87fd4e00860de056ebc157043e17",
+  "branch": "codex/operator-ui-review",
+  "software_state": "COMPLETE_AND_QUALIFIED",
+  "publication": "NOT_ATTEMPTED",
+  "pytest": {
+    "passed": 2403,
+    "skipped_private_data": 28,
+    "inherited_warnings": 1,
+    "elapsed_s": 92.71
+  },
+  "architecture_guard": "PASS",
+  "architecture_self_test": "PASS",
+  "changed_python_ruff": {
+    "status": "PASS",
+    "files": 16
+  },
+  "changed_javascript_syntax": {
+    "status": "PASS",
+    "files": 9
+  },
+  "repository_ruff_inherited_findings": 26,
+  "stage_a": {
+    "cases": 10000,
+    "status": "PASS",
+    "clean_p95_percent": 0.4361,
+    "impossible_distances_without_caveat": 0,
+    "elapsed_s": 77.7
+  },
+  "synthetic_browser": {
+    "checks_passed": 9,
+    "known_42_km_e5": 41.98828243177587,
+    "matching_reference_132kv_e5": 41.98108149626168,
+    "original_samples_and_history_preserved": true
+  },
+  "private_read_only_browser": {
+    "checks_passed": 1,
+    "physical_inputs_invented": false,
+    "unknown_scaling_and_unavailable_distance_retained": true,
+    "original_application_and_history_preserved": true
+  },
+  "browser_page_errors": 0,
+  "mobile_form_overflow": false,
+  "pdfs": [
+    {
+      "label": "known42-native",
+      "pages": 4,
+      "issues": [],
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_effective_font_px": 12,
+      "pdf_text_bbox_outside": []
+    },
+    {
+      "label": "reference-unreviewed",
+      "pages": 4,
+      "issues": [],
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_effective_font_px": 12,
+      "pdf_text_bbox_outside": []
+    },
+    {
+      "label": "reference-reviewed",
+      "pages": 4,
+      "issues": [],
+      "desktop_overflow": false,
+      "mobile_overflow": false,
+      "minimum_effective_font_px": 12,
+      "pdf_text_bbox_outside": []
+    }
+  ],
+  "runtime_files_hash_matched": 16,
+  "owned_qa_servers_stopped": true,
+  "new_automation_created": false,
+  "independent_review": "No outstanding actionable findings after unit-basis and draft-projection corrections",
+  "line_reference": {
+    "id": "erpc-2015-powergrid-panther-132-sc",
+    "r1_ohm_per_phase_km": 0.1622,
+    "x1_ohm_per_phase_km": 0.3861,
+    "selection": "EXPLICIT_ONLY_APPLICABILITY_REVIEW_REQUIRED",
+    "measured_for_incident_line": false,
+    "source_url": "https://erpc.gov.in/wp-content/uploads/2016/08/145216645131ERPCTCCMINUTES.pdf#page=39",
+    "printed_page": 36,
+    "pdf_page": 39,
+    "unknown_geometry_and_operating_conditions": true
+  },
+  "private_content_in_public_payload": false,
+  "main_merged": false,
+  "production_deployed": false,
+  "environment_published": false
+}
