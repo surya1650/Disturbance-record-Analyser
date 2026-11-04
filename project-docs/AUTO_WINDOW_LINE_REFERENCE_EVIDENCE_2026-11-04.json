@@ -2,7 +2,7 @@
   "qualified_runtime": "8c3909c0d81b87fd4e00860de056ebc157043e17",
   "branch": "codex/operator-ui-review",
   "software_state": "COMPLETE_AND_QUALIFIED",
-  "publication": "PUSH_PENDING_AUTH",
+  "publication": "APPROVED_PUSH_PENDING",
   "pytest": {
     "passed": 2403,
     "skipped_private_data": 28,
@@ -91,5 +91,7 @@
   "environment_published": false,
   "local_delivery": "0a5d916",
   "remote_verified_head": "c1b2a88fdb7f24294ef415f349c52cd919b45e4b",
-  "approval_review_reason": "No explicit user approval covers publishing this new payload; prior publication approval was for the earlier workflow."
+  "approval_review_reason": "No explicit user approval covers publishing this new payload; prior publication approval was for the earlier workflow.",
+  "publication_approval": "User explicitly answered publish to the named public code/tests/sanitized-documents question.",
+  "approved_payload": "903ce63"
 }
