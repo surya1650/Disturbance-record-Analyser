@@ -18,6 +18,8 @@ from .source_diagnostics import _prepared
 from .source_snapshot import line_facts
 from .record_names import saved_display_name
 from .incident_line import build_line_diagram
+from .incident_report_classification import stored_source_classification
+from .incident_report_focus import attach_waveform_focus
 from ..rules.signals import CANONICAL, map_signals
 
 VERSION = 1
@@ -247,7 +249,8 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
     times = source['axis']['elapsed_s']
     periods = [b-a for a, b in zip(times, times[1:], strict=False)]
     gap_limit = min(periods)*8 if periods else float('inf')
-    breaks = sorted(set(source.get('break_indices', [])) | {i+1 for i, delta in enumerate(periods) if delta > gap_limit})
+    breaks = sorted(set(source.get('break_indices', [])) | set(source.get('axis', {}).get('break_indices', []))
+        | {i+1 for i, delta in enumerate(periods) if delta > gap_limit})
     # The generic display envelope recognizes time gaps; also insert explicit
     # decode discontinuities so a source break can never become a drawn bridge.
     for group in base['groups'].values():
@@ -268,6 +271,8 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
     base['gaps'] = dict(break_indices=breaks[:128], omitted_break_indices=max(0, len(breaks)-128),
         unknown_analog_samples=sum(value is None for c in source['channels'] for value in c['values']),
         note='Unknown observations and timing gaps remain breaks in waveform paths.')
+    prepared, _, _, _, _ = _prepared(source, item, dict(voltage_kv=0, mappings=chosen['mappings']))
+    attach_waveform_focus(base, prepared, breaks=breaks)
     agree = _mappings_agree(source, item, chosen)
     base['operational_measurements'] = _operational(revision, record, agree)
     stored_rows = [row for row in (revision.get('result') or {}).get('relay_evidence', [])
@@ -411,6 +416,8 @@ def build_incident_report(root, revision, *, records=None, event_inputs=None):
                  'ABCG': 'Three phases to earth'}
         classification = dict(status='stored operational classification', label=names.get(fault, fault),
             code=fault, reason='Classification belongs to the eligible stored operational result.')
+    if location['km_from_S'] is None:
+        classification = stored_source_classification(revision, sources, agreements, facts) or classification
     attachments = []
     for item in inventory:
         name = item['name']
