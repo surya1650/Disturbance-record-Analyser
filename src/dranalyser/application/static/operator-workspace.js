@@ -9,15 +9,10 @@ const DROperatorWorkspace=(()=>{
     section.append(root);
     const content=id=>root.querySelector(`[data-workspace-content="${id}"]`);
     const record=(row.bundle?.files||[]).find(f=>f.name===data.file)||{};
-    const noticePanel=document.createElement('div');noticePanel.innerHTML=DRInputGuidance.markup(record);content('waveforms').append(noticePanel);
+    const noticePanel=document.createElement('div');noticePanel.innerHTML=DRInputGuidance.markup(record,row);content('waveforms').append(noticePanel);
     if(traces)content('waveforms').append(traces);
-    const inputs=document.createElement('details');inputs.className='operator-inputs';inputs.innerHTML='<summary>Review analysis inputs if needed</summary><p class="field-help">Waveforms and an observation report do not need a line model. Change a meaning or supply an actual instrument rating only when the affected finding needs it.</p>';
-    const reviewInputs=document.createElement('div');reviewInputs.innerHTML=instrumentReviewEditor(row,data.file);inputs.append(reviewInputs);
-    bindInstrumentReview(row,reviewInputs,{signal,onSuccess:async(updated,result)=>{
-      history.replaceState(null,'','#incident/'+row.incident_id);await detail(row.incident_id);
-      const select=document.getElementById('inspection-record');if(select&&[...select.options].some(o=>o.value===result.reviewed_record)){select.value=result.reviewed_record;select.dispatchEvent(new Event('change'));}
-      notice('Instrument ratings saved for this recording in input revision '+updated.number+'. Original files are preserved.');
-    }});
+    const inputs=document.createElement('details');inputs.className='operator-inputs';inputs.innerHTML='<summary>Channel meanings and analysis help</summary><p class="field-help">Automatic channel meanings can be reviewed here. Actual CT/VT ratings and physical line details are in Setup.</p>';
+    const setup=document.createElement('p');setup.className='operator-setup-link';setup.innerHTML=`<a class="button" href="#setup/${encodeURIComponent(row.incident_id)}">Ratios and line details →</a> <span class="field-help">Review parsed CT/VT ratings and enter line length/impedance in Setup. No model file is required.</span>`;content('waveforms').append(setup);
     const technical=document.createElement('details');technical.className='operator-source-details';technical.innerHTML='<summary>Supporting measurements and technical exports</summary><p class="field-help">Detailed source fits and method evidence are available here when a finding needs closer review.</p>';
     const original=[...section.children].filter(el=>el!==root);
     for(const el of original){
@@ -34,7 +29,7 @@ const DROperatorWorkspace=(()=>{
     const guide=document.createElement('section');guide.className='operator-feature-guide';
     const help=document.createElement('details');help.innerHTML='<summary>Help for the current analysis</summary>';help.append(guide);inputs.append(help);
     if(typeof DRFaultCalculation!=='undefined'){
-      const calculation=document.createElement('section');calculation.innerHTML=DRFaultCalculation.panel(row,config);inputs.append(calculation);
+      const calculation=document.createElement('section');calculation.innerHTML=DRFaultCalculation.panel(row,config);content('waveforms').insertBefore(calculation,inputs);
       DRFaultCalculation.bind(row,calculation,signal,{config,onQueued:async()=>detail(row.incident_id)});
     }
     if(typeof DREventStudy!=='undefined'){
@@ -87,8 +82,6 @@ const DROperatorWorkspace=(()=>{
       const chosenLoop=section.querySelector('.source-fault-loop')?.value;
       guide.innerHTML=DRFeatureGuide.markup({hasSamples:data.sample_count>0,hasSecondRecord:(row.bundle?.files||[]).filter(f=>f.kind==='comtrade').length>1,hasAnalogSamples:data.channels.some(c=>c.kind==='analog'),hasSourceTimes:Array.isArray(data.time_range_s)&&data.time_range_s.length===2&&data.time_range_s.every(Number.isFinite)&&data.time_range_s[1]>data.time_range_s[0],hasNominalFrequency:Number.isFinite(data.nominal_frequency_hz)&&data.nominal_frequency_hz>=40&&data.nominal_frequency_hz<=70,analysisReady:Boolean(result),hasSupportedFits:(result?.fit_coverage?.model_consistent||0)>0,hasRegions:Boolean(result?.operator_conditions?.selection),hasLine:Boolean(result?.snapshot?.line?.length_km>0),hasLoop:Boolean(chosenLoop),faultLoop:chosenLoop,hasWindow:result?.selected_projection?.window_selection?.status==='selected',hasOperationalResult:Boolean(row.result)});
     }
-    const scalingHelp=document.createElement('p');scalingHelp.className='field-help';scalingHelp.textContent='Leave the voltage-level choice unspecified to retain unresolved ratios. The optional 132/220 kV choices apply labelled missing-CT assumptions only to otherwise-known secondary-current channels; actual supplied ratios remain unchanged.';
-    section.querySelector('.source-voltage')?.closest('.inspection-toolbar')?.after(scalingHelp);
     const inspectionHost=document.getElementById('inspection-workspace'),requested=inspectionHost?.dataset.requestedTask;
     select(requested||preferences.get(key)||'waveforms');if(requested){delete inspectionHost.dataset.requestedRecord;delete inspectionHost.dataset.requestedTask;}update(null);
     return {select,update};

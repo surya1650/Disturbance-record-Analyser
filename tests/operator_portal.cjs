@@ -33,7 +33,7 @@ const originals={traces,run:section.querySelector('.source-run'),mapping:section
 const data={file:'raw.cfg',sample_count:1000,channels:[{kind:'analog'}],time_range_s:[0,1],nominal_frequency_hz:50};
 const row={incident_id:'portal',number:2,bundle:{files:[{name:'raw.cfg',kind:'comtrade'},{name:'remote.cfg',kind:'comtrade'}]}};
 let activated=0;const activeTasks=[];
-const context=vm.createContext({document,DRInputGuidance:require('../src/dranalyser/application/static/input-guidance.js'),DRFeatureGuide:require('../src/dranalyser/application/static/feature-guide.js'),instrumentReviewEditor:()=>'<section class="instrument-review"><input data-actual-ratio></section>',bindInstrumentReview(){},DRIncidentReport:{mount(){return {activate(){activated++;}};}},setPortalTask:task=>activeTasks.push(task)});
+const context=vm.createContext({document,DRInputGuidance:require('../src/dranalyser/application/static/input-guidance.js'),DRFeatureGuide:require('../src/dranalyser/application/static/feature-guide.js'),config:{},DRFaultCalculation:{panel:()=>'<section data-fault-calculation></section>',bind(){}},instrumentReviewEditor:()=>{throw new Error('Instrument editor belongs to Setup');},bindInstrumentReview(){},DRIncidentReport:{mount(){return {activate(){activated++;}};}},setPortalTask:task=>activeTasks.push(task)});
 vm.runInContext(fs.readFileSync('src/dranalyser/application/static/operator-workspace.js','utf8')+';globalThis.workspace=DROperatorWorkspace;',context);
 const controller=new AbortController(),workspace=context.workspace.mount(section,{traces,row,data,signal:controller.signal});
 assert.deepEqual(JSON.parse(JSON.stringify(context.workspace.tasks())),[{id:'waveforms',title:'Analyse'},{id:'compare',title:'Compare'},{id:'report',title:'Report'}]);
@@ -46,6 +46,9 @@ assert.equal(root.querySelector('.source-line-inputs').closest('.operator-source
 assert.equal(root.querySelector('.source-line-inputs').closest('.operator-inputs'),null);
 assert.equal(originals.run.closest('[data-workspace-content]').dataset.workspaceContent,'waveforms','the primary analysis action remains outside collapsed inputs');
 assert.equal(activated,0,'starting the waveform viewer never generates a report');
+assert.equal(root.querySelector('[data-fault-calculation]').closest('.operator-inputs'),null,'primary calculation is outside channel help');
+assert.equal(root.querySelector('[data-fault-calculation]').closest('[data-workspace-content]').dataset.workspaceContent,'waveforms');
+assert.match(root.querySelector('.operator-setup-link').innerHTML,/#setup\/portal/);
 workspace.select('inputs');assert.equal(input.open,true);assert.equal(activeTasks.at(-1),'waveforms','legacy required-input links open the contextual Analyse inputs');
 workspace.select('evidence');assert.equal(technical.open,true);assert.equal(activeTasks.at(-1),'waveforms');
 workspace.select('compare');assert.equal(root.querySelector('[data-workspace-pane="compare"]').hidden,false);assert.equal(root.querySelector('[data-workspace-pane="waveforms"]').hidden,true);

@@ -25,7 +25,11 @@ assert.ok(initial.includes('data-line-input-form'));assert.ok(initial.includes('
 assert.ok(!initial.includes('value="North_DR.cfg" selected')&&!initial.includes('value="South.cfg" selected'),'upload order must not assign a physical end');
 assert.ok(!initial.includes('type="checkbox" checked'),'unknown physical evidence is not confirmed automatically');
 assert.ok(initial.includes('E5 does not require these values'));
-assert.ok(initial.includes('Save line inputs on this incident'));
+assert.ok(initial.includes('Save line details on this incident'));
+assert.match(initial,/<summary>Line details<\/summary>/);
+assert.match(initial,/A separate line-model file is not required/);
+assert.ok(initial.indexOf('name="length_km"')<initial.indexOf('data-line-reference-options'),'actual line values precede optional published references');
+assert.match(initial,/<details data-line-reference-options><summary>Optional published impedance reference/,'new reference options stay closed until requested');
 const saved={...row,metadata:{incident_line:{review:{...body.review,sections:[{from_km:0,to_km:100,r1_ohm_per_km:.03,x1_ohm_per_km:.3}]}}}};
 const reopened=form.markup(saved);
 assert.ok(reopened.includes('name="length_km" type="number" min="0" step="any" value="100"'));

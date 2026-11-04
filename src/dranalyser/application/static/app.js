@@ -78,8 +78,9 @@ function submitUpload(event) {
   if (busyUpload) return;
   if (!selected.length) return notice('Choose files for this incident first.');
   if (selected.reduce((n,f) => n+f.size, 0) > 400*1024*1024) return notice('The selected files exceed 400 MB.');
+  const uploadGeneration=routeGeneration,uploadFiles=[...selected];
   const data = new FormData();
-  selected.forEach(f => data.append('files', f, f.webkitRelativePath || f.name));
+  uploadFiles.forEach(f => data.append('files', f, f.webkitRelativePath || f.name));
   data.append('name', $('incident-name').value);
   if ($('target-incident').value) {
     data.append('incident_id', $('target-incident').value);
@@ -97,8 +98,9 @@ function submitUpload(event) {
     let result;
     try { result=JSON.parse(xhr.responseText); } catch { return notice('The application returned an unexpected upload response.'); }
     if (xhr.status >= 400) return notice(typeof result.detail === 'string' ? result.detail : JSON.stringify(result.detail));
-    selected=[];renderFiles();$('file-picker').value='';$('folder-picker').value='';
-    location.hash=`incident/${result.incident_id}`;
+    selected=selected.filter(file=>!uploadFiles.includes(file));renderFiles();$('file-picker').value='';$('folder-picker').value='';
+    if(uploadGeneration!==routeGeneration){notice('Upload completed. Open the saved incident from history to review its parsed inputs.');return;}
+    location.hash=`setup/${result.incident_id}`;
   };
   xhr.send(data);
 }
@@ -114,14 +116,26 @@ function assignmentForm(row) {
     return `<tr><td><strong>${escapeHtml(f.name)}</strong><small>${escapeHtml(f.station)} · ${f.fs_hz} Hz</small><p class="field-help">${escapeHtml(f.blocked?'Source inspection and independent analysis available; operational assignment is pending.':f.suggested_reason || '')}${f.suggested_end?` · Suggested end ${f.suggested_end}`:''}</p></td><td>${state}<p class="field-help">${escapeHtml(DRInspection.qualityMessage(f))}</p>${f.blocked?`<button type="button" data-review-record-inputs="${escapeHtml(f.name)}">Review required inputs</button>`:''}<details><summary>Input details</summary><div class="flags">${escapeHtml(f.error || f.duplicate_of || f.flags.join('\n'))}</div></details></td><td><select data-record="${escapeHtml(f.name)}" data-index="${i}" ${usable?'':'disabled'}><option value="">${usable?'Choose…':'Excluded'}</option><option value="excluded">Exclude from this analysis</option><option value="S:primary">Sending end (S) · Primary</option><option value="S:corroborating">Sending end (S) · Corroborating</option><option value="R:primary">Receiving end (R) · Primary</option><option value="R:corroborating">Receiving end (R) · Corroborating</option></select></td></tr>`;
   }).join('')}</tbody></table></div>${mappingEditor(row)}${rxReviewEditor(row)}${stageReviewEditor(row)}<div class="detail-section"><button class="button primary" type="submit">Confirm & analyse →</button></div></form>`;
 }
-let routeGeneration=0;
+let routeGeneration=0,setupController=null,setupMounted=null,setupState=null;
+async function setupView(id,generation=routeGeneration){
+  setupController?.abort();setupController=new AbortController();setupMounted=null;
+  const signal=setupController.signal,host=$('setup-content'),active=()=>generation===routeGeneration&&!signal.aborted;
+  if(!setupState||setupState.id!==id)setupState={id,drafts:{}};
+  host.innerHTML='<div class="panel recording-setup-loading" role="status">Parsing the recordings before setup…</div>';
+  const row=await DRRecordingSetup.ready(api,id,{signal,onPending:pending=>{if(active())host.innerHTML='<div class="panel recording-setup-loading" role="status">'+escapeHtml(pending.name||'This incident')+': parsing the original recordings. Names and instrument declarations will appear here when ready.</div>';}});
+  if(!row||!active())return;current=row;
+  for(const link of document.querySelectorAll('[data-nav]'))if(['analyse','compare','report'].includes(link.dataset.nav))link.href='#incident/'+encodeURIComponent(id)+'/'+row.number+'/'+(link.dataset.nav==='analyse'?'waveforms':link.dataset.nav);
+  const mounted=await DRRecordingSetup.mount(host,row,{config,signal,request:api,state:setupState,isCurrent:active,onRevision:async()=>{if(active())await setupView(id,generation);},onRefresh:async()=>{if(active())try{await setupView(id,generation);}catch(error){if(generation===routeGeneration)notice(error.message);}}});
+  if(active())setupMounted=mounted;
+}
+
 async function detail(id, revision = '', generation=routeGeneration) {
   const row = await api(`/api/incidents/${id}${revision?`?revision=${revision}`:''}`);
   if(generation!==routeGeneration)return;current=row;
   await loadStageReviewSource(row);
   if(generation!==routeGeneration)return;
   const result = row.result;
-  let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${date(row.created)} · ${row.files.length} files · originals retained</p></div><div class="detail-actions"><a class="button" href="#upload/${id}">＋ Add records</a></div></div>`;
+  let body = `<div class="detail-top"><a href="#overview">← All incidents</a><span class="muted">/ Revision ${row.number}</span>${badge(row.state)}</div><div class="page-title"><div><div class="eyebrow">INCIDENT ${id.slice(0,8).toUpperCase()}</div><h1>${escapeHtml(row.name)}</h1><p>${date(row.created)} · ${row.files.length} files · originals retained</p></div><div class="detail-actions"><a class="button" href="#setup/${id}">Recording & line setup</a><a class="button" href="#upload/${id}">＋ Add records</a></div></div>`;
   if (row.error) body += `<div class="hint">${escapeHtml(row.error)}</div>`;
   if (['queued','running'].includes(row.state)) body += '<div class="panel busy"><span class="spinner"></span><h2>Processing this incident</h2><p>You can leave this page. The job and its results stay in the workspace.</p></div>';
   body += inspectionPanel(row);
@@ -224,17 +238,19 @@ function setPortalTask(task,row) {
 }
 async function route() {
   if (!config) return;
+  setupMounted?.capture();setupController?.abort();setupMounted=null;
   const generation=++routeGeneration;inspectionController?.abort();
   notice(); current=null;
   const [view,id,revision,task]=(location.hash.slice(1)||'overview').split('/');
   requestedPortalTask=view==='incident'?(task||'waveforms'):['compare','report'].includes(view)?view:'waveforms';
-  const name=view==='incident'?'detail':['overview','upload','integrations','catalogue'].includes(view)?view:'overview';
+  const name=view==='incident'?'detail':['overview','upload','setup','integrations','catalogue'].includes(view)?view:'overview';
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==name);
-  document.querySelectorAll('[data-nav]').forEach(v=>{v.classList.toggle('active',v.dataset.nav===(name==='upload'?'upload':requestedPortalTask==='waveforms'?'analyse':requestedPortalTask));if(name!=='detail')v.href='#'+v.dataset.nav;});
+  document.querySelectorAll('[data-nav]').forEach(v=>{v.classList.toggle('active',v.dataset.nav===(['upload','setup'].includes(name)?'upload':requestedPortalTask==='waveforms'?'analyse':requestedPortalTask));if(name!=='detail')v.href='#'+v.dataset.nav;});
   $('breadcrumb').textContent=name==='overview'?'Choose an incident / '+({waveforms:'Analyse',compare:'Compare',report:'Report'}[requestedPortalTask]):`Workspace / ${name==='detail'?'Incident':name[0].toUpperCase()+name.slice(1)}`;
   try {
     if(name==='overview') await overview();
     if(name==='upload') await uploadView(id);
+    if(name==='setup') await setupView(id,generation);
     if(name==='integrations') await integrations();
     if(name==='catalogue') await catalogueView();
     if(name==='detail') await detail(id,revision,generation);

@@ -14,14 +14,25 @@ const DRFaultCalculation=(()=>{
     const reviewed=row.metadata?.incident_line?.review?.ends?.[end];
     return title+(file?' · '+(reviewed?.record===name&&reviewed.name?reviewed.name:recordName(file)):'');
   }
+  function lineSummary(row,localSelected,line){
+    const review=localSelected?row.metadata.incident_line.review||{}:{};
+    const known=(number,unit)=>typeof number==='number'&&Number.isFinite(number)?esc(number)+' '+unit:'Not supplied';
+    const sections=Array.isArray(review.sections)&&review.sections.length;
+    const basis=review.basis==='per-km'?'Ω/km':review.basis==='total'?'Ω whole line':'units not confirmed';
+    const model=localSelected?'This incident’s saved line details':line?esc(line.name||line.id):'Line details are not set up yet';
+    const facts=localSelected?`<p>Full length: <strong>${known(review.length_km,'km')}</strong> · Voltage: <strong>${known(review.kv,'kV')}</strong></p><p>${sections?'Impedance uses the saved section table.':`R1: ${known(review.r1,basis)} · X1: ${known(review.x1,basis)}`}</p>`:line?'<p class="field-help">Using the existing engineering line record. Its selection and physical ends are available below.</p>':'';
+    return `<div data-fault-line-summary><h3>${model}</h3>${facts}<p>${['S','R'].map(end=>esc(endLabel(row,end))+(selected(row,end)?'':' · Not assigned')).join('<br>')}</p></div>`;
+  }
   function panel(row,configuration){
     const lines=(configuration?.lines||[]).filter(l=>l.id),local=row.metadata?.incident_line,busy=['queued','running'].includes(row.state);
-    if(local?.line_id&&!lines.some(line=>line.id===local.line_id))lines.unshift({id:local.line_id,name:'This incident’s saved line inputs',kv:local.review?.kv??'not supplied',parameter_status:'reviewed incident facts; missing inputs remain gated'});
+    if(local?.line_id&&!lines.some(line=>line.id===local.line_id))lines.unshift({id:local.line_id,name:'This incident’s saved line details',kv:local.review?.kv??'not supplied',parameter_status:'supplied facts; incomplete inputs remain gated'});
     const localSelected=Boolean(local?.line_id&&row.metadata?.line_id===local.line_id);
-    const accepted=Boolean(row.result&&row.metadata?.line_id&&lines.some(l=>l.id===row.metadata.line_id)&&(selected(row,'S')||selected(row,'R')));
+    const chosen=lines.find(line=>line.id===row.metadata?.line_id);
+    const accepted=Boolean(row.result&&chosen&&(selected(row,'S')||selected(row,'R')));
+    const setup='#setup/'+encodeURIComponent(row.incident_id||row.id||'');
     const options=end=>'<option value="">No record at this end</option>'+records(row).map(f=>`<option value="${esc(f.name)}"${selected(row,end)===f.name?' selected':''}>${esc(recordName(f))} · ${esc(f.name)}${f.blocked?' · review inputs required':''}</option>`).join('');
-    const inputs=typeof DRIncidentLineInputs!=='undefined'?DRIncidentLineInputs.markup(row,configuration):'';
-    return `<section data-fault-calculation><details${accepted||local?' open':''}><summary>Optional: calculate physical fault location</summary><p class="field-help">Inspect waveforms, compare recordings and build an observation report first. These do not require a line model or physical-end assignment.</p><h3>Calculate fault location</h3><p>Use the existing engineering engine with reviewed physical inputs. One end is enough for eligible single-ended methods; E5 uses compatible opposite ends without GPS.</p><p class="field-help">Fault detection and analysis-window selection are automatic. The engine checks the recorded disturbance for sufficient usable samples; no manual window is required. If support is too short or unsuitable, the result explains why.</p>${inputs}<form data-fault-form><label>Actual line model<select name="line_id"><option value="">Choose a saved incident line or declared line model</option>${lines.map(l=>`<option value="${esc(l.id)}"${row.metadata?.line_id===l.id?' selected':''}>${esc(l.name)} · ${esc(l.kv)} kV · ${esc(l.parameter_status)}</option>`).join('')}</select></label><div class="event-study-end-grid">${['S','R'].map(end=>`<label><span data-fault-end-label="${end}">${esc(endLabel(row,end))}</span><select name="${end}"${localSelected?' disabled':''}>${options(end)}</select></label>`).join('')}</div><p class="field-help" data-fault-local-note${localSelected?'':' hidden'}>These physical ends and their names come from this incident’s saved line facts. Update and save the line inputs above to change them.</p><label class="event-study-confirm"><input type="checkbox" name="confirmed"${accepted?' checked':''}> I confirm the line and physical ends; when both are selected, they record the same event at opposite ends.</label><p class="field-help">Other recordings are excluded from this calculation and remain available for inspection. Same-relay successive captures are not opposite ends. Channel/scaling corrections must be reviewed in Inputs & help; display choices do not authorize physical calculations.</p><button type="submit" class="button primary"${busy?' disabled':''}>Calculate fault location</button><p data-fault-status role="status" aria-live="polite">${busy?'Wait for the current revision to finish.':!lines.length?'Enter and save this incident’s line facts above, then choose that model here.':'Only method-specific missing evidence will prevent an estimate. Protection settings, relay distance and towers are optional for location.'}</p></form></details></section>`;
+    const engineering=lines.length?`<form data-fault-form><details data-engineering-model-selection><summary>Engineering model selection</summary><p class="field-help">Use this only to select an existing engineering line record. For this incident’s length, impedance, ratios and end names, use Setup.</p><label>Saved line record<select name="line_id"><option value="">Choose an existing line record</option>${lines.map(l=>`<option value="${esc(l.id)}"${row.metadata?.line_id===l.id?' selected':''}>${esc(l.name||l.id)} · ${esc(l.kv??'not supplied')} kV</option>`).join('')}</select></label><div class="event-study-end-grid">${['S','R'].map(end=>`<label><span data-fault-end-label="${end}">${esc(endLabel(row,end))}</span><select name="${end}"${localSelected?' disabled':''}>${options(end)}</select></label>`).join('')}</div></details><p class="field-help" data-fault-local-note${localSelected?'':' hidden'}>The calculation uses this incident’s saved line and physical ends. Change them in Setup.</p><label class="event-study-confirm"><input type="checkbox" name="confirmed"${accepted?' checked':''}> I confirm the selected line and physical ends; two recordings, when selected, are the same event at opposite ends.</label><button type="submit" class="button primary"${busy?' disabled':''}>Calculate fault location</button><p data-fault-status role="status" aria-live="polite">${busy?'Wait for the current revision to finish.':chosen?'Fault type and the usable analysis window are detected automatically. Missing or unsuitable evidence keeps a named reason.':'Save the line details in Setup, or choose an existing engineering line record.'}</p></form>`:'<p data-fault-status role="status">Enter line length, impedance and physical ends in Setup before requesting a distance. Waveforms and the incident report are available now.</p>';
+    return `<section data-fault-calculation><h3>Fault analysis and location</h3><p>The analyser detects the fault type and analysis window from usable recordings. You do not need to choose an assumed fault loop.</p><p class="field-help">Distance also needs the actual line length and impedance. These usually come from the line schedule, not the DR. A separate line-model file is not required. Single-ended methods use one eligible end; E5 uses compatible opposite ends without GPS.</p><p><a class="button" data-fault-setup href="${esc(setup)}">${local?'Edit':'Set up'} ratios and line details →</a></p>${lineSummary(row,localSelected,chosen)}${engineering}</section>`;
   }
   function payload(row,choices){
     if(!choices.line_id)throw new Error('Choose the actual declared line model.');
@@ -34,7 +45,7 @@ const DRFaultCalculation=(()=>{
       if(!name)continue;
       const file=inventory.find(f=>f.name===name);
       if(!file||!file.ok)throw new Error('The selected source is not a recoverable operational recording: '+name);
-      if(typeof DRInputGuidance!=='undefined'&&DRInputGuidance.assess(file).ratio)throw new Error(name+': actual CT/VT ratings are missing. Save the actual ratings for this recording in Review analysis inputs first.');
+      if(typeof DRInputGuidance!=='undefined'&&DRInputGuidance.assess(file).ratio)throw new Error(name+': actual CT/VT ratings are missing. Save the actual ratings for this recording in Setup first.');
       const prior=row.metadata?.assignments?.[name]||{};
       // An end/line change invalidates end-specific window/settings reviews.
       const retained=prior.end===end&&row.metadata?.line_id===choices.line_id?prior:{};
@@ -74,8 +85,7 @@ const DRFaultCalculation=(()=>{
   }
   function bind(row,host,signal,{onQueued,config}={}){
     const root=host.querySelector('[data-fault-calculation]');if(!root)return;
-    if(typeof DRIncidentLineInputs!=='undefined')DRIncidentLineInputs.bind(row,root,signal,{config,onSaved:async result=>{if(root.isConnected&&!signal?.aborted)await onQueued?.(result);}});
-    const form=root.querySelector('[data-fault-form]'),status=root.querySelector('[data-fault-status]');
+    const form=root.querySelector('[data-fault-form]'),status=root.querySelector('[data-fault-status]');if(!form)return;
     form.addEventListener('change',event=>{if(['line_id','S','R'].includes(event.target.name)){
       if(event.target.name==='line_id'){
         const local=event.target.value===row.metadata?.incident_line?.line_id;
@@ -83,6 +93,7 @@ const DRFaultCalculation=(()=>{
         root.querySelector('[data-fault-local-note]').hidden=!local;
       }
       if(['S','R'].includes(event.target.name)){const label=root.querySelector(`[data-fault-end-label="${event.target.name}"]`);if(label)label.textContent=endLabel(row,event.target.name,event.target.value);}
+      const summary=root.querySelector('[data-fault-line-summary]');if(summary)summary.hidden=true;
       form.elements.namedItem('confirmed').checked=false;status.textContent='Physical inputs changed. Confirm the current line and end identities before calculating.';
     }},{signal});
     form.addEventListener('submit',async event=>{

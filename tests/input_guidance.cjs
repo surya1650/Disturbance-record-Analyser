@@ -36,3 +36,8 @@ assert.match(workflow,/href="#upload\//);assert.match(workflow,/> Generate repor
 assert.ok(html.indexOf('Input review for optional physical calculations')<html.indexOf('Missing CT/VT ratings'));
 assert.ok(!html.includes('<details open'),'optional physical findings stay collapsed without hiding waveforms');
 assert.match(html,/Inspect and compare the recorded values now/);
+
+const setupNotice=guidance.markup(record,{incident_id:'parsed incident'});
+assert.match(setupNotice,/href="#setup\/parsed%20incident"/);
+assert.ok(!setupNotice.includes('marked CFG copy'),'ratings update the same source');
+assert.match(guidance.workflowMarkup({incident_id:'parsed',bundle:anonymous.bundle},source),/href="#setup\/parsed"/);

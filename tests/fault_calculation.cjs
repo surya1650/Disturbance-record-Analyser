@@ -24,9 +24,18 @@ assert.equal(calc.payload(withReview,choices).assignments['other.cfg'].instrumen
 
 assert.match(calc.panel({...row,result:{location_summary:{}}},{lines:[{id:'line'}]}),/name="confirmed" checked/);
 assert.ok(!calc.panel(row,{lines:[{id:'line'}]}).includes('name="confirmed" checked'));
-assert.match(calc.panel(row,{lines:[]}),/data-line-input-form/,'the physical calculation panel includes the incident line input form');
-assert.match(calc.panel(row,{lines:[]}),/Enter and save this incident’s line facts above/);
-assert.match(calc.panel(row,{lines:[]}),/<button type="submit" class="button primary">Calculate fault location/,'an empty registry does not disable local line calculation');
+const noModel=calc.panel(row,{lines:[]});
+assert.match(noModel,/href="#setup\/incident"/,'line facts and ratios are entered during Setup');
+assert.match(noModel,/A separate line-model file is not required/);
+assert.match(noModel,/detects the fault type and analysis window/);
+assert.ok(!noModel.includes('data-line-input-form'),'Analyse does not duplicate the editable setup form');
+assert.ok(!noModel.includes('name="line_id"'),'an empty registry does not create an empty model selector');
+assert.ok(!noModel.includes('data-fault-form'),'distance waits for supplied line facts, while observation analysis remains available');
+const engineering=calc.panel(row,{lines:[{id:'line'}]});
+assert.match(engineering,/<details data-engineering-model-selection><summary>Engineering model selection/,'existing registry selection stays secondary and closed');
+assert.ok(!engineering.includes('Actual line model'));
+assert.ok(!engineering.includes('data-line-input-form'));
+calc.bind(row,{querySelector:()=>({querySelector:()=>null})});
 assert.match(calc.panel({...row,state:'running'},{lines:[{id:'line'}]}),/Wait for the current revision/);
 const named={...row,bundle:{files:row.bundle.files.map((file,i)=>({...file,display_name:['North End','South End','Auxiliary'][i]}))}};
 const namedPanel=calc.panel(named,{lines:[{id:'line'}]});
@@ -42,7 +51,7 @@ const localId='INCIDENT-'+'c'.repeat(32),local={...named,metadata:{...named.meta
 const localChoices={...choices,line_id:localId};
 const localPanel=calc.panel(local,{lines:[]});
 assert.match(localPanel,new RegExp('value="'+localId+'" selected'));
-assert.match(localPanel,/This incident’s saved line inputs/);
+assert.match(localPanel,/This incident’s saved line details/);
 assert.match(localPanel,/data-fault-end-label="S">Reference end \(S\) · Reviewed reference station/);
 assert.match(localPanel,/<select name="S" disabled>/,'the model uses its saved physical end facts');
 assert.equal(calc.payload(local,localChoices).line_id,localId);
@@ -72,7 +81,7 @@ assert.throws(()=>calc.payload(local,{...localChoices,R:''}),/saved line facts/)
  }),/Source files changed/);
  assert.equal(writes,0);
  await assert.rejects(()=>calc.queue(row,choices,req,{signal:{aborted:true}}),/cancelled/);
- // The nested line-input form is bound independently; calculation uses its own form.
+ // Setup owns editable line facts; calculation binds only its own confirmed choices.
  const fields=Object.fromEntries(Object.entries({...localChoices}).map(([key,value])=>[key,{name:key,value,checked:key==='confirmed',disabled:['S','R'].includes(key)}]));
  fields.confirmed.value='';
  const handlers={},button={disabled:false},controls=[...Object.values(fields),button];
@@ -83,8 +92,7 @@ assert.throws(()=>calc.payload(local,{...localChoices,R:''}),/saved line facts/)
  const originalBind=context.lineInputs.bind;
  context.lineInputs.bind=(boundRow,host,signal,options)=>{boundLine={boundRow,host,signal,options};};
  calc.bind(local,{querySelector:()=>root},undefined,{onQueued:async()=>{savedRefresh++;}});
- assert.equal(boundLine.boundRow,local);assert.equal(boundLine.host,root);
- await boundLine.options.onSaved({revision:3});assert.equal(savedRefresh,1,'saving local line facts refreshes the incident revision');
+ assert.equal(boundLine,undefined,'the calculation panel never binds a duplicate editable line form');
  fields.line_id.value='line';handlers.change({target:fields.line_id});
  assert.equal(fields.S.disabled,false);assert.equal(note.hidden,true);assert.equal(fields.confirmed.checked,false);
  fields.line_id.value=localId;handlers.change({target:fields.line_id});

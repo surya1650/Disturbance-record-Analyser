@@ -71,11 +71,11 @@ function collectInstrumentReview(section,file){
   if(!section.querySelector('[data-rating-confirm]').checked)throw new Error('Confirm the reviewed secondary designation, gains and actual instrument ratings.');
   return {record_hash:file.content_hash,reviewer,evidence,confirmed_secondary:true,ratios};
 }
-function bindInstrumentReview(row,host=document,{onSuccess,signal}={}){
+function bindInstrumentReview(row,host=document,{onSuccess,signal,isCurrent}={}){
   const bindSection=section=>{
     const file=row.bundle.files.find(f=>f.name===section.dataset.instrumentFile),status=section.querySelector('.instrument-rating-result');
     if(!file)return;
-    const current=()=>section.isConnected&&!signal?.aborted&&location.hash.startsWith('#incident/'+row.incident_id);
+    const current=()=>section.isConnected&&!signal?.aborted&&(isCurrent?isCurrent():location.hash.startsWith('#incident/'+row.incident_id));
     let edited=false;
     section.onkeydown=e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT')e.preventDefault();};
     section.querySelectorAll('input,textarea').forEach(input=>input.addEventListener('input',()=>{edited=true;const confirm=section.querySelector('[data-rating-confirm]');if(input!==confirm)confirm.checked=false;status.textContent='Inputs changed; check and save these ratings for the current recording.';}));
