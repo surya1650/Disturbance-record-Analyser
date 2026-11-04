@@ -16,3 +16,16 @@ API/history/geometry, run required gates, commit/push authorized review branch a
 read back remote HEAD. No main merge, production deployment or environment
 publication. Use `work/qa-incident-line-diagram-2026-11-04/active-writer.json` for
 the current writer lease; never resume the old goal's paused automation.
+
+
+P1 milestone: canonical line diagram frozen.46model/reader tests PASS (5.09s),
+owned Ruff/diff PASS. Workbench incident_line106lines and reader adapter473lines
+reuse the same frozen facts and existing location gates; CB mechanical states
+remain unknown. Tested100km/known42, reverse display order, endpoints0/100,
+mixed-section physical km rather than reactance fraction, missing/nonfinite/
+provisional/refused/stale source/model cases and recorded polarity/gaps.
+Stage-A10000PASS, cleanp95 .4361%, zero impossible distance without caveat,34.6s.
+Three early actual PDF smoke cases (known42, many records/labels, short fault)
+are each4A4 with no clipping; full final-source sweep is still pending.
+Pre-enhancement saved generation served from isolated old-store copy remains
+byte-identical HTML/JSON and has no new diagram; prior evidence root untouched.

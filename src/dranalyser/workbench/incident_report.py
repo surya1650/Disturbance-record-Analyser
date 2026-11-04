@@ -16,6 +16,7 @@ from . import event_study
 from .location_summary import public
 from .source_diagnostics import _prepared
 from .source_snapshot import line_facts
+from .incident_line import build_line_diagram
 from ..rules.signals import CANONICAL, map_signals
 
 VERSION = 1
@@ -345,11 +346,10 @@ def _analogue_observations(source):
     return observations
 
 
-def _location(root, revision, sources, agreements):
+def _location(revision, sources, agreements, facts):
     result = revision.get('result') or {}
     used = result.get('used') or {}
     selected = {source['record'] for source in sources}
-    facts = line_facts(root, revision)
     stored = facts['location']
     structured = result.get('location_summary')
     reasons = []
@@ -391,7 +391,9 @@ def build_incident_report(root, revision, *, records=None, event_inputs=None):
         source, agree = _source_report(root, revision, record, index, selection_reasons[record], event_inputs)
         sources.append(source)
         agreements.append(agree)
-    location = _location(root, revision, sources, agreements)
+    facts = line_facts(root, revision)
+    location = _location(revision, sources, agreements, facts)
+    line_diagram = build_line_diagram(revision, facts, sources, location)
     changes = [source for source in sources if source.get('fault')]
     classification = dict(status='unavailable', label='Not established',
         reason='Recorded changes alone do not establish the physical fault type.')
@@ -460,7 +462,7 @@ def build_incident_report(root, revision, *, records=None, event_inputs=None):
         summary=dict(headline='Recorded disturbance review', text=text, classification=classification,
             limitations=['Values describe the captured electrical samples; before/during/after labels refer to selected observation intervals.',
                 'Each recording retains its own local clock. This report does not establish physical breaker operation.']),
-        location=location, findings=findings, next_steps=next_steps,
+        location=location, line_diagram=line_diagram, findings=findings, next_steps=next_steps,
         glossary=[dict(term='RMS', meaning='Effective value of a varying signal, calculated from its samples; it includes DC and harmonics.'),
             dict(term='Before / during / after', meaning='Selected recording intervals around the observed change; a missing interval stays unknown.'),
             dict(term='CT / VT', meaning='Instrument transformers that scale current / voltage for the recorder.'),
