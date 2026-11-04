@@ -1,5 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const context=vm.createContext({setTimeout});
+vm.runInContext(fs.readFileSync('src/dranalyser/application/static/incident-line-inputs.js','utf8')+';globalThis.lineInputs=DRIncidentLineInputs',context);
 vm.runInContext(fs.readFileSync('src/dranalyser/application/static/fault-calculation.js','utf8')+';globalThis.calc=DRFaultCalculation',context);
 const calc=context.calc;
 const row={incident_id:'incident',number:2,state:'needs_review',files:[{name:'S.cfg',sha256:'a'},{name:'R.cfg',sha256:'b'}],metadata:{line_id:'line',assignments:{'S.cfg':{end:'S',role:'primary',rx_review:{accepted:true},channel_mapping:{record_hash:'a'}},'R.cfg':{end:'R',role:'primary'}}},bundle:{files:[{kind:'comtrade',name:'S.cfg',ok:true},{kind:'comtrade',name:'R.cfg',ok:true},{kind:'comtrade',name:'other.cfg',ok:true}]}};
@@ -14,10 +15,40 @@ assert.equal(calc.payload(row,choices).assignments['S.cfg'].rx_review.accepted,t
 assert.equal(calc.payload(row,{...choices,line_id:'different'}).assignments['S.cfg'].rx_review,undefined);
 assert.equal(calc.payload(row,{...choices,S:'',R:'S.cfg'}).assignments['S.cfg'].rx_review,undefined);
 assert.equal(calc.payload(row,{...choices,S:'',R:'S.cfg'}).assignments['S.cfg'].channel_mapping.record_hash,'a');
+const retainedReview={record_hash:'a',ratios:{A1:{primary:1000,secondary:1}}};
+const withReview={...row,metadata:{...row.metadata,assignments:{...row.metadata.assignments,'S.cfg':{...row.metadata.assignments['S.cfg'],instrument_review:retainedReview},'other.cfg':{instrument_review:retainedReview}}}};
+assert.equal(calc.payload(withReview,{...choices,line_id:'different'}).assignments['S.cfg'].instrument_review,retainedReview,'line changes retain source-bound instrument inputs');
+assert.equal(calc.payload(withReview,{...choices,S:'',R:'S.cfg'}).assignments['S.cfg'].instrument_review,retainedReview,'end changes retain source-bound instrument inputs');
+assert.equal(calc.payload(withReview,{...choices,S:''}).assignments['S.cfg'].instrument_review,retainedReview,'excluded recordings retain instrument inputs for source inspection');
+assert.equal(calc.payload(withReview,choices).assignments['other.cfg'].instrument_review,retainedReview);
+
 assert.match(calc.panel({...row,result:{location_summary:{}}},{lines:[{id:'line'}]}),/name="confirmed" checked/);
 assert.ok(!calc.panel(row,{lines:[{id:'line'}]}).includes('name="confirmed" checked'));
-assert.match(calc.panel(row,{lines:[]}),/Needs a declared line model/);
+assert.match(calc.panel(row,{lines:[]}),/data-line-input-form/,'the physical calculation panel includes the incident line input form');
+assert.match(calc.panel(row,{lines:[]}),/Enter and save this incident’s line facts above/);
+assert.match(calc.panel(row,{lines:[]}),/<button type="submit" class="button primary">Calculate fault location/,'an empty registry does not disable local line calculation');
 assert.match(calc.panel({...row,state:'running'},{lines:[{id:'line'}]}),/Wait for the current revision/);
+const named={...row,bundle:{files:row.bundle.files.map((file,i)=>({...file,display_name:['North End','South End','Auxiliary'][i]}))}};
+const namedPanel=calc.panel(named,{lines:[{id:'line'}]});
+assert.match(namedPanel,/data-fault-end-label="S">Reference end \(S\) · North End/);
+assert.match(namedPanel,/data-fault-end-label="R">Other end \(R\) · South End/);
+assert.deepEqual(Object.keys(calc.payload(named,choices).assignments).sort(),['R.cfg','S.cfg','other.cfg'],'friendly names do not replace source identities');
+const unassigned=calc.panel({...named,metadata:{}},{lines:[{id:'line'}]});
+assert.ok(!unassigned.includes('name="confirmed" checked'));
+assert.ok(!unassigned.includes('value="S.cfg" selected'),'DR names do not automatically assign opposite physical ends');
+const escaped=calc.panel({...row,bundle:{files:[{...row.bundle.files[0],display_name:'<img src=x onerror=alert(1)>'}]}},{lines:[]});
+assert.ok(!escaped.includes('<img src=x'));assert.ok(escaped.includes('&lt;img'));
+const localId='INCIDENT-'+'c'.repeat(32),local={...named,metadata:{...named.metadata,line_id:localId,incident_line:{line_id:localId,review:{ends:{S:{record:'S.cfg',name:'Reviewed reference station'},R:{record:'R.cfg',name:'Reviewed remote station'}}}}}};
+const localChoices={...choices,line_id:localId};
+const localPanel=calc.panel(local,{lines:[]});
+assert.match(localPanel,new RegExp('value="'+localId+'" selected'));
+assert.match(localPanel,/This incident’s saved line inputs/);
+assert.match(localPanel,/data-fault-end-label="S">Reference end \(S\) · Reviewed reference station/);
+assert.match(localPanel,/<select name="S" disabled>/,'the model uses its saved physical end facts');
+assert.equal(calc.payload(local,localChoices).line_id,localId);
+assert.throws(()=>calc.payload(local,{...localChoices,S:'other.cfg'}),/saved line facts/);
+assert.throws(()=>calc.payload(local,{...localChoices,R:''}),/saved line facts/);
+
 (async()=>{
  let calls=[];
  const req=async(path,options)=>{calls.push([path,options]);return {};};
@@ -41,5 +72,28 @@ assert.match(calc.panel({...row,state:'running'},{lines:[{id:'line'}]}),/Wait fo
  }),/Source files changed/);
  assert.equal(writes,0);
  await assert.rejects(()=>calc.queue(row,choices,req,{signal:{aborted:true}}),/cancelled/);
+ // The nested line-input form is bound independently; calculation uses its own form.
+ const fields=Object.fromEntries(Object.entries({...localChoices}).map(([key,value])=>[key,{name:key,value,checked:key==='confirmed',disabled:['S','R'].includes(key)}]));
+ fields.confirmed.value='';
+ const handlers={},button={disabled:false},controls=[...Object.values(fields),button];
+ const form={dataset:{},elements:{namedItem:key=>fields[key]},addEventListener:(event,fn)=>{handlers[event]=fn;},querySelectorAll:()=>controls};
+ const labels={S:{textContent:''},R:{textContent:''}},note={hidden:false},status={textContent:''};
+ const root={isConnected:true,querySelector:selector=>selector==='[data-fault-form]'?form:selector==='[data-fault-status]'?status:selector==='[data-fault-local-note]'?note:selector.includes('data-fault-end-label="S"')?labels.S:selector.includes('data-fault-end-label="R"')?labels.R:null};
+ let boundLine,savedRefresh=0;
+ const originalBind=context.lineInputs.bind;
+ context.lineInputs.bind=(boundRow,host,signal,options)=>{boundLine={boundRow,host,signal,options};};
+ calc.bind(local,{querySelector:()=>root},undefined,{onQueued:async()=>{savedRefresh++;}});
+ assert.equal(boundLine.boundRow,local);assert.equal(boundLine.host,root);
+ await boundLine.options.onSaved({revision:3});assert.equal(savedRefresh,1,'saving local line facts refreshes the incident revision');
+ fields.line_id.value='line';handlers.change({target:fields.line_id});
+ assert.equal(fields.S.disabled,false);assert.equal(note.hidden,true);assert.equal(fields.confirmed.checked,false);
+ fields.line_id.value=localId;handlers.change({target:fields.line_id});
+ assert.equal(fields.S.value,'S.cfg');assert.equal(fields.R.value,'R.cfg');assert.equal(fields.S.disabled,true);assert.equal(note.hidden,false);
+ assert.match(labels.S.textContent,/Reviewed reference station/);
+ fields.confirmed.checked=true;context.api=async()=>{throw new Error('Synthetic connection failure');};
+ await handlers.submit({preventDefault(){}});
+ assert.match(status.textContent,/Synthetic connection failure/);
+ assert.equal(fields.S.disabled,true,'failed queue preserves saved-end controls');assert.equal(button.disabled,false);
+ context.lineInputs.bind=originalBind;
  console.log('Fault calculation: assignments, missing inputs, single end, revision, source and cancellation checks passed');
 })().catch(e=>{console.error(e);process.exitCode=1;});

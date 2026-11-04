@@ -5,7 +5,7 @@ const labels = {queued:'Queued',running:'Processing',needs_review:'Needs review'
 const badge = state => `<span class="badge ${escapeHtml(state)}">${escapeHtml(labels[state] || state)}</span>`;
 const date = stamp => new Date(stamp * 1000).toLocaleString(undefined, {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 const size = bytes => bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${(bytes / 1024).toFixed(1)} KB`;
-let config, selected = [], page = 0, lastItems = [], current = null, polling = false, busyUpload = false, requestedPortalTask='waveforms';
+let config, selected = [], page = 0, lastItems = [], current = null, polling = false, busyUpload = false, requestedPortalTask='waveforms', suggestedUploadName='';
 
 function notice(message = '') { $('notice').textContent = message; $('notice').hidden = !message; }
 async function api(path, options = {}) {
@@ -34,6 +34,22 @@ async function overview() {
   $('page-label').textContent = `Page ${page+1}`;
 }
 
+function uploadRecordName(file) {
+  const parts=String(file.webkitRelativePath||file.name||'').replace(/\\/g,'/').split('/').filter(Boolean);
+  let name=(parts.pop()||'').replace(/\.[^.]+$/, '');
+  if(/^(?:event|record(?:ing)?|disturbance|dr)[\s_-]*\d*$/i.test(name)&&parts.length)name=parts.at(-1);
+  return name.replace(/_/g,' ').replace(/\s+/g,' ').trim();
+}
+function suggestUploadName(files) {
+  const recordings=files.filter(file=>/\.(cfg|cff)$/i.test(file.name)),archives=files.filter(file=>/\.zip$/i.test(file.name));
+  const names=[...new Set((recordings.length?recordings:archives.length?archives:files).map(uploadRecordName).filter(Boolean))];
+  return names.join(' + ').slice(0,200);
+}
+function updateUploadName() {
+  const field=$('incident-name'),suggestion=suggestUploadName(selected);
+  if(!field.value.trim()||field.value===suggestedUploadName)field.value=suggestion;
+  suggestedUploadName=suggestion;
+}
 function chooseFiles(files) {
   const existing = new Set(selected.map(f => f.webkitRelativePath || f.name));
   for (const file of files) {
@@ -41,7 +57,7 @@ function chooseFiles(files) {
     if (existing.has(name)) { notice(`A file named ${name} is already selected. Use folders to distinguish terminals.`); continue; }
     existing.add(name); selected.push(file);
   }
-  if (!$('incident-name').value && selected.length) $('incident-name').value = selected[0].name.replace(/\.[^.]+$/, '');
+  updateUploadName();
   renderFiles();
 }
 function renderFiles() {
@@ -89,7 +105,9 @@ function submitUpload(event) {
 
 function assignmentForm(row) {
   const records = row.bundle?.files.filter(f => f.kind === 'comtrade') || [];
-  const options = '<option value="">Analyse without line constants</option>' + config.lines.filter(l=>l.id).map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(l.name)} · ${l.kv} kV · ${l.parameter_status}</option>`).join('');
+  const lines=config.lines.filter(l=>l.id),local=row.metadata?.incident_line;
+  if(local?.line_id&&!lines.some(line=>line.id===local.line_id))lines.unshift({id:local.line_id,name:'This incident’s saved line inputs',kv:local.review?.kv??'not supplied',parameter_status:'reviewed incident facts; missing inputs remain gated'});
+  const options = '<option value="">Analyse without line constants</option>' + lines.map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(l.name)} · ${escapeHtml(l.kv)} kV · ${escapeHtml(l.parameter_status)}</option>`).join('');
   return `<form id="review-form" class="panel"><div class="panel-heading"><div><h2>Confirm the incident assignment</h2><p>Choose one primary record at each available end. Other records can corroborate it.</p></div></div><div class="detail-section"><label for="review-line">Line definition</label><select id="review-line">${options}</select><p class="field-help">Without line constants, you can still inspect protection behaviour. Provisional definitions do not establish operational distance accuracy.</p></div><div class="table-wrap"><table class="assign-table"><thead><tr><th>Record & evidence</th><th>Data quality</th><th>Use in analysis</th></tr></thead><tbody>${records.map((f,i) => {
     const usable = f.ok && !f.duplicate_of && (!f.blocked || (config.mapping_targets && f.channel_inventory?.length));
     const state = f.duplicate_of?'Duplicate':f.blocked?'Input notes':!f.ok?'Source needs inspection':'Ready';
@@ -141,7 +159,6 @@ async function detail(id, revision = '', generation=routeGeneration) {
   if ($('review-form')) {
     bindMappingEditor();
     $('review-line').value=row.metadata.line_id || '';
-    const selectedEnds=new Set();
     document.querySelectorAll('[data-record]').forEach(select => {
       if (select.disabled) return;
       const f=row.bundle.files.find(f=>f.name===select.dataset.record), declared=row.metadata.assignments?.[f.name];
@@ -158,10 +175,6 @@ async function detail(id, revision = '', generation=routeGeneration) {
       profile.value = declared?.recording_profile || f.recording_profile || 'unconfirmed';
       profileLabel.append(profile); select.parentElement.append(profileLabel);
       if (declared) select.value=declared.role==='excluded'?'excluded':`${declared.end}:${declared.role}`;
-      else if (f.suggested_end && (!row.metadata.line_id || f.suggested_line_id===row.metadata.line_id)) {
-        select.value=`${f.suggested_end}:${selectedEnds.has(f.suggested_end)?'corroborating':'primary'}`;
-        selectedEnds.add(f.suggested_end);
-      }
     });
     $('review-form').onsubmit = async event => {
       event.preventDefault(); notice(); const assignments={};
@@ -171,11 +184,13 @@ async function detail(id, revision = '', generation=routeGeneration) {
         if (select.disabled) continue;
         if (!select.value) return notice('Choose how to use each usable record, or explicitly exclude it.');
         const file=row.bundle.files.find(f=>f.name===select.dataset.record);
-        if(select.value!=='excluded'&&DRInputGuidance.assess(file).ratio){notice(file.name+': actual CT/VT ratings are missing. Complete the required inputs and create a reviewed copy before choosing its operational end.');DRInputGuidance.openInputs(file.name);return;}
+        if(select.value!=='excluded'&&DRInputGuidance.assess(file).ratio){notice(file.name+': actual CT/VT ratings are missing. Save the actual ratings for this recording before choosing its operational end.');DRInputGuidance.openInputs(file.name);return;}
         const [end,role]=select.value==='excluded'?['','excluded']:select.value.split(':');
         const system = [...document.querySelectorAll('[data-system]')].find(s => s.dataset.system === select.dataset.record);
         const profile = [...document.querySelectorAll('[data-profile]')].find(s => s.dataset.profile === select.dataset.record);
         assignments[select.dataset.record]={end,role,protection_system:system?.value || 'unknown',recording_profile:profile?.value || 'unconfirmed'};
+        const instrumentReview=row.metadata.assignments?.[select.dataset.record]?.instrument_review;
+        if(instrumentReview)assignments[select.dataset.record].instrument_review=instrumentReview;
         if(mappings[select.dataset.record]) assignments[select.dataset.record].channel_mapping=mappings[select.dataset.record];
         if(rxReviews[select.dataset.record]) assignments[select.dataset.record].rx_review=rxReviews[select.dataset.record];
       }
@@ -234,7 +249,7 @@ $('dropzone').onkeydown=event=>{if(['Enter',' '].includes(event.key)){event.prev
 $('dropzone').ondragover=event=>{event.preventDefault();$('dropzone').classList.add('drag');};
 $('dropzone').ondragleave=()=>$('dropzone').classList.remove('drag');
 $('dropzone').ondrop=event=>{event.preventDefault();$('dropzone').classList.remove('drag');chooseFiles(event.dataTransfer.files);};
-$('selected-files').onclick=event=>{if(event.target.dataset.remove!==undefined){selected.splice(Number(event.target.dataset.remove),1);renderFiles();}};
+$('selected-files').onclick=event=>{if(event.target.dataset.remove!==undefined){selected.splice(Number(event.target.dataset.remove),1);updateUploadName();renderFiles();}};
 let searchTimer;
 $('search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{page=0;overview().catch(e=>notice(e.message));},250);};
 $('state-filter').onchange=()=>{page=0;overview().catch(e=>notice(e.message));};

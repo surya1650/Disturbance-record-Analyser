@@ -52,3 +52,14 @@ assertion failure; wording corrected with9renderer testsPASS, final full run act
 Two actual real-source PDFs are4A4/no clipping on initial final render; final
 source/browser proof and synthetic ratio-edit/line-form browser proof continue.
 Actual physical facts requested earlier remain unanswered; no real distance claimed.
+
+
+P2 frontend milestone: automatic incident/source names from CFG/CFF, editable
+physical-end names, saved-ratio reopening/editing and phase-only requirement rows
+are integrated. Incident-local line form works without a global registry entry;
+partial unknown facts remain a draft. Exact source identity, confirmation resets,
+abort/stale response guards and source-bound review retention are preserved.
+The new script is loaded before fault-calculation.js and the line API is installed.
+The success message now says inputs saved on this recording, not copy created.
+Focused frontend wrappers/Node contracts, syntax and diff PASS. No new main task
+or mandatory inspection input is introduced. Actual browser qualification ongoing.

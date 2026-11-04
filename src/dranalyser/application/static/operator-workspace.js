@@ -16,7 +16,7 @@ const DROperatorWorkspace=(()=>{
     bindInstrumentReview(row,reviewInputs,{signal,onSuccess:async(updated,result)=>{
       history.replaceState(null,'','#incident/'+row.incident_id);await detail(row.incident_id);
       const select=document.getElementById('inspection-record');if(select&&[...select.options].some(o=>o.value===result.reviewed_record)){select.value=result.reviewed_record;select.dispatchEvent(new Event('change'));}
-      notice('Reviewed copy created in revision '+updated.number+'. Original files are preserved.');
+      notice('Instrument ratings saved for this recording in input revision '+updated.number+'. Original files are preserved.');
     }});
     const technical=document.createElement('details');technical.className='operator-source-details';technical.innerHTML='<summary>Supporting measurements and technical exports</summary><p class="field-help">Detailed source fits and method evidence are available here when a finding needs closer review.</p>';
     const original=[...section.children].filter(el=>el!==root);
