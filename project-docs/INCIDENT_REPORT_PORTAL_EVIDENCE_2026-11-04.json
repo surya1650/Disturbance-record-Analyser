@@ -1,8 +1,8 @@
 {
   "version": 1,
   "qualified_runtime_commit": "dcab1ecd8f7b6e888720ac476770ff96099426fc",
-  "remote_verified_head": "52256d102269e6929d69a07081cd828f038688a6",
-  "publication": "PUSH_PENDING_AUTH",
+  "remote_verified_head": "ab93e95e69d827b2894e96754c242e23704a3360",
+  "publication": "PUBLISHED",
   "data_scope": "Synthetic fixtures only; private corpus unavailable.",
   "tests": {
     "passed": 2239,
@@ -268,5 +268,7 @@
     "src/dranalyser/application/static/fault-calculation.css": "48b3395f8fbfa6caace80fe6273834423ba684fbd5092fea9211c03a0d3fd728",
     "src/dranalyser/application/static/event-study.css": "697f0187fb0f0e9ddc23888a4705f3d8d122b674fb2a7b351a7e3ba777c32435",
     "src/dranalyser/application/static/incident-report.js": "d15952f1554485bd4d208ad2de80344328119eb3ae972d3ce8b45df827ffbd34"
-  }
+  },
+  "previous_remote_head": "52256d102269e6929d69a07081cd828f038688a6",
+  "publication_authorization": "User explicitly answered continue go ahead to the named public review-branch publication question."
 }

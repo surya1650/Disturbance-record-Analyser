@@ -2,8 +2,9 @@
 
 The current primary goal is the [clear incident report and simple portal](INCIDENT_REPORT_PORTAL_GOAL_v1.md).
 Read its [checkpoint](INCIDENT_REPORT_PORTAL_CHECKPOINT.md) first, including the
-active-writer lease and **PUSH_PENDING_AUTH** restriction. Preserve local commits
-and uncommitted work if the remote does not yet contain these goal files. When
+active-writer lease and recorded publication state. The user explicitly approved
+publication and the review-branch delivery is verified. Preserve commits and
+uncommitted work. When
 the implementation is COMPLETE, verify the acceptance evidence and stop; do not
 start another feature backlog. The earlier autonomous plan below remains context.
 

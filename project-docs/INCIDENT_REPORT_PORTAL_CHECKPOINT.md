@@ -3,32 +3,35 @@
 Goal: [INCIDENT_REPORT_PORTAL_GOAL_v1.md](INCIDENT_REPORT_PORTAL_GOAL_v1.md).
 Branch: `codex/operator-ui-review`. Starting remote HEAD: `52256d1`.
 State: **COMPLETE — implementation and qualification** (2026-11-04 Asia/Calcutta).
-Publication: **PUSH_PENDING_AUTH**. No autonomous engineering work remains.
+Publication: **PUBLISHED**. User explicitly approved the named public review-branch
+push with “continue go ahead” in response to the publication question.
+Implementation/handoff `ab93e95e69d827b2894e96754c242e23704a3360` was pushed and the remote HEAD
+read back exactly. This documentation closure follows; runtime is unchanged.
+No autonomous engineering work remains.
 
 ## Resume first
 
 Read [acceptance](INCIDENT_REPORT_PORTAL_ACCEPTANCE_2026-11-04.md) and
 [compact evidence](INCIDENT_REPORT_PORTAL_EVIDENCE_2026-11-04.json), then stop.
-Do not restart closed phases or create a feature backlog. Preserve local commits
-and working files; the remote does not yet include this completed goal.
+Do not restart closed phases or create a feature backlog. Preserve commits and
+working files. The review branch now contains this completed goal.
 The active-writer lease is completed. All QA servers have been stopped.
 Owned continuation **Continue incident report goal** is paused (disabled state
 verified); do not resume it for a goal that has no unfinished engineering work.
 Native automation/connection identifiers are deliberately not committed.
 
-## Publishing constraint
+## Publication record
 
-Automatic approval review twice rejected publication to this public repository;
-an explicit user answer permitting code/tests/checkpoints to be pushed to
-`surya1650/Disturbance-record-Analyser`, branch `codex/operator-ui-review`, remains
-pending. Do not bypass through another tool/path or infer consent from elapsed
-time or a preselected answer. The resumed task explicitly preserves this rule.
-No push was attempted here. A read-only remote HEAD check returned
-`52256d102269e6929d69a07081cd828f038688a6` after implementation was complete.
-Once an actual explicit answer arrives, push the preserved local commits to this
-review branch only and read back remote HEAD. Never merge main or deploy.
+The earlier automatic approval rejection was resolved by the user's explicit
+“continue go ahead” answer to the named public repository/branch push question.
+A normal fast-forward push published all six validated phase/handoff commits to
+`surya1650/Disturbance-record-Analyser`, `codex/operator-ui-review` only.
+Remote HEAD was read back as `ab93e95e69d827b2894e96754c242e23704a3360` immediately afterwards.
+No force push, alternate publishing path, main merge or deployment was used.
+The approval and delivery state are now resolved; do not ask for the same
+publication permission again. Future work still requires an actual new goal.
 
-## Delivered locally
+## Delivered to the review branch
 
 - P0 `5ab8595`: durable goal, ownership and continuation protection.
 - P1 `141bbc7`: version1 canonical, source-bound reader model, complete one-cycle
