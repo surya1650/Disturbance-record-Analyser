@@ -1,3 +1,13 @@
+# Automatic windows and explicit line references — active
+
+[Plan](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md),
+[checkpoint](AUTO_WINDOW_LINE_REFERENCE_CHECKPOINT.md). Continue this bounded user
+request before older closed goals. Preserve uncommitted work, coordinate the
+active writer and retain all numerical/input gates. Publication for this new
+payload has not been attempted. Real private facts are still unanswered.
+
+---
+
 # Real-source input workflow qualified — actual facts pending
 
 [Plan](REAL_SOURCE_INPUTS_PLAN_v1.md),
