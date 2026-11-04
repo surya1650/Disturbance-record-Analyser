@@ -4,6 +4,11 @@ Branch `codex/operator-ui-review`; qualified runtime
 `8c3909c0d81b87fd4e00860de056ebc157043e17`.
 Plan: [AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md).
 
+Publication **PUBLISHED** after the user explicitly answered **“publish”** to the
+named public code/tests/sanitized-documents question. Normal review-branch delivery
+`2b68e2405b0670ef992b7cee49f0e48c8b012b09` was pushed and remote HEAD verified
+exactly; this closure changes documentation only. No private payload was published.
+
 ## Result
 
 The main physical engine already detects the disturbance and selects its native

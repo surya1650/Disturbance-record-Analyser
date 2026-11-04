@@ -1,8 +1,10 @@
 # Continue the autonomous analyser work
 
-Active follow-up: [automatic windows and explicit line references](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md)
+Latest completed follow-up: [automatic windows and explicit line references](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md)
 and [checkpoint](AUTO_WINDOW_LINE_REFERENCE_CHECKPOINT.md). Read this before the
 older completed goals below; preserve local work and check its writer lease.
+It is COMPLETE and PUBLISHED: verify the recorded evidence and stop unless the
+user supplies a new goal or the actual previously requested engineering facts.
 
 Active goal: [real-source inputs](REAL_SOURCE_INPUTS_PLAN_v1.md) and
 [checkpoint](REAL_SOURCE_INPUTS_CHECKPOINT.md). Check this before older completed

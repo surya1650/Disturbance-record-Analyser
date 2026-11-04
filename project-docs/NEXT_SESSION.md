@@ -1,4 +1,4 @@
-# Automatic windows and explicit line references — qualified
+# Automatic windows and explicit line references — complete and published
 
 [Plan](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md),
 [checkpoint](AUTO_WINDOW_LINE_REFERENCE_CHECKPOINT.md),
@@ -6,12 +6,13 @@
 Engineering COMPLETE at8c3909c: automatic source support, optional reviewed132kV
 reference/manual fallback, frozen provenance and original gates.2403PASS/28private
 skips,Stage-A10000PASS .4361%p95,browser10/10PASS,3PDFs each4A4/no clipping.
-16runtime hashes unchanged; owned servers stopped. **APPROVED_PUSH_PENDING**:
+16runtime hashes unchanged; owned servers stopped. **PUBLISHED**:
 the user explicitly answered **“publish”** to the named public code/tests/sanitized
 documents question, resolving the earlier automatic review block for this new
-payload. Approved903ce63 includes delivery0a5d916/checkpoint. Next: normal review-
-branch push and remote verification; no repeat permission question. Real facts
-remain unanswered and private; old goals paused.
+payload. Normal delivery2b68e2405b0670ef992b7cee49f0e48c8b012b09 was pushed and
+remote HEAD verified exactly; this documentation closure leaves runtime unchanged.
+No engineering/publication work remains; verify evidence and stop. Real facts
+remain unanswered and private; old goals paused. Do not ask for approval again.
 
 ---
 
