@@ -9,6 +9,8 @@
 .recording-setup-section [data-line-input-form]{display:grid;gap:12px;min-width:0}
 .recording-setup-section [data-line-input-form]>label{margin:0}
 .recording-setup-section [data-line-input-form]>button{justify-self:start}
+.recording-setup-section .source-input-grid>label{display:block}
+.recording-setup-section .source-input-grid>label>input,.recording-setup-section .source-input-grid>label>select{display:block;width:100%;margin-top:6px}
 .recording-setup-section .inspection-toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
 .recording-setup-section .inspection-toolbar button{padding:10px 14px;border:1px solid var(--line,#d8e4e8);border-radius:6px;background:#fff;color:#435961;font:inherit;font-size:13px}
 .recording-setup-section .inspection-toolbar [data-rating-action=save]{background:var(--teal,#087f75);border-color:var(--teal,#087f75);color:#fff}
