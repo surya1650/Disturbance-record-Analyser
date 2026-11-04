@@ -44,7 +44,7 @@ route integration and report focus/classification are still in progress. Source
 normal UI no longer offers voltage-based CT guesses; new source requests use
 actual source/saved ratings with voltage choice0. Root integration checks running.
 
-## Setup milestone
+## Setup milestone — P1 `494de5e`
 
 Frontend Setup/line flow is frozen. Upload opens #setup/{incident}, known ratings
 and already-primary scaling are shown, missing phase CT/VT uses common fields
@@ -54,9 +54,34 @@ voltage-based assumptions even with stale saved132/220 display preferences.
 Combined Setup/instrument/line/operator/guidance checks:23PASS,4.31s,1inherited
 Starlette warning; changed JS syntax/diff PASS. No final full-suite claim yet.
 
-Canonical focus/classification helpers are frozen with78focusedPASS,6.93s:
+P2 `3164884` canonical focus/classification helpers are frozen with78focusedPASS,6.93s:
 actual bounded native event context, retained original overview/gaps/counts,
 strong source/revision bindings for stored classification independent of distance.
 Renderer interaction tests44PASS, but actual print smoke found footer overlap
 and long-label stress overflow despite4page counts. Agent is fixing those;
 PDF acceptance and final runtime freeze remain pending. Preserve this work.
+
+
+Stage-A10000freshPASS: cleanp95 .4361%, zero impossible distances without caveat,
+45.3s. Native DSP/estimator/oracle unchanged. Pre-freeze actual Setup browser3/3PASS,
+no page errors: common missing ratings/save on same source, other end primary
+samples unchanged, independent end ratios, unsaved line draft retained, mobile390px
+fits. Final report/browser/PDF qualification still waits for renderer print fixes.
+Independent review found touch pointerleave could clear readouts on finger lift;
+renderer corrected it and added a regression. Actual touch check remains pending.
+
+## Final runtime frozen
+
+P3 `16e83e7`: exact table hover values, actual retained/native sample readouts,
+screen Event detail/Full recording toggle, zero-centred phase scales, unit/RMS
+clarity and print-safe four-page layout. Print overlap/long-label stress issues
+were corrected;3actual smoke PDFs each4A4/no clipping/min9pt. Actual keyboard,
+toggle, print-forced-event-detail and mobile touch-release readout smoke PASS.
+Independent review reports no outstanding actionable finding after the touch fix.
+
+All18runtime files (including packaging) frozen in ignored runtime-manifest.json.
+Direct guard/self-test, changed10Python Ruff/18JS syntax/diff PASS. Whole Ruff
+retains26 inherited findings in untouched files. Built wheel includes exact inline
+report JS/template and new Setup JS/CSS assets; no active environment modification.
+Full pytest and final actual browser/PDF matrix are running; do not claim their
+counts until recorded. No current-user physical facts were fabricated.
