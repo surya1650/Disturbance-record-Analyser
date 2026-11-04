@@ -38,7 +38,8 @@ def test_four_offline_sheets_preserve_zeros_counts_and_the_input_model():
     assert 'data-report-model-version="1"' in html
     assert '@page{size:A4;margin:0}' in html
     assert 'window.print()' in html
-    assert '<script' not in html and 'src=' not in html and 'href=' not in html
+    assert '<script src=' not in html and 'src=' not in html and 'href=' not in html
+    assert 'const DRIncidentWaveforms=' in html, 'offline interaction is bundled in the saved HTML'
     assert '<span class="value">0</span>' in html
     assert '<span class="value">734</span> <span class="unit">counts</span>' in html
     assert 'Capture ends before a supported after-event interval.' in text

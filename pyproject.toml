@@ -42,7 +42,7 @@ package-dir = { "" = "src" }
 where = ["src"]
 
 [tool.setuptools.package-data]
-dranalyser = ["standards/*.yaml", "rules/*.yaml", "report/*.html", "application/static/*"]
+dranalyser = ["standards/*.yaml", "rules/*.yaml", "report/*.html", "report/*.js", "application/static/*"]
 
 [tool.ruff]
 target-version = "py311"

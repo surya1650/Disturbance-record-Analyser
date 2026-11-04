@@ -6,6 +6,7 @@ windows, calculate electrical quantities, or infer physical breaker operation.
 from __future__ import annotations
 
 import math
+import json
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -15,7 +16,7 @@ from .incident_line import line_diagram_view
 
 _PHASES = {'IA': 'R (A)', 'IB': 'Y (B)', 'IC': 'B (C)',
            'VA': 'R (A)', 'VB': 'Y (B)', 'VC': 'B (C)'}
-_COLORS = ('#b34b13', '#876b00', '#176b9b')
+_COLORS = ('#cc3845', '#9b7300', '#2563b9')
 _SIGNALS = {'START': 'Disturbance start indication', 'TRIP': 'Trip command indication',
             'CARRIER_SEND': 'Protection message sent', 'CARRIER_RECV': 'Protection message received',
             'CLOSE': 'Close command indication', 'Z1': 'Zone 1 indication', 'Z2': 'Zone 2 indication',
@@ -65,8 +66,14 @@ def _display_scale(source, quantity):
 def _display_value(value, unit, divisor):
     unit = _unit(unit)
     factor = divisor if unit in ('A', 'V') else 1
+    if _number(value) is not None and value != 0 and value/factor == 0:
+        factor = 1
     return (_number(value/factor) if _number(value) is not None else None,
             'k'+unit if factor == 1000 else unit)
+
+
+def _precise(value):
+    return str(value) if _number(value) is not None else 'Unavailable'
 
 
 def _phase_rows(source, quantity, divisor):
@@ -81,7 +88,7 @@ def _phase_rows(source, quantity, divisor):
         fallback = (withheld[0].get('reason') if withheld else None) or (
             source.get('reason') or ('Phase mapping is ambiguous.' if len(matches) > 1 else 'No uniquely mapped '+quantity+' channel.'))
         label = item.get('label') or item.get('id')
-        row = dict(phase=_PHASES[meaning], channel=_text(label, 42) if label != meaning else '', cells=[])
+        row = dict(phase=_PHASES[meaning], channel=_text(label, 22) if label != meaning else '', cells=[])
         for region, key in (('pre', 'pre_rms'), ('fault', 'fault_rms'), ('post', 'post_rms')):
             number, unit = _display_value(item.get(key), item.get('units'), divisor)
             reason = missing.get(region) or item.get('reason') or fallback
@@ -89,29 +96,42 @@ def _phase_rows(source, quantity, divisor):
             if number is None and reason not in reasons:
                 reasons.append(reason)
             row['cells'].append(dict(value=number, units=unit,
-                reason=reason, reason_number=reasons.index(reason)+1 if number is None else None))
+                reason=reason, reason_number=reasons.index(reason)+1 if number is None else None,
+                tooltip=(f'{_PHASES[meaning]} · '+(str(label)+' · ' if label and label != meaning else '')
+                    +f'{region}: {_precise(item.get(key))} {item.get("units") or "units unavailable"}. '
+                    +(item.get('rms_basis') or source.get('rms_basis') or 'Median of complete one-cycle RMS observations in this region.')
+                    +' '+str(item.get('scaling_note') or 'Instrument scaling is not independently verified.'))))
         rows.append(row)
     return rows, reasons
 
 
-def _waveforms(source, quantity, divisor):
+def _waveforms(source, quantity, divisor, *, overview=False):
     """Bounded SVG tracks; missing values and source time gaps break paths."""
     channels = []
-    for channel in list((source.get('groups') or {}).get(quantity) or [])[:3]:
+    originals = list((source.get('groups') or {}).get(quantity) or [])[:3]
+    focus = source.get('waveform_focus') or {}
+    focused = not overview and focus.get('status') == 'available' and all(isinstance(c.get('focus_trace'), list) for c in originals)
+    hover_channels = []
+    for channel in originals:
         unit = channel.get('units')
         factor = divisor if _unit(unit) in ('A', 'V') else 1
+        retained = channel.get('focus_trace') if focused else channel.get('trace', [])
         trace = [[p[0], p[1], p[2]/factor if _number(p[2]) is not None else p[2]]
-                 for p in channel.get('trace', [])[:4096] if isinstance(p, (list, tuple)) and len(p) >= 3]
+                 for p in retained[:4096] if isinstance(p, (list, tuple)) and len(p) >= 3]
         channels.append(dict(channel, units=_display_value(0, unit, divisor)[1], trace=trace))
+        hover_channels.append(dict(label=_PHASES.get(channel.get('meaning'), _text(channel.get('label') or channel.get('id'), 80)),
+            units=_display_value(0, unit, divisor)[1], original_units=_unit(unit), factor=factor,
+            trace=[[p[0], p[1], p[2] if _number(p[2]) is not None else None]
+                   for p in retained[:4096] if isinstance(p, (list, tuple)) and len(p) >= 3 and _number(p[1]) is not None]))
     if not channels:
         return None
     width, left, right = 680, 91, 665
     shared = len({_unit(c.get('units')) for c in channels}) == 1
     row_height, top = 42, 8
-    height = 140 if shared else top+len(channels)*row_height+29
+    height = 180 if shared else top+len(channels)*row_height+29
     all_times = [p[1] for c in channels for p in c.get('trace', [])
                  if isinstance(p, (list, tuple)) and len(p) >= 3 and _number(p[1]) is not None]
-    time_range = source.get('time_range_s')
+    time_range = focus.get('time_range_s') if focused else source.get('time_range_s')
     if (isinstance(time_range, (list, tuple)) and len(time_range) == 2
             and all(_number(v) is not None for v in time_range) and time_range[1] > time_range[0]):
         start, stop = time_range
@@ -127,8 +147,8 @@ def _waveforms(source, quantity, divisor):
     out = [f'<svg class="waveform{"" if shared else " waveform-stacked"}" viewBox="0 0 {width} {height}" role="img" '
            f'aria-label="{escape(quantity.title())} waveforms in source-local seconds. Gaps remain unknown.">']
     for row, channel in enumerate(channels):
-        ytop = 25 if shared else top+row*row_height
-        ybottom = 105 if shared else ytop+28
+        ytop = 30 if shared else top+row*row_height
+        ybottom = 135 if shared else ytop+28
         points = [p for p in channel.get('trace', [])[:4096]
                   if isinstance(p, (list, tuple)) and len(p) >= 3]
         value_points = [p for c in channels for p in c.get('trace', [])[:4096]] if shared else points
@@ -145,7 +165,8 @@ def _waveforms(source, quantity, divisor):
         if not values:
             out.append(f'<text x="{left+8}" y="{ytop+24}">No finite waveform samples available.</text>')
             continue
-        low, high = min(values), max(values)
+        extent = max(abs(min(values)), abs(max(values))) or 1
+        low, high = -extent, extent
         scale = max(abs(low), abs(high), 1)
         nlow, nhigh = low/scale, high/scale
         def y(v, scale=scale, nlow=nlow, nhigh=nhigh, ytop=ytop, ybottom=ybottom):
@@ -162,7 +183,7 @@ def _waveforms(source, quantity, divisor):
                                f'height="{ybottom-ytop}" fill="{color}"/>')
         for value in (() if shared and row else (low, low/2+high/2, high)):
             yy = y(value)
-            out.append(f'<line x1="{left}" x2="{right}" y1="{yy:.2f}" y2="{yy:.2f}" class="grid"/>')
+            out.append(f'<line x1="{left}" x2="{right}" y1="{yy:.2f}" y2="{yy:.2f}" class="grid{" zero-line" if value == 0 else ""}"/>')
             out.append(f'<text x="{left-6}" y="{yy+3:.2f}" text-anchor="end" class="axis">{escape(_number(value))}</text>')
         segments, path = [], []
         previous_time = None
@@ -204,7 +225,18 @@ def _waveforms(source, quantity, divisor):
                 t = start*(1-i/4)+stop*(i/4)
                 out.append(f'<text x="{x(t):.2f}" y="{ybottom+15}" text-anchor="middle" class="axis">{escape(_number(t))}</text>')
     out.append(f'<text x="{(left+right)/2}" y="{height-1}" text-anchor="middle" class="axis-title">Source-local time (s)</text></svg>')
-    return Markup(''.join(out))
+    policy = str(focus.get('trace_policy') or 'retained sample envelope') if focused else 'retained sample envelope'
+    mode = 'Event detail' if focused else 'Capture overview'
+    payload = dict(version=1, range=[start, stop],
+        plot=dict(left=left, right=right, top=30 if shared else top, bottom=135 if shared else height-29, width=width, height=height),
+        trace_policy=policy, channels=hover_channels)
+    data = json.dumps(payload, allow_nan=False, separators=(',', ':')).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
+    scale_note = 'shared phase scale' if shared else 'separate scales for unlike units'
+    note = f'{mode} · instantaneous values · {scale_note} · {_number(start)}–{_number(stop)} local s'
+    return Markup('<div class="waveform-view" tabindex="0" role="group" aria-label="'+str(escape(quantity.title()+' waveform. '+note))+ '">'
+        +'<p class="waveform-caption">'+str(escape(note))+'</p>'+''.join(out)
+        +'<output class="waveform-readout" aria-live="polite">Hover or tap for retained sample values. Arrow keys step through retained samples.</output>'
+        +'<script type="application/json" class="waveform-data">'+data+'</script></div>')
 
 
 def _source(source, index):
@@ -228,6 +260,10 @@ def _source(source, index):
         divisor = _display_scale(source, quantity)
         result[quantity+'_rows'], result[quantity+'_reasons'] = _phase_rows(source, quantity, divisor)
         result[quantity+'_svg'] = _waveforms(source, quantity, divisor)
+        group = (source.get('groups') or {}).get(quantity) or []
+        has_focus = ((source.get('waveform_focus') or {}).get('status') == 'available'
+                     and group and all(isinstance(c.get('focus_trace'), list) for c in group))
+        result[quantity+'_overview_svg'] = _waveforms(source, quantity, divisor, overview=True) if has_focus else None
         operational = source.get('operational_measurements') or {}
         prefix = 'I' if quantity == 'current' else 'V'
         measured = [p for p in operational.get('channels', []) if p.get('channel') in (prefix+'A', prefix+'B', prefix+'C')]
@@ -292,6 +328,7 @@ def render_incident_report(model):
     has_location = location_number is not None and bool(location.get('method'))
     attachments = [a for a in model.get('attachments') or [] if a.get('status') != 'included']
     report = dict(version=model.get('version', 1), title=_text(model.get('title') or 'Incident report', 90),
+        interaction=Markup(Path(__file__).with_name('incident_interaction.js').read_text(encoding='utf-8')),
         incident=_text(model.get('incident_id') or 'Not supplied', 72), revision=model.get('revision', 'Not supplied'),
         generated=_text(generation.get('created_at') or model.get('created_at') or 'Saved generation', 70),
         timezone=_text(generation.get('timezone'), 40),
