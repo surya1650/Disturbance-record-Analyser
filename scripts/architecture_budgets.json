@@ -147,8 +147,9 @@
     "src/dranalyser/workbench/source_models.py": 33,
     "src/dranalyser/workbench/source_snapshot.py": 130,
     "src/dranalyser/workbench/line_reference_review.py": 39,
-    "src/dranalyser/workbench/line_references.py": 114,
-    "src/dranalyser/workbench/source_projection_window.py": 118
+    "src/dranalyser/workbench/line_references.py": 115,
+    "src/dranalyser/workbench/source_projection_window.py": 118,
+    "src/dranalyser/workbench/source_quantities.py": 210
   },
   "exceptions": {}
 }

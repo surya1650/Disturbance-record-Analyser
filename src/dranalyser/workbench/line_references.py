@@ -96,8 +96,9 @@ def line_reference_catalogue():
 def reference_line_review(reference_id):
     """Provide an unconfirmed positive-sequence draft after an explicit choice.
 
-    Callers merge this partial draft with their existing inputs. Zero sequence,
-    length, section geometry, end choices and confirmations remain manual.
+    Length, section geometry, end choices and confirmations remain manual.
+    Callers must not preserve numeric zero-sequence inputs across a change of
+    impedance basis: refuse that change until their units are explicitly resolved.
     """
     row = get_line_reference(reference_id)
     if row is None:

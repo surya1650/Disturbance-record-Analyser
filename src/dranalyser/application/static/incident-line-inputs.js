@@ -111,6 +111,12 @@ const DRIncidentLineInputs=(()=>{
         if(!current()||form.dataset.busy||hasSections)return;
         const reference=items.find(item=>item.id===referenceChoice.value);
         if(!reference)return;
+        const existingBasis=field('basis').value;
+        if(existingBasis!==reference.basis&&['r0','x0'].some(key=>value(field(key).value).trim()!=='')){
+          const basisLabel=existingBasis==='total'?'whole-line impedance (Ω)':existingBasis==='per-km'?'per-kilometre impedance (Ω/km)':'an unconfirmed impedance basis';
+          status.textContent=referenceStatus.textContent='R0/X0 currently use '+basisLabel+'; clear optional zero-sequence fields or enter the reference basis and correct values before applying.';
+          return;
+        }
         for(const [key,input] of [['kv',reference.kv],['basis',reference.basis],['r1',reference.parameters?.r1],['x1',reference.parameters?.x1]])field(key).value=value(input);
         referenceId.value=reference.id;referenceReviewed.checked=false;referenceReviewed.disabled=false;
         field('confirmed_line').checked=false;field('uniform_line').checked=false;

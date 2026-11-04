@@ -29,7 +29,7 @@ integration and final checks are next. No private physical facts have been fille
 ## Implementation milestone
 
 P1 `47fcced`: automatic source-projection support and secondary manual override.
-P2 implementation is frozen locally: explicit source-labelled reference draft UI,
+P2 `6fd8ad3`: explicit source-labelled reference draft UI,
 strict matching constants and applicability gate, frozen report provenance and
 manual fallback. Legacy independent projection controls now live under collapsed
 technical details; the primary physical calculation explains automatic detection.
@@ -44,6 +44,22 @@ self-test/diff PASS. Only changed/new Python growth budgets updated exactly.
 Full pytest, Stage-A10000 and actual browser/PDF checks are running. No final
 counts, PDF page counts or completed qualification are claimed yet. Final source
 commit/checkpoint, sanitized evidence and publication decision follow those checks.
+
+## Review correction and final freeze
+
+Independent review found Apply could reinterpret existing total-ohm R0/X0 after
+switching the shared basis to per-km. Corrected before qualification: incompatible
+basis plus any supplied R0/X0 (including zero) refuses Apply before any field,
+reference or confirmation mutation. No silent conversion or deletion occurs.
+Unreviewed reference drafts now also refuse advanced distance projections; the
+operational applicability gate was already enforced. Historical manual behavior
+without a reference stays supported.74focused tests PASS,1.44s. Independent
+re-review reports no outstanding actionable findings.
+
+The earlier full run2402PASS/28skips/1warning,120.94s predates these final corrections;
+the final full run is in progress. Stage-A10000PASS,cleanp95 .4361%,77.7s; native
+DSP/estimator/synthetic files remain unchanged. Browser/PDF checks are still
+active; actual page counts and final-runtime evidence must be recorded later.
 
 Earlier workers hit a platform usage limit; the user's continuation resumed their
 preserved local edits. Work during the limit is not claimed. Required real CT/VT,

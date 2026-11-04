@@ -4,7 +4,7 @@ const inputs=require('../src/dranalyser/application/static/incident-line-inputs.
 const reference={id:'erpc-2015-powergrid-panther-132-sc',label:'132 kV Single Panther, single circuit',kv:132,conductor:'Single Panther',circuit_configuration:'single-circuit',basis:'per-km',units:'ohm/phase/km (primary)',parameters:{r1:.1622,x1:.3861,r0:.4056,x0:1.622},source:{url:'https://erpc.gov.in/reference.pdf#page=39',printed_page:36,pdf_page:39},limitations:['Temperature and geometry are not stated.']};
 const config={line_references:{version:1,references:[reference]}};
 const row={incident_id:'line-reference-incident',number:2,state:'needs_review',metadata:{},bundle:{files:[{name:'north.cfg',kind:'comtrade'},{name:'south.cfg',kind:'comtrade'}]}};
-const original={length_km:'73.2',kv:'220',basis:'total',r1:'2',x1:'20',r0:'7',x0:'60',reviewer:'Engineer',evidence:'Approved line schedule',confirmed_line:true,uniform_line:true,confirmed_same_event:true,ends:{S:{record:'north.cfg',name:'North',current_direction:'bus-to-line',vt_type:'CVT',vt_location:'line'},R:{record:'south.cfg',name:'South',current_direction:'line-to-bus',vt_type:'VT',vt_location:'bus'}}};
+const original={length_km:'73.2',kv:'220',basis:'per-km',r1:'2',x1:'20',r0:'7',x0:'60',reviewer:'Engineer',evidence:'Approved line schedule',confirmed_line:true,uniform_line:true,confirmed_same_event:true,ends:{S:{record:'north.cfg',name:'North',current_direction:'bus-to-line',vt_type:'CVT',vt_location:'line'},R:{record:'south.cfg',name:'South',current_direction:'line-to-bus',vt_type:'VT',vt_location:'bus'}}};
 const markup=inputs.markup(row,config);
 assert.match(markup,/Manual entry · no reference/);
 assert.match(markup,/data-apply-line-reference disabled/,'a reference is never selected or applied automatically');
@@ -43,6 +43,25 @@ function fixture(initial=original){
   const emit=(key,next,type='change')=>{const target=fields[key];if(typeof next==='boolean')target.checked=next;else target.value=next;target.emit(type,{target});form.emit(type,{target});};
   return {root,form,fields,apply,status,referenceStatus,details,units,emit,applyDraft:()=>apply.emit('click'),submit:()=>Promise.all(form.emit('submit',{preventDefault(){}}))};
 }
+const snapshot=draft=>Object.fromEntries(Object.entries(draft.fields).map(([key,field])=>[key,{value:field.value,checked:field.checked,disabled:field.disabled}]));
+for(const initial of [{basis:'total',r0:'7',x0:'60'},{basis:'total',r0:'0',x0:''},{basis:'total',r0:'',x0:'60'},{basis:'',r0:'7',x0:''},{basis:'',r0:'',x0:'0'}]){
+  const blocked=fixture({...original,...initial,reference_id:reference.id,reference_reviewed:true});
+  inputs.bind(row,blocked.root,undefined,{config});
+  const before=snapshot(blocked),unitsBefore=blocked.units.map(unit=>unit.textContent);
+  blocked.applyDraft();
+  assert.deepEqual(snapshot(blocked),before,'a refused basis change keeps every input, reference and confirmation intact');
+  assert.deepEqual(blocked.units.map(unit=>unit.textContent),unitsBefore);
+  assert.match(blocked.status.textContent,/R0\/X0 currently use/);
+  assert.match(blocked.status.textContent,/clear optional zero-sequence fields or enter the reference basis and correct values before applying/);
+  assert.equal(blocked.status.textContent,blocked.referenceStatus.textContent);
+  assert.match(blocked.status.textContent,initial.basis==='total'?/whole-line impedance \(Ω\)/:/unconfirmed impedance basis/);
+}
+const totalWithoutZero=fixture({...original,basis:'total',r0:'',x0:''});
+inputs.bind(row,totalWithoutZero.root,undefined,{config});
+totalWithoutZero.emit('reference_choice',reference.id);totalWithoutZero.applyDraft();
+assert.equal(totalWithoutZero.fields.basis.value,'per-km','a total basis can change explicitly when no zero-sequence values would be reinterpreted');
+assert.equal(totalWithoutZero.fields.reference_id.value,reference.id);
+assert.equal(totalWithoutZero.fields.r0.value,'');assert.equal(totalWithoutZero.fields.x0.value,'');
 const draft=fixture();inputs.bind(row,draft.root,undefined,{config});
 draft.emit('reference_choice',reference.id);
 assert.equal(draft.fields.kv.value,'220','previewing a reference does not apply it');
@@ -73,6 +92,8 @@ for(const key of ['kv','basis','r1','x1']){
   assert.equal(draft.fields.confirmed_line.checked,false,'manual electrical edits immediately invalidate line confirmation');
 }
 draft.emit('reference_choice',reference.id);draft.applyDraft();
+assert.equal(draft.fields.basis.value,'total','a reference does not reinterpret preserved zero-sequence fields after a manual basis change');
+draft.emit('basis','per-km');draft.emit('reference_choice',reference.id);draft.applyDraft();
 const retained=Object.fromEntries(['kv','basis','r1','x1','length_km','r0','x0'].map(key=>[key,draft.fields[key].value]));
 draft.emit('reference_choice','');
 for(const [key,expected] of Object.entries(retained))assert.equal(draft.fields[key].value,expected,'switching to manual retains '+key);

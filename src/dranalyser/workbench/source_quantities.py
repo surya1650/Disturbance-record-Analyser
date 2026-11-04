@@ -138,6 +138,9 @@ def _line_sections(line):
 
 def _projection(loops,line,name):
     empty=dict(distance_km=None,fraction=None,residual=None,eligible_overlay=False)
+    reference=(line or {}).get('line_reference') or {}
+    if reference and reference.get('applicability_reviewed') is not True:
+        return _unavailable('Published reference applicability is unreviewed; review the actual conductor and circuit before a distance projection.',**empty)
     if name not in ('AB','BC','CA'):
         return _unavailable('Choose an explicit phase-phase fault-loop assumption; ground loops require a separate compensation contract.',**empty)
     loop=loops[name]

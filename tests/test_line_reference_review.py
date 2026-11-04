@@ -8,6 +8,7 @@ from dranalyser.workbench.incident_inputs import (
 )
 from dranalyser.workbench.line_reference_review import reference_provenance
 from dranalyser.workbench.line_references import reference_line_review
+from dranalyser.workbench.source_quantities import _projection
 from tests.test_incident_inputs import metadata_and_bundle, row_and_review
 
 REFERENCE = 'erpc-2015-powergrid-panther-132-sc'
@@ -73,3 +74,17 @@ def test_confirmation_without_reference_is_rejected_and_manual_zero_sequence_rem
     review = clean_line_review(dict(manual, **reference_line_review(REFERENCE), r0=.8, x0=1.9))
     assert (review['r0'], review['x0']) == (.8, 1.9)
     assert 'r0' not in reference_provenance(review)['applied_parameters']
+
+
+def test_unreviewed_reference_cannot_supply_even_an_advanced_distance_projection():
+    review = reference_line_review(REFERENCE)
+    line = dict(length_km=100, sections=[dict(from_km=0, to_km=100, r1_ohm_per_km=.1622, x1_ohm_per_km=.3861)],
+                line_reference=reference_provenance(review))
+    loops = {'AB': dict(status='Conditional source quantity', impedance_ohm=[1.622, 3.861])}
+    refused = _projection(loops, line, 'AB')
+    assert refused['distance_km'] is None and not refused['eligible_overlay']
+    assert 'applicability is unreviewed' in refused['reason']
+    line['line_reference']['applicability_reviewed'] = True
+    supported = _projection(loops, line, 'AB')
+    assert supported['distance_km'] == pytest.approx(10)
+    assert supported['status'] == 'Conditional model projection' and not supported['authorizes_location']
