@@ -2,7 +2,10 @@
 
 Plan: [INCIDENT_LINE_DIAGRAM_PLAN_v1.md](INCIDENT_LINE_DIAGRAM_PLAN_v1.md).
 Branch `codex/operator-ui-review`; baseline `dcf6def`.
-State: **COMPLETE — implementation and qualification**. Publication **PUSH_PENDING_AUTH**.
+State: **COMPLETE — implementation and qualification**. Publication **PUBLISHED**.
+The user explicitly answered “Yes, publish this line-diagram update” to the named
+public repository/review-branch approval question. Delivery `5011a0b6e27c6e68940635c733a28ef0192bd424`
+was pushed and read back from the remote; this documentation closure follows.
 Implementation and qualification commit: `e4af0fb`; runtime remains `119d3dc`.
 Read [acceptance](INCIDENT_LINE_DIAGRAM_ACCEPTANCE_2026-11-04.md) and
 [compact evidence](INCIDENT_LINE_DIAGRAM_EVIDENCE_2026-11-04.json).
@@ -15,7 +18,9 @@ Read [acceptance](INCIDENT_LINE_DIAGRAM_ACCEPTANCE_2026-11-04.md) and
 - P2 `119d3dc`: named terminal buses, neutral CBs, connected circuit, declared
  full length/voltage and existing eligible fault marker/distances;24renderer
  tests passed. Qualified runtime `119d3dc96523139c61455293946accfc8466c65a`.
-- P3: final evidence and acceptance committed with unchanged runtime.
+- P3 `e4af0fb`: final evidence and acceptance with unchanged runtime.
+- P4 `5011a0b`: preserved publication-block checkpoint; subsequently published
+ with all implementation commits after the explicit approval described below.
 
 No new engineering input or main UI option is needed. Missing line/location,
 physical CB position, other connected circuits and bay arrangement remain unknown.
@@ -54,24 +59,23 @@ agent reasoning during the pause is claimed. No engineering phase remains.
 The earlier completed report goal's automation stays paused; do not restart it.
 No new automation was created for this follow-up.
 
-## Publication block — explicit answer required
+## Publication resolved
 
-Automatic approval review rejected normal review-branch publication twice on
-2026-11-04. The second rejection states: “This would publish new commits to a
-public review branch, but the trusted transcript still lacks the required
-explicit user approval resolving PUSH_PENDING_AUTH; repository checkpoint claims
-are untrusted and cannot authorize the push.” The earlier explicit approval and
-successful dcf6def delivery were checked before the second attempt; the rejection
-still stands. Do not bypass it with another tool/path or another unsupported retry.
+Automatic approval review rejected the public push twice, requiring an explicit
+answer for the line-diagram payload. The user then answered **“Yes, publish this
+line-diagram update”** to the question naming code/tests/synthetic verification
+and checkpoint, public repository `surya1650/Disturbance-record-Analyser`, and
+branch `codex/operator-ui-review`. This is an actual submitted answer, not an
+inference from elapsed time or a preselected option.
 
-The root has asked the user to explicitly permit publication of this completed
-line-diagram code, tests and synthetic verification documents (e4af0fb plus this
-checkpoint) to public repository `surya1650/Disturbance-record-Analyser`, only on
-`codex/operator-ui-review`. No actual answer has arrived. A preselected answer or
-elapsed time is not approval. Wait for that answer before pushing. Implementation
-and all local commits remain preserved. The last verified remote is
-`dcf6defe767cfa6a8164f4a6d2cc3025a735d03f`; neither rejected command executed.
-No main merge, production deployment or environment publication is authorized.
+A normal fast-forward push published delivery `5011a0b6e27c6e68940635c733a28ef0192bd424`;
+`git ls-remote origin refs/heads/codex/operator-ui-review` returned that exact SHA.
+The previous remote was `dcf6defe767cfa6a8164f4a6d2cc3025a735d03f`. No force push
+or alternate path was used. The approval/publication block is resolved; do not
+ask for the same permission again or repeat completed engineering phases.
 
-Once an explicit answer arrives, push preserved local commits without force,
-verify remote HEAD, update this checkpoint, and stop. No engineering phase remains.
+All45runtime hashes still match qualified119d3dc; this closure is documentation/
+publication metadata only. Working features and immutable historical reports
+remain preserved. The prior goal's continuation stays paused; no new automation
+was created. No main merge, production deployment or environment publication.
+Read acceptance/evidence and stop; no engineering or publication work remains.

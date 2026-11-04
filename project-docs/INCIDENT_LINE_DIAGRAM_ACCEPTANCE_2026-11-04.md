@@ -77,12 +77,13 @@ private corpus/patrol truth is unavailable. No new field-accuracy claim is made.
 - P1 `7ce9ce9`: frozen line/terminal/observation/location model and tests.
 - P2 `119d3dc`: diagram SVG, compact page1, API/UI integration and renderer tests.
 - P3 `e4af0fb`: complete qualification/evidence and synthetic sample export.
-- P4: local publication-block checkpoint; no push occurred.
+- P4 `5011a0b`: publication-block checkpoint, then published with the completed
+ update after explicit approval; remote HEAD read back exactly.
 
 All runtime gates above and source hashes are satisfied. Full repository lint
 still has26 inherited findings; it is not claimed clean.
 The prior completed goal's continuation stays paused. No main merge, deployment
-or environment publication. Public publication is blocked as recorded below.
+or environment publication. Review-branch publication is complete as recorded below.
 
 
 The24actual PDFs comprise13source fixtures,6provided-model geometry stress cases
@@ -111,9 +112,10 @@ actual logs/artifacts and45runtime hashes. No continued agent reasoning during
 the pause is claimed. All owned QA servers are stopped, and the earlier goal's
 continuation remains paused. Review-branch publication is the only remaining step.
 
-**PUSH_PENDING_AUTH**: automatic approval review twice rejected publishing this
-new payload despite the earlier approval/published delivery record. It requires
-an explicit current answer permitting this line-diagram code/tests/synthetic docs
-to the named public repository and review branch. That question is pending; no
-push ran and no alternate path was used. All implementation/qualification commits
-remain local; last verified remote HEAD is dcf6defe767cfa6a8164f4a6d2cc3025a735d03f.
+**PUBLISHED** after the actual submitted user answer **“Yes, publish this
+line-diagram update”** to the explicit question naming this code/tests/synthetic
+verification/checkpoint, the public repository and review branch. This resolved
+the two earlier automatic-approval rejections. A normal fast-forward push
+published delivery `5011a0b6e27c6e68940635c733a28ef0192bd424`, and read-only remote HEAD
+verification returned that exact SHA. No alternate path or force push was used.
+This documentation closure follows; all45runtime hashes remain unchanged.
