@@ -11,6 +11,8 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from markupsafe import Markup, escape
 
+from .incident_line import line_diagram_view
+
 _PHASES = {'IA': 'R (A)', 'IB': 'Y (B)', 'IC': 'B (C)',
            'VA': 'R (A)', 'VB': 'Y (B)', 'VC': 'B (C)'}
 _COLORS = ('#b34b13', '#876b00', '#176b9b')
@@ -302,6 +304,7 @@ def render_incident_report(model):
         location_method=_text(location.get('method') if has_location else '', 100),
         location_caveats=_items(location.get('caveats'), 2, 170),
         location_reason=_text(location.get('reason') or location.get('text') or 'No eligible method-labelled fault-location estimate was supplied.', 1000),
+        line_diagram=line_diagram_view(model.get('line_diagram')),
         sources=[_source(source, i) for i, source in enumerate(sources[:2])],
         omitted_sources=max(0, len(sources)-2), attachment_count=len(attachments),
         attachment_notes=_items([str(a.get('record', 'Recording'))+': '+str(a.get('reason') or a.get('status') or 'Attached evidence') for a in attachments], 2, 190),

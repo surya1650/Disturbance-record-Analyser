@@ -29,3 +29,13 @@ Three early actual PDF smoke cases (known42, many records/labels, short fault)
 are each4A4 with no clipping; full final-source sweep is still pending.
 Pre-enhancement saved generation served from isolated old-store copy remains
 byte-identical HTML/JSON and has no new diagram; prior evidence root untouched.
+
+
+P2 milestone: renderer frozen.24renderer tests PASS (15new +9legacy), owned
+Ruff/diff PASS. Inline accessible SVG includes neutral terminal CBs, the connected
+circuit, declared length/voltage/names, and eligible physical-km marker/distances
+with method. Reviewed assertion/clearing, unreviewed high/low, gap brackets and
+feedback observations keep their meanings; no mechanical status inferred.
+New model page1 source cards are compact; old model rendering remains compatible.
+Real API integration13PASS, frontend wrappers5PASS; final runtime integration
+and full-source print/regression qualification follow immediately.

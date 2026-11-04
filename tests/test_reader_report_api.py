@@ -155,11 +155,15 @@ def test_real_source_report_generates_without_optional_physical_inputs(environme
     first = response.json()
     model = first['model']
     assert model['kind'] == 'incident-reader-report' and model['version'] == 1
+    assert model['line_diagram']['version'] == 1
     assert len(model['sources']) == (2 if paired else 1)
     assert all(len(source['phase_values']) == 6 for source in model['sources'])
     assert all(source['source_sha256'] for source in model['sources'])
     if paired:
         assert model['location']['method'] == 'E5'
+        assert model['line_diagram']['line']['length_km'] == 100
+        assert model['line_diagram']['fault']['method'] == 'E5'
+        assert model['line_diagram']['terminals']['S']['label'] == 'Synthetic S'
         assert model['location']['km_from_S'] == pytest.approx(41.98828243177587, abs=1e-10)
         assert client.get(f'/api/incidents/{identity}/report?revision=1').content == legacy
     else:
@@ -169,6 +173,7 @@ def test_real_source_report_generates_without_optional_physical_inputs(environme
     html = client.get(first['urls']['html']).content
     assert html.count(b'class="page"') == 4
     assert b'<svg' in html and b'window.print()' in html
+    assert b'class="line-diagram"' in html
     second = client.post(base, json={'revision': 1})
     assert second.status_code == 201, second.text
     assert second.json()['report_id'] != first['report_id']
