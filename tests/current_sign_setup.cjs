@@ -1,0 +1,32 @@
+'use strict';
+const assert=require('node:assert/strict'),inputs=require('../src/dranalyser/application/static/incident-line-inputs.js');
+const row={incident_id:'synthetic-sign',number:3,state:'needs_review',metadata:{},bundle:{files:[{kind:'comtrade',name:'near.cfg'},{kind:'comtrade',name:'far.cfg'}]}};
+const html=inputs.markup(row);
+assert.match(html,/P1-to-bus \/ P2-to-line/);assert.match(html,/S1 feeds the relay I\+ input/);
+assert.match(html,/S2 connections alone do not identify export polarity/);
+assert.match(html,/not the direction of AC power flow/);
+assert.ok(!html.includes('value="bus-to-line" selected'),'unknown installation sign is never a default');
+function fixture(ends={}){
+ const fields={},handlers={},status={textContent:''},signStatus={textContent:''},signLabels={S:{textContent:''},R:{textContent:''}};
+ for(const key of ['length_km','kv','r1','x1','r0','x0','basis','reviewer','evidence'])fields[key]={name:key,value:'',disabled:false};
+ for(const key of ['confirmed_line','uniform_line','confirmed_same_event'])fields[key]={name:key,checked:true,disabled:false};
+ for(const end of ['S','R'])for(const key of ['record','name','current_direction','vt_type','vt_location'])fields[end+'.'+key]={name:end+'.'+key,value:ends[end]?.[key]||(['current_direction','vt_type','vt_location'].includes(key)?'unknown':''),disabled:false};
+ const button={addEventListener(event,fn){this.click=fn;}},form={dataset:{},elements:{namedItem:key=>fields[key]},addEventListener(event,fn){handlers[event]=fn;},querySelectorAll:()=>[]};
+ const root={isConnected:true,matches:()=>true,querySelector:selector=>selector==='[data-line-input-form]'?form:selector==='[data-line-input-status]'?status:selector==='[data-current-sign-status]'?signStatus:selector==='[data-apply-standard-current-sign]'?button:selector.includes('[data-line-end="S"]')?signLabels.S:selector.includes('[data-line-end="R"]')?signLabels.R:null,querySelectorAll:()=>[]};
+ const change=(key,value)=>{fields[key].value=value;handlers.change({target:fields[key]});};
+ return {root,fields,form,button,status,signStatus,signLabels,change};
+}
+const empty=fixture();inputs.bind(row,empty.root);empty.button.click();
+assert.equal(empty.fields['S.current_direction'].value,'unknown');assert.match(empty.signStatus.textContent,/Choose the recording/);
+const draft=fixture({S:{record:'near.cfg'},R:{record:'far.cfg',current_direction:'line-to-bus'}});inputs.bind(row,draft.root);
+assert.equal(draft.fields['S.current_direction'].value,'unknown','mounting Setup does not select a hardware/export convention');
+draft.button.click();assert.equal(draft.fields['S.current_direction'].value,'bus-to-line');assert.equal(draft.fields['R.current_direction'].value,'bus-to-line');
+assert.equal(draft.fields.confirmed_line.checked,false,'changed declared physics needs the existing line review');assert.equal(draft.fields.confirmed_same_event.checked,true,'a sign declaration does not change event pairing');
+assert.match(draft.signLabels.S.textContent,/positive means bus → line/);assert.match(draft.signStatus.textContent,/selected|Declared/);
+draft.fields.confirmed_same_event.checked=true;draft.change('R.current_direction','line-to-bus');
+assert.equal(draft.fields['R.current_direction'].value,'line-to-bus');assert.match(draft.signLabels.R.textContent,/positive means line → bus/);assert.equal(draft.fields.confirmed_same_event.checked,true);
+draft.change('S.record','far.cfg');assert.equal(draft.fields['S.current_direction'].value,'unknown','a new recording cannot silently inherit the previous export polarity');assert.equal(draft.fields.confirmed_same_event.checked,false);
+const single=fixture({S:{record:'near.cfg'}});inputs.bind(row,single.root);single.button.click();assert.equal(single.fields['S.current_direction'].value,'bus-to-line');assert.equal(single.fields['R.current_direction'].value,'unknown');
+const detached=fixture({S:{record:'near.cfg'}});inputs.bind(row,detached.root);detached.root.isConnected=false;detached.button.click();assert.equal(detached.fields['S.current_direction'].value,'unknown');
+const pending=fixture({S:{record:'near.cfg'}});inputs.bind(row,pending.root);pending.form.dataset.busy='true';pending.button.click();assert.equal(pending.fields['S.current_direction'].value,'unknown');
+console.log('CT sign setup: explicit standard declaration, selected ends only, reverse override, source reset and no guessed defaults passed');

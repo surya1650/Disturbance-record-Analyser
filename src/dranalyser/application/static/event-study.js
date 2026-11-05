@@ -6,7 +6,7 @@ const DREventStudy=(()=>{
   const arr=v=>Array.isArray(v)?v:[];
   const finite=v=>typeof v==='number'&&Number.isFinite(v);
   const num=v=>finite(v)?v===0?'0':Number(v.toPrecision(5)).toString():'Not available';
-  const roles={S:'Sending end (S)',R:'Receiving end (R)'};
+  const roles={S:'Reference end (S)',R:'Other end (R)'};
   const regions=['pre','fault','post'];
   const regionName=kind=>({pre:'Pre-fault',fault:'Fault',post:'Post-fault'}[kind]);
   const colors=['#d62d39','#a67400','#2463cf','#526678'];
@@ -18,10 +18,37 @@ const DREventStudy=(()=>{
     return `<label>Analysis timings<select name="${role}.timing_mode"><option value="auto">Automatic · from recording</option><option value="manual">Manual adjustment</option></select></label><div class="event-study-timing" data-timing-summary="${role}" role="status">Choose a recording to select timings automatically.</div><button type="button" data-auto-timing="${role}">Auto select timings</button>`;
   }
   function endFields(role){
-    return `<fieldset class="event-study-end" data-event-end="${role}"><legend>${roles[role]}</legend><label>Recording${role==='R'?' · optional':''}<select name="${role}.record"><option value="">Choose recording</option></select></label><label>Display label · optional<input name="${role}.substation" maxlength="120" placeholder="Uses recording name when blank"></label><p class="event-study-help" data-end-meta="${role}"></p>${timingFields(role)}<details data-manual-timing="${role}" hidden><summary>Adjust pre-fault, fault and post-fault intervals</summary><p>Choose stable pre-fault samples and the fault interval separately. Use source sample indices; the start is included and the end is excluded. Empty intervals leave comparison values unavailable.</p><div class="event-study-ranges">${regions.map(kind=>`<fieldset><legend>${regionName(kind)} samples</legend><label>Start<input name="${role}.${kind}.0" type="number" min="0" step="1" placeholder="Not selected"></label><label>End, excluded<input name="${role}.${kind}.1" type="number" min="1" step="1" placeholder="Not selected"></label><button type="button" data-request-region="${role}:${kind}">Use waveform A–B</button></fieldset>`).join('')}</div></details><details><summary>Relay-reported distance · optional</summary><p>Enter the relay reading and its reference end. This remains separate from the application calculation.</p><label>Distance, km<input name="${role}.relay.km" type="number" min="0" step="any" placeholder="Not supplied"></label><label>Measured from<select name="${role}.relay.reference"><option value="">Choose reference end</option><option value="S">Sending end (S)</option><option value="R">Receiving end (R)</option></select></label><label>Source of this reading<input name="${role}.relay.evidence" maxlength="500" placeholder="Relay event report or setting reference"></label></details></fieldset>`;
+    return `<fieldset class="event-study-end" data-event-end="${role}"><legend>${roles[role]}</legend><label>Recording${role==='R'?' · optional':''}<select name="${role}.record"><option value="">Choose recording</option></select></label><label>Display label · optional<input name="${role}.substation" maxlength="120" placeholder="Uses recording name when blank"></label><p class="event-study-help" data-end-meta="${role}"></p>${timingFields(role)}<details data-manual-timing="${role}" hidden><summary>Adjust pre-fault, fault and post-fault intervals</summary><p>Choose stable pre-fault samples and the fault interval separately. Use source sample indices; the start is included and the end is excluded. Empty intervals leave comparison values unavailable.</p><div class="event-study-ranges">${regions.map(kind=>`<fieldset><legend>${regionName(kind)} samples</legend><label>Start<input name="${role}.${kind}.0" type="number" min="0" step="1" placeholder="Not selected"></label><label>End, excluded<input name="${role}.${kind}.1" type="number" min="1" step="1" placeholder="Not selected"></label><button type="button" data-request-region="${role}:${kind}">Use waveform A–B</button></fieldset>`).join('')}</div></details><details><summary>Relay-reported distance · optional</summary><p>This is optional comparison evidence, separate from the application calculation. Incomplete or invalid readings stay in this form and are excluded from the observation report until their missing details are supplied.</p><label>Distance, km<input name="${role}.relay.km" type="text" inputmode="decimal" maxlength="40" placeholder="Not supplied"></label><label>Measured from<select name="${role}.relay.reference"><option value="">Choose reference end</option><option value="S">Reference end (S)</option><option value="R">Other end (R)</option></select></label><label>Source of this reading<input name="${role}.relay.evidence" maxlength="500" placeholder="Relay event report or setting reference"></label><p class="event-study-help" data-relay-input-status="${role}" role="status" aria-live="polite">No optional relay reading entered.</p></details></fieldset>`;
   }
   function panel(row={}){
-    return `<section class="event-study" data-event-study data-incident="${esc(row.incident_id??row.id??'')}"><header><h2>Simple event analysis</h2><p>Compare both ends of one fault: voltages, currents, selected pre-fault and fault values, digital indications and available distance evidence.</p></header><form data-event-study-form><div class="event-study-end-grid">${endFields('S')}${endFields('R')}</div><label class="event-study-confirm"><input type="checkbox" name="same_event_confirmed"> I confirm these recordings are from opposite physical ends of the same event.</label><p class="event-study-help">Keep successive DR1/DR2 captures from the same relay separate and inspect or compare them at one end. Joining/export is not available. They are not opposite line ends.</p><div class="event-study-actions"><button type="submit" disabled>Build event report</button><span data-event-study-status role="status" aria-live="polite">Loading recording choices…</span></div><details class="event-study-explain"><summary>Which inputs do I need?</summary><p>For waveform inspection, choose a recording. Timings are selected automatically from supported changes in each recording; manual adjustment is optional. Review universal CT/VT ratios and channel meanings in Inputs before interpreting primary values. Applied channel-meaning and digital-polarity choices carry into this report for display; they do not assign physical ends or authorize an operational calculation.</p><p>For a fault-distance calculation, use Calculate fault location above with the actual line model, physical end assignments and method-specific evidence. Advanced operational review remains in More tools. This report presents its eligible existing result with its method and reference. Digital operation times require reviewed signal meanings, polarity and suitable contact evidence.</p></details></form><div data-event-study-output></div></section>`;
+    return `<section class="event-study" data-event-study data-incident="${esc(row.incident_id??row.id??'')}"><header><h2>Simple event analysis</h2><p>Compare both ends of one fault: voltages, currents, selected pre-fault and fault values, digital indications and available distance evidence.</p></header><form data-event-study-form><div class="event-study-end-grid">${endFields('S')}${endFields('R')}</div><label class="event-study-confirm"><input type="checkbox" name="same_event_confirmed"> I confirm these recordings are from opposite physical ends of the same event.</label><p class="event-study-help">Keep successive DR1/DR2 captures from the same relay separate and inspect or compare them at one end. Joining/export is not available. They are not opposite line ends.</p><div class="event-study-actions"><button type="submit" disabled>Build event report</button><span data-event-study-status role="status" aria-live="polite">Loading recording choices…</span></div><details class="event-study-explain"><summary>Which inputs do I need?</summary><p>For waveform inspection, choose a recording. Timings are selected automatically from supported changes in each recording; manual adjustment is optional. Review common CT/VT ratios and line details in Setup, and channel meanings in Analyse, before interpreting primary values. Applied channel-meaning and digital-polarity choices carry into this report for display; they do not assign physical ends or authorize an operational calculation.</p><p>For a fault-distance calculation, use Calculate fault location above with the actual line model, physical end assignments and method-specific evidence. Advanced operational review remains in More tools. This report presents its eligible existing result with its method and reference. Digital operation times require reviewed signal meanings, polarity and suitable contact evidence.</p></details></form><div data-event-study-output></div></section>`;
+  }
+  function relayReading(values,role){
+    const get=name=>String(typeof values==='function'?values(name)??'':values[name]??'').trim();
+    const km=get(role+'.relay.km'),reference=get(role+'.relay.reference'),evidence=get(role+'.relay.evidence');
+    if(!km&&!reference&&!evidence)return {reading:null,issues:[]};
+    const issues=[];
+    if(km==='')issues.push('Enter the relay distance in kilometres.');
+    else if(!finite(Number(km))||Number(km)<0||Number(km)>1000000)issues.push('Distance must be a finite number from 0 to 1000000 km.');
+    if(!['S','R'].includes(reference))issues.push('Choose the end from which this reading was measured.');
+    if(!evidence)issues.push('Add the source of this reading, such as its relay event-report reference.');
+    else if(evidence.length>1000)issues.push('The source of the reading must be at most 1000 characters.');
+    return {reading:issues.length?null:{km:Number(km),reference,evidence},issues};
+  }
+  function setupDefaults(row,records){
+    const meta=row.metadata||{},entry=meta.incident_line,review=entry?.review,id=row.incident_id||row.id;
+    if(!entry||entry.version!==1||entry.line_id!=='INCIDENT-'+id||meta.line_id!==entry.line_id||!review)return null;
+    const files=arr(row.files),hashes=entry.source_sha256;
+    if(!files.length||!hashes||Object.keys(hashes).length!==files.length||files.some(file=>!/^[0-9a-f]{64}$/.test(file.sha256||'')||hashes[file.name]!==file.sha256))return null;
+    const ends={},inventory=arr(row.bundle?.files),used=new Set();
+    for(const role of ['S','R']){
+      const chosen=review.ends?.[role];if(!chosen)continue;
+      const record=chosen.record,item=inventory.find(item=>item.name===record),assignment=meta.assignments?.[record];
+      if(!item||item.kind!=='comtrade'||item.duplicate_of||!records.some(item=>item.file===record)||used.has(record)||assignment?.role!=='primary'||assignment.end!==role)return null;
+      used.add(record);ends[role]={record,substation:chosen.name||'',timing_mode:'auto',pre:null,fault:null,post:null,relay_distance:null};
+    }
+    if(!ends.S||Object.entries(meta.assignments||{}).some(([record,value])=>value.role==='primary'&&!used.has(record)))return null;
+    return {same_event_confirmed:!!ends.R&&review.confirmed_same_event===true,ends};
   }
   function collect(values){
     const get=name=>String(typeof values==='function'?values(name)??'':values[name]??'').trim();
@@ -29,7 +56,7 @@ const DREventStudy=(()=>{
     const ends={};
     for(const role of ['S','R']){
       const record=get(role+'.record');
-      if(!record){if(role==='S')throw new Error('Choose the sending-end recording.');continue;}
+      if(!record){if(role==='S')throw new Error('Choose the reference-end recording.');continue;}
       const substation=get(role+'.substation')||record.slice(0,120);
       const timing_mode=get(role+'.timing_mode')||'manual';
       if(!['auto','manual'].includes(timing_mode))throw new Error('Choose automatic or manual timings.');
@@ -45,12 +72,7 @@ const DREventStudy=(()=>{
       if(end.pre&&end.fault&&end.pre[1]>end.fault[0])throw new Error(roles[role]+': pre-fault samples must finish before the fault interval begins.');
       const before=end.fault||end.pre;
       if(before&&end.post&&before[1]>end.post[0])throw new Error(roles[role]+': post-fault samples must begin after the preceding interval ends.');
-      const km=get(role+'.relay.km'),reference=get(role+'.relay.reference'),evidence=get(role+'.relay.evidence');
-      end.relay_distance=null;
-      if(km||reference||evidence){
-        if(km===''||!finite(Number(km))||Number(km)<0||!['S','R'].includes(reference)||!evidence)throw new Error(`${roles[role]}: a relay distance needs nonnegative kilometres, its reference end and the source of the reading.`);
-        end.relay_distance={km:Number(km),reference,evidence};
-      }
+      end.relay_distance=relayReading(values,role).reading;
       ends[role]=end;
     }
     if(ends.R&&ends.R.record===ends.S.record)throw new Error('Choose distinct opposite-end recordings. A recording cannot represent both ends.');
@@ -102,7 +124,7 @@ const DREventStudy=(()=>{
   }
   function distance(model){
     const d=model.distance||{},km=finite(d.km_from_S)&&d.method?d.km_from_S:null;
-    return `<section class="event-study-distance"><h3>Fault-distance evidence</h3><p><strong>${km===null?'Calculated distance unavailable':num(km)+' km from '+esc(roles[d.reference]||d.reference||'Sending end')}</strong></p><p>${esc(d.text||d.status||'No eligible calculation is stored.')}</p><p>Method: ${esc(d.method||'Not available')}</p><p>${esc(d.reason||'')}</p>${d.next_action?'<details><summary>Inputs needed for distance</summary><p>'+esc(typeof d.next_action==='string'?d.next_action:d.next_action.label)+'</p>'+list(d.next_action.requirements)+'<button type="button" data-go-feature="study">Open operational study</button></details>':''}${d.source_records&&Object.keys(d.source_records).length?'<p>Calculation records: '+Object.entries(d.source_records).map(([role,file])=>esc((roles[role]||role)+' · '+file)).join('; ')+'.</p>':''}${arr(model.relay_distances).length?'<h4>Relay-reported distance</h4><ul>'+model.relay_distances.map(r=>`<li>${roles[r.end]||esc(r.end)} reading: <strong>${num(r.km)} km</strong> from ${roles[r.reference]||esc(r.reference)}. Source: ${esc(r.evidence)}${finite(r.delta_to_calculated_km)?' · Difference from calculation: '+num(r.delta_to_calculated_km)+' km':''}${r.reason?' · '+esc(r.reason):''}</li>`).join('')+'</ul>':'<p>Relay-reported distance has not been supplied.</p>'}<p class="event-study-help">The method, reference end, selected records and input quality govern a calculated result. A relay reading is separate evidence; neither establishes the actual physical fault position by itself.</p></section>`;
+    return `<section class="event-study-distance"><h3>Fault-distance evidence</h3><p><strong>${km===null?'Calculated distance unavailable':num(km)+' km from '+esc(roles[d.reference]||d.reference||'Reference end')}</strong></p><p>${esc(d.text||d.status||'No eligible calculation is stored.')}</p><p>Method: ${esc(d.method||'Not available')}</p><p>${esc(d.reason||'')}</p>${d.next_action?'<details><summary>Inputs needed for distance</summary><p>'+esc(typeof d.next_action==='string'?d.next_action:d.next_action.label)+'</p>'+list(d.next_action.requirements)+'<button type="button" data-go-feature="study">Open operational study</button></details>':''}${d.source_records&&Object.keys(d.source_records).length?'<p>Calculation records: '+Object.entries(d.source_records).map(([role,file])=>esc((roles[role]||role)+' · '+file)).join('; ')+'.</p>':''}${arr(model.relay_distances).length?'<h4>Relay-reported distance</h4><ul>'+model.relay_distances.map(r=>`<li>${roles[r.end]||esc(r.end)} reading: <strong>${num(r.km)} km</strong> from ${roles[r.reference]||esc(r.reference)}. Source: ${esc(r.evidence)}${finite(r.delta_to_calculated_km)?' · Difference from calculation: '+num(r.delta_to_calculated_km)+' km':''}${r.reason?' · '+esc(r.reason):''}</li>`).join('')+'</ul>':'<p>Relay-reported distance has not been supplied.</p>'}<p class="event-study-help">The method, reference end, selected records and input quality govern a calculated result. A relay reading is separate evidence; neither establishes the actual physical fault position by itself.</p></section>`;
   }
   function explanation(model){
     const summary=model.explanation;
@@ -126,7 +148,7 @@ const DREventStudy=(()=>{
   }
   function markup(model,mode='trace'){
     const space=coordinates(model),ends=model.ends||{};
-    return `<article class="event-study-report"><p class="event-study-stale" data-event-stale hidden>Inputs have changed. Build the event report to apply them; the report below still shows the previous choices.</p><header><h2>Event report</h2><p>Incident ${esc(model.incident_id)} · Revision ${esc(model.revision)}</p></header>${explanation(model)}<section><div class="event-study-heading"><h3>Both-end waveform overview</h3><label>Display<select data-event-mode><option value="trace"${mode==='trace'?' selected':''}>Recorded waveform</option><option value="rms_trace"${mode==='rms_trace'?' selected':''}>One-cycle RMS</option></select></label></div><p class="event-study-help">${esc(space.label)}. Each plot has its own labelled vertical scale. These overviews do not establish clock alignment or exact cursor values.</p><div class="event-study-quantity-row">${plot(ends.S,'voltage',space,mode,'S')}${plot(ends.R,'voltage',space,mode,'R')}</div><div class="event-study-quantity-row">${plot(ends.S,'current',space,mode,'S')}${plot(ends.R,'current',space,mode,'R')}</div><label class="event-study-inspector">Inspect the full displayed span<input type="range" min="0" max="10000" step="1" value="0" data-event-inspector><output data-event-cursor-label>Move over a plot or use this slider. Click a plot to hold the inspection line.</output></label><p class="event-study-help">Use the Waveforms page for exact instantaneous values, one-cycle RMS, vectors and source sample cursors.</p></section><section><h3>Pre-fault, fault and optional post-fault comparison</h3><p>RMS values use the selected source intervals and stated units. Empty values retain their reason; zero is a real value. Primary quantities require reviewed CT/VT scaling. Region changes alone do not establish fault type or breaker operation.</p>${list([...new Set(Object.values(ends).map(end=>end?.rms_basis).filter(Boolean))])}<div class="event-study-end-grid">${phaseTable(ends.S,'S')}${phaseTable(ends.R,'R')}</div></section>${distance(model)}${lineView(model)}${navigationView(model)}<section><h3>Digital indications and timing</h3><p>Times below are observed source transitions. A trip indication alone does not prove circuit-breaker opening; AR command alone does not prove successful reclosure. Reviewed meanings, polarity and suitable contacts are needed for those conclusions.</p><div class="event-study-end-grid">${digital(ends.S,'S')}${digital(ends.R,'R')}</div></section>${arr(model.notes).length?'<section><h3>Evidence and limits</h3>'+list(model.notes)+'</section>':''}<div class="event-study-actions"><button type="button" data-event-download="html">Download report</button><button type="button" data-event-download="json">Download report data</button></div></article>`;
+    return `<article class="event-study-report">${arr(model.relay_input_notes).length?'<aside class="event-study-help" role="note"><strong>Optional relay readings excluded</strong>'+list(model.relay_input_notes)+'</aside>':''}<p class="event-study-stale" data-event-stale hidden>Inputs have changed. Build the event report to apply them; the report below still shows the previous choices.</p><header><h2>Event report</h2><p>Incident ${esc(model.incident_id)} · Revision ${esc(model.revision)}</p></header>${explanation(model)}<section><div class="event-study-heading"><h3>Both-end waveform overview</h3><label>Display<select data-event-mode><option value="trace"${mode==='trace'?' selected':''}>Recorded waveform</option><option value="rms_trace"${mode==='rms_trace'?' selected':''}>One-cycle RMS</option></select></label></div><p class="event-study-help">${esc(space.label)}. Each plot has its own labelled vertical scale. These overviews do not establish clock alignment or exact cursor values.</p><div class="event-study-quantity-row">${plot(ends.S,'voltage',space,mode,'S')}${plot(ends.R,'voltage',space,mode,'R')}</div><div class="event-study-quantity-row">${plot(ends.S,'current',space,mode,'S')}${plot(ends.R,'current',space,mode,'R')}</div><label class="event-study-inspector">Inspect the full displayed span<input type="range" min="0" max="10000" step="1" value="0" data-event-inspector><output data-event-cursor-label>Move over a plot or use this slider. Click a plot to hold the inspection line.</output></label><p class="event-study-help">Use the Waveforms page for exact instantaneous values, one-cycle RMS, vectors and source sample cursors.</p></section><section><h3>Pre-fault, fault and optional post-fault comparison</h3><p>RMS values use the selected source intervals and stated units. Empty values retain their reason; zero is a real value. Primary quantities require reviewed CT/VT scaling. Region changes alone do not establish fault type or breaker operation.</p>${list([...new Set(Object.values(ends).map(end=>end?.rms_basis).filter(Boolean))])}<div class="event-study-end-grid">${phaseTable(ends.S,'S')}${phaseTable(ends.R,'R')}</div></section>${distance(model)}${lineView(model)}${navigationView(model)}<section><h3>Digital indications and timing</h3><p>Times below are observed source transitions. A trip indication alone does not prove circuit-breaker opening; AR command alone does not prove successful reclosure. Reviewed meanings, polarity and suitable contacts are needed for those conclusions.</p><div class="event-study-end-grid">${digital(ends.S,'S')}${digital(ends.R,'R')}</div></section>${arr(model.notes).length?'<section><h3>Evidence and limits</h3>'+list(model.notes)+'</section>':''}<div class="event-study-actions"><button type="button" data-event-download="html">Download report</button><button type="button" data-event-download="json">Download report data</button></div></article>`;
   }
   function withChoices(inputs,saved={},sourceChoices){
     const result=JSON.parse(JSON.stringify(inputs));
@@ -155,10 +177,23 @@ const DREventStudy=(()=>{
     const form=root.querySelector('form'),status=root.querySelector('[data-event-study-status]'),output=root.querySelector('[data-event-study-output]');
     const submit=form.querySelector('[type=submit]'),base='/api/incidents/'+encodeURIComponent(row.incident_id??row.id)+'/event-study',revision=row.number??row.revision??row.current_revision??1;
     let version=0,records=[],model=null,busy=false,mode='trace',held=false,savedInputs={},navigationHandle=null,navigationRequest=0;
-    const automatic=new Map(),pending=new Map();
+    const automatic=new Map(),pending=new Map(),relayDrafts=new Map(),selectedRecords={};
     const current=()=>!local.aborted&&root.isConnected;
     const field=name=>form.elements.namedItem(name);
     const setStatus=(message,error=false)=>{if(current()){status.textContent=message;status.classList.toggle('event-study-error',error);}};
+    function updateRelayStatus(role){
+      const result=relayReading(name=>field(name).value,role),node=form.querySelector('[data-relay-input-status="'+role+'"]');
+      if(node){node.textContent=result.issues.length?result.issues.join(' ')+' This optional reading will not be included until complete.':result.reading?'This entered reading has its reference and source; it remains separate from the application calculation.':'No optional relay reading entered.';node.classList.toggle('event-study-error',result.issues.length>0);}
+      return result;
+    }
+    function rememberRelayDraft(role,record){
+      if(record)relayDrafts.set(role+'\0'+record,Object.fromEntries(['km','reference','evidence'].map(key=>[key,field(role+'.relay.'+key).value])));
+    }
+    function restoreRelayDraft(role,record){
+      const reading=relayDrafts.get(role+'\0'+record)||{};
+      for(const key of ['km','reference','evidence'])field(role+'.relay.'+key).value=reading[key]??'';
+      selectedRecords[role]=record;updateRelayStatus(role);
+    }
     function stale(){const warning=output.querySelector('[data-event-stale]');if(warning)warning.hidden=false;setStatus('Inputs changed. Build the event report to apply them.');}
     const freeze=value=>{form.querySelectorAll('input,select,button').forEach(control=>{control.disabled=value;});if(!value)for(const role of ['S','R'])syncTiming(role);};
     const request=async(path,options={})=>{
@@ -196,13 +231,15 @@ const DREventStudy=(()=>{
       node.textContent=selected?[selected.station,selected.device,Number.isInteger(selected.sample_count)?selected.sample_count+' samples':'Sample count available when decoded'].filter(Boolean).join(' · '):'Choose the recording for this physical end.';
       for(const kind of regions)for(const i of [0,1]){const input=field(`${role}.${kind}.${i}`);if(Number.isInteger(selected?.sample_count)&&selected.sample_count>0)input.max=String(selected.sample_count);else input.removeAttribute('max');}
     }
-    function populate(inputs={}){
+    function populate(inputs={},retainRelayDrafts=false){
       for(const role of ['S','R']){
         const end=inputs.ends?.[role]||{};
         field(role+'.record').value=end.record||'';field(role+'.substation').value=end.substation||'';
         field(role+'.timing_mode').value=end.record?(end.timing_mode||(regions.some(kind=>Array.isArray(end[kind]))?'manual':'auto')):'auto';
         for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).value=end[kind]?.[i]??'';
-        for(const key of ['km','reference','evidence'])field(role+'.relay.'+key).value=end.relay_distance?.[key]??'';
+        const reading=(retainRelayDrafts&&relayDrafts.get(role+'\0'+end.record))||end.relay_distance||{};
+        for(const key of ['km','reference','evidence'])field(role+'.relay.'+key).value=reading[key]??'';
+        selectedRecords[role]=end.record||'';updateRelayStatus(role);
         describe(role);
         syncTiming(role);form.querySelector('[data-timing-summary="'+role+'"]') .innerHTML=timingMarkup(end.timing_evidence||{...end,status:end.record?'manual':'unavailable'});
       }
@@ -226,9 +263,10 @@ const DREventStudy=(()=>{
       for(const role of ['S','R'])describe(role);
       output.innerHTML=markup(model,mode);held=false;navigationHandle=null;navigationRequest++;
     }}
-    form.addEventListener('input',stale,{signal:local});
+    form.addEventListener('input',event=>{stale();for(const role of ['S','R'])if(event.target.name?.startsWith(role+'.relay.'))updateRelayStatus(role);},{signal:local});
     form.addEventListener('change',event=>{stale();for(const role of ['S','R']){
-      if(event.target===field(role+'.record')){field('same_event_confirmed').checked=false;field(role+'.timing_mode').value='auto';for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).value='';describe(role);syncTiming(role);selectTimings(role);}
+      if(event.target===field(role+'.record')){rememberRelayDraft(role,selectedRecords[role]);restoreRelayDraft(role,field(role+'.record').value);field('same_event_confirmed').checked=false;field(role+'.timing_mode').value='auto';for(const kind of regions)for(const i of [0,1])field(`${role}.${kind}.${i}`).value='';describe(role);syncTiming(role);selectTimings(role);}
+      if(event.target.name?.startsWith(role+'.relay.'))updateRelayStatus(role);
       if(event.target===field(role+'.timing_mode')){automatic.get(role)?.abort();syncTiming(role);if(event.target.value==='auto')selectTimings(role);else form.querySelector('[data-timing-summary="'+role+'"]') .textContent='Manual adjustment: retained intervals can be edited below.';}
     }},{signal:local});
     form.addEventListener('click',event=>{
@@ -242,14 +280,18 @@ const DREventStudy=(()=>{
     form.addEventListener('submit',async event=>{
       event.preventDefault();if(busy)return;
       try{
-        if(!form.reportValidity())return;
+        // Optional relay drafts must not block an observation-only report.
+        if([...form.querySelectorAll('input,select')].some(control=>!control.name?.includes('.relay.')&&control.reportValidity?.()===false))return;
         busy=true;freeze(true);await Promise.all([...pending.values()]);if(!current())return;
-        const inputs=withChoices(collect(name=>name==='same_event_confirmed'?field(name).checked:field(name).value),savedInputs,options.sourceChoices);
+        for(const role of ['S','R'])rememberRelayDraft(role,field(role+'.record').value);
+        const read=name=>name==='same_event_confirmed'?field(name).checked:field(name).value;
+        const notices=['S','R'].filter(role=>field(role+'.record').value).flatMap(role=>{const value=updateRelayStatus(role);return value.issues.length?[roles[role]+': '+value.issues.join(' ')+' This optional reading is excluded from this report.']:[];});
+        const inputs=withChoices(collect(read),savedInputs,options.sourceChoices);
         setStatus('Saving reviewed inputs and building the event report…');
         const saved=await request(base,json('PUT',{revision,expected_version:version,inputs}));if(!current())return;version=saved.version;savedInputs=saved.inputs||inputs;
-        populate(savedInputs);
+        populate(savedInputs,true);
         const report=await request(base+'/report',json('POST',{revision,inputs:savedInputs}));if(!current())return;
-        model=report;applyAutomaticReport(report);render();setStatus('Event report ready. Review its missing values and evidence limits.');
+        model=notices.length?{...report,relay_input_notes:notices}:report;applyAutomaticReport(report);render();setStatus('Event report ready. '+(notices.length?notices.join(' '):'Review its missing values and evidence limits.'));
       }catch(error){setStatus(error.message||'The event report could not be built.',true);}finally{busy=false;if(current())freeze(false);}
     },{signal:local});
     output.addEventListener('change',event=>{if(event.target.matches('[data-event-mode]')){mode=event.target.value;render();}},{signal:local});
@@ -274,9 +316,14 @@ const DREventStudy=(()=>{
       const url=URL.createObjectURL(new Blob([body],{type:html?'text/html':'application/json'})),link=document.createElement('a');link.href=url;link.download='event-report-'+String(model.incident_id).replace(/[^a-z0-9_-]/gi,'_')+'.'+(html?'html':'json');link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
     },{signal:local});
     request(base+'?revision='+encodeURIComponent(revision)).then(data=>{
-      if(!current())return;version=data.version;records=arr(data.records);
+      if(!current())return;
+      if(data.revision!==revision)throw new Error('The event input response belongs to another revision. Reopen this incident.');
+      version=data.version;records=arr(data.records);
       for(const role of ['S','R'])field(role+'.record').innerHTML='<option value="">Choose recording</option>'+records.map(record=>'<option value="'+esc(record.file)+'">'+esc(record.file)+'</option>').join('');
-      savedInputs=data.inputs||{};populate(data.inputs);submit.disabled=false;setStatus(data.note||'Choose records and intervals, then build the event report.');
+      const defaults=!Object.values(data.inputs?.ends||{}).some(end=>end.record)?setupDefaults(row,records):null;
+      savedInputs=defaults||data.inputs||{};populate(savedInputs);submit.disabled=false;
+      setStatus(defaults?'Using this incident’s saved Setup recordings, end names and same-event review. Timings are selected automatically.':data.note||'Choose records and intervals, then build the event report.');
+      if(defaults)for(const role of ['S','R'])if(field(role+'.record').value)selectTimings(role);
       if(version>0&&data.inputs?.ends?.S?.record){
         busy=true;freeze(true);setStatus('Loading the saved event report…');
         const initial=JSON.parse(JSON.stringify(data.inputs));let migrated=false;
@@ -292,7 +339,7 @@ const DREventStudy=(()=>{
       bounds.forEach((value,i)=>{field(`${role}.${kind}.${i}`).value=value;});stale();setStatus(roles[role]+' '+(regionName(kind).toLowerCase())+' interval selected. Build the report to apply this change.');return true;
     }};
   }
-  return {panel,collect,withChoices,timingMarkup,coordinates,tracePaths,plot,explanation,lineView,markup,bind};
+  return {panel,collect,relayReading,setupDefaults,withChoices,timingMarkup,coordinates,tracePaths,plot,explanation,lineView,markup,bind};
 })();
 function eventStudyPanel(row){return DREventStudy.panel(row);}
 function bindEventStudy(row,host,signal,options){return DREventStudy.bind(row,host,signal,options);}

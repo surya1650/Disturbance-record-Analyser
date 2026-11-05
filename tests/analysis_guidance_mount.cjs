@@ -15,9 +15,10 @@ const context=vm.createContext({document:{createElement(){return section;}},DRSo
 });
 vm.runInContext(fs.readFileSync('src/dranalyser/application/static/inspection-analysis.js','utf8'),context);
 vm.runInContext("sourceAnalysisPreferences.set('test/1/raw.cfg',{voltage_kv:132,mappings:{}})",context);
-context.mountSourceAnalysis(host,{file:'raw.cfg',channels:[],source_sha256:{'raw.cfg':'abc'}},{incident_id:'test',number:1,bundle:{files:[]}},controller,null);
+context.mountSourceAnalysis(host,{file:'raw.cfg',channels:[],source_sha256:{'raw.cfg':'abc'}},{incident_id:'test',number:1,bundle:{files:[]},metadata:{line_id:'INCIDENT-test',incident_line:{line_id:'INCIDENT-test',review:{ends:{S:{name:'Synthetic North'},R:{name:'Synthetic South'}}}}}},controller,null);
 (async()=>{
  for(let i=0;i<5;i++)await new Promise(resolve=>setImmediate(resolve));
+ assert.match(node('.source-line-notes').textContent,/Setup line details are reused automatically for Synthetic North \/ Synthetic South/);
  node('.source-line-mode').value='LINE';node('.source-line-mode').onchange();
  assert.equal(node('.source-voltage').value,'0','line voltage cannot choose an assumed missing CT ratio');
  assert.match(node('.source-line-notes').textContent,/Test declaration/);

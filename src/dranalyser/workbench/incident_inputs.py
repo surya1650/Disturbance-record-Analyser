@@ -152,7 +152,7 @@ def incident_line_missing(entry):
         for key, label in (('current_direction', 'current direction'), ('vt_type', 'VT/CVT type'),
                            ('vt_location', 'voltage measurement location')):
             if value[key] == 'unknown':
-                missing.append('Confirm '+end+' '+label+'.')
+                missing.append('Confirm '+end+' '+label+(' / recorded sign convention in Setup: which positive channel sign means bus into line; this is not power-flow direction.' if key == 'current_direction' else '.'))
     if len(review['ends']) == 2 and not review['confirmed_same_event']:
         missing.append('Confirm both recordings are the same event at opposite physical ends.')
     if not review['confirmed_line']:

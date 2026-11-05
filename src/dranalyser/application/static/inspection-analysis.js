@@ -21,14 +21,22 @@ function mountSourceAnalysis(host,data,row,recordController,workbench) {
   }
   const stable=DRSourceInputs.stable;
   let lineModels=[];
+  const setupLine=row.metadata?.incident_line,usesSetup=Boolean(setupLine?.line_id&&row.metadata?.line_id===setupLine.line_id);
+  const defaultLineLabel=usesSetup?'Setup line details · reused automatically':'Saved incident line details, when available';
+  const setupOption=q('.source-line-mode').options?.[0];if(setupOption)setupOption.textContent=defaultLineLabel;
   fetch('/api/source-lines',{signal:recordController.signal}).then(async r=>DRSourceInputs.catalogue(await r.json(),r.ok)).then(items=>{
     if(recordController.signal.aborted||!host.isConnected)return;
     lineModels=items;const select=q('.source-line-mode'),chosen=select.value;
-    select.innerHTML='<option value="">Saved incident line details, when available</option>'+lineModels.filter(m=>m.id).map(m=>`<option value="${esc(m.id)}">${esc(m.name)} · ${esc(m.parameter_status)}</option>`).join('')+'<option value="__custom__">Enter declared line values</option>';
+    select.innerHTML='<option value="">'+esc(defaultLineLabel)+'</option>'+lineModels.filter(m=>m.id).map(m=>`<option value="${esc(m.id)}">${esc(m.name)} · ${esc(m.parameter_status)}</option>`).join('')+'<option value="__custom__">Enter declared line values</option>';
     if(chosen&&!['__custom__',...lineModels.map(m=>m.id)].includes(chosen)){select.add(new Option(chosen+' (not currently resolved)',chosen));}select.value=chosen;
     lineNotes();
-  }).catch(error=>{if(error.name!=='AbortError')q('.source-line-notes').textContent='Line catalogue unavailable: '+error.message;});
-  function lineNotes(){const chosen=q('.source-line-mode').value,line=lineModels.find(m=>m.id===chosen);q('.source-custom-line').hidden=chosen!=='__custom__';q('.source-line-notes').textContent=line?`${line.parameter_status}. ${line.provenance} Hash: ${line.sha256}`:chosen==='__custom__'?'Explicit user-declared values; blank fields remain Not available.':'No independent line is inferred. Frozen incident facts appear only when supplied.';}
+  }).catch(error=>{if(error.name!=='AbortError'){lineNotes();q('.source-line-notes').textContent+=' Engineering registry unavailable: '+error.message;}});
+  function lineNotes(){
+    const chosen=q('.source-line-mode').value,line=lineModels.find(m=>m.id===chosen);q('.source-custom-line').hidden=chosen!=='__custom__';
+    const review=setupLine?.review||{},names=['S','R'].map(end=>review.ends?.[end]?.name).filter(Boolean).join(' / ');
+    q('.source-line-notes').textContent=line?`${line.parameter_status}. ${line.provenance} Hash: ${line.sha256}`:chosen==='__custom__'?'Explicit user-declared values; blank fields remain Not available.':usesSetup?`Setup line details are reused automatically${names?' for '+names:''}. The normal fault analysis uses the saved ratios, line and physical ends; no entries are needed in this separate projection tool.`:'No saved Setup line details yet. Enter them once in Setup for the normal fault analysis.';
+  }
+  lineNotes();
   q('.source-line-mode').onchange=()=>{lineNotes();invalidate();};
   q('.source-fault-loop').onchange=()=>invalidate();q('.source-projection-window').onchange=()=>run();section.querySelectorAll('[data-line-field],[data-assertion]').forEach(el=>el.onchange=()=>invalidate());
   q('.source-accept-meanings').onclick=()=>{

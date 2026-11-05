@@ -50,10 +50,15 @@ assert.ok(!escaped.includes('<img src=x'));assert.ok(escaped.includes('&lt;img')
 const localId='INCIDENT-'+'c'.repeat(32),local={...named,metadata:{...named.metadata,line_id:localId,incident_line:{line_id:localId,review:{ends:{S:{record:'S.cfg',name:'Reviewed reference station'},R:{record:'R.cfg',name:'Reviewed remote station'}}}}}};
 const localChoices={...choices,line_id:localId};
 const localPanel=calc.panel(local,{lines:[]});
-assert.match(localPanel,new RegExp('value="'+localId+'" selected'));
+assert.ok(!localPanel.includes('name="line_id"'),'the saved setup model is reused without another selector');
+assert.ok(!localPanel.includes('name="S"')&&!localPanel.includes('name="R"'),'the saved physical ends are reused directly');
 assert.match(localPanel,/This incident’s saved line details/);
-assert.match(localPanel,/data-fault-end-label="S">Reference end \(S\) · Reviewed reference station/);
-assert.match(localPanel,/<select name="S" disabled>/,'the model uses its saved physical end facts');
+assert.match(localPanel,/Reference end \(S\) · Reviewed reference station/);
+assert.ok(!localPanel.includes('data-engineering-model-selection'),'local Setup does not expose duplicate engineering selectors');
+assert.deepEqual(JSON.parse(JSON.stringify(calc.savedChoices(local))),{line_id:localId,S:'S.cfg',R:'R.cfg',confirmed:false});
+const confirmedLocal={...local,metadata:{...local.metadata,incident_line:{...local.metadata.incident_line,review:{...local.metadata.incident_line.review,confirmed_line:true,confirmed_same_event:true}}}};
+assert.equal(calc.savedChoices(confirmedLocal).confirmed,true,'reviewed Setup confirmations are reused');
+assert.match(calc.panel(confirmedLocal,{lines:[]}),/name="confirmed" checked/);
 assert.equal(calc.payload(local,localChoices).line_id,localId);
 assert.throws(()=>calc.payload(local,{...localChoices,S:'other.cfg'}),/saved line facts/);
 assert.throws(()=>calc.payload(local,{...localChoices,R:''}),/saved line facts/);
@@ -91,7 +96,7 @@ assert.throws(()=>calc.payload(local,{...localChoices,R:''}),/saved line facts/)
  let boundLine,savedRefresh=0;
  const originalBind=context.lineInputs.bind;
  context.lineInputs.bind=(boundRow,host,signal,options)=>{boundLine={boundRow,host,signal,options};};
- calc.bind(local,{querySelector:()=>root},undefined,{onQueued:async()=>{savedRefresh++;}});
+ calc.bind({...local,metadata:{...local.metadata,line_id:'line'}},{querySelector:()=>root},undefined,{onQueued:async()=>{savedRefresh++;}});
  assert.equal(boundLine,undefined,'the calculation panel never binds a duplicate editable line form');
  fields.line_id.value='line';handlers.change({target:fields.line_id});
  assert.equal(fields.S.disabled,false);assert.equal(note.hidden,true);assert.equal(fields.confirmed.checked,false);

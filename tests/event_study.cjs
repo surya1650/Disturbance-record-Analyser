@@ -24,8 +24,10 @@ assert.throws(()=>study.collect({...fields,'R.record':'sending.cfg','R.substatio
 const paired=study.collect({...fields,'R.record':'receiving.cfg','R.substation':'Beta',same_event_confirmed:true,'S.relay.km':'0','S.relay.reference':'S','S.relay.evidence':'Relay event sheet'});
 assert.equal(paired.ends.S.relay_distance.km,0);
 assert.equal(paired.ends.R.pre,null);
-assert.throws(()=>study.collect({...fields,'S.relay.km':'10'}),/reference end/);
-assert.throws(()=>study.collect({...fields,'S.relay.km':'Infinity','S.relay.reference':'S','S.relay.evidence':'sheet'}),/nonnegative/);
+assert.equal(study.collect({...fields,'S.relay.km':'10'}).ends.S.relay_distance,null);
+assert.match(study.relayReading({...fields,'S.relay.km':'10'},'S').issues.join(' '),/end from which.*source of this reading/);
+assert.equal(study.collect({...fields,'S.relay.km':'Infinity','S.relay.reference':'S','S.relay.evidence':'sheet'}).ends.S.relay_distance,null);
+assert.match(study.relayReading({'S.relay.km':'Infinity','S.relay.reference':'S','S.relay.evidence':'sheet'},'S').issues.join(' '),/finite number/);
 
 const persisted={ends:{S:{record:'sending.cfg',mappings:{A1:'VA'},asserted_states:{D1:0}}}};
 assert.deepEqual(study.withChoices(single,persisted).ends.S.mappings,{A1:'VA'});
@@ -43,7 +45,7 @@ const makeEnd=(name,origin)=>({record:name+'.cfg',substation:name,origin_s:origi
 const report={incident_id:'event-7',revision:2,ends:{S:makeEnd('Alpha',.01),R:makeEnd('Beta',.02)},distance:{status:'Existing conditional estimate',text:'Stored incident result',km_from_S:12.5,reference:'S',method:'E5',source_records:{S:'Alpha.cfg',R:'Beta.cfg'},reason:'Conditional on reviewed line inputs.',next_action:{kind:'operational-study',label:'Review line inputs',requirements:['Line length','CT/VT ratios']}},relay_distances:[{end:'S',km:12,reference:'S',evidence:'Relay sheet',delta_to_calculated_km:-.5}],notes:['Operator-selected intervals are not detected fault boundaries.'],authorizes_location:false};
 const saved=JSON.stringify(report),html=study.markup(report);
 assert.equal(JSON.stringify(report),saved,'report presentation must not mutate shared backend evidence');
-assert.match(html,/12\.5 km from Sending end/);
+assert.match(html,/12\.5 km from Reference end/);
 assert.match(html,/Method: E5/);
 assert.match(html,/Relay-reported distance/);
 assert.match(html,/Difference from calculation: -0\.5 km/);
@@ -96,9 +98,9 @@ assert.match(study.markup(noMethod),/Calculated distance unavailable/);
 assert.doesNotMatch(study.markup(noMethod),/12\.5 km from/);
 const shell=study.panel({incident_id:'id"<script>',number:2});
 assert.doesNotMatch(shell,/<script>/);
-assert.match(shell,/Sending end/);assert.match(shell,/Receiving end/);
+assert.match(shell,/Reference end/);assert.match(shell,/Other end/);
 assert.match(shell,/same relay/);
-assert.match(shell,/universal CT\/VT/);
+assert.match(shell,/common CT\/VT/);
 assert.match(shell,/name="S\.post\.0"/);
 assert.match(shell,/Automatic · from recording/);assert.match(shell,/data-manual-timing="S" hidden/);
 assert.equal(study.bind({},null).applyRegion('missing',[0,10]),false);
