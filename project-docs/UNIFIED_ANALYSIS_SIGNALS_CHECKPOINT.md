@@ -64,3 +64,26 @@ event UI, digital/time and source-default integration. New renderer focused chec
 initially53PASS; audit is correcting legacy assumed-high prose, omission counts
 and missing-support/censor context before final freeze. Actual final PDFs pending.
 Stage-A10000 is running against unchanged native numerical engines.
+
+## Final implementation milestones
+
+P1 `cf73e53`: Setup/end/sign reuse, explicit standard wiring declaration and
+precise nonblocking optional relay drafts. P2 `21025d0`: bounded digital/time
+adapter evidence. Independent review found legacy single-R event reuse wrongly
+required S; corrected in `06f40cb`, including pair-confirmation/autoload guards
+and saved R-only report reload. It never remaps physical R into S.33event tests
+PASS,1.17s after this correction.
+
+P3 `e303e87`: compact analog/digital cursor tables, source local recorded dates,
+reviewed/unreviewed distinction and window duration brackets, with four-page
+print layout. Renderer audit corrected legacy assumed-high prose, omission counts
+and uncertainty context.55focused tests PASS; actual two-source/four-signal smoke
+PDF4A4/min9pt/no clipping/footer overlap. Final independent code review has no
+unresolved actionable finding.
+
+All12runtime files frozen in ignored runtime-manifest.json. Direct guard/self-test,
+changed13Python Ruff/13JS syntax/diff PASS; exact changed/new Python budgets only.
+Wheel contains exact digital/time helpers and report JS/template. Fresh
+Stage-A10000PASS cleanp95.4361%,zero impossible uncaveated distances,48.2s.
+Full pytest and final actual browser/interaction/PDF matrix are running. No final
+whole-suite or PDF matrix counts claimed yet. Original sources/history untouched.
