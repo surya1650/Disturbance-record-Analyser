@@ -87,3 +87,19 @@ Wheel contains exact digital/time helpers and report JS/template. Fresh
 Stage-A10000PASS cleanp95.4361%,zero impossible uncaveated distances,48.2s.
 Full pytest and final actual browser/interaction/PDF matrix are running. No final
 whole-suite or PDF matrix counts claimed yet. Original sources/history untouched.
+
+
+## Final qualification findings — awaiting layout correction
+
+Frozen e303e87 fullpytest **2470PASS/28private skips/1inherited warning,102.67s**.
+Whole Ruff retains26 inherited findings; changed-file checks/guard PASS. Actual
+workflow7checks passed including R-only reuse, authoritative missing/stale gates,
+relay drafts/validzero and nativeE5=41.98828243177587km; originals/history unchanged.
+
+Final PDF matrix exposed a real print defect:3of5 fuller reports produced5pages
+(page4footer/disclosure overflow8–13px);2were4pages. Long underscore source names
+also caused mobile painted-text horizontal overflow. Earlier artificial smoke was
+insufficient. Renderer is correcting these before acceptance; no final PDF pass
+is claimed. Raw failed matrix/interaction evidence remains ignored local data.
+Reports and state/clock logic stay frozen; layout-only changes must be verified
+against fresh native/private/long-label snapshots, then final manifest updated.
