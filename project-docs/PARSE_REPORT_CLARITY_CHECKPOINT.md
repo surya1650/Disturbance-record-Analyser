@@ -1,87 +1,66 @@
 # Parse setup and report clarity checkpoint
 
 [Plan](PARSE_REPORT_CLARITY_PLAN_v1.md). Branch `codex/operator-ui-review`;
-baseline `1123cb4`. State **IMPLEMENTING**; publication **NOT ATTEMPTED**.
+baseline `1123cb4`. State **SOFTWARE COMPLETE AND QUALIFIED**.
+Publication **NOT ATTEMPTED** for this new payload.
 
-New user request: ratios and line details earlier at parsing, simpler automatic
-calculation UI, clearer four-page report waveforms/scales and accurate hover values.
-Earlier completed goals remain closed. All older leases completed or waiting for
-actual real inputs; no competing active writer. Root coordinates disjoint agents
-under ignored `work/qa-parse-report-clarity-2026-11-04/active-writer.json`.
+## Resume
 
-Active ownership: parse_setup(app/index/new setup/instrument UI); line_flow_clarity
-(line form/main calculation UI); report_hover_scale(renderer/template/interaction);
-report_model_audit(canonical report/classification/focus). Root owns source UI
-cleanup/workspace/guidance, integration, exact budgets, qualification and docs.
+Engineering is finished. Read [acceptance](PARSE_REPORT_CLARITY_ACCEPTANCE_2026-11-05.md)
+and [sanitized evidence](PARSE_REPORT_CLARITY_EVIDENCE_2026-11-05.json).
+Next: authorized review-branch delivery and remote HEAD verification, subject to
+actual automatic approval review. If publication becomes PUSH_PENDING_AUTH, do
+not push or use another path until an explicit user answer permits this named
+public code/tests/sanitized-documents payload/repository/branch. Time is not consent.
+Preserve local commits/private data and do not restart phases or invent real facts.
 
-Baseline evidence: prior qualified2403PASS/28private skips; Stage-A10000PASS .4361%
-cleanp95; native known42E5=41.98828243177587km. These are historical, not new checks.
-Main physical engine already classifies fault type and chooses windows. DR does
-not normally supply physical line length/impedance. No standalone supported
-source physical classifier exists without its needed inputs; do not invent one.
+## Delivered locally
 
-Current report traces are bounded retained native min/max samples, not every
-native observation. Additive focused native display is authorized with strict
-support/count/gap provenance, unchanged measurement windows. Existing generated
-reports remain immutable; changes apply to new generations.
+- P0 `3061519`: protect work and save bounded new plan/checkpoint.
+- P1 `494de5e`: upload/parse opens Setup; common phase CT/VT per recording where
+  missing, parsed facts/primary no-rescale, same-record revisions/draft retention;
+  line details entered there with no separate model file; expert options secondary.
+  Normal source requests use0 voltage-based CT assumptions, including stale prefs.
+- P2 `3164884`: bounded actual-native event detail, retained overview/gaps/counts;
+  strongly bound stored classification independent of distance eligibility.
+- P3 `16e83e7`: precise RMS/sample readouts, event/full-record display, clear scales
+  and print-safe four pages. No numerical/classifier/DSP-window changes.
+- Visual corrections `a40e65f`/`f2aaaf4`: compact readable confirmations, label clicks,
+  inline units and full-width fields. Only Setup CSS changed after16e83e7.
 
-User localhost8098 is unreachable here (connection refused); screenshots and
-local saved fixtures guide the implementation. Actual user ratios/physical facts
-have not been supplied in this turn; never fill guesses. Final tests/PDF counts
-are pending. Next: finish coordinated phases, then qualify frozen runtime.
+## Actual checks
 
-## Preserved interruption and resumed work
+Fullpytest on16e83e7 **2438PASS/28private skips/1inherited warning,105.16s**.
+Final CSS-onlyf2aaaf42f7618cdd387813cc867b0d8f0f5b4231 qualified by desktop/mobile
+2/2geometry+inline-unit+label-click checks; focused Setup23PASS,3.25s. No subsequent
+Python/JS/source/report logic changes. Direct architecture/self-test/changed10Python
+Ruff/18JS syntax/diff PASS; whole Ruff retains26 inherited findings in untouched
+files. Exact changed/new budgets only, no weakened guard. Wheel final assets match.
 
-Four helpers reported a platform usage limit (tool text: “try again at5:23PM”).
-Partial setup/renderer edits stayed local; no work during the interruption is
-claimed. User explicitly said continue; resumed at23:07IST,4November2026 with
-working tools and the same ownership. No account/model/permission workaround.
+Stage-A10000PASS,cleanp95.4361%,zero impossible uncaveated distances,45.3s.
+Known42E5 exactly41.98828243177587km; native samples and engines unchanged.
+Browserworkflow7/7PASS; finaldesktop/mobile2/2PASS,zero errors.5HTMLs:780sample
+readouts,162RMS cells,16mode pairs,12gap refusals,18touch persistence/clear cases,
+34mouse-leave cases,zero external requests.7fresh PDFs each4A4,28pages visually
+checked,no clipping/overflow/footer overlap,min9pt. All18runtime hashes match.
+Independent final code/evidence/privacy audit PASS. All owned QA servers stopped.
 
-Line-flow UI is now frozen: Setup link and saved facts replace duplicated inline
-line forms/empty primary model selectors; registry controls remain secondary;
-manual line fields precede optional reference.3focused UI tests PASS. Ratio Setup
-route integration and report focus/classification are still in progress. Source
-normal UI no longer offers voltage-based CT guesses; new source requests use
-actual source/saved ratings with voltage choice0. Root integration checks running.
+Evidence: ignored `work/qa-parse-report-clarity-2026-11-04/` and final browser/
+setup-visual-results.json (headf2aaaf4), interaction-print-summary.json and workflow
+qualification.json. Workflow/report evidence was16e83e7; final CSS check closes
+its earlier pending flag. Combined final result is qualified; superseded initial
+scratch exceptions/a40visual result are not final evidence. New reports get the
+presentation; immutable earlier HTML/JSON is not rewritten. Userlocalhost8098 was
+unreachable here; screenshots/local saved fixtures were used honestly.
 
-## Setup milestone — P1 `494de5e`
+## Preservation and interruption
 
-Frontend Setup/line flow is frozen. Upload opens #setup/{incident}, known ratings
-and already-primary scaling are shown, missing phase CT/VT uses common fields
-per recording, and input saves preserve other drafts/source bytes/history. Main
-calculation links Setup; registry options are secondary. Source UI forces0
-voltage-based assumptions even with stale saved132/220 display preferences.
-Combined Setup/instrument/line/operator/guidance checks:23PASS,4.31s,1inherited
-Starlette warning; changed JS syntax/diff PASS. No final full-suite claim yet.
-
-P2 `3164884` canonical focus/classification helpers are frozen with78focusedPASS,6.93s:
-actual bounded native event context, retained original overview/gaps/counts,
-strong source/revision bindings for stored classification independent of distance.
-Renderer interaction tests44PASS, but actual print smoke found footer overlap
-and long-label stress overflow despite4page counts. Agent is fixing those;
-PDF acceptance and final runtime freeze remain pending. Preserve this work.
-
-
-Stage-A10000freshPASS: cleanp95 .4361%, zero impossible distances without caveat,
-45.3s. Native DSP/estimator/oracle unchanged. Pre-freeze actual Setup browser3/3PASS,
-no page errors: common missing ratings/save on same source, other end primary
-samples unchanged, independent end ratios, unsaved line draft retained, mobile390px
-fits. Final report/browser/PDF qualification still waits for renderer print fixes.
-Independent review found touch pointerleave could clear readouts on finger lift;
-renderer corrected it and added a regression. Actual touch check remains pending.
-
-## Final runtime frozen
-
-P3 `16e83e7`: exact table hover values, actual retained/native sample readouts,
-screen Event detail/Full recording toggle, zero-centred phase scales, unit/RMS
-clarity and print-safe four-page layout. Print overlap/long-label stress issues
-were corrected;3actual smoke PDFs each4A4/no clipping/min9pt. Actual keyboard,
-toggle, print-forced-event-detail and mobile touch-release readout smoke PASS.
-Independent review reports no outstanding actionable finding after the touch fix.
-
-All18runtime files (including packaging) frozen in ignored runtime-manifest.json.
-Direct guard/self-test, changed10Python Ruff/18JS syntax/diff PASS. Whole Ruff
-retains26 inherited findings in untouched files. Built wheel includes exact inline
-report JS/template and new Setup JS/CSS assets; no active environment modification.
-Full pytest and final actual browser/PDF matrix are running; do not claim their
-counts until recorded. No current-user physical facts were fabricated.
+Lease under the same ignored goal root. Earlier leases completed or waited for
+real inputs; no competing writer. Four helpers hit a platform usage limit before
+user continuation resumed at23:07IST4November. Another pause occurred before final
+f2Setup check;5November continuation ran that remaining check. No execution during
+pauses is claimed. All edits/commits survived; no reset or account/model workaround.
+Old goal continuations remain paused; no new automation created. Private real
+ratios/line/end/clock facts remain unanswered, not guessed. No original bytes,
+reports, names or history discarded. No main merge, deployment or environment
+publication. Public payload contains code/tests/sanitized documents only.

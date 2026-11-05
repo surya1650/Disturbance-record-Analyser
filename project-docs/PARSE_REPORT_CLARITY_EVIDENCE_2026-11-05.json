@@ -1,0 +1,89 @@
+{
+  "pass": true,
+  "final_runtime": "f2aaaf42f7618cdd387813cc867b0d8f0f5b4231",
+  "logic_runtime": "16e83e7dcb1cb89f093dd1c250b6103409c9d633",
+  "final_change_scope": [
+    "src/dranalyser/application/static/recording-setup.css"
+  ],
+  "workflow_checks_passed": 7,
+  "final_setup_visual_checks_passed": 2,
+  "interaction": {
+    "reports": 5,
+    "totals": {
+      "keyboard_samples": 624,
+      "pointer_samples": 102,
+      "touch_samples": 54,
+      "gap_refusals": 12,
+      "precise_cells": 162,
+      "touch_persistence_and_clear_cases": 18,
+      "mouse_leave_cases": 34
+    },
+    "mode_pairs": 16,
+    "external_requests": 0,
+    "page_errors": 0
+  },
+  "pdf": {
+    "reports": 7,
+    "pages": 28,
+    "all_four_pages": true,
+    "minimum_font_px": 12,
+    "desktop_or_mobile_overflow": false
+  },
+  "runtime_hashes_matched": 18,
+  "owned_servers_stopped": true,
+  "private_originals_history_preserved": true,
+  "branch": "codex/operator-ui-review",
+  "baseline": "1123cb4ab6527b803ac9367ea20227cdd9847d7e",
+  "software_state": "COMPLETE_AND_QUALIFIED",
+  "publication": "NOT_ATTEMPTED",
+  "pytest": {
+    "commit": "16e83e7dcb1cb89f093dd1c250b6103409c9d633",
+    "passed": 2438,
+    "private_data_skips": 28,
+    "inherited_warnings": 1,
+    "elapsed_s": 105.16
+  },
+  "setup_followup_tests": {
+    "commit": "a40e65f2f9cd67aa3219082eef47312b1bf2d2a1",
+    "passed": 23,
+    "inherited_warnings": 1,
+    "elapsed_s": 3.25
+  },
+  "final_css_browser": {
+    "commit": "f2aaaf42f7618cdd387813cc867b0d8f0f5b4231",
+    "passed": 2,
+    "desktop_width": 1440,
+    "mobile_width": 390,
+    "label_clicks_toggle": true,
+    "inline_units_retained": true,
+    "confirmation_text_clipping": false
+  },
+  "architecture_guard": "PASS",
+  "architecture_self_test": "PASS",
+  "changed_python_ruff": {
+    "files": 10,
+    "status": "PASS"
+  },
+  "changed_javascript_syntax": {
+    "files": 18,
+    "status": "PASS"
+  },
+  "repository_ruff_inherited_findings": 26,
+  "stage_a": {
+    "cases": 10000,
+    "status": "PASS",
+    "clean_p95_percent": 0.4361,
+    "impossible_distances_without_caveat": 0,
+    "elapsed_s": 45.3
+  },
+  "native_engine_and_oracle_unchanged": true,
+  "synthetic_known_42_km_e5": 41.98828243177587,
+  "independent_review": "PASS; no outstanding code/evidence/privacy findings",
+  "wheel_final_assets_match": true,
+  "private_physical_inputs_invented": false,
+  "private_sources_settings_hashes_reports_in_public_payload": false,
+  "new_automation_created": false,
+  "main_merged": false,
+  "production_deployed": false,
+  "environment_published": false
+}

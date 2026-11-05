@@ -1,11 +1,16 @@
-# Parse setup and report clarity — active new request
+# Parse setup and report clarity — qualified, delivery pending
 
 [Plan](PARSE_REPORT_CLARITY_PLAN_v1.md),
-[checkpoint](PARSE_REPORT_CLARITY_CHECKPOINT.md). Baseline1123cb4; preserve work and
-coordinate the active writer. Ratios/line facts move to parsing Setup; main flow
-loses duplicate expert inputs; report gets faithful hover/event detail/scales.
-No new private physical facts or shortened DSP windows. New qualification pending;
-earlier closed-goal evidence below is historical. Publication not attempted.
+[checkpoint](PARSE_REPORT_CLARITY_CHECKPOINT.md),
+[acceptance](PARSE_REPORT_CLARITY_ACCEPTANCE_2026-11-05.md).
+Engineering complete: parse-first common phase CT/VT and line Setup, simple
+automatic calculation, accurate interactive event/full-record report views.
+2438PASS/28private skips on unchanged16e83e7 logic; final CSS-onlyf2aaaf4 has
+2/2desktop/mobile geometry/label-click checks. Workflow7/7,780sample readouts,
+162RMS cells,7PDFs each4A4/no clipping; Stage-A10000PASS .4361%p95.18runtime hashes
+match; QA servers stopped. Next: review-branch delivery/remote verification,
+subject to actual approval review. Publication NOT_ATTEMPTED for this new payload;
+honor any PUSH_PENDING_AUTH state. Real unknowns/private data stay local.
 
 ---
 
