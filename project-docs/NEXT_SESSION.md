@@ -1,3 +1,16 @@
+# Primary measurement basis and same-end sequence — in progress
+
+[Plan](PRIMARY_BASIS_SEQUENCE_PLAN_v1.md),
+[checkpoint](PRIMARY_BASIS_SEQUENCE_CHECKPOINT.md). Baseline `97489e4`.
+Read this first for the new user task. Preserve all working edits and inspect
+the exclusive local writer lease before resuming; never edit concurrently.
+Implement explicit primary-basis review, simple secondary presets and conservative
+magnitude hints, independent capture chronology and real private one-ended audit.
+Earlier completed goals below remain closed. Record actual tests/PDF counts;
+do not claim work continued across platform pauses or invent engineering facts.
+
+---
+
 # Setup reuse and signal evidence — complete and published
 
 [Plan](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md),
