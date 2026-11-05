@@ -22,17 +22,31 @@ changed backend/helper Ruff and direct architecture self-test/guard PASS. Native
 DSP and numerical gates remain unchanged. PRIMARY copy/export has a precise
 refusal; same-record input revisions and old history remain supported.
 
-P2–P3 in progress: Setup basis/presets,
-display-only RMS assessment and bounded same-recorder chronology. Private audit
-is examining the real capture spans, supported RMS/stages and recorded contacts.
-A private audit has saved source-time measurements/stages and original-byte
-preservation checks. Only a zone contact is recorded; mechanical AR/CB action
-remains unproven, and one capture retains an independent timing block.
-No new full-test/PDF count is claimed. Earlier goal evidence remains historical.
+P2 complete `f83960a`: explicit primary/secondary Setup and common/custom rating
+shortcuts, readonly original P and hash-bound draft retention. Five focused UI
+tests and Chromium DOM/mobile smoke PASS. P3 `1a7634a`: candidate same-recorder
+chronology, original DAT origin, explicit gaps/overlap/unknown and missing signals.
+Sequence/origin31PASS. Independent review's nonzero-origin trigger-label defect
+was corrected; assessment34PASS. Final cohort-preservation fix keeps accepted
+single-ended operational display cohorts intact, without weakening location gates;
+50 targeted reader/sequence/classification tests PASS (one inherited warning).
 
-Next: finish focused mode/cross-revision tests; privately apply the user's primary
-declaration without changing source bytes, analyse independent same-end captures,
-then complete P4/P5 qualification and record actual results/page counts here.
+P4 complete privately: actual original pairs ingested into a separate local app;
+same-record PRIMARY revisions preserve all four source hashes and original report
+history. All36 phase RMS values match independent source-time measurement. The
+only zone contact cannot prove AR/CB action; one source retains an independent
+TIME-DAT block. No line/end/ratio/clock facts or distance were fabricated.
+
+P5 in progress: initial full2564PASS/28private skips (one inherited warning,
+110.40s) precedes the final cohort-preservation fix; rerun on final frozen runtime
+is required. Stage-A10000PASS cleanp95.4361%, zero impossible uncaveated distances,
+57.2s, unchanged numerical core. Actual private report print currently4A4 pages;
+final browser workflow, PDF matrix, package/privacy and final full test are pending.
+Earlier goal evidence remains historical; provisional checks above are not final acceptance.
+
+Next: finish P5 on the final frozen cohort-preservation commit, record actual
+full tests/fresh PDF counts and privacy/package checks, then deliver only code,
+tests and sanitized documents to the authorized review branch with remote check.
 Physical distance still requires actual method-specific line facts; observations
 must remain available without them. Do not silently invent any missing facts.
 
