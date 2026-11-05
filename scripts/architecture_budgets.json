@@ -129,7 +129,7 @@
     "src/dranalyser/report/static_rx.py": 79,
     "src/dranalyser/report/zone_comparison.py": 265,
     "src/dranalyser/report/zone_comparison_view.py": 49,
-    "src/dranalyser/workbench/incident_report.py": 486,
+    "src/dranalyser/workbench/incident_report.py": 490,
     "src/dranalyser/report/incident_summary.py": 354,
     "src/dranalyser/application/incident_report.py": 179,
     "src/dranalyser/workbench/incident_line.py": 108,
@@ -151,7 +151,9 @@
     "src/dranalyser/workbench/source_projection_window.py": 118,
     "src/dranalyser/workbench/source_quantities.py": 210,
     "src/dranalyser/workbench/incident_report_focus.py": 83,
-    "src/dranalyser/workbench/incident_report_classification.py": 52
+    "src/dranalyser/workbench/incident_report_classification.py": 52,
+    "src/dranalyser/workbench/incident_report_digital.py": 123,
+    "src/dranalyser/workbench/incident_report_time.py": 37
   },
   "exceptions": {}
 }

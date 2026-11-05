@@ -20,6 +20,8 @@ from .record_names import saved_display_name
 from .incident_line import build_line_diagram
 from .incident_report_classification import stored_source_classification
 from .incident_report_focus import attach_waveform_focus
+from .incident_report_digital import attach_digital_inspection
+from .incident_report_time import recorded_clock
 from ..rules.signals import CANONICAL, map_signals
 
 VERSION = 1
@@ -201,7 +203,8 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
         explicit=choice.get('substation', ''))[:120]
     base = dict(record=record, display_label=choice['substation'], substation=choice['substation'],
         selection_reason=selection_reason, station=source.get('station', ''), device=source.get('device', ''),
-        recorded_times=source.get('recorded_times', {}), source_sha256=source.get('source_sha256', {}),
+        recorded_times=source.get('recorded_times', {}), record_clock=recorded_clock(source.get('recorded_times')),
+        source_sha256=source.get('source_sha256', {}),
         sample_count=source.get('sample_count', 0), nominal_frequency_hz=source.get('nominal_frequency_hz'),
         status='available', reason='', issues=list(source.get('issues', [])),
         observation_inputs_note=note, rms_basis=RMS_BASIS,
@@ -271,8 +274,9 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
     base['gaps'] = dict(break_indices=breaks[:128], omitted_break_indices=max(0, len(breaks)-128),
         unknown_analog_samples=sum(value is None for c in source['channels'] for value in c['values']),
         note='Unknown observations and timing gaps remain breaks in waveform paths.')
-    prepared, _, _, _, _ = _prepared(source, item, dict(voltage_kv=0, mappings=chosen['mappings']))
+    prepared, _, _, mapped, provenance = _prepared(source, item, dict(voltage_kv=0, mappings=chosen['mappings']))
     attach_waveform_focus(base, prepared, breaks=breaks)
+    attach_digital_inspection(base, source, mapped, provenance, chosen['asserted_states'], breaks=breaks)
     agree = _mappings_agree(source, item, chosen)
     base['operational_measurements'] = _operational(revision, record, agree)
     stored_rows = [row for row in (revision.get('result') or {}).get('relay_evidence', [])
