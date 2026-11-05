@@ -32,7 +32,7 @@
     "src/dranalyser/comtrade/__init__.py": 0,
     "src/dranalyser/comtrade/channel_review.py": 49,
     "src/dranalyser/comtrade/conformance.py": 247,
-    "src/dranalyser/comtrade/parser.py": 487,
+    "src/dranalyser/comtrade/parser.py": 497,
     "src/dranalyser/comtrade/timestamps.py": 69,
     "src/dranalyser/dsp/__init__.py": 0,
     "src/dranalyser/dsp/clock_quality.py": 40,
@@ -135,12 +135,12 @@
     "src/dranalyser/workbench/incident_line.py": 108,
     "src/dranalyser/report/incident_line.py": 130,
     "src/dranalyser/application/incident_inputs.py": 45,
-    "src/dranalyser/application/instrument_review.py": 97,
-    "src/dranalyser/comtrade/instrument_review.py": 92,
+    "src/dranalyser/application/instrument_review.py": 104,
+    "src/dranalyser/comtrade/instrument_review.py": 156,
     "src/dranalyser/comtrade/source_container.py": 91,
-    "src/dranalyser/comtrade/source_decode.py": 174,
+    "src/dranalyser/comtrade/source_decode.py": 179,
     "src/dranalyser/workbench/incident_inputs.py": 248,
-    "src/dranalyser/workbench/ratio_inputs.py": 140,
+    "src/dranalyser/workbench/ratio_inputs.py": 143,
     "src/dranalyser/workbench/record_names.py": 32,
     "src/dranalyser/workbench/source_diagnostics.py": 222,
     "src/dranalyser/workbench/source_inspection.py": 234,
@@ -153,7 +153,8 @@
     "src/dranalyser/workbench/incident_report_focus.py": 83,
     "src/dranalyser/workbench/incident_report_classification.py": 52,
     "src/dranalyser/workbench/incident_report_digital.py": 123,
-    "src/dranalyser/workbench/incident_report_time.py": 37
+    "src/dranalyser/workbench/incident_report_time.py": 37,
+    "src/dranalyser/workbench/measurement_basis.py": 210
   },
   "exceptions": {}
 }

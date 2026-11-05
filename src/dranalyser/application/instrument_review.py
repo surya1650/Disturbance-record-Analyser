@@ -10,7 +10,9 @@ from fastapi.responses import Response
 
 from .store import Conflict
 from .intake import Intake
-from ..workbench.ratio_inputs import prepare_ratio_copy, prepare_ratio_update, required_ratios
+from ..workbench.ratio_inputs import (prepare_ratio_copy, prepare_ratio_update, required_ratios,
+                                    primary_reviewable_channels, review_basis)
+from ..workbench.measurement_basis import measurement_basis_hint
 from ..workbench.source_inspection import _source
 
 
@@ -42,15 +44,19 @@ def install_instrument_review(app, store):
                                 revision: int = Query(..., ge=1, le=2147483647)):
         row = revision_row(incident_id, revision)
         source, item = _source(store.root, row, record)
+        original = dict(source, header_inventory=source.get('recorded_header_inventory', source.get('header_inventory', [])))
+        applied = source.get('instrument_review') or {}
         return dict(record=record, revision=revision, record_hash=item.get('content_hash'),
                     source_sha256=source['source_sha256'],
                     required_ratios=required_ratios(source, item=item),
-                    reviewable_ratios=required_ratios(dict(source, header_inventory=source.get('recorded_header_inventory', source.get('header_inventory', []))), item=item),
-                    applied_review=copy.deepcopy(source.get('instrument_review') or {}),
+                    reviewable_ratios=required_ratios(original, item=item),
+                    primary_reviewable_channels=primary_reviewable_channels(original['header_inventory']),
+                    measurement_basis_hint=measurement_basis_hint(source),
+                    applied_review=copy.deepcopy(applied), applied_review_basis=review_basis(applied),
                     blocking_findings=[f for f in item.get('flags', []) if f.startswith('[BLOCK ')],
                     source_samples=source['sample_count'],
-                    note='Enter verified primary/secondary ratings in A for currents or V for voltages. '
-                         'Unknown ratios do not prevent raw waveform inspection.')
+                    note='Explicitly declare PRIMARY values after the recorded gains, or enter actual secondary CT/VT ratings in A or V. '
+                         'Amplitude alone does not establish the measurement basis. Instrument scaling remains unverified.')
 
     @app.post('/api/incidents/{incident_id}/instrument-review')
     def instrument_review(incident_id: str, body: dict):
@@ -58,6 +64,7 @@ def install_instrument_review(app, store):
         mode = body.get('mode', 'same-record')
         result = {key: prepared[key] for key in ('flags', 'blocked', 'reviewed_record')}
         result.update(record=body['record'], save_mode=mode, applied_review=prepared['review'])
+        result['applied_review_basis'] = review_basis(prepared['review'])
         result['note'] = ('All conformance checks were rerun using source-bound inputs on this recording; original files are unchanged.'
                           if mode == 'same-record' else 'Conformance was rerun on an explicitly requested reviewed copy; originals are unchanged.')
         if body.get('save', False) and mode == 'same-record':

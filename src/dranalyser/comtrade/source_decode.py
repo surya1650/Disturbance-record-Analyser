@@ -62,7 +62,8 @@ def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None, instrum
         out['content_hash']=hashlib.sha256(cfg_bytes+dat_bytes).hexdigest()
         out['source_sha256'][dat_name]=hashlib.sha256(dat_bytes).hexdigest()
         from .instrument_review import apply_instrument_review, reviewed_inventory, review_digest
-        cfg, instrument = apply_instrument_review(cfg, instrument_review, _review_identity or out['content_hash'])
+        cfg, instrument = apply_instrument_review(cfg, instrument_review, _review_identity or out['content_hash'],
+                                                 original_inventory=out['header_inventory'])
         if instrument:
             out['recorded_header_inventory'] = [dict(row) for row in out['header_inventory']]
             out['header_inventory'] = reviewed_inventory(out['header_inventory'], instrument)
@@ -138,9 +139,10 @@ def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None, instrum
             if instrument and 'A'+str(i+1) in instrument['ratios']:
                 primary, secondary = cfg.analogs[i].primary, cfg.analogs[i].secondary
             gain=1000 if unit in ('KV','KA') else 1
-            valid=a is not None and b is not None and unit in ('V','A','KV','KA') and fields[12].upper() in ('P','S')
+            ps='P' if 'A'+str(i+1) in instrument.get('primary_channels', []) else fields[12].upper()
+            valid=a is not None and b is not None and unit in ('V','A','KV','KA') and ps in ('P','S')
             ratio=1
-            if fields[12].upper()=='S':
+            if ps=='S':
                 valid=valid and primary is not None and secondary is not None and primary>0 and secondary>0
                 ratio=primary/secondary if valid else 1
             if valid:
@@ -157,8 +159,11 @@ def decode_source(cfg_bytes, dat_bytes=None, *, cfg_name, dat_name=None, instrum
                 valid=bool(np.all(np.isfinite(converted[finite])) and not np.any(underflow | subnormal))
                 if valid:
                     vals=converted
+            basis=(' (PRIMARY-declared, unverified)' if 'A'+str(i+1) in instrument.get('primary_channels', []) else
+                   ' (reviewed ratings, unverified)' if 'A'+str(i+1) in instrument.get('ratios', {}) else
+                   ' (CFG-declared, unverified)')
             out['channels'].append(dict(key=f'A{i+1}',label=fields[1],
-                units=(('V' if unit.endswith('V') else 'A')+(' (reviewed ratings, unverified)' if instrument and 'A'+str(i+1) in instrument['ratios'] else ' (CFG-declared, unverified)')) if valid else 'raw counts',
+                units=(('V' if unit.endswith('V') else 'A')+basis) if valid else 'raw counts',
                 values=_list(vals),frequency_reference=map_channel(fields[1],unit,fields[2],naming) in ('VA','VB','VC'),skew_us=skew,
                 current_reference=map_channel(fields[1],unit,fields[2],naming) in ('IA','IB','IC'),
                 scaling_verified=False))

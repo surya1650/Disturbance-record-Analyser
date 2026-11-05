@@ -179,6 +179,7 @@ class Cfg:
     leapsec: str = ""
     warnings: List[str] = None
     local_code: str = ""
+    instrument_header_inventory: Optional[List[dict]] = None
 
     @property
     def total_samples(self) -> int:
@@ -285,12 +286,14 @@ def parse_cfg(text: str) -> Cfg:
         warn.append("nrates=0: sampling rate is not stated in the CFG and is "
                     "derived from the DAT timestamp column")
 
+    from .source_header import header_information
     return Cfg(station=station, device_id=device, rev_year_raw=rev_raw,
                edition=edition, n_analog=na, n_digital=nd, analogs=analogs,
                digitals=digitals, line_freq=lf, nrates=nrates, rates=rates,
                start_time=start, trigger_time=trig, file_type=ftype,
                timemult=timemult, time_code=time_code, tmq_code=tmq,
-               leapsec=leap, warnings=warn, local_code=local_code)
+               leapsec=leap, warnings=warn, local_code=local_code,
+               instrument_header_inventory=header_information(text.encode('utf-8')).get('inventory', []))
 
 
 # --------------------------------------------------------------------------
@@ -389,9 +392,10 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
     if dat_path != cfg_path:
         h.update(dat_bytes)
     digest = h.hexdigest()
-    from .instrument_review import apply_instrument_review, reviewed_inventory, review_digest
+    from .instrument_review import apply_instrument_review, reviewed_inventory, review_digest, review_basis
     original_ratings = {f'A{i+1}': (c.primary, c.secondary) for i, c in enumerate(cfg.analogs)}
-    cfg, instrument = apply_instrument_review(cfg, instrument_review, digest)
+    cfg, instrument = apply_instrument_review(cfg, instrument_review, digest,
+                                              original_inventory=cfg.instrument_header_inventory)
     na, nd = cfg.n_analog, cfg.n_digital
     ftype = cfg.file_type.strip().upper()
     if ftype.startswith("ASCII"):
@@ -469,7 +473,13 @@ def _assemble(cfg: Cfg, dat_bytes: bytes, cfg_path: str, dat_path: str,
     )
     if instrument:
         rec.notes.update(instrument_review=instrument, instrument_review_sha256=review_digest(instrument))
-        rec.add_flag('RATIO-REVIEW', 'flag', 'User-declared instrument ratings applied to original recording '+digest+
+        if review_basis(instrument) == 'PRIMARY':
+            rec.notes['recorded_header_inventory'] = cfg.instrument_header_inventory
+            message = ('User-declared PRIMARY measurement basis overrides original CFG S metadata on selected channels; '
+                       'a/b gains and physical unit conversion applied once without CT/VT multiplication; scaling unverified; ')
+        else:
+            message = 'User-declared instrument ratings applied to original recording '
+        rec.add_flag('RATIO-REVIEW', 'flag', message+digest+
                      '; '+instrument['evidence']+'; original bytes/gains unchanged.')
     if timing['status'] == 'invalid':
         rec.add_flag('TIME-DAT', 'block', timing['reason'])

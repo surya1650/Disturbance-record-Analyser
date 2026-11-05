@@ -8,7 +8,8 @@ from pathlib import Path
 import numpy as np
 
 from ..comtrade.conformance import check
-from ..comtrade.instrument_review import clean_instrument_review
+from ..comtrade.instrument_review import clean_instrument_review, review_basis
+from ..comtrade.instrument_review import primary_reviewable_channels as primary_reviewable_channels
 from ..comtrade.parser import read_cff, read_comtrade
 from ..comtrade.source_container import _framed
 from .source_inspection import _source
@@ -70,6 +71,8 @@ def prepare_ratio_copy(root, row, filename, review):
     clean = clean_instrument_review(review)
     if not clean or clean['record_hash'] != item.get('content_hash'):
         raise ValueError('Ratio review belongs to a different recording. Reopen this capture.')
+    if review_basis(clean) == 'PRIMARY':
+        raise ValueError('PRIMARY basis reviews apply to the same original recording. Copy/export is supported only for secondary rating reviews.')
     recorded = dict(source, header_inventory=source.get('recorded_header_inventory', source.get('header_inventory', [])))
     eligible = {h['id']: h for h in required_ratios(recorded, include_auxiliary=True)}
     if not eligible:
