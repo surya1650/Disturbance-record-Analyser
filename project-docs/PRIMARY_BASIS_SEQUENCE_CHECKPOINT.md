@@ -15,10 +15,19 @@ preserved. Changes underway are owned by this root and delegated file owners;
 do not start another writer or reset/discard them. Current exclusive lease lives
 under ignored `work/qa-primary-basis-sequence-2026-11-05/active-writer.json`.
 
-P1–P3 in progress: source-bound primary declaration/backend, Setup basis/presets,
+P1 complete at `2b996a1`: source-bound explicit primary review, unchanged legacy
+secondary digests, original metadata retained and display-only magnitude hints.
+Focused backend99PASS (one inherited warning), dedicated assessment27PASS;
+changed backend/helper Ruff and direct architecture self-test/guard PASS. Native
+DSP and numerical gates remain unchanged. PRIMARY copy/export has a precise
+refusal; same-record input revisions and old history remain supported.
+
+P2–P3 in progress: Setup basis/presets,
 display-only RMS assessment and bounded same-recorder chronology. Private audit
 is examining the real capture spans, supported RMS/stages and recorded contacts.
-No real measurements, diagnosis, AR success or distance has yet been qualified.
+A private audit has saved source-time measurements/stages and original-byte
+preservation checks. Only a zone contact is recorded; mechanical AR/CB action
+remains unproven, and one capture retains an independent timing block.
 No new full-test/PDF count is claimed. Earlier goal evidence remains historical.
 
 Next: finish focused mode/cross-revision tests; privately apply the user's primary
