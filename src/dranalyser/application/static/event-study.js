@@ -47,8 +47,8 @@ const DREventStudy=(()=>{
       if(!item||item.kind!=='comtrade'||item.duplicate_of||!records.some(item=>item.file===record)||used.has(record)||assignment?.role!=='primary'||assignment.end!==role)return null;
       used.add(record);ends[role]={record,substation:chosen.name||'',timing_mode:'auto',pre:null,fault:null,post:null,relay_distance:null};
     }
-    if(!ends.S||Object.entries(meta.assignments||{}).some(([record,value])=>value.role==='primary'&&!used.has(record)))return null;
-    return {same_event_confirmed:!!ends.R&&review.confirmed_same_event===true,ends};
+    if(!Object.keys(ends).length||Object.entries(meta.assignments||{}).some(([record,value])=>value.role==='primary'&&!used.has(record)))return null;
+    return {same_event_confirmed:!!ends.S&&!!ends.R&&review.confirmed_same_event===true,ends};
   }
   function collect(values){
     const get=name=>String(typeof values==='function'?values(name)??'':values[name]??'').trim();
@@ -56,7 +56,7 @@ const DREventStudy=(()=>{
     const ends={};
     for(const role of ['S','R']){
       const record=get(role+'.record');
-      if(!record){if(role==='S')throw new Error('Choose the reference-end recording.');continue;}
+      if(!record)continue;
       const substation=get(role+'.substation')||record.slice(0,120);
       const timing_mode=get(role+'.timing_mode')||'manual';
       if(!['auto','manual'].includes(timing_mode))throw new Error('Choose automatic or manual timings.');
@@ -75,9 +75,10 @@ const DREventStudy=(()=>{
       end.relay_distance=relayReading(values,role).reading;
       ends[role]=end;
     }
-    if(ends.R&&ends.R.record===ends.S.record)throw new Error('Choose distinct opposite-end recordings. A recording cannot represent both ends.');
-    if(ends.R&&!checked)throw new Error('Confirm that the selected recordings are opposite physical ends of the same event.');
-    return {same_event_confirmed:!!ends.R&&checked,ends};
+    if(!Object.keys(ends).length)throw new Error('Choose at least one recording at its physical end.');
+    if(ends.S&&ends.R&&ends.R.record===ends.S.record)throw new Error('Choose distinct opposite-end recordings. A recording cannot represent both ends.');
+    if(ends.S&&ends.R&&!checked)throw new Error('Confirm that the selected recordings are opposite physical ends of the same event.');
+    return {same_event_confirmed:!!ends.S&&!!ends.R&&checked,ends};
   }
   function coordinates(model){
     const ends=Object.values(model.ends||{}).filter(Boolean),relative=ends.length>0&&ends.every(end=>finite(end.origin_s));
@@ -148,7 +149,7 @@ const DREventStudy=(()=>{
   }
   function markup(model,mode='trace'){
     const space=coordinates(model),ends=model.ends||{};
-    return `<article class="event-study-report">${arr(model.relay_input_notes).length?'<aside class="event-study-help" role="note"><strong>Optional relay readings excluded</strong>'+list(model.relay_input_notes)+'</aside>':''}<p class="event-study-stale" data-event-stale hidden>Inputs have changed. Build the event report to apply them; the report below still shows the previous choices.</p><header><h2>Event report</h2><p>Incident ${esc(model.incident_id)} · Revision ${esc(model.revision)}</p></header>${explanation(model)}<section><div class="event-study-heading"><h3>Both-end waveform overview</h3><label>Display<select data-event-mode><option value="trace"${mode==='trace'?' selected':''}>Recorded waveform</option><option value="rms_trace"${mode==='rms_trace'?' selected':''}>One-cycle RMS</option></select></label></div><p class="event-study-help">${esc(space.label)}. Each plot has its own labelled vertical scale. These overviews do not establish clock alignment or exact cursor values.</p><div class="event-study-quantity-row">${plot(ends.S,'voltage',space,mode,'S')}${plot(ends.R,'voltage',space,mode,'R')}</div><div class="event-study-quantity-row">${plot(ends.S,'current',space,mode,'S')}${plot(ends.R,'current',space,mode,'R')}</div><label class="event-study-inspector">Inspect the full displayed span<input type="range" min="0" max="10000" step="1" value="0" data-event-inspector><output data-event-cursor-label>Move over a plot or use this slider. Click a plot to hold the inspection line.</output></label><p class="event-study-help">Use the Waveforms page for exact instantaneous values, one-cycle RMS, vectors and source sample cursors.</p></section><section><h3>Pre-fault, fault and optional post-fault comparison</h3><p>RMS values use the selected source intervals and stated units. Empty values retain their reason; zero is a real value. Primary quantities require reviewed CT/VT scaling. Region changes alone do not establish fault type or breaker operation.</p>${list([...new Set(Object.values(ends).map(end=>end?.rms_basis).filter(Boolean))])}<div class="event-study-end-grid">${phaseTable(ends.S,'S')}${phaseTable(ends.R,'R')}</div></section>${distance(model)}${lineView(model)}${navigationView(model)}<section><h3>Digital indications and timing</h3><p>Times below are observed source transitions. A trip indication alone does not prove circuit-breaker opening; AR command alone does not prove successful reclosure. Reviewed meanings, polarity and suitable contacts are needed for those conclusions.</p><div class="event-study-end-grid">${digital(ends.S,'S')}${digital(ends.R,'R')}</div></section>${arr(model.notes).length?'<section><h3>Evidence and limits</h3>'+list(model.notes)+'</section>':''}<div class="event-study-actions"><button type="button" data-event-download="html">Download report</button><button type="button" data-event-download="json">Download report data</button></div></article>`;
+    return `<article class="event-study-report">${arr(model.relay_input_notes).length?'<aside class="event-study-help" role="note"><strong>Optional relay readings excluded</strong>'+list(model.relay_input_notes)+'</aside>':''}<p class="event-study-stale" data-event-stale hidden>Inputs have changed. Build the event report to apply them; the report below still shows the previous choices.</p><header><h2>Event report</h2><p>Incident ${esc(model.incident_id)} · Revision ${esc(model.revision)}</p></header>${explanation(model)}<section><div class="event-study-heading"><h3>Recording waveform overview</h3><label>Display<select data-event-mode><option value="trace"${mode==='trace'?' selected':''}>Recorded waveform</option><option value="rms_trace"${mode==='rms_trace'?' selected':''}>One-cycle RMS</option></select></label></div><p class="event-study-help">${esc(space.label)}. Each plot has its own labelled vertical scale. These overviews do not establish clock alignment or exact cursor values.</p><div class="event-study-quantity-row">${plot(ends.S,'voltage',space,mode,'S')}${plot(ends.R,'voltage',space,mode,'R')}</div><div class="event-study-quantity-row">${plot(ends.S,'current',space,mode,'S')}${plot(ends.R,'current',space,mode,'R')}</div><label class="event-study-inspector">Inspect the full displayed span<input type="range" min="0" max="10000" step="1" value="0" data-event-inspector><output data-event-cursor-label>Move over a plot or use this slider. Click a plot to hold the inspection line.</output></label><p class="event-study-help">Use the Waveforms page for exact instantaneous values, one-cycle RMS, vectors and source sample cursors.</p></section><section><h3>Pre-fault, fault and optional post-fault comparison</h3><p>RMS values use the selected source intervals and stated units. Empty values retain their reason; zero is a real value. Primary quantities require reviewed CT/VT scaling. Region changes alone do not establish fault type or breaker operation.</p>${list([...new Set(Object.values(ends).map(end=>end?.rms_basis).filter(Boolean))])}<div class="event-study-end-grid">${phaseTable(ends.S,'S')}${phaseTable(ends.R,'R')}</div></section>${distance(model)}${lineView(model)}${navigationView(model)}<section><h3>Digital indications and timing</h3><p>Times below are observed source transitions. A trip indication alone does not prove circuit-breaker opening; AR command alone does not prove successful reclosure. Reviewed meanings, polarity and suitable contacts are needed for those conclusions.</p><div class="event-study-end-grid">${digital(ends.S,'S')}${digital(ends.R,'R')}</div></section>${arr(model.notes).length?'<section><h3>Evidence and limits</h3>'+list(model.notes)+'</section>':''}<div class="event-study-actions"><button type="button" data-event-download="html">Download report</button><button type="button" data-event-download="json">Download report data</button></div></article>`;
   }
   function withChoices(inputs,saved={},sourceChoices){
     const result=JSON.parse(JSON.stringify(inputs));
@@ -324,7 +325,7 @@ const DREventStudy=(()=>{
       savedInputs=defaults||data.inputs||{};populate(savedInputs);submit.disabled=false;
       setStatus(defaults?'Using this incident’s saved Setup recordings, end names and same-event review. Timings are selected automatically.':data.note||'Choose records and intervals, then build the event report.');
       if(defaults)for(const role of ['S','R'])if(field(role+'.record').value)selectTimings(role);
-      if(version>0&&data.inputs?.ends?.S?.record){
+      if(version>0&&['S','R'].some(role=>data.inputs?.ends?.[role]?.record)){
         busy=true;freeze(true);setStatus('Loading the saved event report…');
         const initial=JSON.parse(JSON.stringify(data.inputs));let migrated=false;
         for(const [role,end] of Object.entries(initial.ends))if(!end.timing_mode&&field(role+'.timing_mode').value==='auto'){end.timing_mode='auto';migrated=true;}

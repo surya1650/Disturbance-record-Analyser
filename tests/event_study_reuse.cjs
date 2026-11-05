@@ -35,6 +35,10 @@ assert.equal(study.setupDefaults(unconfirmed,records).same_event_confirmed,false
 const single=structuredClone(row);delete single.metadata.incident_line.review.ends.R;delete single.metadata.assignments['R.cfg'];
 assert.equal(study.setupDefaults(single,records).same_event_confirmed,false);
 assert.equal(study.setupDefaults({...row,metadata:{}},records),null,'older incidents retain explicit selection');
+const remoteOnly=structuredClone(row);delete remoteOnly.metadata.incident_line.review.ends.S;delete remoteOnly.metadata.assignments['S.cfg'];
+const remoteDefaults=study.setupDefaults(remoteOnly,records);
+assert.deepEqual(Object.keys(remoteDefaults.ends),['R']);assert.equal(remoteDefaults.ends.R.record,'R.cfg');
+assert.equal(remoteDefaults.same_event_confirmed,false,'a single R source cannot inherit a stale opposite-end confirmation');
 
 // A complete zero is data; malformed or unfinished optional readings are named and omitted.
 assert.deepEqual(study.relayReading({},'S'),{reading:null,issues:[]});
@@ -124,6 +128,15 @@ const settle=async()=>{for(let i=0;i<8;i++)await new Promise(resolve=>setImmedia
   assert.equal(fields['S.record'].value,'R.cfg');assert.equal(fields['S.substation'].value,'Explicit display label');
   assert.equal(fields['S.timing_mode'].value,'manual');assert.equal(fields.same_event_confirmed.checked,false);
   assert.equal(fields['R.record'].value,'');
+  // A saved R-only report reloads without moving the physical R capture into S.
+  storedInputs={same_event_confirmed:false,ends:{R:{record:'R.cfg',substation:'Remote only',timing_mode:'auto',pre:null,fault:null,post:null,relay_distance:null}}};storedVersion=5;
+  const reportsBefore=requests.filter(value=>value.path.endsWith('/report')).length;
+  context.view.bind(remoteOnly,root,new AbortController().signal);await settle();
+  assert.equal(fields['S.record'].value,'');assert.equal(fields['R.record'].value,'R.cfg');
+  assert.equal(fields.same_event_confirmed.checked,false);assert.match(status.textContent,/Saved event report loaded/);
+  assert.equal(requests.filter(value=>value.path.endsWith('/report')).length,reportsBefore+1);
+  const remoteRequest=JSON.parse(requests.filter(value=>value.path.endsWith('/report')).at(-1).options.body);
+  assert.deepEqual(Object.keys(remoteRequest.inputs.ends),['R']);
   const beforeChoices=fields['S.record'].innerHTML;getRevision=8;getRecords=[{file:'stale.cfg'}];
   context.view.bind(row,root,new AbortController().signal);await settle();
   assert.match(status.textContent,/another revision/);assert.equal(fields['S.record'].innerHTML,beforeChoices,'stale response cannot replace recording choices');
