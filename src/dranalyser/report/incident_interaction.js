@@ -23,31 +23,135 @@ const DRIncidentWaveforms=(()=>{
     }
     return null;
   }
-  function formatReadout(data,time){
-    const readings=(Array.isArray(data?.channels)?data.channels:[]).map(channel=>{
+  function readoutRows(data,time){
+    return (Array.isArray(data?.channels)?data.channels:[]).map(channel=>{
       const point=nearestObservation(channel.trace,time),label=String(channel.label||'Channel');
-      if(!point)return label+': unavailable here (gap or no retained support).';
+      if(!point)return {label,value:null,units:null,source_time_s:null,sample:null,reason:'Gap or no retained support'};
       const original=String(channel.original_units||channel.units||'units unavailable');
       const physical=['A','V'].includes(original.split(' ',1)[0]);
       const proposed=physical&&channel.factor===1000?1000:1;
       const factor=point[2]!==0&&point[2]/proposed===0?1:proposed;
-      const units=String(factor===1000?channel.units:original);
-      const converted=point[2]/factor;
-      const value=exact(converted)+' '+units+(factor!==1?' ('+exact(point[2])+' '+original+')':'');
-      return label+': '+value+' · t='+exact(point[1])+' s local · sample '+exact(point[0])+'.';
+      return {label,value:point[2]/factor,units:String(factor===1000?channel.units:original),
+        source_time_s:point[1],sample:point[0],reason:null,
+        original_value:factor===1?null:point[2],original_units:factor===1?null:original};
+    });
+  }
+  function readingValue(row){
+    return exact(row.value)+' '+row.units+(row.original_value!==null?' ('+exact(row.original_value)+' '+row.original_units+')':'');
+  }
+  function formatReadout(data,time){
+    const readings=readoutRows(data,time).map(row=>{
+      if(row.reason)return row.label+': unavailable here (gap or no retained support).';
+      return row.label+': '+readingValue(row)+' · t='+exact(row.source_time_s)+' s local · sample '+exact(row.sample)+'.';
     });
     return 'Instantaneous samples; nearest retained observation, no interpolation. '+readings.join(' ');
+  }
+  function digitalRows(data,time){
+    return (Array.isArray(data?.digital_inspection?.channels)?data.digital_inspection.channels:[]).slice(0,4).map(channel=>{
+      const polarity=channel.asserted_state===0||channel.asserted_state===1?channel.asserted_state:null;
+      // Both endpoints are recorded samples. The space between runs remains unknown,
+      // including the unsampled bracket around a transition to the opposite bit.
+      const segment=finite(time)&&(Array.isArray(channel.segments)?channel.segments:[]).find(row=>
+        finite(row?.from_s)&&finite(row?.to_s)&&row.to_s>=row.from_s&&time>=row.from_s&&time<=row.to_s&&(row.state===0||row.state===1));
+      const summary=channel.window_summary||{},state=segment?segment.state:null;
+      const asserted=state===null||polarity===null?null:state===polarity;
+      const reason=segment?null:'Gap or no retained support';
+      const bounds=summary.duration_bounds_s;
+      let duration='Unknown';
+      if(polarity===null){
+        const high=summary.high_duration_bounds_s;
+        if(Array.isArray(high)&&high.length===2&&high.every(finite)&&high[0]>=0&&high[1]>=high[0])
+          duration='High span '+(high[0]===high[1]?exact(high[0]):exact(high[0])+'–'+exact(high[1]))+' s; active unverified';
+        else if(finite(summary.observed_high_span_s)&&summary.observed_high_span_s>=0)
+          duration='Observed high span '+(summary.observed_high_span_s>0?'≥':'')+exact(summary.observed_high_span_s)+' s; active unverified';
+        else duration='Unknown polarity';
+      }
+      else if(Array.isArray(bounds)&&bounds.length===2&&bounds.every(finite)&&bounds[0]>=0&&bounds[1]>=bounds[0]){
+        duration=(bounds[0]===bounds[1]?exact(bounds[0]):exact(bounds[0])+'–'+exact(bounds[1]))+' s';
+      }
+      const support=[];
+      if(summary.censored_start||summary.censored_end)support.push('boundary censored');
+      if(summary.gap_count>0||summary.unknown_samples>0)support.push('missing observations');
+      if(support.length&&!['Unknown','Unknown polarity'].includes(duration))
+        duration+=' (recorded portion; '+support.join('; ')+')';
+      const active=polarity===null?null:typeof summary.active_during_window==='boolean'?summary.active_during_window:null;
+      const window=Array.isArray(summary.time_range_s)&&summary.time_range_s.length===2&&summary.time_range_s.every(finite)&&
+        summary.time_range_s[1]>=summary.time_range_s[0]?summary.time_range_s.slice():null;
+      return {label:String(channel.label||channel.id||'Signal'),state,asserted,reason,support_reason:String(summary.reason||''),
+        at_cursor:state===null?'Unavailable ('+reason.toLowerCase()+')':(state===1?'High (1)':'Low (0)')+(polarity===null?' · polarity unreviewed':asserted?' · Asserted':' · Cleared'),
+        active_in_window:polarity===null?'Unknown polarity':active===null?'Unknown':active?'Yes':'No',
+        recorded_active_duration:duration,window_time_range_s:window,polarity_label:String(channel.polarity_label||'')};
+    });
+  }
+  function recordClockText(data){
+    const clock=data?.record_clock;
+    if(!clock||typeof clock!=='object')return 'Record clock unavailable; source-local elapsed seconds only.';
+    const start=String(clock.start_display||'Unavailable'),trigger=String(clock.trigger_display||'Unavailable');
+    const reason=clock.cursor_time_reason||clock.reason;
+    return 'Record start: '+start+' · Trigger: '+trigger+' · Time zone: '+String(clock.timezone_label||'Not declared')+
+      ' · Cursor clock unavailable'+(reason?': '+String(reason).replace(/\.+$/,''):'; source-local elapsed seconds only')+'.';
+  }
+  function renderReadout(output,data,time){
+    const doc=output.ownerDocument;
+    if(!doc||typeof doc.createElement!=='function'){output.textContent=formatReadout(data,time);return;}
+    output.textContent='';
+    output.setAttribute('role','status');output.setAttribute('aria-live','polite');output.setAttribute('aria-atomic','true');
+    const element=(tag,text,className)=>{
+      const node=doc.createElement(tag);
+      if(text!==undefined)node.textContent=String(text);
+      if(className)node.setAttribute('class',className);
+      return node;
+    };
+    const table=(caption,headers,rows,className,reasons=[])=>{
+      const node=element('table',undefined,className);
+      node.append(element('caption',caption));
+      const head=element('thead'),header=element('tr');
+      for(const label of headers){const cell=element('th',label);cell.setAttribute('scope','col');header.append(cell);}
+      head.append(header);node.append(head);
+      const body=element('tbody');
+      for(const [index,values] of rows.entries()){
+        const row=element('tr');
+        if(reasons[index])row.setAttribute('title',reasons[index]);
+        values.forEach((value,index)=>{const cell=element(index===0?'th':'td',value);if(index===0)cell.setAttribute('scope','row');row.append(cell);});
+        body.append(row);
+      }
+      node.append(body);output.append(node);
+    };
+    output.append(element('p',recordClockText(data),'waveform-clock-context'));
+    table('Instantaneous samples · nearest retained observation; no interpolation.',
+      ['Phase','Instantaneous value','Source local s','Sample'],readoutRows(data,time).map(row=>
+        [row.label,row.reason?'Unavailable ('+row.reason.toLowerCase()+')':readingValue(row),row.reason?'—':exact(row.source_time_s),row.reason?'—':exact(row.sample)]),'waveform-readout-table');
+    const digitals=digitalRows(data,time);
+    const window=digitals[0]?.window_time_range_s;
+    const sameWindow=window&&digitals.every(row=>row.window_time_range_s&&row.window_time_range_s.every((value,index)=>value===window[index]));
+    const omittedChannels=data?.digital_inspection?.omitted_channels;
+    const omittedSegments=(Array.isArray(data?.digital_inspection?.channels)?data.digital_inspection.channels:[]).slice(0,4)
+      .reduce((total,channel)=>total+(Number.isInteger(channel.omitted_segments)&&channel.omitted_segments>0?channel.omitted_segments:0),0);
+    const omissions=[];
+    if(Number.isInteger(omittedChannels)&&omittedChannels>0)omissions.push(exact(omittedChannels)+' signals omitted');
+    if(omittedSegments>0)omissions.push(exact(omittedSegments)+' segments omitted');
+    if(digitals.length)table('Recorded digital states at cursor '+exact(time)+' local s'+
+      (sameWindow?'; selected window '+exact(window[0])+'–'+exact(window[1])+' local s':'')+
+      (omissions.length?'; '+omissions.join('; '):'')+'. Asserted meanings require reviewed polarity.',
+      ['Signal','At cursor','Active in window','Recorded active duration'],digitals.map(row=>
+        [row.label,row.at_cursor,row.active_in_window,row.recorded_active_duration]),'waveform-digital-table',digitals.map(row=>row.support_reason));
   }
   function readData(view){
     try{return JSON.parse(view.querySelector('.waveform-data')?.textContent||'null');}catch{return null;}
   }
   function retainedTimes(data){
-    return [...new Set((data?.channels||[]).flatMap(channel=>(channel.trace||[]).filter(valid).map(point=>point[1])))].sort((a,b)=>a-b);
+    const analog=(data?.channels||[]).flatMap(channel=>(channel.trace||[]).filter(valid).map(point=>point[1]));
+    const digital=(data?.digital_inspection?.channels||[]).slice(0,4).flatMap(channel=>(channel.segments||[])
+      .filter(row=>finite(row?.from_s)&&finite(row?.to_s)&&row.to_s>=row.from_s&&(row.state===0||row.state===1))
+      .flatMap(row=>[row.from_s,row.to_s])).filter(time=>!Array.isArray(data?.range)||data.range.length!==2||
+        !data.range.every(finite)||(time>=data.range[0]&&time<=data.range[1]));
+    return [...new Set([...analog,...digital])].sort((a,b)=>a-b);
   }
   function mount(view){
     if(view.dataset.waveformBound)return;
     const svg=view.querySelector('svg.waveform'),output=view.querySelector('.waveform-readout');
     if(!svg||!output)return;
+    output.setAttribute('role','status');output.setAttribute('aria-live','polite');
     view.dataset.waveformBound='true';
     if(!view.hasAttribute('tabindex'))view.setAttribute('tabindex','0');
     let time=null,cursor=svg.querySelector('[data-waveform-cursor]');
@@ -61,7 +165,7 @@ const DRIncidentWaveforms=(()=>{
       time=Math.max(range[0],Math.min(range[1],next));
       const x=plot.left+(time-range[0])/(range[1]-range[0])*(plot.right-plot.left);
       for(const [key,value] of Object.entries({x1:x,x2:x,y1:plot.top,y2:plot.bottom,visibility:'visible'}))cursor.setAttribute(key,String(value));
-      output.textContent=formatReadout(data,time);
+      renderReadout(output,data,time);
     };
     const pointer=event=>{
       const data=readData(view),plot=data?.plot,range=data?.range,matrix=svg.getScreenCTM?.();
@@ -103,7 +207,7 @@ const DRIncidentWaveforms=(()=>{
     });
   }
   function init(root){for(const set of root?.querySelectorAll?.('.waveform-set')||[])mountSet(set);for(const view of root?.querySelectorAll?.('.waveform-view')||[])mount(view);}
-  return {nearestObservation,formatReadout,mount,mountSet,init};
+  return {nearestObservation,readoutRows,formatReadout,digitalRows,recordClockText,renderReadout,mount,mountSet,init};
 })();
 if(typeof module!=='undefined')module.exports=DRIncidentWaveforms;
 if(typeof document!=='undefined'){

@@ -130,7 +130,7 @@
     "src/dranalyser/report/zone_comparison.py": 265,
     "src/dranalyser/report/zone_comparison_view.py": 49,
     "src/dranalyser/workbench/incident_report.py": 490,
-    "src/dranalyser/report/incident_summary.py": 354,
+    "src/dranalyser/report/incident_summary.py": 424,
     "src/dranalyser/application/incident_report.py": 179,
     "src/dranalyser/workbench/incident_line.py": 108,
     "src/dranalyser/report/incident_line.py": 130,

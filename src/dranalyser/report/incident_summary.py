@@ -229,18 +229,69 @@ def _waveforms(source, quantity, divisor, *, overview=False):
     mode = 'Event detail' if focused else 'Capture overview'
     payload = dict(version=1, range=[start, stop],
         plot=dict(left=left, right=right, top=30 if shared else top, bottom=135 if shared else height-29, width=width, height=height),
-        trace_policy=policy, channels=hover_channels)
+        trace_policy=policy, channels=hover_channels,
+        digital_inspection=(source.get('digital') or {}).get('inspection') or {},
+        record_clock=source.get('record_clock') or dict(
+            start_display=(source.get('recorded_times') or {}).get('start') or '',
+            trigger_display=(source.get('recorded_times') or {}).get('trigger') or '',
+            timezone_label='Not declared', cursor_time_status='unavailable'))
     data = json.dumps(payload, allow_nan=False, separators=(',', ':')).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
     scale_note = 'shared phase scale' if shared else 'separate scales for unlike units'
     note = f'{mode} · instantaneous values · {scale_note} · {_number(start)}–{_number(stop)} local s'
     return Markup('<div class="waveform-view" tabindex="0" role="group" aria-label="'+str(escape(quantity.title()+' waveform. '+note))+ '">'
         +'<p class="waveform-caption">'+str(escape(note))+'</p>'+''.join(out)
-        +'<output class="waveform-readout" aria-live="polite">Hover or tap for retained sample values. Arrow keys step through retained samples.</output>'
+        +'<div class="waveform-readout" role="status" aria-live="polite">Hover or tap for retained sample values. Arrow keys step through retained samples.</div>'
         +'<script type="application/json" class="waveform-data">'+data+'</script></div>')
+
+
+def _span_text(value):
+    if _number(value) is None or value < 0:
+        return 'Unavailable'
+    return (_number(value*1000)+' ms') if value < 1 else (_number(value)+' s')
+
+
+def _signal_rows(digital):
+    inspection = digital.get('inspection') or {}
+    channels = inspection.get('channels') if isinstance(inspection, dict) else []
+    rows = []
+    for channel in (channels or [])[:4]:
+        if not isinstance(channel, dict):
+            continue
+        summary = channel.get('window_summary') if isinstance(channel.get('window_summary'), dict) else {}
+        raw = summary.get('raw_state_at_start')
+        raw_text = ('High (1)' if raw == 1 else 'Low (0)') if type(raw) is int and raw in (0, 1) else 'Unavailable'
+        asserted = channel.get('asserted_state')
+        reviewed = type(asserted) is int and asserted in (0, 1)
+        semantic = summary.get('asserted_at_start')
+        state = (('Asserted · ' if semantic else 'Cleared · ')+raw_text
+                 if reviewed and raw_text != 'Unavailable' and type(semantic) is bool else raw_text)
+        active = summary.get('active_during_window')
+        activity = ('Yes' if active else 'No') if reviewed and type(active) is bool else (
+            'Polarity unreviewed' if not reviewed else 'Unavailable')
+        bounds = summary.get('duration_bounds_s') if reviewed else summary.get('high_duration_bounds_s')
+        if isinstance(bounds, (list, tuple)) and len(bounds) == 2 and all(
+                _number(value) is not None and value >= 0 for value in bounds) and bounds[1] >= bounds[0]:
+            span = _span_text(bounds[0]) if bounds[0] == bounds[1] else _span_text(bounds[0])+'–'+_span_text(bounds[1])
+        else:
+            value = summary.get('observed_active_span_s') if reviewed else summary.get('observed_high_span_s')
+            span = _span_text(value)
+            if span != 'Unavailable':
+                span = '≥ '+span
+        if not reviewed and span != 'Unavailable':
+            span = 'High '+span
+        partial = bool(summary.get('censored_start') or summary.get('censored_end') or
+                       summary.get('gap_count') or summary.get('unknown_samples'))
+        rows.append(dict(signal=_text(channel.get('plain_label') or channel.get('label') or channel.get('id') or 'Signal', 52),
+            state=state, activity=activity, span=span+(' *' if partial and span != 'Unavailable' else ''),
+            reason=_text(summary.get('reason') or channel.get('polarity_label') or 'Recorded indication; physical operation is not established.', 500),
+            reviewed=reviewed, partial=partial))
+    return rows
 
 
 def _source(source, index):
     label = source.get('display_label') or source.get('substation') or 'Recording '+str(index+1)
+    clock = source.get('record_clock') if isinstance(source.get('record_clock'), dict) else {}
+    recorded = source.get('recorded_times') or {}
     result = dict(label=_text(label, 76), record=_text(source.get('record') or 'Source not identified', 100),
         selection=_text(source.get('selection_reason'), 220),
         range=' to '.join(_number(v) or 'unknown' for v in (source.get('time_range_s') or [])),
@@ -248,7 +299,10 @@ def _source(source, index):
         timing=_text((source.get('timing_evidence') or {}).get('method') or source.get('timing_mode') or 'No event-region selection available', 100),
         insights=_items(source.get('insights'), 2, 170),
         station_device=_text(' / '.join(str(source[k]) for k in ('station', 'device') if source.get(k)), 76),
-        trigger=_text((source.get('recorded_times') or {}).get('trigger'), 64))
+        start=_text(clock.get('start_display') or recorded.get('start'), 72),
+        trigger=_text(clock.get('trigger_display') or recorded.get('trigger'), 72),
+        clock_timezone=_text(clock.get('timezone_label') or 'Not declared', 70),
+        clock_note=_text(clock.get('cursor_time_reason') or clock.get('reason') or 'Recorder-local date/time; cursor readings use elapsed source time. Clock alignment is unverified.', 150))
     intervals = []
     for kind, name in (('pre', 'before'), ('fault', 'during'), ('post', 'after')):
         support = (source.get('region_support') or {}).get(kind) or {}
@@ -283,6 +337,21 @@ def _source(source, index):
         result[quantity+'_native_reason'] = _text(reason, 140)
     digital = source.get('digital') or {}
     events = digital.get('events') or []
+    result['signal_rows'] = _signal_rows(digital)
+    inspection = digital.get('inspection') or {}
+    window = inspection.get('time_range_s') if isinstance(inspection, dict) else None
+    if not window and result['signal_rows']:
+        channels = inspection.get('channels') or []
+        window = ((channels[0].get('window_summary') or {}).get('time_range_s')) if channels else None
+    result['signal_window'] = ('–'.join(_number(value) or 'unknown' for value in window)+' local s'
+        if isinstance(window, (list, tuple)) and len(window) == 2 else 'Unavailable')
+    total_signals = inspection.get('total_channels') if isinstance(inspection, dict) else None
+    result['signal_channel_note'] = (str(len(result['signal_rows']))+' of '+str(total_signals)+' digital channels shown.'
+        if type(total_signals) is int and total_signals > len(result['signal_rows']) else '')
+    result['signal_partial'] = any(row['partial'] for row in result['signal_rows'])
+    result['signal_unreviewed'] = any(not row['reviewed'] for row in result['signal_rows'])
+    result['signal_missing_note'] = 'No bounded during-event sample interval is available.' if (
+        result['signal_rows'] and result['signal_window'] == 'Unavailable') else ''
     result['events'] = []
     assumed_polarity = False
     for event in events[:4]:
@@ -299,12 +368,12 @@ def _source(source, index):
         result['events'].append(dict(time=time,
             signal=_text(event.get('plain_label') or _SIGNALS.get(event.get('meaning')) or event.get('label') or event.get('id') or 'Unlabelled signal', 68),
             state=_text(state, 32), unknown_meaning=not bool(event.get('meaning'))))
-    result['polarity_note'] = '* High state is assumed active; signal polarity is unverified.' if assumed_polarity else ''
+    result['polarity_note'] = '* High state is assumed active; signal polarity is unverified.' if assumed_polarity and not result['signal_rows'] else ''
     total = digital.get('total_events', len(events))
     result['event_count'] = total if type(total) is int and total >= 0 else len(events)
-    result['event_omitted'] = max(0, result['event_count']-len(result['events']))
+    result['event_omitted'] = max(0, result['event_count']-(0 if result['signal_rows'] else len(result['events'])))
     initial_active = [v for v in digital.get('insights', []) if 'already active at capture start' in v]
-    result['digital_note'] = _text(initial_active[0], 180) if initial_active else ''
+    result['digital_note'] = _text(initial_active[0], 180) if initial_active and not result['signal_rows'] else ''
     result['digital_empty_reason'] = _text(source.get('reason') or (
         'No digital channels were recorded; trip and close outcomes are unknown.' if digital.get('channel_count') == 0
         else 'No recorded digital changes are available in this selection. Constant or unknown signals do not establish whether equipment operated.'), 220)
@@ -350,5 +419,6 @@ def render_incident_report(model):
         limitations=_items(summary.get('limitations'), 3, 220),
         notes=_items(model.get('notes'), 2, 200),
         glossary=[dict(term=_text(g.get('term'), 32), meaning=_text(g.get('meaning'), 180)) for g in (model.get('glossary') or [])[:5]])
+    report['has_signal_rows'] = any(source['signal_rows'] for source in report['sources'])
     env = Environment(loader=FileSystemLoader(Path(__file__).parent), autoescape=select_autoescape(['html']))
     return env.get_template('incident_summary.html').render(report=report)
