@@ -155,7 +155,7 @@
     "src/dranalyser/workbench/incident_report_digital.py": 123,
     "src/dranalyser/workbench/incident_report_time.py": 37,
     "src/dranalyser/workbench/measurement_basis.py": 221,
-    "src/dranalyser/workbench/capture_sequence.py": 189
+    "src/dranalyser/workbench/capture_sequence.py": 192
   },
   "exceptions": {}
 }

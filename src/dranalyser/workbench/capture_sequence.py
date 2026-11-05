@@ -171,7 +171,10 @@ def build_capture_sequence(sources, revision=None, agreements=()):
 
 def same_recorder_attachments(root, revision, primaries, inventory):
     """Fill one remaining display slot only with a recoverable declared peer."""
-    if len(primaries) != 1:
+    # Keep an accepted operational result's default display cohort intact.
+    # Explicit two-capture requests retain the existing source/cohort gates.
+    summary = (revision.get('result') or {}).get('location_summary') or {}
+    if len(primaries) != 1 or summary.get('accepted') is True:
         return []
     from . import event_study
     primary = next((item for item in inventory if item['name'] == primaries[0]), {})

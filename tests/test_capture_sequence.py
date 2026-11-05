@@ -194,3 +194,13 @@ def test_default_peer_selection_requires_identity_and_skips_unavailable_or_dupli
     assert same_recorder_attachments('.', {}, ['primary.cfg'], inventory) == [] and calls == []
     inventory[0]['device_id'] = 'Another relay'
     assert same_recorder_attachments('.', {}, ['primary.cfg'], inventory) == [] and calls == []
+
+
+def test_accepted_location_keeps_default_operational_cohort(monkeypatch):
+    from dranalyser.workbench.capture_sequence import same_recorder_attachments
+    inventory = [dict(name=name, station='Station', device_id='Relay') for name in ('primary.cfg', 'peer.cfg')]
+    def unexpected(*args):
+        pytest.fail('Accepted operational cohorts must not decode an extra default display capture.')
+    monkeypatch.setattr(event_study, '_source', unexpected)
+    row = dict(result=dict(used={'S': 'primary.cfg'}, location_summary=dict(accepted=True)))
+    assert same_recorder_attachments('.', row, ['primary.cfg'], inventory) == []
