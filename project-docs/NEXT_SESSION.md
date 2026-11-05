@@ -1,11 +1,16 @@
-# Setup reuse and signal evidence — active new request
+# Setup reuse and signal evidence — qualified, delivery pending
 
 [Plan](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md),
-[checkpoint](UNIFIED_ANALYSIS_SIGNALS_CHECKPOINT.md). Baseline57d0aec. Reuse Setup
-in Analyse/event views, clarify CT sign convention, nonblocking optional relay
-drafts, compact cursor table, digital state/window/duration and recorded date/time.
-Preserve source bytes/history/gates and unknown polarity/clock facts. New task
-qualification pending; old completed-goal evidence below is historical.
+[checkpoint](UNIFIED_ANALYSIS_SIGNALS_CHECKPOINT.md),
+[acceptance](UNIFIED_ANALYSIS_SIGNALS_ACCEPTANCE_2026-11-05.md). Baseline57d0aec.
+Engineering COMPLETE: canonical Setup/sign reuse, optional relay drafts, compact
+cursor digital tables/window duration support and recorded local dates. Full2470
+PASS/28private skips on unchangede303e87 logic; final CSS-onlyf4811e3 qualifies
+5PDFs each4A4/no overflow,min9pt,7workflow checks,792analog/976digital rows.
+Stage-A10000PASS .4361%p95;12runtime hashes match, owned servers stopped. Next:
+review-branch delivery/remote HEAD verification, subject to actual approval review.
+Publication NOT_ATTEMPTED for this new payload; honor any PUSH_PENDING_AUTH state.
+Private unknowns/history stay local; do not restart completed engineering phases.
 
 ---
 

@@ -1,105 +1,69 @@
 # Unified analysis and signals checkpoint
 
-[Plan](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md). Branchcodex/operator-ui-review,
-baseline57d0aec. State **IMPLEMENTING**, publication **NOT ATTEMPTED**.
+[Plan](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md). Branch `codex/operator-ui-review`,
+baseline57d0aec. State **SOFTWARE COMPLETE AND QUALIFIED**.
+Publication **NOT ATTEMPTED** for this new payload.
 
-New user request: Setup reuse/current-sign clarity, optional relay-distance error,
-small cursor table, digital instant/window/duration and recorded local date/time.
-Earlier goals are completed/published, all prior leases completed or waiting for
-actual real inputs; no competing active writer. Root coordinates disjoint helpers
-under ignored `work/qa-unified-analysis-signals-2026-11-05/active-writer.json`.
+## Resume
 
-Ownership: setup_reuse_polarity(incident inputs/setup/line/fault UI),
-event_input_flow(event-study.js), digital_time_evidence(canonical digital/time
-helpers), report_state_table(renderer/interaction). Root owns integration, exact
-budgets, tests/qualification, phase commits/docs/delivery.
+Engineering is finished. Read [acceptance](UNIFIED_ANALYSIS_SIGNALS_ACCEPTANCE_2026-11-05.md)
+and [sanitized evidence](UNIFIED_ANALYSIS_SIGNALS_EVIDENCE_2026-11-05.json).
+Next: authorized normal review-branch delivery and remote HEAD verification,
+subject to actual approval review. If publication becomes PUSH_PENDING_AUTH, do
+not push or use another path until an explicit answer permits this named public
+code/tests/sanitized-documents payload. Elapsed time is not consent. Preserve all
+local/private work; do not invent physical facts or restart completed phases.
 
-Screenshots show the current-direction declaration remains unknown at both ends;
-this is a missing sign reference, not measured power-flow direction. User states
-standard P1-bus/P2-line/S2-common wiring. Do not infer exported channel inversion,
-CT/VT ratios, terminal association or common clock from that alone. Implement an
-explicit reusable standard sign choice, retaining existing backend gates/schema.
-Do not commit private screenshot line facts or real source names/measurements.
+## Milestones
 
-Optional relay-reading error is caused by missing evidence/source, not its typed
-kilometres. UI will retain incomplete drafts, give precise reasons and exclude
-them visibly from the request while allowing observation reports. No fake source.
+- P0 4e5e76c: bounded new goal/lease/protection.
+- P1 cf73e53: Analyse reuses Setup; explicit CT recorded-sign declaration, unknown/
+  reverse overrides; source-bound readiness; optional relay drafts no longer block
+  observations and retain exact entered values with clear exclusion notices.
+- P2 21025d0: bounded native digital state/window/duration evidence and recorded
+  local start/trigger dates; no invented assertion or clock facts.
+- 06f40cb: reviewed R-only event reuse gap fixed without remapping physical ends;
+  either-end saved reports load, stale pair confirmation clears for single ends.
+- P3 e303e87: compact analog/digital cursor tables, full local date/time labels,
+  source-local cursor, window duration support and honest older-model fallback.
+- Final f4811e31953a2590ffc641e0f3288234326ebd95 changes two template CSS lines:
+  long headings wrap and page4 footer reserve is respected; all logic unchanged.
 
-Recorded CFG start/trigger strings are available; decoded elapsed axis does not
-prove wall-clock origin/zone. Display these recorded fields honestly and use
-source-local sample time for cursor. No guessed timezone or clock alignment.
+## Final actual checks
 
-Baseline prior tests2438PASS/28private skips; Stage-A10000 .4361%p95;7four-page
-PDFs. These are historical, not new task qualification. Current implementation,
-tests/PDF counts and final freeze pending. Original bytes/history preserved.
+Fullpytest e303e87 **2470PASS/28private skips/1inherited warning,102.67s**.
+Final CSS layout focused54PASS,1.48s. Guard/self-test/changed13Python Ruff/13JS
+syntax/diff PASS; whole Ruff retains26 inherited findings in untouched files.
+Exact budgets only; guard unchanged. Built wheel final assets match.
+Stage-A10000PASS,cleanp95.4361%,zero impossible uncaveated distances,48.2s;
+native DSP/estimators/oracle unchanged. Known42E5 exactly41.98828243177587km.
 
-## Preserved milestones and continuation
+Actualworkflow7checks PASS; offline5reports/10contexts:792analog rows,976digital
+cursor/window rows,56static signal rows,192keyboard,24pointer,24touch,24gap/
+transition,108unknown refusals,24touch-hold/clear and24mouse-leave cases. Zero
+network requests/page errors. Final5PDFs each4A4=20pages,min9pt,no clipping/footer
+or horizontal overflow. Independent code review and final visual audit PASS.
+All12runtime hashes match; original private app/history unchanged. Owned servers
+stopped/browsers closed. Private inputs were not guessed; raw unknowns preserved.
 
-Setup/sign implementation is frozen:49focusedPASS,1.70s. Existing metadata fields
-only; Analyse reuses canonical line/end choices and confirmations, checks the
-authoritative missing list before queue, and shows Setup directly. Explicit
-standard wiring action affects selected records only; unknowns are not defaulted.
-Main local model/end selectors are removed; reverse exports remain supported.
+Evidence root ignored work/qa-unified-analysis-signals-2026-11-05/: final-pytest.log,
+final-layout-tests.log, stage-a.log/csv, runtime-manifest.json and final browser/
+final-qualification.json, workflow-results.json, offline-results.json,
+pdf-qualification.json. Initial3of5PDFs were5pages and long names overflowed;
+final layout correction and fresh complete matrix resolved this. Keep first failed
+matrix/attempts as history; do not use their counts as final acceptance. The touch
+stress discrepancy was harness viewport coordinates, not a cursor-code defect.
 
-Event UI frozen:33focusedPASS,1.13s. Setup defaults require exact current source-
-bound review/primary cohort; saved event inputs take precedence. Pending optional
-relay readings name missing fields, remain editable and are omitted visibly until
-complete; observation report can still build. Valid zero readings stay supported.
-Reference/Other labels replace power-flow-sounding Sending/Receiving labels.
+## Preservation and interruptions
 
-Canonical digital/time frozen:97focusedPASS,6.57s. Added bounded native digital
-state supports, reviewed assertion only, window activity/duration brackets with
-gaps/censoring, and recorded local start/trigger dates without guessed zone/anchor.
-Only report adapters/helpers changed; no DSP or estimator changes.
-
-Renderer/table and browser helpers hit a platform usage limit (tool text “try
-again at7:03AM”). Partial edits stayed local. Latest explicit user continuation
-resumed at12:35IST5November with working tools. No execution during this pause is
-claimed and no account/model workaround occurred. Finish the preserved renderer
-and new meaningful tests, then final browser/PDF and whole-branch qualification.
-Old goal automation remains paused; no new automation created.
-
-Root resumed foundation check:28PASS,1.15s,1inherited warning across Setup/sign,
-event UI, digital/time and source-default integration. New renderer focused checks
-initially53PASS; audit is correcting legacy assumed-high prose, omission counts
-and missing-support/censor context before final freeze. Actual final PDFs pending.
-Stage-A10000 is running against unchanged native numerical engines.
-
-## Final implementation milestones
-
-P1 `cf73e53`: Setup/end/sign reuse, explicit standard wiring declaration and
-precise nonblocking optional relay drafts. P2 `21025d0`: bounded digital/time
-adapter evidence. Independent review found legacy single-R event reuse wrongly
-required S; corrected in `06f40cb`, including pair-confirmation/autoload guards
-and saved R-only report reload. It never remaps physical R into S.33event tests
-PASS,1.17s after this correction.
-
-P3 `e303e87`: compact analog/digital cursor tables, source local recorded dates,
-reviewed/unreviewed distinction and window duration brackets, with four-page
-print layout. Renderer audit corrected legacy assumed-high prose, omission counts
-and uncertainty context.55focused tests PASS; actual two-source/four-signal smoke
-PDF4A4/min9pt/no clipping/footer overlap. Final independent code review has no
-unresolved actionable finding.
-
-All12runtime files frozen in ignored runtime-manifest.json. Direct guard/self-test,
-changed13Python Ruff/13JS syntax/diff PASS; exact changed/new Python budgets only.
-Wheel contains exact digital/time helpers and report JS/template. Fresh
-Stage-A10000PASS cleanp95.4361%,zero impossible uncaveated distances,48.2s.
-Full pytest and final actual browser/interaction/PDF matrix are running. No final
-whole-suite or PDF matrix counts claimed yet. Original sources/history untouched.
-
-
-## Final qualification findings — awaiting layout correction
-
-Frozen e303e87 fullpytest **2470PASS/28private skips/1inherited warning,102.67s**.
-Whole Ruff retains26 inherited findings; changed-file checks/guard PASS. Actual
-workflow7checks passed including R-only reuse, authoritative missing/stale gates,
-relay drafts/validzero and nativeE5=41.98828243177587km; originals/history unchanged.
-
-Final PDF matrix exposed a real print defect:3of5 fuller reports produced5pages
-(page4footer/disclosure overflow8–13px);2were4pages. Long underscore source names
-also caused mobile painted-text horizontal overflow. Earlier artificial smoke was
-insufficient. Renderer is correcting these before acceptance; no final PDF pass
-is claimed. Raw failed matrix/interaction evidence remains ignored local data.
-Reports and state/clock logic stay frozen; layout-only changes must be verified
-against fresh native/private/long-label snapshots, then final manifest updated.
+Local lease is under that goal root. Prior leases were completed/waiting for real
+facts; no competing writer. Renderer/QA hit platform usage limit with tool text
+try again at7:03AM. Explicit user continuation resumed at12:35IST5November; no work
+in the pause is claimed and all partial edits survived. No reset/account/model
+workaround. Old goal continuations remain paused; no new automation created.
+No source bytes, ratings, sign, clock evidence or historical reports silently
+changed. Standard P1/P2/S2 wiring does not itself establish exported sign; product
+requires explicit applicable standard action and retains unknown/reverse options.
+Optional incomplete relay readings stay unverified/excluded. New reports get the
+presentation; old HTML/JSON remains immutable. Public payload is code/tests/
+sanitized evidence only. No main merge, deployment or environment publication.

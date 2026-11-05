@@ -1,0 +1,79 @@
+{
+  "branch": "codex/operator-ui-review",
+  "baseline": "57d0aeca108b05f9843c029af90888bf6a8f31af",
+  "software_state": "COMPLETE_AND_QUALIFIED",
+  "publication": "NOT_ATTEMPTED",
+  "qualified_runtime": "f4811e31953a2590ffc641e0f3288234326ebd95",
+  "full_test_logic_runtime": "e303e87287f92ba7684fbb9aab379853407c8577",
+  "final_change_scope": [
+    "src/dranalyser/report/incident_summary.html"
+  ],
+  "pytest": {
+    "passed": 2470,
+    "private_data_skips": 28,
+    "inherited_warnings": 1,
+    "elapsed_s": 102.67
+  },
+  "final_layout_tests": {
+    "passed": 54,
+    "inherited_warnings": 1,
+    "elapsed_s": 1.48
+  },
+  "architecture_guard": "PASS",
+  "architecture_self_test": "PASS",
+  "changed_python_ruff": {
+    "files": 13,
+    "status": "PASS"
+  },
+  "changed_javascript_syntax": {
+    "files": 13,
+    "status": "PASS"
+  },
+  "whole_repository_inherited_ruff_findings": 26,
+  "stage_a": {
+    "cases": 10000,
+    "status": "PASS",
+    "clean_p95_percent": 0.4361,
+    "impossible_distances_without_caveat": 0,
+    "elapsed_s": 48.2
+  },
+  "native_engines_and_oracle_unchanged": true,
+  "synthetic_known_42_km_e5": 41.98828243177587,
+  "workflow_checks_passed": 7,
+  "offline_reports": 5,
+  "offline_device_contexts": 10,
+  "offline_counts": {
+    "analog_rows": 792,
+    "digital_rows": 976,
+    "static_digital_rows": 56,
+    "keyboard_events": 192,
+    "pointer_events": 24,
+    "touch_events": 24,
+    "unknown_digital_states": 108,
+    "gap_or_transition_events": 24,
+    "touch_hold_and_clear": 24,
+    "mouse_leave_clear": 24
+  },
+  "external_requests": 0,
+  "browser_errors": 0,
+  "pdf_reports": 5,
+  "pdf_pages": 20,
+  "minimum_font_pt": 9.0,
+  "pdf_footer_overlap_count": 0,
+  "pdf_sheet_outside_count": 0,
+  "pdf_text_outside_count": 0,
+  "pdf_document_overflow_count": 0,
+  "runtime_files_hash_matched": 12,
+  "original_private_application_and_history_preserved": true,
+  "private_inputs_invented": false,
+  "private_sources_settings_hashes_reports_in_public_payload": false,
+  "wheel_final_assets_match": true,
+  "owned_servers_stopped": true,
+  "browsers_closed": true,
+  "independent_engineering_review": "PASS; R-only reuse and renderer uncertainty findings corrected",
+  "earlier_failed_pdf_matrix_retained": true,
+  "new_automation_created": false,
+  "main_merged": false,
+  "production_deployed": false,
+  "environment_published": false
+}
