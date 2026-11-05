@@ -5,6 +5,10 @@
 Final runtime `f2aaaf42f7618cdd387813cc867b0d8f0f5b4231`; report/source logic is
 unchanged from fully tested `16e83e7`. Final follow-ups change Setup CSS only.
 
+Publication **PUBLISHED**: normal review-branch delivery
+`5f2ce1557f06af31c2ec239cc0e96ab3872f8789` pushed and remote HEAD verified exactly.
+This documentation closure leaves runtime unchanged. Private data stayed local.
+
 ## Result
 
 Upload/parse now opens **Setup** before Analyse. Parsed recording names and known

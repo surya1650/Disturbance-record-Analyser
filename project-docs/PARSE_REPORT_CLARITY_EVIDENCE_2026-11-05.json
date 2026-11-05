@@ -35,7 +35,7 @@
   "branch": "codex/operator-ui-review",
   "baseline": "1123cb4ab6527b803ac9367ea20227cdd9847d7e",
   "software_state": "COMPLETE_AND_QUALIFIED",
-  "publication": "NOT_ATTEMPTED",
+  "publication": "PUBLISHED",
   "pytest": {
     "commit": "16e83e7dcb1cb89f093dd1c250b6103409c9d633",
     "passed": 2438,
@@ -85,5 +85,7 @@
   "new_automation_created": false,
   "main_merged": false,
   "production_deployed": false,
-  "environment_published": false
+  "environment_published": false,
+  "public_delivery": "5f2ce1557f06af31c2ec239cc0e96ab3872f8789",
+  "remote_verified_head": "5f2ce1557f06af31c2ec239cc0e96ab3872f8789"
 }

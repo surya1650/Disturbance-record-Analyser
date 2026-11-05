@@ -1,4 +1,4 @@
-# Parse setup and report clarity — qualified, delivery pending
+# Parse setup and report clarity — complete and published
 
 [Plan](PARSE_REPORT_CLARITY_PLAN_v1.md),
 [checkpoint](PARSE_REPORT_CLARITY_CHECKPOINT.md),
@@ -8,9 +8,11 @@ automatic calculation, accurate interactive event/full-record report views.
 2438PASS/28private skips on unchanged16e83e7 logic; final CSS-onlyf2aaaf4 has
 2/2desktop/mobile geometry/label-click checks. Workflow7/7,780sample readouts,
 162RMS cells,7PDFs each4A4/no clipping; Stage-A10000PASS .4361%p95.18runtime hashes
-match; QA servers stopped. Next: review-branch delivery/remote verification,
-subject to actual approval review. Publication NOT_ATTEMPTED for this new payload;
-honor any PUSH_PENDING_AUTH state. Real unknowns/private data stay local.
+match; QA servers stopped. **PUBLISHED**: normal review-branch delivery
+5f2ce1557f06af31c2ec239cc0e96ab3872f8789 pushed and remote HEAD verified exactly;
+documentation closure follows with unchanged runtime. No implementation/delivery
+work remains. Verify evidence and stop; no repeat publication question. Real
+unknowns/private data stay local; prior completed-goal automation stays paused.
 
 ---
 

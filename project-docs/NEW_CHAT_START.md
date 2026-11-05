@@ -1,8 +1,10 @@
 # Continue the autonomous analyser work
 
-Current new request: [parse setup and report clarity](PARSE_REPORT_CLARITY_PLAN_v1.md)
+Latest completed request: [parse setup and report clarity](PARSE_REPORT_CLARITY_PLAN_v1.md)
 and [checkpoint](PARSE_REPORT_CLARITY_CHECKPOINT.md). Read before older completed
 goals. Preserve working files and check this goal's active-writer lease.
+It is COMPLETE and PUBLISHED: verify evidence and stop unless the user supplies
+a new task or the actual earlier requested physical inputs. No repeat approval.
 
 Latest completed follow-up: [automatic windows and explicit line references](AUTO_WINDOW_LINE_REFERENCE_PLAN_v1.md)
 and [checkpoint](AUTO_WINDOW_LINE_REFERENCE_CHECKPOINT.md). Read this before the
