@@ -1,4 +1,4 @@
-# Setup reuse and signal evidence — qualified, delivery pending
+# Setup reuse and signal evidence — complete and published
 
 [Plan](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md),
 [checkpoint](UNIFIED_ANALYSIS_SIGNALS_CHECKPOINT.md),
@@ -7,10 +7,11 @@ Engineering COMPLETE: canonical Setup/sign reuse, optional relay drafts, compact
 cursor digital tables/window duration support and recorded local dates. Full2470
 PASS/28private skips on unchangede303e87 logic; final CSS-onlyf4811e3 qualifies
 5PDFs each4A4/no overflow,min9pt,7workflow checks,792analog/976digital rows.
-Stage-A10000PASS .4361%p95;12runtime hashes match, owned servers stopped. Next:
-review-branch delivery/remote HEAD verification, subject to actual approval review.
-Publication NOT_ATTEMPTED for this new payload; honor any PUSH_PENDING_AUTH state.
-Private unknowns/history stay local; do not restart completed engineering phases.
+Stage-A10000PASS .4361%p95;12runtime hashes match, owned servers stopped.
+**PUBLISHED**: normal delivery00b6903a450366023a3f4872163fd76111be1ddc pushed and
+remote HEAD verified exactly; documentation closure follows with unchanged runtime.
+No implementation/delivery remains. Verify evidence and stop; no repeat approval.
+Private unknowns/history stay local; earlier owned continuations remain paused.
 
 ---
 

@@ -5,6 +5,10 @@
 Final runtime `f4811e31953a2590ffc641e0f3288234326ebd95`. Source/JS/Python logic
 is unchanged from tested e303e87; final follow-up is two template CSS lines only.
 
+Publication **PUBLISHED**: normal review-branch delivery
+`00b6903a450366023a3f4872163fd76111be1ddc` pushed and remote HEAD verified exactly.
+This documentation closure leaves runtime unchanged; private data stayed local.
+
 ## Result
 
 Analyse reuses incident-local Setup line/end selections and saved confirmations;

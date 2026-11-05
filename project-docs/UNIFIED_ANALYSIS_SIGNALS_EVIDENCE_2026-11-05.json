@@ -2,7 +2,7 @@
   "branch": "codex/operator-ui-review",
   "baseline": "57d0aeca108b05f9843c029af90888bf6a8f31af",
   "software_state": "COMPLETE_AND_QUALIFIED",
-  "publication": "NOT_ATTEMPTED",
+  "publication": "PUBLISHED",
   "qualified_runtime": "f4811e31953a2590ffc641e0f3288234326ebd95",
   "full_test_logic_runtime": "e303e87287f92ba7684fbb9aab379853407c8577",
   "final_change_scope": [
@@ -75,5 +75,7 @@
   "new_automation_created": false,
   "main_merged": false,
   "production_deployed": false,
-  "environment_published": false
+  "environment_published": false,
+  "public_delivery": "00b6903a450366023a3f4872163fd76111be1ddc",
+  "remote_verified_head": "00b6903a450366023a3f4872163fd76111be1ddc"
 }

@@ -1,18 +1,19 @@
 # Unified analysis and signals checkpoint
 
 [Plan](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md). Branch `codex/operator-ui-review`,
-baseline57d0aec. State **SOFTWARE COMPLETE AND QUALIFIED**.
-Publication **NOT ATTEMPTED** for this new payload.
+baseline57d0aec. State **COMPLETE — QUALIFIED AND PUBLISHED**.
+Publication **PUBLISHED**. Normal review-branch delivery
+`00b6903a450366023a3f4872163fd76111be1ddc` pushed and remote HEAD read back
+exactly. This closure changes documentation only; qualified runtime is unchanged.
 
 ## Resume
 
 Engineering is finished. Read [acceptance](UNIFIED_ANALYSIS_SIGNALS_ACCEPTANCE_2026-11-05.md)
 and [sanitized evidence](UNIFIED_ANALYSIS_SIGNALS_EVIDENCE_2026-11-05.json).
-Next: authorized normal review-branch delivery and remote HEAD verification,
-subject to actual approval review. If publication becomes PUSH_PENDING_AUTH, do
-not push or use another path until an explicit answer permits this named public
-code/tests/sanitized-documents payload. Elapsed time is not consent. Preserve all
-local/private work; do not invent physical facts or restart completed phases.
+Verify recorded evidence, preserve local/private work and stop. No implementation
+or publication task remains for this goal. Review-branch delivery was authorized
+and succeeded; do not ask for repeat approval or restart phases. Actual physical
+facts remain user-declared or unknown, never inferred from the wiring statement.
 
 ## Milestones
 
@@ -67,3 +68,12 @@ requires explicit applicable standard action and retains unknown/reverse options
 Optional incomplete relay readings stay unverified/excluded. New reports get the
 presentation; old HTML/JSON remains immutable. Public payload is code/tests/
 sanitized evidence only. No main merge, deployment or environment publication.
+
+## Publication closure
+
+Remote was57d0aec before delivery. Normal fast-forward push to public
+`surya1650/Disturbance-record-Analyser`, only `codex/operator-ui-review`, delivered
+00b6903a450366023a3f4872163fd76111be1ddc and remote HEAD matched exactly. No force
+push, alternate path or private data publication. Final closure is documents only.
+Local writer completed; all owned servers/browsers stopped, old continuations
+remain paused and no new automation was created.
