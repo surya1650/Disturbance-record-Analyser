@@ -1,5 +1,9 @@
 # Continue the autonomous analyser work
 
+Current new request: [Setup reuse and signal evidence](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md)
+and [checkpoint](UNIFIED_ANALYSIS_SIGNALS_CHECKPOINT.md). Read these before older
+completed goals; preserve uncommitted work and check the active-writer lease.
+
 Latest completed request: [parse setup and report clarity](PARSE_REPORT_CLARITY_PLAN_v1.md)
 and [checkpoint](PARSE_REPORT_CLARITY_CHECKPOINT.md). Read before older completed
 goals. Preserve working files and check this goal's active-writer lease.

@@ -1,3 +1,14 @@
+# Setup reuse and signal evidence — active new request
+
+[Plan](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md),
+[checkpoint](UNIFIED_ANALYSIS_SIGNALS_CHECKPOINT.md). Baseline57d0aec. Reuse Setup
+in Analyse/event views, clarify CT sign convention, nonblocking optional relay
+drafts, compact cursor table, digital state/window/duration and recorded date/time.
+Preserve source bytes/history/gates and unknown polarity/clock facts. New task
+qualification pending; old completed-goal evidence below is historical.
+
+---
+
 # Parse setup and report clarity — complete and published
 
 [Plan](PARSE_REPORT_CLARITY_PLAN_v1.md),
