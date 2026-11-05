@@ -11,21 +11,24 @@ const DRRecordingSetup=(()=>{
       const channels=inventory.filter(channel=>String(channel.unit??channel.declared_units??'').trim().toUpperCase().endsWith(kind));
       const declared=[...new Set(channels.filter(channel=>positive(channel.primary)&&positive(channel.secondary)&&channel.primary!==channel.secondary).map(channel=>`${channel.primary} / ${channel.secondary}`))];
       const sides=[...new Set(channels.map(channel=>String(channel.ps??channel.primary_secondary??'').trim().toUpperCase()).filter(Boolean))];
-      return {label,kind,ratios:declared,primarySamples:channels.length>0&&sides.length===1&&sides[0]==='P',hasChannels:channels.length>0};
+      const reviewedPrimary=channels.some(channel=>channel.measurement_basis==='PRIMARY');
+      return {label,kind,ratios:declared,primarySamples:channels.length>0&&sides.length===1&&sides[0]==='P',reviewedPrimary,hasChannels:channels.length>0};
     });
     return groups;
   }
-  function recordSummary(file){
-    const rows=declaredRatios(file).filter(group=>group.hasChannels).map(group=>`<li><strong>${esc(group.label)}:</strong> ${group.ratios.length?esc(group.ratios.join(' · '))+' '+esc(group.kind)+' (CFG declarations)':'Actual transformer ratings are not declared.'}${group.primarySamples?' <span>Samples are already in primary units; no ratio is applied again.</span>':''}</li>`).join('');
-    return `<div class="recording-setup-source"><h3>${esc(displayName(file))}</h3><p class="field-help">${esc(file.name)}</p>${rows?'<ul class="recording-setup-facts">'+rows+'</ul>':'<p>Instrument declarations are unavailable. Recoverable observations remain available in their recorded units.</p>'}</div>`;
+  function recordSummary(file,requirements){
+    const rows=declaredRatios(file).filter(group=>group.hasChannels).map(group=>`<li><strong>${esc(group.label)}:</strong> ${group.ratios.length?esc(group.ratios.join(' · '))+' '+esc(group.kind)+' (recording declarations)':'Actual transformer ratings are not declared.'}${group.primarySamples?(group.reviewedPrimary?' <span>Your saved declaration uses recorded primary values; no additional CT / VT multiplier is applied.</span>':' <span>Samples are already in primary units; no ratio is applied again. The original primary declaration is read-only.</span>'):''}</li>`).join('');
+    const primaryReview=requirements?.applied_review_basis==='PRIMARY';
+    return `<div class="recording-setup-source"><h3>${esc(displayName(file))}</h3><p class="field-help">${esc(file.name)}</p>${primaryReview?'<p class="recording-setup-ready">Saved primary-value declaration: no additional CT / VT multiplier applies to its listed channels. Original CFG declarations are preserved.</p>':''}${rows?'<ul class="recording-setup-facts">'+rows+'</ul>':'<p>Instrument declarations are unavailable. Recoverable observations remain available in their recorded units.</p>'}</div>`;
   }
-  const fieldKey=input=>[input.dataset.common||'',input.closest?.('[data-rating]')?.dataset.rating||'',input.dataset.ratingValue||'',input.hasAttribute?.('data-rating-override')?'override':'',input.hasAttribute?.('data-rating-reviewer')?'reviewer':'',input.hasAttribute?.('data-rating-evidence')?'evidence':'',input.hasAttribute?.('data-rating-confirm')?'confirmed':'',input.type||input.tagName].join('|');
+  const fieldsIn=section=>[...section.querySelectorAll('input,textarea'),...section.querySelectorAll('select')];
+  const fieldKey=input=>[input.dataset.common||'',input.closest?.('[data-rating]')?.dataset.rating||'',input.dataset.ratingValue||'',input.hasAttribute?.('data-rating-override')?'override':'',input.hasAttribute?.('data-rating-reviewer')?'reviewer':'',input.hasAttribute?.('data-rating-evidence')?'evidence':'',input.hasAttribute?.('data-rating-confirm')?'confirmed':'',input.hasAttribute?.('data-rating-basis')?'basis:'+input.value:'',input.hasAttribute?.('data-rating-preset')?'preset':'',input.hasAttribute?.('data-vt-basis')?'vt-basis':'',input.type||input.tagName].join('|');
   function capture(host,row,state,excludedRecord){
     state.drafts||={};
     for(const section of host.querySelectorAll('[data-instrument-file]')){
       const file=records(row).find(file=>file.name===section.dataset.instrumentFile);
       if(!file||file.name===excludedRecord)continue;
-      state.drafts[file.name]={hash:file.content_hash,fields:[...section.querySelectorAll('input,textarea')].map(input=>({key:fieldKey(input),value:input.value,checked:input.checked}))};
+      state.drafts[file.name]={hash:file.content_hash,fields:fieldsIn(section).map(input=>({key:fieldKey(input),value:input.value,checked:input.checked})),presetVtBasis:section.dataset.presetVtBasis||'',exceptions:Object.fromEntries([...section.querySelectorAll('[data-rating]')].filter(channel=>channel.instrumentOverrideDraft).map(channel=>[channel.dataset.rating,{...channel.instrumentOverrideDraft}]))};
     }
     if(excludedRecord)delete state.drafts[excludedRecord];
     const form=host.querySelector('[data-line-input-form]');
@@ -45,13 +48,16 @@ const DRRecordingSetup=(()=>{
   function restore(host,row,state){
     for(const section of host.querySelectorAll('[data-instrument-file]')){
       const file=records(row).find(file=>file.name===section.dataset.instrumentFile),draft=state.drafts?.[file?.name];
-      const inputs=[...section.querySelectorAll('input,textarea')];
+      const inputs=fieldsIn(section);
       if(!draft||draft.hash!==file.content_hash||JSON.stringify(inputs.map(fieldKey))!==JSON.stringify(draft.fields.map(field=>field.key)))continue;
-      inputs.forEach((input,index)=>{input.value=draft.fields[index].value;if(input.type==='checkbox')input.checked=draft.fields[index].checked;});
+      inputs.forEach((input,index)=>{input.value=draft.fields[index].value;if(['checkbox','radio'].includes(input.type))input.checked=draft.fields[index].checked;});
+      if(draft.presetVtBasis)section.dataset.presetVtBasis=draft.presetVtBasis;else delete section.dataset.presetVtBasis;
       for(const channel of section.querySelectorAll('[data-rating]')){
         const override=channel.querySelector('[data-rating-override]')?.checked;
         for(const input of channel.querySelectorAll('[data-rating-value]'))input.disabled=!override;
+        if(draft.exceptions?.[channel.dataset.rating])channel.instrumentOverrideDraft={...draft.exceptions[channel.dataset.rating]};
       }
+      if(typeof updateInstrumentBasis==='function')updateInstrumentBasis(section);
     }
   }
   async function ready(request,id,{signal,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms)),onPending=()=>{},attempts=120}={}){
@@ -79,7 +85,7 @@ const DRRecordingSetup=(()=>{
     }));
     if(!active())return null;
     const virtualRow=state.lineReview?{...row,metadata:{...row.metadata,incident_line:{...(row.metadata?.incident_line||{}),review:state.lineReview}}}:row;
-    host.innerHTML=`<div class="recording-setup-heading"><div class="eyebrow">STEP 1 · PARSE & SETUP</div><h1>Check the recordings once</h1><p>Names and available instrument ratings come from the recordings. Enter a shared CT rating and a shared VT / PT rating for each recording only where values are missing. Other ends and auxiliary channels may differ.</p><p class="field-help">Original files and previous reports are retained. You can continue with unknown values to inspect raw observations; physical calculations keep their input checks.</p></div><section class="panel recording-setup-section"><h2>1. Recording names and instrument ratios</h2>${inventory.length?inventory.map(file=>`<article class="recording-setup-record" data-setup-record="${esc(file.name)}">${recordSummary(file)}${errors[file.name]?'<p class="hint">'+esc(errors[file.name])+'</p>':requirements[file.name]?instrumentReviewEditor(row,file.name,{[file.name]:requirements[file.name]}):'<p class="field-help">A matching parsed source identity is unavailable; inspect the source error before entering ratings.</p>'}${requirements[file.name]&&!reviewableInstrumentRatings(row,file,requirements[file.name]).length?'<p class="recording-setup-ready">No missing phase instrument ratings require entry for this recording.</p>':''}</article>`).join(''):'<p>No parsed COMTRADE recording is available. Open the source errors in Analyse.</p>'}</section><section class="panel recording-setup-section"><h2>2. Line details · for fault distance</h2><p>Enter the actual line length and approved impedance values here, or use an applicable saved line/reference. These are usually absent from a disturbance recording. A line-model file is not required.</p><div data-setup-line>${typeof DRIncidentLineInputs!=='undefined'?DRIncidentLineInputs.markup(virtualRow,config):'<p>Line input controls are unavailable. Reload the application.</p>'}</div></section><div class="recording-setup-actions"><button type="button" class="button" data-setup-refresh>Refresh parsed facts</button><a class="button primary" href="#incident/${encodeURIComponent(row.incident_id)}/${row.number}/waveforms">Continue to Analyse →</a></div>`;
+    host.innerHTML=`<div class="recording-setup-heading"><div class="eyebrow">STEP 1 · PARSE & SETUP</div><h1>Check the recordings once</h1><p>Names and declarations come from the recordings. Confirm whether the recorded engineering values are already primary or are actual secondary values. Enter CT and VT / PT ratings once per recording only for secondary values that need them.</p><p class="field-help">Original files and previous reports are retained. You can continue with unknown values to inspect raw observations; physical calculations keep their input checks.</p></div><section class="panel recording-setup-section"><h2>1. Recording values and instrument ratios</h2>${inventory.length?inventory.map(file=>`<article class="recording-setup-record" data-setup-record="${esc(file.name)}">${recordSummary(file,requirements[file.name])}${errors[file.name]?'<p class="hint">'+esc(errors[file.name])+'</p>':requirements[file.name]?instrumentReviewEditor(row,file.name,{[file.name]:requirements[file.name]}):'<p class="field-help">A matching parsed source identity is unavailable; inspect the source error before entering ratings.</p>'}${requirements[file.name]&&requirements[file.name].applied_review_basis!=='PRIMARY'&&!reviewableInstrumentRatings(row,file,requirements[file.name]).length?'<p class="recording-setup-ready">No missing phase instrument ratings require entry for this recording.</p>':''}</article>`).join(''):'<p>No parsed COMTRADE recording is available. Open the source errors in Analyse.</p>'}</section><section class="panel recording-setup-section"><h2>2. Line details · for fault distance</h2><p>Enter the actual line length and approved impedance values here, or use an applicable saved line/reference. These are usually absent from a disturbance recording. A line-model file is not required.</p><div data-setup-line>${typeof DRIncidentLineInputs!=='undefined'?DRIncidentLineInputs.markup(virtualRow,config):'<p>Line input controls are unavailable. Reload the application.</p>'}</div></section><div class="recording-setup-actions"><button type="button" class="button" data-setup-refresh>Refresh parsed facts</button><a class="button primary" href="#incident/${encodeURIComponent(row.incident_id)}/${row.number}/waveforms">Continue to Analyse →</a></div>`;
     restore(host,row,state);
     bindInstrumentReview(row,host,{signal,isCurrent:active,onSuccess:async(updated,result)=>{
       if(!active())return;capture(host,row,state,result.record||result.reviewed_record);await onRevision(updated,result);
