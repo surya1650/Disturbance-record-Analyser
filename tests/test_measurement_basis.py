@@ -45,7 +45,7 @@ def test_primary_sized_s_unity_is_a_supported_hint_and_never_changes_source():
     assert result['support']['end_s'] == pytest.approx(.02)
     assert result['support']['sample_count'] == 20
     assert result['support']['first_sample_index'] == 1
-    assert result['support']['observation'] == 'before recorded trigger'
+    assert result['support']['observation'] == 'first complete source cycle'
     assert result['support']['prefault_established'] is False
     assert [c['rms'] for c in result['channels']] == pytest.approx([75000]*3+[500]*3)
     assert source == before
@@ -199,3 +199,36 @@ def test_unknown_or_nonzero_channel_skew_is_not_joint_phase_support(skew):
     result = measurement_basis_hint(source)
     assert result['status'] == 'ambiguous'
     assert result['channels'][0]['rms'] is None
+
+
+@pytest.mark.parametrize('origin,observation', [(.03, 'before recorded trigger'),
+                                              (.06, 'first complete source cycle'),
+                                              (.10, 'first complete source cycle')])
+def test_recorded_trigger_label_uses_original_dat_origin_before_comparing_cycle(origin, observation):
+    source = capture(times=np.arange(121)/1000+origin, nrates=0)
+    before = deepcopy(source)
+    assert source['axis']['declared_origin']['first_offset_s'] == pytest.approx(origin)
+    result = measurement_basis_hint(source)
+    assert result['support']['start_s'] == pytest.approx(0)
+    assert result['support']['end_s'] == pytest.approx(.02)
+    assert result['support']['observation'] == observation
+    assert result['support']['prefault_established'] is False
+    assert source == before
+
+
+@pytest.mark.parametrize('defect', ['missing', 'wrong_basis', 'unknown', 'synthetic_rate_axis'])
+def test_unproven_dat_origin_cannot_label_the_cycle_before_recorded_trigger(defect):
+    source = capture(nrates=0)
+    if defect == 'missing':
+        source['axis'].pop('declared_origin')
+    elif defect == 'wrong_basis':
+        source['axis']['declared_origin']['basis'] = 'Unproven zero origin'
+    elif defect == 'unknown':
+        source['axis']['declared_origin']['first_offset_s'] = None
+    else:
+        source = capture(times=np.arange(121)/1000+.1)
+        assert source['axis']['declared_origin']['first_offset_s'] == 0
+        assert source['axis']['basis'].startswith('Explicit single CFG sample rate;')
+    result = measurement_basis_hint(source)
+    assert result['support']['observation'] == 'first complete source cycle'
+    assert result['support']['prefault_established'] is False

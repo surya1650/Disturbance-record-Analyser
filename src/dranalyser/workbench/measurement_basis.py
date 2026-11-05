@@ -33,6 +33,17 @@ def _ps(row):
     return str(row.get('primary_secondary', row.get('ps', ''))).strip().upper()
 
 
+def _before_trigger(source, axis, end_s):
+    origin = axis.get('declared_origin') or {}
+    first = _number(origin.get('first_offset_s'))
+    trigger = timeline(source)['trigger_offset_s']
+    return (str(axis.get('basis', '')).startswith('DAT source timestamps as declared;')
+            and origin.get('status') == 'available'
+            and origin.get('basis') == 'Original DAT timestamps × declared time multiplier'
+            and first is not None and first >= 0 and trigger is not None
+            and first+end_s < trigger-1e-12)
+
+
 def _ratio(row):
     primary, secondary = (_number(row.get(k)) for k in ('primary', 'secondary'))
     if primary is None or secondary is None or min(primary, secondary) <= 0:
@@ -154,12 +165,12 @@ def measurement_basis_hint(source):
             reason = measured.get('reason', '')
             window = measured.get('window')
             if window and not reason:
-                trigger = timeline(source)['trigger_offset_s']
+                before_trigger = _before_trigger(source, axis, window['end_s'])
                 support = dict(start_s=window['nominal_start_s'], end_s=window['end_s'],
                     first_sample_index=window['start_index'], last_sample_index=index,
                     sample_count=index+1-window['start_index'], window_s=1/frequency,
                     observed_start_s=window['start_s'], interval=window['interval'],
-                    observation='before recorded trigger' if trigger is not None and window['end_s'] < trigger else 'first complete source cycle',
+                    observation='before recorded trigger' if before_trigger else 'first complete source cycle',
                     prefault_established=False,
                     basis='Equal-weight RMS of actual native samples over one complete nominal cycle; includes DC and harmonics.')
                 out['support'] = support

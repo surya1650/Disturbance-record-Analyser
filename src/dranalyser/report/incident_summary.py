@@ -352,6 +352,7 @@ def _source(source, index):
     result['signal_unreviewed'] = any(not row['reviewed'] for row in result['signal_rows'])
     result['signal_missing_note'] = 'No bounded during-event sample interval is available.' if (
         result['signal_rows'] and result['signal_window'] == 'Unavailable') else ''
+    result['signal_missing_note'] += ' '+_text((digital.get('sequence_signals') or {}).get('missing_note'), 140)
     result['events'] = []
     assumed_polarity = False
     for event in events[:4]:
@@ -412,6 +413,7 @@ def render_incident_report(model):
         location_reason=_text(location.get('reason') or location.get('text') or 'No eligible method-labelled fault-location estimate was supplied.', 1000),
         line_diagram=line_diagram_view(model.get('line_diagram')),
         sources=[_source(source, i) for i, source in enumerate(sources[:2])],
+        sequence_note=_text((model.get('capture_sequence') or {}).get('note'), 350),
         omitted_sources=max(0, len(sources)-2), attachment_count=len(attachments),
         attachment_notes=_items([str(a.get('record', 'Recording'))+': '+str(a.get('reason') or a.get('status') or 'Attached evidence') for a in attachments], 2, 190),
         findings=_items(model.get('findings'), 3, 210),
@@ -419,6 +421,9 @@ def render_incident_report(model):
         limitations=_items(summary.get('limitations'), 3, 220),
         notes=_items(model.get('notes'), 2, 200),
         glossary=[dict(term=_text(g.get('term'), 32), meaning=_text(g.get('meaning'), 180)) for g in (model.get('glossary') or [])[:5]])
+    for index, source in enumerate(report['sources']):
+        row = next((r for r in (model.get('capture_sequence') or {}).get('captures', [])[:2] if r.get('record') == sources[index].get('record')), {})
+        source.update(sequence_order=row.get('order'), capture_first=_text(row.get('first_local_iso'), 40).replace('T', ' '), capture_last=_text(row.get('last_local_iso'), 40).replace('T', ' '))
     report['has_signal_rows'] = any(source['signal_rows'] for source in report['sources'])
     env = Environment(loader=FileSystemLoader(Path(__file__).parent), autoescape=select_autoescape(['html']))
     return env.get_template('incident_summary.html').render(report=report)

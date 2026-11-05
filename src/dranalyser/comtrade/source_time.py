@@ -52,6 +52,7 @@ def source_time_axis(numbers, stamps, *, nrates, timemult):
     with np.errstate(over='ignore', under='ignore', invalid='ignore'):
         elapsed = (raw-raw[0])*scale
         periods = delta*scale
+        offsets = raw[[0, -1]]*scale
     if (np.any(delta <= 0) or not np.all(np.isfinite(elapsed))
             or not np.all(np.isfinite(periods)) or np.any(np.diff(elapsed) <= 0)
             or np.any(periods < tiny) or np.any((elapsed != 0) & (elapsed < tiny))):
@@ -65,6 +66,10 @@ def source_time_axis(numbers, stamps, *, nrates, timemult):
     out.update(status='source_time_inspection', reason='Declared source coordinates only; all analytical gates remain external.',
                elapsed_s=elapsed.tolist(), minimum_interval_s=float(np.min(periods)),
                maximum_interval_s=float(np.max(periods)), raw_period_runs=runs)
+    if (np.all(np.isfinite(offsets)) and 0 <= offsets[0] < offsets[1]
+            and np.all((raw[[0, -1]] == 0) | (offsets >= tiny))):
+        out['declared_origin'] = dict(status='available', first_offset_s=float(offsets[0]),
+            last_offset_s=float(offsets[1]), basis='Original DAT timestamps × declared time multiplier')
     return out
 
 

@@ -117,7 +117,7 @@
     "scripts/scalar_observability_validation.py": 139,
     "src/dranalyser/faultloc/error_sets.py": 193,
     "scripts/e5_error_validation.py": 100,
-    "src/dranalyser/comtrade/source_time.py": 109,
+    "src/dranalyser/comtrade/source_time.py": 114,
     "scripts/source_time_validation.py": 93,
     "src/dranalyser/dsp/nonuniform.py": 124,
     "src/dranalyser/dsp/source_analysis.py": 110,
@@ -129,8 +129,8 @@
     "src/dranalyser/report/static_rx.py": 79,
     "src/dranalyser/report/zone_comparison.py": 265,
     "src/dranalyser/report/zone_comparison_view.py": 49,
-    "src/dranalyser/workbench/incident_report.py": 490,
-    "src/dranalyser/report/incident_summary.py": 424,
+    "src/dranalyser/workbench/incident_report.py": 495,
+    "src/dranalyser/report/incident_summary.py": 429,
     "src/dranalyser/application/incident_report.py": 179,
     "src/dranalyser/workbench/incident_line.py": 108,
     "src/dranalyser/report/incident_line.py": 130,
@@ -154,7 +154,8 @@
     "src/dranalyser/workbench/incident_report_classification.py": 52,
     "src/dranalyser/workbench/incident_report_digital.py": 123,
     "src/dranalyser/workbench/incident_report_time.py": 37,
-    "src/dranalyser/workbench/measurement_basis.py": 210
+    "src/dranalyser/workbench/measurement_basis.py": 221,
+    "src/dranalyser/workbench/capture_sequence.py": 189
   },
   "exceptions": {}
 }

@@ -22,6 +22,7 @@ from .incident_report_classification import stored_source_classification
 from .incident_report_focus import attach_waveform_focus
 from .incident_report_digital import attach_digital_inspection
 from .incident_report_time import recorded_clock
+from .capture_sequence import capture_time, signal_inventory, build_capture_sequence, same_recorder_attachments
 from ..rules.signals import CANONICAL, map_signals
 
 VERSION = 1
@@ -93,7 +94,8 @@ def _selection(root, revision, records):
     reviewed = _reviewed_copies(root, revision, inventory)
     used = (revision.get('result') or {}).get('used') or {}
     primaries = [used[end] for end in ('S', 'R') if used.get(end) in by_name]
-    order = list(records) if records is not None else primaries or [item['name'] for item in inventory]
+    order = (list(records) if records is not None else primaries + same_recorder_attachments(root, revision, primaries, inventory)
+        if primaries else [item['name'] for item in inventory])
     preferred = {}
     for reviewed_name, original in reviewed.items():
         preferred.setdefault(original, reviewed_name)
@@ -204,7 +206,7 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
     base = dict(record=record, display_label=choice['substation'], substation=choice['substation'],
         selection_reason=selection_reason, station=source.get('station', ''), device=source.get('device', ''),
         recorded_times=source.get('recorded_times', {}), record_clock=recorded_clock(source.get('recorded_times')),
-        source_sha256=source.get('source_sha256', {}),
+        source_sha256=source.get('source_sha256', {}), capture_time=capture_time(source),
         sample_count=source.get('sample_count', 0), nominal_frequency_hz=source.get('nominal_frequency_hz'),
         status='available', reason='', issues=list(source.get('issues', [])),
         observation_inputs_note=note, rms_basis=RMS_BASIS,
@@ -233,10 +235,11 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
         row['phase'] = {'A': 'R', 'B': 'Y', 'C': 'B'}.get(row['meaning'][-1], '')
         row['missing_reasons'] = {kind: _missing_reason(source, chosen, row, kind) for kind in ('pre', 'fault', 'post')}
         row['rms_basis'] = RMS_BASIS
-        row['scaling_note'] = ('Primary scale from saved user-declared instrument ratings; original file bytes unchanged, physical accuracy unverified.'
+        row['scaling_note'] = ('Physical scaling is unavailable; values remain in recorded counts.'
+            if not row['units'].startswith(('A', 'V')) else 'Primary scale from saved user-declared PRIMARY measurement basis; CT/VT multiplication is not applied; physical accuracy unverified.'
+            if row.get('id') in base['instrument_review'].get('primary_channels', []) else 'Primary scale from saved user-declared instrument ratings; original file bytes unchanged, physical accuracy unverified.'
             if row.get('id') in (base['instrument_review'].get('ratios') or {})
-            else 'CFG-declared primary scale; instrument/wiring accuracy is not independently verified.'
-            if row['units'].startswith(('A', 'V')) else 'Physical scaling is unavailable; values remain in recorded counts.')
+            else 'CFG-declared primary scale; instrument/wiring accuracy is not independently verified.')
     # Include phases that are absent or withheld so no source can silently lose
     # one phase. Missing values always have a named reason.
     present = {row['meaning'] for row in base['phase_values']}
@@ -277,6 +280,7 @@ def _source_report(root, revision, record, index, selection_reason, event_inputs
     prepared, _, _, mapped, provenance = _prepared(source, item, dict(voltage_kv=0, mappings=chosen['mappings']))
     attach_waveform_focus(base, prepared, breaks=breaks)
     attach_digital_inspection(base, source, mapped, provenance, chosen['asserted_states'], breaks=breaks)
+    base['digital']['sequence_signals'] = signal_inventory(source, mapped)
     agree = _mappings_agree(source, item, chosen)
     base['operational_measurements'] = _operational(revision, record, agree)
     stored_rows = [row for row in (revision.get('result') or {}).get('relay_evidence', [])
@@ -480,6 +484,7 @@ def build_incident_report(root, revision, *, records=None, event_inputs=None):
             limitations=['Values describe the captured electrical samples; before/during/after labels refer to selected observation intervals.',
                 'Each recording retains its own local clock. This report does not establish physical breaker operation.']),
         location=location, line_diagram=line_diagram, findings=findings, next_steps=next_steps,
+        capture_sequence=build_capture_sequence(sources, revision, agreements),
         glossary=[dict(term='RMS', meaning='Effective value of a varying signal, calculated from its samples; it includes DC and harmonics.'),
             dict(term='Before / during / after', meaning='Selected recording intervals around the observed change; a missing interval stays unknown.'),
             dict(term='CT / VT', meaning='Instrument transformers that scale current / voltage for the recorder.'),
