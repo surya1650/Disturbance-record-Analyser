@@ -1,4 +1,4 @@
-# Primary measurement basis and same-end sequence — qualified
+# Primary measurement basis and same-end sequence — complete and published
 
 [Plan](PRIMARY_BASIS_SEQUENCE_PLAN_v1.md),
 [checkpoint](PRIMARY_BASIS_SEQUENCE_CHECKPOINT.md),
@@ -8,9 +8,11 @@ review, conservative hints and independent same-end chronology. Final2565PASS/
 28private skips; Stage-A10000PASS .4361%p95;4PDFs each4A4/no clipping,min9pt;
 7workflow+3final API/browser checks and all15 runtime/wheel hashes match.
 Original private sources/history remain local, unknowns stay gated. Owned servers
-stopped; no new continuation automation. Only authorized review-branch delivery
-and remote HEAD verification remain; checkpoint owns publication state. Preserve
-all work and verify the local writer lease; do not restart implementation phases.
+stopped; no new continuation automation. **PUBLISHED**: normal review-branch
+push delivered `221c9f226bd7797fd8c3855db326a49ee7a60e98` and remote HEAD matched
+exactly. Documentation closure leaves runtime unchanged. Verify the evidence and
+stop; no implementation or publishing task remains and no repeat approval is
+needed. Preserve all work and the completed local writer lease.
 
 ---
 

@@ -4,9 +4,11 @@
 [acceptance](PRIMARY_BASIS_SEQUENCE_ACCEPTANCE_2026-11-06.md),
 [compact evidence](PRIMARY_BASIS_SEQUENCE_EVIDENCE_2026-11-06.json).
 Branch `codex/operator-ui-review`, baseline `97489e4`.
-State **COMPLETE — QUALIFIED**. Publication **READY FOR AUTHORIZED PUSH**.
-No publication rejection exists; the user's review-branch delivery authorization
-persists. Normal delivery and remote HEAD verification remain before closure.
+State **COMPLETE — QUALIFIED AND PUBLISHED**. Publication **PUBLISHED**.
+Normal authorized delivery `221c9f226bd7797fd8c3855db326a49ee7a60e98` was pushed to
+public `surya1650/Disturbance-record-Analyser`, only `codex/operator-ui-review`,
+and remote HEAD was read back exactly. No approval rejection occurred. This
+closure changes documentation only; all15 qualified runtime hashes are unchanged.
 
 ## Delivered implementation
 
@@ -52,11 +54,12 @@ claimed; explicit continuation resumed6November and preserved the final test log
 
 ## Resume and limits
 
-Finish only the normal authorized code/tests/sanitized-documents push to the
-named public review branch; verify remote HEAD, record delivery here and stop.
-Never publish private evidence, merge main, deploy or publish the environment.
-If actual automatic approval review rejects the push, save `PUSH_PENDING_AUTH`
-and require the explicit named-payload answer; never retry another publishing path.
+Engineering and delivery are finished. Verify the linked acceptance/evidence,
+preserve local/private work and stop; do not repeat completed phases or ask for
+publication approval that was already given and used successfully. No private
+evidence was published, and no main merge, deployment or environment publication
+occurred. The normal review-branch push was fast-forward, without alternate
+publishing paths. Only an actual new task or new engineering facts can reopen work.
 
 The local writer lease is under the evidence root. No competing writer exists;
 no new continuation automation was created and earlier goal continuations remain
