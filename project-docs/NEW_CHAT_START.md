@@ -3,7 +3,8 @@
 Active new follow-up: [primary basis and same-end capture sequence](PRIMARY_BASIS_SEQUENCE_PLAN_v1.md)
 and [checkpoint](PRIMARY_BASIS_SEQUENCE_CHECKPOINT.md). Read these before older
 completed goals, check the local writer lease and preserve uncommitted work.
-Continue only unfinished phases; real recordings and private results stay local.
+Implementation and qualification are COMPLETE; only authorized review-branch
+delivery/remote verification remains. Real recordings and private results stay local.
 
 Latest completed request: [Setup reuse and signal evidence](UNIFIED_ANALYSIS_SIGNALS_PLAN_v1.md)
 and [checkpoint](UNIFIED_ANALYSIS_SIGNALS_CHECKPOINT.md). Read these before older

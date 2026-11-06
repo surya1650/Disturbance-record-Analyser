@@ -1,0 +1,97 @@
+{
+  "goal": "primary basis and same-end capture sequence",
+  "branch": "codex/operator-ui-review",
+  "baseline": "97489e44ce3577bf2073a85c55068e56e907a322",
+  "qualified_runtime": "00c53f0e93f3e1958f4f5c2b672d046eebc2ddbd",
+  "state": "COMPLETE_QUALIFIED",
+  "publication": "READY_FOR_AUTHORIZED_PUSH",
+  "pytest": {
+    "passed": 2565,
+    "private_skips": 28,
+    "inherited_warnings": 1,
+    "elapsed_s": 101.6
+  },
+  "stage_a": {
+    "cases": 10000,
+    "status": "PASS",
+    "clean_p95_percent": 0.4361,
+    "impossible_without_caveat": 0,
+    "elapsed_s": 57.2,
+    "numerical_core_unchanged": true
+  },
+  "checks": {
+    "architecture_self_test": true,
+    "architecture_guard": true,
+    "changed_python_ruff_files": 15,
+    "js_cjs_syntax_files": 3,
+    "diff": true,
+    "original_review_digests_preserved": true
+  },
+  "browser": {
+    "workflow_checks": 7,
+    "workflow_runtime": "1a7634a",
+    "final_api_browser_checks": 3,
+    "final_runtime": "00c53f0",
+    "page_errors": 0,
+    "desktop_width_px": 1440,
+    "mobile_width_px": 390,
+    "owned_servers_stopped": true,
+    "accepted_single_ended_cohort_preserved": true,
+    "explicit_mismatched_cohort_withheld": true
+  },
+  "print": {
+    "reports": 4,
+    "a4_pages_per_report": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "total_a4_pages": 16,
+    "minimum_effective_font_pt": 9,
+    "overflow": false,
+    "clipping": false,
+    "three_synthetic_cases_and_one_private_case": true
+  },
+  "private_verification": {
+    "original_files_preserved": 4,
+    "phase_rms_cells_matching_independent_audit": 36,
+    "old_revisions_and_reports_preserved": true,
+    "physical_ends_unassigned": true,
+    "missing_line_facts_not_invented": true,
+    "independent_timing_gate_preserved": true,
+    "real_source_data_in_public_payload": false
+  },
+  "runtime_files": {
+    "src/dranalyser/application/instrument_review.py": "bd9e7593677d9b7710eebaf37586a8cb9ade43327cdc9b4663cd514b42544bdb",
+    "src/dranalyser/application/static/index.html": "4f73efbc2b17c87125cac937b2c13bfdfcc17185da742a963086b0309a9afeaa",
+    "src/dranalyser/application/static/instrument-review.css": "95e57af07fe33ece33e9d2eda101697d025b956c247e62f29426aa44d80dbd03",
+    "src/dranalyser/application/static/instrument-review.js": "a8dfae8a49e77da38b14836e7ebbd03dd3cd27edc7c4fbbf53983d9ddf3c5e77",
+    "src/dranalyser/application/static/recording-setup.js": "c72a169f9e51a2c14ccff16138c785a11bdea5661d6e5c5576a65ba9bb2f2cbf",
+    "src/dranalyser/comtrade/instrument_review.py": "7f21f0edc5b56ce19b813103f719d713f0ec40ef2b033ec347cfbecc4ee630af",
+    "src/dranalyser/comtrade/parser.py": "4ccb51fc3745d9f29f06479567e185e61c249f052df1ebf0ee80de3a0bd6109c",
+    "src/dranalyser/comtrade/source_decode.py": "8b3714498cf60750ffeda49bc2cda94265a9d716c516a2df1510d7a5ef138ebd",
+    "src/dranalyser/comtrade/source_time.py": "29918fc0caeb91234a93dd5b5649100cd9591b190cebeb5f2b43fe31ebd0e8d6",
+    "src/dranalyser/report/incident_summary.html": "6e8029df6c3038bb3749d175c173cacfdfc233ad6d98fb4bfa1542cb113b3ad5",
+    "src/dranalyser/report/incident_summary.py": "233cb884cfe634637f70ee43f076d7ae3ec32bc42291b216e32ed5dddf1665b8",
+    "src/dranalyser/workbench/capture_sequence.py": "0c34b2d9c01a4ffed1137ae5178b5c2c246441430c2317a04e3bdd3d5575a4d7",
+    "src/dranalyser/workbench/incident_report.py": "c95b7d3db9757f34b4bdddaf67bb342917ee65adaa0dd7652835bc92691b4ad4",
+    "src/dranalyser/workbench/measurement_basis.py": "20c3fa48953536ecb44053b2afded554f2895fc0198063165c5f8e134f4be825",
+    "src/dranalyser/workbench/ratio_inputs.py": "919dfa24b2d658d738d6c45ac05a7ef52e1450823d536ecb71fe67f8c2982c35"
+  },
+  "wheel": {
+    "exact_runtime_assets_matched": 15
+  },
+  "automation": {
+    "new_created": false,
+    "prior_owned_goal_continuations_remain_paused": true
+  },
+  "limits": [
+    "Magnitude evidence is display-only and does not infer ratings or alter basis.",
+    "Candidate same-recorder identity is not verified physical identity or clock alignment.",
+    "Trip/reclose/breaker actions and intervening gap states require suitable evidence.",
+    "PRIMARY copy/export is refused; same-record input revisions are supported.",
+    "Physical distance requires actual method-specific facts and eligible native evidence."
+  ],
+  "interruption": "Session/environment paused between 5 and 6 November; no work during pause is claimed."
+}

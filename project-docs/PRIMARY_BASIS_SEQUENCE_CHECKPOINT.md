@@ -1,61 +1,66 @@
 # Primary basis and sequence checkpoint
 
-[Plan](PRIMARY_BASIS_SEQUENCE_PLAN_v1.md). Branch `codex/operator-ui-review`.
-Baseline `97489e44ce3577bf2073a85c55068e56e907a322`.
-State **IN PROGRESS**. Publication **NOT ATTEMPTED**.
+[Plan](PRIMARY_BASIS_SEQUENCE_PLAN_v1.md),
+[acceptance](PRIMARY_BASIS_SEQUENCE_ACCEPTANCE_2026-11-06.md),
+[compact evidence](PRIMARY_BASIS_SEQUENCE_EVIDENCE_2026-11-06.json).
+Branch `codex/operator-ui-review`, baseline `97489e4`.
+State **COMPLETE — QUALIFIED**. Publication **READY FOR AUTHORIZED PUSH**.
+No publication rejection exists; the user's review-branch delivery authorization
+persists. Normal delivery and remote HEAD verification remain before closure.
 
-The latest user asks to analyse two successive real captures, avoid multiplying
-already-primary engineering values again, offer explicit common/custom secondary
-ratings when needed and support one-ended observations. User implementation and
-review-branch delivery authorization persists. No new publication rejection exists.
+## Delivered implementation
 
-P0 complete: prior local leases are completed or waiting for old missing facts;
-no competing active writer. Original uploads and existing private apps/history
-preserved. Changes underway are owned by this root and delegated file owners;
-do not start another writer or reset/discard them. Current exclusive lease lives
-under ignored `work/qa-primary-basis-sequence-2026-11-05/active-writer.json`.
+P0 `1ce719c` protects the new bounded goal/lease. P1 `2b996a1` adds explicit
+source-bound primary review with retained original declarations, unchanged legacy
+secondary digests, supported magnitude hints and all existing gates. P2 `f83960a`
+adds simple Setup basis, explicit secondary presets/custom ratings and source-bound
+drafts. P3 `1a7634a` adds independent capture chronology with original DAT origins,
+explicit gaps/overlaps/unknown and absent signal evidence. Final runtime
+`00c53f0e93f3e1958f4f5c2b672d046eebc2ddbd` preserves accepted single-ended display
+cohorts; explicit extra-source requests retain the strict location cohort gate.
+Independent review's nonzero-origin before-trigger label defect is corrected.
 
-P1 complete at `2b996a1`: source-bound explicit primary review, unchanged legacy
-secondary digests, original metadata retained and display-only magnitude hints.
-Focused backend99PASS (one inherited warning), dedicated assessment27PASS;
-changed backend/helper Ruff and direct architecture self-test/guard PASS. Native
-DSP and numerical gates remain unchanged. PRIMARY copy/export has a precise
-refusal; same-record input revisions and old history remain supported.
+P4 privately verifies both actual uploads after the user's primary declaration.
+All four original files, logical names, earlier revisions and old report bytes
+are preserved. All36 phase RMS cells match independent actual-time measurement.
+Only recorded contacts support signal findings; physical AR/CB action, line/end
+facts and a distance are not fabricated. An independent timing gate remains.
+Private records, settings, source hashes, values and reports remain ignored/local.
 
-P2 complete `f83960a`: explicit primary/secondary Setup and common/custom rating
-shortcuts, readonly original P and hash-bound draft retention. Five focused UI
-tests and Chromium DOM/mobile smoke PASS. P3 `1a7634a`: candidate same-recorder
-chronology, original DAT origin, explicit gaps/overlap/unknown and missing signals.
-Sequence/origin31PASS. Independent review's nonzero-origin trigger-label defect
-was corrected; assessment34PASS. Final cohort-preservation fix keeps accepted
-single-ended operational display cohorts intact, without weakening location gates;
-50 targeted reader/sequence/classification tests PASS (one inherited warning).
+## Final checks
 
-P4 complete privately: actual original pairs ingested into a separate local app;
-same-record PRIMARY revisions preserve all four source hashes and original report
-history. All36 phase RMS values match independent source-time measurement. The
-only zone contact cannot prove AR/CB action; one source retains an independent
-TIME-DAT block. No line/end/ratio/clock facts or distance were fabricated.
+Full pytest **2565PASS/28private skips/one inherited warning,101.60s**.
+Stage-A10000 **PASS**, cleanp95 **.4361%**, zero impossible uncaveated distances,
+57.2s. Native DSP/estimators/oracle/conformance/timestamp policy unchanged.
+Direct architecture self-test/guard, changed15 Python Ruff,3 JS/CJS syntax and
+diff PASS. All15 runtime hashes and built-wheel bytes match.
 
-P5 final runtime `00c53f0`: full **2565PASS / 28 private skips / one inherited
-warning, 101.60s**. Stage-A10000PASS, cleanp95 .4361%, zero impossible uncaveated
-distances, 57.2s. Direct architecture/self-test, changed15 Python Ruff, 3 JS/CJS
-syntax, diff and package checks PASS; all15 runtime files match frozen hashes and
-built-wheel bytes. No numerical engine/oracle/conformance/timestamp policy changed.
-Seven actual browser workflow checks passed at unchanged `1a7634a`; the final
-cohort preservation fix has50 targeted passes. Three synthetic PDFs each4A4,
-minimum9pt/no clipping/overflow/errors. Final fresh private PDF and cohort API
-smoke remain pending, then sanitized acceptance and publication can finish.
+Actual browser workflow7checks at unchanged `1a7634a`; final3 API/browser checks
+on `00c53f0` preserve accepted single-ended location, refuse explicit mismatched
+cohorts, retain fresh private report/original/history bytes and fit1440px/390px.
+Zero page errors; owned servers/browsers stopped. Final4PDFs each4A4=16pages,
+minimum9pt, no clipping, footer collision or horizontal overflow. Independent
+code review and visual inspection PASS. Final cohort-focused50tests PASS.
 
-Session/environment paused between5 and6November. Explicit user continuation
-resumed on6November; the completed final test log survived. No work during the
-pause is claimed. New current lease checked/renewed; no competing active writer.
+Evidence root ignored `work/qa-primary-basis-sequence-2026-11-05/`: final-pytest.log,
+stage-a.log/CSV,cohort-preservation.log,runtime-manifest.json,wheel-validation.json;
+browser/workflow-results.json,final-smoke-results.json,runtime-manifest-final.json,
+BROWSER_ACCEPTANCE.md and print metrics; separate private audit/application.
+The pre-fix2564 run, stopped redundant API run and intermediate artifacts are
+history, not final acceptance. No work during the5-to-6November session pause is
+claimed; explicit continuation resumed6November and preserved the final test log.
 
-Next: finish P5 on the final frozen cohort-preservation commit, record actual
-full tests/fresh PDF counts and privacy/package checks, then deliver only code,
-tests and sanitized documents to the authorized review branch with remote check.
-Physical distance still requires actual method-specific line facts; observations
-must remain available without them. Do not silently invent any missing facts.
+## Resume and limits
 
-No work during a paused session is claimed. Old owned continuations stay paused;
-no new automation is created. Never merge main, deploy or publish the environment.
+Finish only the normal authorized code/tests/sanitized-documents push to the
+named public review branch; verify remote HEAD, record delivery here and stop.
+Never publish private evidence, merge main, deploy or publish the environment.
+If actual automatic approval review rejects the push, save `PUSH_PENDING_AUTH`
+and require the explicit named-payload answer; never retry another publishing path.
+
+The local writer lease is under the evidence root. No competing writer exists;
+no new continuation automation was created and earlier goal continuations remain
+paused. Primary copy/export is precisely refused; same-record reviews work.
+Magnitude hints do not infer ratings. Recorder labels do not establish physical
+identity, opposite ends or common clocks. Actual method-specific line facts and
+eligible native acquisition/windows remain necessary for physical fault distance.

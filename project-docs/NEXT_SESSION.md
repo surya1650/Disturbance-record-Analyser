@@ -1,13 +1,16 @@
-# Primary measurement basis and same-end sequence — in progress
+# Primary measurement basis and same-end sequence — qualified
 
 [Plan](PRIMARY_BASIS_SEQUENCE_PLAN_v1.md),
-[checkpoint](PRIMARY_BASIS_SEQUENCE_CHECKPOINT.md). Baseline `97489e4`.
-Read this first for the new user task. Preserve all working edits and inspect
-the exclusive local writer lease before resuming; never edit concurrently.
-Implement explicit primary-basis review, simple secondary presets and conservative
-magnitude hints, independent capture chronology and real private one-ended audit.
-Earlier completed goals below remain closed. Record actual tests/PDF counts;
-do not claim work continued across platform pauses or invent engineering facts.
+[checkpoint](PRIMARY_BASIS_SEQUENCE_CHECKPOINT.md),
+[acceptance](PRIMARY_BASIS_SEQUENCE_ACCEPTANCE_2026-11-06.md). Baseline `97489e4`.
+Engineering COMPLETE at runtime `00c53f0`: primary/secondary Setup, source-bound
+review, conservative hints and independent same-end chronology. Final2565PASS/
+28private skips; Stage-A10000PASS .4361%p95;4PDFs each4A4/no clipping,min9pt;
+7workflow+3final API/browser checks and all15 runtime/wheel hashes match.
+Original private sources/history remain local, unknowns stay gated. Owned servers
+stopped; no new continuation automation. Only authorized review-branch delivery
+and remote HEAD verification remain; checkpoint owns publication state. Preserve
+all work and verify the local writer lease; do not restart implementation phases.
 
 ---
 
