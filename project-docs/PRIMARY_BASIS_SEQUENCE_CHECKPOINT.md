@@ -37,12 +37,19 @@ history. All36 phase RMS values match independent source-time measurement. The
 only zone contact cannot prove AR/CB action; one source retains an independent
 TIME-DAT block. No line/end/ratio/clock facts or distance were fabricated.
 
-P5 in progress: initial full2564PASS/28private skips (one inherited warning,
-110.40s) precedes the final cohort-preservation fix; rerun on final frozen runtime
-is required. Stage-A10000PASS cleanp95.4361%, zero impossible uncaveated distances,
-57.2s, unchanged numerical core. Actual private report print currently4A4 pages;
-final browser workflow, PDF matrix, package/privacy and final full test are pending.
-Earlier goal evidence remains historical; provisional checks above are not final acceptance.
+P5 final runtime `00c53f0`: full **2565PASS / 28 private skips / one inherited
+warning, 101.60s**. Stage-A10000PASS, cleanp95 .4361%, zero impossible uncaveated
+distances, 57.2s. Direct architecture/self-test, changed15 Python Ruff, 3 JS/CJS
+syntax, diff and package checks PASS; all15 runtime files match frozen hashes and
+built-wheel bytes. No numerical engine/oracle/conformance/timestamp policy changed.
+Seven actual browser workflow checks passed at unchanged `1a7634a`; the final
+cohort preservation fix has50 targeted passes. Three synthetic PDFs each4A4,
+minimum9pt/no clipping/overflow/errors. Final fresh private PDF and cohort API
+smoke remain pending, then sanitized acceptance and publication can finish.
+
+Session/environment paused between5 and6November. Explicit user continuation
+resumed on6November; the completed final test log survived. No work during the
+pause is claimed. New current lease checked/renewed; no competing active writer.
 
 Next: finish P5 on the final frozen cohort-preservation commit, record actual
 full tests/fresh PDF counts and privacy/package checks, then deliver only code,
