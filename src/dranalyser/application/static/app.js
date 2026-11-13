@@ -245,7 +245,7 @@ async function route() {
   requestedPortalTask=view==='incident'?(task||'waveforms'):['compare','report'].includes(view)?view:'waveforms';
   const name=view==='incident'?'detail':['overview','upload','setup','integrations','catalogue'].includes(view)?view:'overview';
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!==name);
-  document.querySelectorAll('[data-nav]').forEach(v=>{v.classList.toggle('active',v.dataset.nav===(['upload','setup'].includes(name)?'upload':requestedPortalTask==='waveforms'?'analyse':requestedPortalTask));if(name!=='detail')v.href='#'+v.dataset.nav;});
+  document.querySelectorAll('[data-nav]').forEach(v=>{v.classList.toggle('active',v.dataset.nav===(name==='catalogue'?'catalogue':['upload','setup'].includes(name)?'upload':requestedPortalTask==='waveforms'?'analyse':requestedPortalTask));if(name!=='detail')v.href='#'+v.dataset.nav;});
   $('breadcrumb').textContent=name==='overview'?'Choose an incident / '+({waveforms:'Analyse',compare:'Compare',report:'Report'}[requestedPortalTask]):`Workspace / ${name==='detail'?'Incident':name[0].toUpperCase()+name.slice(1)}`;
   try {
     if(name==='overview') await overview();

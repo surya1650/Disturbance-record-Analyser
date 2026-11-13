@@ -1,3 +1,18 @@
+# Excel source catalogue integration — complete
+
+[Plan](EXCEL_CATALOGUE_PLAN_v1.md), [acceptance](EXCEL_CATALOGUE_ACCEPTANCE_2026-11-13.md),
+[VM/import guide](EXCEL_CATALOGUE_GUIDE.md). User-authorized follow-on from the
+published baseline4742dae. Direct XLSX upload/preview/explicit activation,
+TL/PTR inventory, source coordinates, circle/station filters and retained versions.
+No DR maths, incident data or approved registry changes.2639PASS/28private skips;
+Stage-A10000PASS cleanp95 .4361%; direct architecture/self-tests, targeted Ruff,
+Node and supplied-workbook browser checks pass. Private workbook stays local.
+Delivery is normal review-branch code push; the VM still needs the documented
+pull/dependency install/restart. No cloud deployment or environment publication.
+Do not repeat prior completed goals or start automation without a new user task.
+
+---
+
 # Primary measurement basis and same-end sequence — complete and published
 
 [Plan](PRIMARY_BASIS_SEQUENCE_PLAN_v1.md),

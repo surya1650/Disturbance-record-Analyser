@@ -29,6 +29,8 @@ def reviewed_line(catalogue, review):
         params = rows[review['parameter_row']]
     except KeyError as exc:
         raise ValueError('All reviewed source rows must exist in this catalogue.') from exc
+    if any(row.get('kind', 'TL') != 'TL' for row in ends.values()):
+        raise ValueError('Transformer inventory cannot be promoted to a transmission line.')
     if params['id'] not in selected.values():
         raise ValueError('Parameter row must be one of the selected terminal rows.')
     if not all(r['electrical_values_parseable'] for r in ends.values()):
@@ -96,6 +98,8 @@ def source_candidate(catalogue, selection, prior=None):
     except KeyError as exc:
         raise ValueError('Selected row is absent from this catalogue.') from exc
     s, r = selected['S'], selected['R']
+    if any(row.get('kind', 'TL') != 'TL' for row in (s, r)):
+        raise ValueError('Transformer inventory cannot be used as a transmission-line candidate.')
     if not all(row['electrical_values_parseable'] for row in (s, r)):
         raise ValueError('Selected candidate has source value errors.')
     if any(s[k] != r[k] for k in ('kv', 'length_km', 'z1', 'z0')):

@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DR Analyser · Local workspace</title><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/channel-comparison.css"><link rel="stylesheet" href="/static/operator-ui.css"><link rel="stylesheet" href="/static/instrument-review.css"><link rel="stylesheet" href="/static/recording-setup.css"><link rel="stylesheet" href="/static/event-study.css"><link rel="stylesheet" href="/static/fault-calculation.css"><link rel="stylesheet" href="/static/inspection-layout.css"></head>
+<title>DR Analyser · Local workspace</title><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/channel-comparison.css"><link rel="stylesheet" href="/static/operator-ui.css"><link rel="stylesheet" href="/static/instrument-review.css"><link rel="stylesheet" href="/static/recording-setup.css"><link rel="stylesheet" href="/static/event-study.css"><link rel="stylesheet" href="/static/fault-calculation.css"><link rel="stylesheet" href="/static/inspection-layout.css"><link rel="stylesheet" href="/static/catalogue.css"></head>
 <body>
 <aside class="sidebar">
   <a class="brand" href="#overview" aria-label="DR Analyser · incident history"><span class="brand-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M3 17h6l4-10 6 19 4-9h6" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg></span><span>DR Analyser<small>INCIDENT WORKSPACE</small></span></a>
   <div class="nav-label">YOUR INCIDENT</div>
   <nav aria-label="Main tasks"><a href="#upload" data-nav="upload"><span>1</span> Upload</a><a href="#analyse" data-nav="analyse"><span>2</span> Analyse</a><a href="#compare" data-nav="compare"><span>3</span> Compare</a><a href="#report" data-nav="report"><span>4</span> Report</a></nav>
+  <nav aria-label="Source data" class="catalogue-navigation"><a href="#catalogue" data-nav="catalogue"><span aria-hidden="true">▤</span> Source catalogue</a></nav>
   <div class="sidebar-note"><span class="dot"></span> Running on this computer<p>Your files and analysis results stay in this local workspace.</p><span class="version">LOCAL APPLICATION · v0.2</span></div>
 </aside>
 <main>
@@ -43,7 +44,7 @@
     <div class="panel"><div class="panel-heading"><div><h2>Collector activity</h2><p>Persistent receipts make retries and intake problems visible.</p></div></div><div id="receipts" class="table-wrap"></div></div>
     <div class="hint">Direct relay connections use site-specific collectors. This application accepts their exported records through the folder or API interface; manual upload is always available.</div>
   </section>
-  <section id="catalogue" class="view" hidden><div class="page-title"><div><div class="eyebrow">SOURCE DATA</div><h1>Line and relay catalogue</h1><p>Inspect source rows, input issues and candidate terminal associations.</p></div></div><div id="catalogue-content" class="panel"></div></section>
+  <section id="catalogue" class="view" hidden><div class="page-title"><div><div class="eyebrow">SOURCE DATA</div><h1>Source catalogue</h1><p>Import Excel, browse line and transformer inventory, and review source data.</p></div></div><div id="catalogue-content" class="panel"></div></section>
   <section id="setup" class="view" hidden><div id="setup-content"></div></section>
   <section id="detail" class="view" hidden><div id="detail-content"></div></section>
   <footer>DR Analyser <span>·</span> Evidence first. Every location carries its method.</footer>

@@ -375,3 +375,10 @@ src/dranalyser/
 - Source catalogues do not establish event-effective settings, verified wiring,
   surveyed tower chainages or independent patrol truth. Field acceptance remains
   unavailable until those inputs are supplied and reviewed.
+
+### Excel source catalogue
+
+Upload `.xlsx` files in **Source catalogue**, preview TL/PTR source rows, then
+explicitly select a version for browsing. See the [Excel import and VM update
+guide](project-docs/EXCEL_CATALOGUE_GUIDE.md). Imported values retain their source
+coordinates; engineering review remains separate from catalogue activation.

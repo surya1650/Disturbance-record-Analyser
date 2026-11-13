@@ -17,7 +17,7 @@
     "src/dranalyser/application/__init__.py": 1,
     "src/dranalyser/application/__main__.py": 39,
     "src/dranalyser/application/api.py": 257,
-    "src/dranalyser/application/catalogue.py": 50,
+    "src/dranalyser/application/catalogue.py": 68,
     "src/dranalyser/application/intake.py": 211,
     "src/dranalyser/application/store.py": 193,
     "src/dranalyser/application/watcher.py": 61,
@@ -61,9 +61,9 @@
     "src/dranalyser/ml/tier3.py": 287,
     "src/dranalyser/registry/__init__.py": 0,
     "src/dranalyser/registry/assets.py": 356,
-    "src/dranalyser/registry/catalogue.py": 226,
+    "src/dranalyser/registry/catalogue.py": 257,
     "src/dranalyser/registry/catalogue_io.py": 55,
-    "src/dranalyser/registry/catalogue_review.py": 120,
+    "src/dranalyser/registry/catalogue_review.py": 124,
     "src/dranalyser/registry/loader.py": 188,
     "src/dranalyser/registry/model.py": 303,
     "src/dranalyser/registry/settings.py": 529,
@@ -155,7 +155,11 @@
     "src/dranalyser/workbench/incident_report_digital.py": 123,
     "src/dranalyser/workbench/incident_report_time.py": 37,
     "src/dranalyser/workbench/measurement_basis.py": 221,
-    "src/dranalyser/workbench/capture_sequence.py": 192
+    "src/dranalyser/workbench/capture_sequence.py": 192,
+    "src/dranalyser/application/catalogue_import.py": 72,
+    "src/dranalyser/registry/catalogue_excel.py": 117,
+    "src/dranalyser/registry/catalogue_store.py": 213,
+    "src/dranalyser/registry/xlsx_catalogue.py": 276
   },
   "exceptions": {}
 }

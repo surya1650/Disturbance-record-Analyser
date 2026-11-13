@@ -88,11 +88,12 @@ def _parse_row(source, sheet, headers, values, row_number):
     title, sid = sheet['title'], sheet['sheetId']
     cells = {key: values[i] if i < len(values) else None for i, key in enumerate(headers)}
     raw = {key: cells.get(header) for key, header in FIELDS.items()}
-    row_hash = digest({'spreadsheet_id': source['spreadsheet_id'], 'sheet_id': sid,
+    local = source.get('kind') == 'xlsx'
+    row_hash = digest({('workbook_sha256' if local else 'spreadsheet_id'): source['sha256'] if local else source['spreadsheet_id'], 'sheet_id': sid,
                        'row': row_number, 'headers': headers, 'values': values})
     out = {'id': f'{sid}:{row_number}:{row_hash[:12]}', 'row_hash': row_hash,
            'sheet': title, 'sheet_id': sid, 'row': row_number,
-           'url': f"https://docs.google.com/spreadsheets/d/{source['spreadsheet_id']}/edit#gid={sid}&range=A{row_number}",
+           'url': None if local else f"https://docs.google.com/spreadsheets/d/{source['spreadsheet_id']}/edit#gid={sid}&range=A{row_number}",
            'raw': raw, 'cells': {key: f"'{title.replace(chr(39), chr(39)*2)}'!{column_name(headers.index(h)+1)}{row_number}"
                                 for key, h in FIELDS.items() if h in headers},
            'station': text(raw['station']), 'feeder': text(raw['feeder']),
@@ -101,6 +102,10 @@ def _parse_row(source, sheet, headers, values, row_number):
            'reference_date': None, 'issues': [], 'status': 'unreviewed source evidence',
            'field_verified': False, 'settings_effective_date_verified': False,
            'line_impedance_basis': 'unconfirmed', 'source_values': list(values)}
+    if local:
+        out.update(kind='TL', source_headers=list(headers), circle=re.sub(r'\s+TL$', '', title),
+                   source_locator={'file_name': source['file_name'], 'sha256': source['sha256'],
+                                   'sheet': title, 'row': row_number, 'cells': dict(out['cells'])})
 
     def issue(code, field, detail, severity='error'):
         out['issues'].append({'code': code, 'field': field, 'severity': severity, 'detail': detail})
@@ -141,7 +146,17 @@ def _parse_row(source, sheet, headers, values, row_number):
                 issue('invalid_derived_column', key, f'{prefix} {label} is not a finite decimal.', 'warning')
     if text(raw['date']):
         try:
-            out['reference_date'] = datetime.strptime(text(raw['date']), '%d/%m/%y').date().isoformat()
+            formats = ('%Y-%m-%d', '%Y-%m-%dT%H:%M:%S', '%d/%m/%Y', '%d/%m/%y') if local else ('%d/%m/%y',)
+            parsed = None
+            for fmt in formats:
+                try:
+                    parsed = datetime.strptime(text(raw['date']), fmt).date().isoformat()
+                    break
+                except ValueError:
+                    pass
+            if parsed is None:
+                raise ValueError('Unknown date format')
+            out['reference_date'] = parsed
         except ValueError:
             issue('unparsed_date', 'date', 'Reference date retained verbatim; not an effective settings date.', 'warning')
     # These are source reach/time values, not zone polygons or confirmed relay bases.
@@ -149,11 +164,25 @@ def _parse_row(source, sheet, headers, values, row_number):
     out['zones'] = [{'name': f'Z{i+1}', 'reach_raw': values[start+2*i] if start is not None and start+2*i < len(values) else None,
                      'time_raw': values[start+2*i+1] if start is not None and start+2*i+1 < len(values) else None,
                      'impedance_basis': 'unconfirmed', 'characteristic_complete': False} for i in range(4)]
+    if local:
+        # Excel columns can move independently: adjacency does not establish a time field.
+        for zone in out['zones']:
+            reach, timing = zone['name'], 'T'+zone['name'][1:]
+            alternate = 'Zone Impedance / Reach Settings (Ohms)'
+            header = reach if reach in headers else alternate if reach == 'Z1' and alternate in headers else reach
+            zone.update(reach_raw=cells.get(header), time_raw=cells.get(timing))
+            for key in (header, timing):
+                if key in headers:
+                    out['cells'][key] = f"'{title.replace(chr(39), chr(39)*2)}'!{column_name(headers.index(key)+1)}{row_number}"
+        out['source_locator']['cells'] = dict(out['cells'])
     out['electrical_values_parseable'] = not any(i['severity'] == 'error' for i in out['issues'])
     return out
 
 
 def build_catalogue(snapshot):
+    if snapshot.get('schema') == 'dranalyser.xlsx-snapshot.v1':
+        from .catalogue_excel import build_excel_catalogue
+        return build_excel_catalogue(snapshot)
     if snapshot.get('schema') != 'dranalyser.google-sheet-snapshot.v1':
         raise ValueError('Unsupported snapshot schema.')
     source = snapshot['source']
@@ -208,12 +237,14 @@ def reciprocal_candidates(catalogue, row_id):
     row = next((r for r in catalogue['rows'] if r['id'] == row_id), None)
     if row is None:
         raise ValueError('Unknown catalogue row.')
+    if row.get('kind', 'TL') != 'TL':
+        return []
     station, feeder = identity(row['station']), feeder_identity(row['feeder'])
     if not station or not feeder or not row['kv']:
         return []
     candidates = []
     for other in catalogue['rows']:
-        if other['id'] == row_id or other['kv'] != row['kv']:
+        if other.get('kind', 'TL') != 'TL' or other['id'] == row_id or other['kv'] != row['kv']:
             continue
         if identity(other['station']) == feeder and feeder_identity(other['feeder']) == station:
             disagreements = []

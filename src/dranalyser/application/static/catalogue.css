@@ -1,0 +1,17 @@
+#catalogue-content .catalogue-upload{display:flex;align-items:center;flex-wrap:wrap;gap:14px;padding:22px 25px;border-bottom:1px solid var(--line)}
+#catalogue-content .catalogue-upload>div{flex:1 1 300px}#catalogue-content .catalogue-upload p{margin:0}#catalogue-content .catalogue-upload label{cursor:pointer}
+#catalogue-file{position:absolute;width:1px;height:1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%)}
+#catalogue-content .catalogue-upload:focus-within label{outline:2px solid var(--teal);outline-offset:4px}
+#catalogue-upload-state{font-size:12px;color:#526e73}#catalogue-message{padding:0 25px;color:#946026;overflow-wrap:anywhere}#catalogue-message:empty{display:none}
+#catalogue-content .catalogue-preview{margin:20px 25px;padding:22px;border:1px solid #9ecbc4;border-radius:8px;background:#f8fcfb;overflow-wrap:anywhere}
+#catalogue-content .catalogue-preview small,#catalogue-content .catalogue-preview code{overflow-wrap:anywhere}.catalogue-preview-actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 10px}
+#catalogue-content .catalogue-history{padding:18px 25px;border-bottom:1px solid var(--line)}#catalogue-content summary{cursor:pointer;font-size:12px;line-height:1.7}
+#catalogue-history-list{max-height:300px;overflow:auto;list-style:none;padding:0;font-size:11px}#catalogue-history-list li{padding:12px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}#catalogue-history-list button{padding-left:0;white-space:normal;text-align:left}
+#catalogue-content .catalogue-filters{display:grid;grid-template-columns:minmax(180px,2fr) repeat(3,minmax(100px,1fr));padding-top:22px;gap:12px}
+#catalogue-content .catalogue-filters label{display:block;margin:0;font-size:11px;color:#526e73}#catalogue-content .catalogue-filters input,#catalogue-content .catalogue-filters select{display:block;max-width:none;width:100%;margin:6px 0 0;min-width:0}
+#catalogue-content .catalogue-filters .catalogue-errors-label{display:flex;align-items:center;gap:8px;grid-column:1/-1}#catalogue-content .catalogue-errors-label input{display:inline-block;width:auto;margin:0}
+#catalogue-content code{overflow-wrap:anywhere}#catalogue-content .catalogue-source-cells{margin:20px 0}#catalogue-content .catalogue-preview table td{padding:10px 16px}
+@media(max-width:900px){#catalogue-content .catalogue-filters{grid-template-columns:repeat(2,minmax(100px,1fr))}}@media(max-width:480px){#catalogue-content .catalogue-filters{grid-template-columns:1fr}#catalogue-content .catalogue-upload,#catalogue-content .catalogue-history{padding:18px}#catalogue-content .catalogue-preview{margin:18px;padding:16px}.catalogue-preview-actions .button{white-space:normal}}
+
+.sidebar .catalogue-navigation{margin-top:20px}
+@media(max-width:700px){.sidebar .catalogue-navigation{margin-top:8px}}
